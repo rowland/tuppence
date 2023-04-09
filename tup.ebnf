@@ -1,0 +1,96 @@
+program         ::= { statement } .
+
+statement       ::= assignment
+                  | for_statement
+                  | function_declaration
+                  | type_declaration .
+
+assignment      ::= assignment_lhs "=" [ "mut" ] expression .
+
+assignment_lhs  ::= identifier { "," identifier } | "(" assignment_lhs ")" .
+
+for_statement   ::= "for" [ for_init ] ";" [ expression ] ";" [ expression ] block .
+
+for_init        ::= for_simple_init | for_tuple_init .
+
+for_simple_init ::= assignment_lhs "=" expression .
+
+for_tuple_init  ::= "(" [ assignment_lhs { "," assignment_lhs } ] ")" "=" expression .
+
+function_declaration ::= identifier [ function_parameters ] "=" "fn" "(" [ parameters ] ")" return_type block .
+
+function_parameters ::= "[" [ identifier { "," identifier } ] "]" .
+
+parameters      ::= parameter { "," parameter } .
+
+parameter       ::= [ identifier ":" ] type .
+
+type            ::= identifier
+                  | tuple_type .
+
+tuple_type      ::= "(" [ annotations ] [ tuple_type_members ] ")" .
+
+tuple_type_members ::= tuple_type_member { "," tuple_type_member } .
+
+tuple_type_member ::= [ annotations ] [ identifier ":" ] type .
+
+type_declaration ::= identifier "=" "type" "(" [ annotations ] [ type_members ] ")" .
+
+annotations     ::= annotation { annotation } .
+
+annotation      ::= "@" identifier ":" identifier value .
+
+value           ::= string_literal | number .
+
+block           ::= "{" { statement } [ expression ] "}" .
+
+expression      ::= literal
+                  | identifier
+                  | binary_operation
+                  | function_call
+                  | if_expression
+                  | for_statement
+                  | "!" expression .
+
+literal         ::= integer_literal
+                  | float_literal
+                  | string_literal
+                  | boolean_literal .
+
+integer_literal ::= decimal_literal
+                  | octal_literal
+                  | hexadecimal_literal .
+
+decimal_literal ::= digit { digit } .
+
+octal_literal   ::= "0" octal_digit { octal_digit } .
+
+hexadecimal_literal ::= "0x" hex_digit { hex_digit } .
+
+float_literal   ::= digit { digit } "." digit { digit } .
+
+string_literal  ::= '"' { unicode_escape_sequence | character } '"' .
+
+boolean_literal ::= "true" | "false" .
+
+if_expression   ::= "if" expression block { "else if" expression block } [ "else" block ] .
+
+function_call   ::= identifier "(" [ arguments ] ")" .
+
+arguments       ::= expression { "," expression } .
+
+binary_operation ::= expression operator expression .
+
+operator        ::= "+" | "-" | "*" | "/" | "%" | "^" | "==" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "&" | "|" .
+
+identifier      ::= IDENTIFIER [ "?" | "!" ] .
+
+IDENTIFIER      ::= letter { letter | digit | "_" } .
+
+letter          ::= [A-Za-z] .
+
+decimal_digit   ::= [0-9] .
+
+octal_digit     ::= [0-7] .
+
+hex_digit       ::= [0-9A-Fa-f] .
