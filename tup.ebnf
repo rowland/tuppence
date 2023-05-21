@@ -1,96 +1,222 @@
-program         ::= { statement } .
+add_sub_op      = "+" | "-" | "|" .
 
-statement       ::= assignment
-                  | for_statement
+annotation      = "@" namespace ":" identifier annotation_value .
+
+annotations     = [ annotation { annotation } ] .
+
+argument        = expression .
+
+arguments       = argument { "," argument } .
+
+array_literal   = "[" [ array_members ] "]" .
+
+array_members   = expression { "," expression } .
+
+assignment      = assignment_lhs "=" [ "mut" ] expression .
+
+assignment_lhs  = identifier { "," identifier } | "(" assignment_lhs ")" .
+
+bin_op          = "^" | mul_div_op | add_sub_op | rel_op | "||" | "&&" .
+
+binary_literal  = "0b" ( "0" | "1" ) { "0" | "1" } .
+
+binary_operation = expression bin_op expression .
+
+block           = "{" { statement } expression "}" .
+
+boolean_literal = "true" | "false" .
+
+chained_expression = expression "|>" expression .
+
+character       = (* valid UTF-8 codepoint *) .
+
+comment         = "#" { not_eol } eol
+
+decimal_digit   = "0"-"9" .
+
+decimal_literal = [ "-" ] decimal_digit { decimal_digit } .
+
+eol             = ( "\r\n" | "\r" | "\n" ) .
+
+exponent        = "e" [ "-" | "+" ] decimal_digit { decimal_digit } .
+
+export_assignment = assignment_lhs ":" expression .
+
+export_declaration = ( export_assignment | export_function_declaration | export_type_declaration ) .
+
+export_function_declaration = function_declaration_lhs ":" function_type block .
+
+export_function_type_declaration = function_type_declaration_lhs ":" function_type .
+
+export_type_declaration = type_declaration_lhs ":" type_declaration_rhs .
+
+expression      = literal
+                | "(" expression ")"
+                | "-" expression
+                | "!" expression
+                | identifier
+                | binary_operation
+                | function_call
+                | if_expression
+                | for_statement
+                | chained_expression
+                | member_access
+                | block
+                | return_expression .
+
+float_literal   = [ "-" ] decimal_digit { decimal_digit } "." decimal_digit { decimal_digit } [ exponent ]
+                | [ "-" ] decimal_digit { decimal_digit } exponent .
+
+for_block       = "{" { statement } [ expression ] "}" .
+
+for_header      = assignment [ ";" expression [ ";" expression ] ] .
+
+for_statement   = "for" [ for_header ] for_block .
+
+function_call   = function_identifier "(" [ ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ] ")" .
+
+function_declaration = function_declaration_lhs "=" function_type block .
+
+function_declaration_lhs = function_identifier [ function_parameters ] .
+
+function_identifier = lowercase_letter { letter | decimal_digit | "_" } [ "?" | "!" ] .
+
+function_parameters = "[" [ identifier { "," identifier } ] "]" .
+
+function_type   = "fn" "(" [ labeled_parameters | parameters ] ")" return_type .
+
+function_type_declaration = function_type_declaration_lhs "=" function_type .
+
+function_type_declaration_lhs = function_type_identifier [ function_parameters ] .
+
+function_type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
+
+generic_type    = type_identifier type_argument_list .
+
+hex_digit       = decimal_digit | "a"-"f" | "A"-"F" .
+
+hexadecimal_literal = [ "-" ] "0x" hex_digit { hex_digit } .
+
+identifier      = ( letter | "_" ) { letter | decimal_digit | "_" } .
+
+if_expression   = "if" expression block { "else if" expression block } [ "else" block ] .
+
+integer_literal = binary_literal
+                | hexadecimal_literal
+                | octal_literal
+                | decimal_literal .
+
+labeled_argument = identifier ":" expression .
+
+labeled_arguments = labeled_argument { "," ( labeled_argument ) } .
+
+labeled_parameter = identifier ":" parameter .
+
+labeled_parameters = labeled_parameter { "," labeled_parameter } .
+
+labeled_tuple_member = identifier ":" tuple_member .
+
+labeled_tuple_members = labeled_tuple_member { "," labeled_tuple_member } .
+
+labeled_tuple_type_member = identifier ":" tuple_type_member .
+
+labeled_tuple_type_members = labeled_tuple_type_member { "," labeled_tuple_type_member } .
+
+letter          = "a"-"z" | "A"-"Z" .
+
+literal         = integer_literal
+                | float_literal
+                | string_literal
+                | raw_string_literal
+                | boolean_literal
+                | tuple_literal
+                | array_literal .
+
+lowercase_letter = "a"-"z" .
+
+member_access   = expression "." ( integer_literal | identifier ) .
+
+module          = { top_level_item } .
+
+mul_div_op      = "*" | "/" | "%" | "&" | "<<" | ">>" .
+
+namespace       = letter { letter | decimal_digit | "_" } .
+
+nonzero_digit   = "1"-"9" .
+
+not_eol         = character - "\n" - "\r" .
+
+number          = integer_literal | float_literal .
+
+octal_digit     = "0"-"7" .
+
+octal_literal   = [ "-" ] "0" octal_digit { octal_digit } .
+
+parameter       = ( type | literal ) .
+
+parameters      = parameter { "," parameter } .
+
+partial_application = "," "*" .
+
+pipeline_expression = expression "|>" expression .
+
+raw_string_literal = "`" { unicode_char | newline } "`" .
+
+rel_op          = "==" | "<" | ">" | "<=" | ">=" | "!=" .
+
+return_expression = "return" expression .
+
+return_type     = type .
+
+statement       = ( assignment
                   | function_declaration
-                  | type_declaration .
+                  | type_declaration 
+                  ) .
 
-assignment      ::= assignment_lhs "=" [ "mut" ] expression .
+string_literal  = '"' { unicode_escape_sequence | character } '"' .
 
-assignment_lhs  ::= identifier { "," identifier } | "(" assignment_lhs ")" .
+top_level_item  = ( assignment
+                  | function_declaration
+                  | type_declaration
+                  | export_declaration
+                  ) .
 
-for_statement   ::= "for" [ for_init ] ";" [ expression ] ";" [ expression ] block .
+tuple_literal   = "(" [ labeled_tuple_members | tuple_members ] ")" .
 
-for_init        ::= for_simple_init | for_tuple_init .
+tuple_member    = expression
 
-for_simple_init ::= assignment_lhs "=" expression .
+tuple_members   = tuple_member { "," tuple_member } .
 
-for_tuple_init  ::= "(" [ assignment_lhs { "," assignment_lhs } ] ")" "=" expression .
+tuple_type      = "(" [ labeled_tuple_type_members | tuple_type_members ] ")" .
 
-function_declaration ::= identifier [ function_parameters ] "=" "fn" "(" [ parameters ] ")" return_type block .
+tuple_type_member = ( type | literal ) .
 
-function_parameters ::= "[" [ identifier { "," identifier } ] "]" .
+tuple_type_members = tuple_type_member { "," tuple_type_member } .
 
-parameters      ::= parameter { "," parameter } .
+type            = identifier
+                | tuple_type
+                | function_type
+                | generic_type .
 
-parameter       ::= [ identifier ":" ] type .
+type_argument   = type
+                | generic_type .
 
-type            ::= identifier
-                  | tuple_type .
+type_argument_list  = "[" type_argument { "," type_argument } "]" .
 
-tuple_type      ::= "(" [ annotations ] [ tuple_type_members ] ")" .
+type_declaration = type_declaration_lhs "=" type_declaration_rhs .
 
-tuple_type_members ::= tuple_type_member { "," tuple_type_member } .
+type_declaration_lhs = type_identifier [ type_parameters ] .
 
-tuple_type_member ::= [ annotations ] [ identifier ":" ] type .
+type_declaration_rhs = "type" tuple_type .
 
-type_declaration ::= identifier "=" "type" "(" [ annotations ] [ type_members ] ")" .
+type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
 
-annotations     ::= annotation { annotation } .
+type_parameter  = letter { letter | decimal_digit | "_" } .
 
-annotation      ::= "@" identifier ":" identifier value .
+type_parameters = "[" type_parameter { "," type_parameter } "]" .
 
-value           ::= string_literal | number .
+unicode_escape_sequence = "\\" "u" hex_digit hex_digit hex_digit hex_digit
 
-block           ::= "{" { statement } [ expression ] "}" .
+uppercase_letter = "A"-"Z" .
 
-expression      ::= literal
-                  | identifier
-                  | binary_operation
-                  | function_call
-                  | if_expression
-                  | for_statement
-                  | "!" expression .
-
-literal         ::= integer_literal
-                  | float_literal
-                  | string_literal
-                  | boolean_literal .
-
-integer_literal ::= decimal_literal
-                  | octal_literal
-                  | hexadecimal_literal .
-
-decimal_literal ::= digit { digit } .
-
-octal_literal   ::= "0" octal_digit { octal_digit } .
-
-hexadecimal_literal ::= "0x" hex_digit { hex_digit } .
-
-float_literal   ::= digit { digit } "." digit { digit } .
-
-string_literal  ::= '"' { unicode_escape_sequence | character } '"' .
-
-boolean_literal ::= "true" | "false" .
-
-if_expression   ::= "if" expression block { "else if" expression block } [ "else" block ] .
-
-function_call   ::= identifier "(" [ arguments ] ")" .
-
-arguments       ::= expression { "," expression } .
-
-binary_operation ::= expression operator expression .
-
-operator        ::= "+" | "-" | "*" | "/" | "%" | "^" | "==" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "&" | "|" .
-
-identifier      ::= IDENTIFIER [ "?" | "!" ] .
-
-IDENTIFIER      ::= letter { letter | digit | "_" } .
-
-letter          ::= [A-Za-z] .
-
-decimal_digit   ::= [0-9] .
-
-octal_digit     ::= [0-7] .
-
-hex_digit       ::= [0-9A-Fa-f] .
+annotation_value = string_literal | number | boolean_literal .

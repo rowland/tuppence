@@ -1,0 +1,72 @@
+# simple, infinite loop, effectively
+#   for condition = true; true; true {}
+# the value of the for loop is determined by any break statements
+#   (in this case nil)
+for {
+    v = input()
+    if v == "exit" { break nil }
+}
+
+# infinite loop with initializer, effectively
+#   for i = 1; true; <block value>
+# i takes the value of the block for successive iterations
+# it is an error for the block to have no final expression
+# the type and value of the for loop is determined by any break statements
+#   (in this case 10)
+for i = 0 {
+    if !(i < 10) { break i }
+    i + 1
+}
+
+# loop with initializer and condition, effectively
+#   for i = 0; i < 10; <block value>
+# i takes the value of the block for successive iterations
+# it is an error for the block to have no final expression
+# the type and value of the for loop is determined by
+#   the initial or final expression when condition is true
+#   and any break statements
+#   (in this case 9)
+for i = 0; i < 10 {
+    i + 1
+}
+
+# loop with initializer, condition and step expression
+# the step expression becomes the last line of the block
+# and the new value of a
+# the type and value of the for loop is determined by
+#   the initial or step expression when condition is true
+#   and any break statements
+#   (in this case 9)
+for i = 0; i < 10; i + 1 {}
+
+# infinite loop with tuple initializer, effectively
+#   for (acc, i) = (0, 1); true; <block value>
+# (acc, i) takes the value of the block for successive iterations
+# it is an error for the block to have no final expression
+# or for the final expression to not match the shape of the initializer
+# the type and value of the for loop is determined by any break statements
+# in this case the sum of the integers 1..10
+sum, _ = for (acc, i) = (0, 1) {
+    if i > 10 { break acc }
+    (acc + i, i + 1)
+}
+
+# loop with tuple initializer and condition, effectively
+#   for (acc, i) = (0, 1); i <= 10; <block value>
+# (acc, i) takes the value of the block for successive iterations
+# it is an error for the block to have no final expression
+# or for the final expression to not match the shape of the initializer
+# the type and value of the for loop is determined by
+#   the initial or final expression when condition is true
+#   and any break statements
+# in this case the sum of the integers 1..10
+sum, _ = for (acc, i) = (0, 1); i <= 10 {
+    (acc + i, i + 1)
+}
+
+# loop with tuple initializer, condition and step expression
+# note that parens around initial tuple are optional
+# the step expression becomes the last line of the block
+# and the new value of the initialized tuple
+# the type and value of the for loop is determined by the step expression and any break statements
+sum, _ = for acc, i = (0, 1); i <= 10; (acc + i, i + 1) {}

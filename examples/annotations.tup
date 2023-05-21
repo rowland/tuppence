@@ -1,0 +1,2 @@
+@deprecated:reason "Use the newer function instead."
+@tested:version "1.2.3"
