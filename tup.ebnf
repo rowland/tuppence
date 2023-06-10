@@ -108,7 +108,7 @@ labeled_arguments = labeled_argument { "," ( labeled_argument ) } .
 
 labeled_parameter = annotations identifier ":" parameter .
 
-labeled_parameters = labeled_parameter { "," labeled_parameter } .
+labeled_parameters = labeled_parameter { "," labeled_parameter }  [ "," ] .
 
 labeled_tuple_member = identifier ":" tuple_member .
 
@@ -150,9 +150,9 @@ octal_literal   = "0o" octal_digit { octal_digit } .
 
 parameter       = annotations ( type | literal ) .
 
-parameters      = parameter { "," parameter } .
+parameters      = parameter { "," parameter } [ "," ] .
 
-partial_application = "," "*" .
+partial_application = [ "," ] "*" .
 
 pipeline_expression = expression "|>" expression .
 
