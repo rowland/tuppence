@@ -10,7 +10,7 @@ arguments       = argument { "," argument } .
 
 array_literal   = "[" [ array_members ] "]" .
 
-array_members   = expression { "," expression } .
+array_members   = expression { "," expression } [ "," ] .
 
 assignment      = assignment_lhs "=" [ "mut" ] expression .
 
