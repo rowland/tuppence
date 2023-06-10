@@ -6,7 +6,7 @@ annotations     = [ annotation { annotation } ] .
 
 argument        = expression .
 
-arguments       = argument { "," argument } .
+arguments       = argument { "," argument } [ "," ] .
 
 array_literal   = "[" [ array_members ] "]" .
 
@@ -104,7 +104,7 @@ interpolation   =  "\\(" expression ")"
 
 labeled_argument = identifier ":" expression .
 
-labeled_arguments = labeled_argument { "," ( labeled_argument ) } .
+labeled_arguments = labeled_argument { "," ( labeled_argument ) } [ "," ] .
 
 labeled_parameter = annotations identifier ":" parameter .
 
