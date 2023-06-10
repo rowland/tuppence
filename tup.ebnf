@@ -106,7 +106,7 @@ labeled_argument = identifier ":" expression .
 
 labeled_arguments = labeled_argument { "," ( labeled_argument ) } .
 
-labeled_parameter = identifier ":" parameter .
+labeled_parameter = annotations identifier ":" parameter .
 
 labeled_parameters = labeled_parameter { "," labeled_parameter } .
 
@@ -114,7 +114,7 @@ labeled_tuple_member = identifier ":" tuple_member .
 
 labeled_tuple_members = labeled_tuple_member { "," labeled_tuple_member } .
 
-labeled_tuple_type_member = identifier ":" tuple_type_member .
+labeled_tuple_type_member = annotations identifier ":" tuple_type_member .
 
 labeled_tuple_type_members = labeled_tuple_type_member { "," labeled_tuple_type_member } .
 
@@ -148,7 +148,7 @@ octal_digit     = "0"-"7" .
 
 octal_literal   = "0o" octal_digit { octal_digit } .
 
-parameter       = ( type | literal ) .
+parameter       = annotations ( type | literal ) .
 
 parameters      = parameter { "," parameter } .
 
@@ -209,7 +209,7 @@ tuple_members   = tuple_member { "," tuple_member } .
 
 tuple_type      = "(" [ labeled_tuple_type_members | tuple_type_members ] ")" .
 
-tuple_type_member = ( type | literal ) .
+tuple_type_member = annotations ( type | literal ) .
 
 tuple_type_members = tuple_type_member { "," tuple_type_member } .
 
@@ -227,7 +227,7 @@ type_argument_list  = "[" type_argument { "," type_argument } "]" .
 
 type_declaration = type_declaration_lhs "=" type_declaration_rhs .
 
-type_declaration_lhs = type_identifier [ type_parameters ] .
+type_declaration_lhs = annotations type_identifier [ type_parameters ] .
 
 type_declaration_rhs = "type" tuple_type .
 
@@ -243,4 +243,4 @@ unicode_escape_sequence = "\\" "u" hex_digit hex_digit hex_digit hex_digit
 
 uppercase_letter = "A"-"Z" .
 
-annotation_value = string_literal | number | boolean_literal .
+annotation_value = string_literal | ["-"] number | boolean_literal .
