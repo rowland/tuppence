@@ -5,7 +5,7 @@ const debug = std.debug;
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    _ = gpa.deinit();
+    defer _ = gpa.deinit();
     var allocator = gpa.allocator();
 
     const params = comptime clap.parseParamsComptime(
@@ -33,6 +33,6 @@ pub fn main() !void {
         debug.print("Input file: '{s}'\n", .{input});
     if (res.args.output) |output|
         debug.print("Output file: '{s}'\n", .{output});
-    for (res.positionals) |pos|
-        debug.print("{s}\n", .{pos});
+    for (res.positionals, 0..) |pos, i|
+        debug.print("{}: {s}\n", .{ i, pos });
 }
