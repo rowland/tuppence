@@ -8,7 +8,7 @@ for {
 }
 
 # infinite loop with initializer, effectively
-#   for i = 1; true; <block value>
+#   for i = 0; true; <block value>
 # i takes the value of the block for successive iterations
 # it is an error for the block to have no final expression
 # the type and value of the for loop is determined by any break statements
@@ -23,20 +23,20 @@ for i = 0 {
 # i takes the value of the block for successive iterations
 # it is an error for the block to have no final expression
 # the type and value of the for loop is determined by
-#   the initial or final expression when condition is true
+#   the initial or final expression
 #   and any break statements
-#   (in this case 9)
+#   (in this case 10)
 for i = 0; i < 10 {
     i + 1
 }
 
 # loop with initializer, condition and step expression
 # the step expression becomes the last line of the block
-# and the new value of a
+# and the new value of i
 # the type and value of the for loop is determined by
-#   the initial or step expression when condition is true
+#   the initial or step expression
 #   and any break statements
-#   (in this case 9)
+#   (in this case 10)
 for i = 0; i < 10; i + 1 {}
 
 # infinite loop with tuple initializer, effectively
@@ -57,7 +57,7 @@ sum, _ = for (acc, i) = (0, 1) {
 # it is an error for the block to have no final expression
 # or for the final expression to not match the shape of the initializer
 # the type and value of the for loop is determined by
-#   the initial or final expression when condition is true
+#   the initial or final expression
 #   and any break statements
 # in this case the sum of the integers 1..10
 sum, _ = for (acc, i) = (0, 1); i <= 10 {
@@ -68,5 +68,8 @@ sum, _ = for (acc, i) = (0, 1); i <= 10 {
 # note that parens around initial tuple are optional
 # the step expression becomes the last line of the block
 # and the new value of the initialized tuple
-# the type and value of the for loop is determined by the step expression and any break statements
+# the type and value of the for loop is determined by
+    # the initial or final expression
+    # the step expression
+    # and any break statements
 sum, _ = for acc, i = (0, 1); i <= 10; (acc + i, i + 1) {}
