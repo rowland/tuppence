@@ -3,6 +3,7 @@ const TokenType = @import("token_type.zig").TokenType;
 
 pub const Token = struct {
     typ: TokenType,
+    invalid: bool,
     line: u32,
     column: u32,
     value: []const u8,
