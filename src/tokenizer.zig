@@ -2,6 +2,21 @@ const std = @import("std");
 const Token = @import("token.zig").Token;
 const TokenType = @import("token_type.zig").TokenType;
 
+pub fn tokenize(allocator: std.mem.Allocator, source: []const u8, filename: []const u8) ![]Token {
+    var tokens = std.ArrayList(Token).init(allocator);
+    defer tokens.deinit();
+
+    var tokenizer = Tokenizer.init(source, filename);
+    while (true) {
+        const token = tokenizer.next();
+        try tokens.append(token);
+        if (token.typ == .eof) {
+            break;
+        }
+    }
+    return tokens.toOwnedSlice();
+}
+
 pub const Tokenizer = struct {
     source: []const u8,
     filename: []const u8,

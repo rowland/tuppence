@@ -2,7 +2,7 @@ const std = @import("std");
 const debug = std.debug;
 const stderr = std.io.getStdErr().writer();
 const clap = @import("clap");
-const tokenize = @import("tokenize.zig").tokenize;
+const tokenize = @import("tokenizer.zig").tokenize;
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -58,6 +58,6 @@ pub fn readFile(allocator: std.mem.Allocator, path: []const u8) ![]u8 {
 }
 
 test "run all tests" {
-    std.testing.refAllDeclsRecursive(@import("tokenize.zig"));
+    std.testing.refAllDeclsRecursive(@import("tokenizer.zig"));
     try std.testing.expectEqual(1, 1);
 }
