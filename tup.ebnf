@@ -1,4 +1,4 @@
-add_sub_op      = "+" | "-" | "|" .
+add_sub_op      = "+" | "?+" | "-" | "?-" | "|" .
 
 annotation      = "@" namespace ":" identifier annotation_value .
 
@@ -42,7 +42,9 @@ exponent        = "e" [ "-" | "+" ] decimal_digit { decimal_digit } .
 
 export_assignment = assignment_lhs ":" expression .
 
-export_declaration = ( export_assignment | export_function_declaration | export_type_declaration ) .
+export_declaration = ( export_type_declaration
+                     | export_function_declaration
+                     | export_assignment ) .
 
 export_function_declaration = function_declaration_lhs ":" function_type block .
 
@@ -71,13 +73,13 @@ function_identifier = lowercase_letter { letter | decimal_digit | "_" } [ "?" | 
 
 function_parameters = "[" [ identifier { "," identifier } ] "]" .
 
-function_type   = "fn" "(" [ labeled_parameters | parameters ] ")" return_type .
+function_type   = ( "fn" | "fx" ) "(" [ labeled_parameters | parameters ] ")" return_type .
 
 function_type_declaration = function_type_declaration_lhs "=" function_type .
 
 function_type_declaration_lhs = function_type_identifier [ function_parameters ] .
 
-function_type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
+function_type_identifier = type_identifier .
 
 generic_type    = type_identifier type_argument_list .
 
@@ -134,7 +136,7 @@ member_access   = expression "." ( decimal_literal | identifier ) .
 
 module          = { top_level_item } .
 
-mul_div_op      = "*" | "/" | "%" | "&" | "<<" | ">>" .
+mul_div_op      = "*" | "?*" | "/" | "?/" | "%" | "&" | "<<" | ">>" .
 
 namespace       = letter { letter | decimal_digit | "_" } .
 
@@ -188,16 +190,16 @@ return_expression = "return" expression .
 
 return_type     = type .
 
-statement       = ( assignment
+statement       = ( type_declaration
                   | function_declaration
-                  | type_declaration 
+                  | assignment
                   ) .
 
 string_literal  = '"' { unicode_escape_sequence | escape_sequence | character - '"' } '"' .
 
 top_level_item  = ( assignment
-                  | function_declaration
                   | type_declaration
+                  | function_declaration
                   | export_declaration
                   ) .
 
@@ -229,7 +231,7 @@ type_declaration = type_declaration_lhs "=" type_declaration_rhs .
 
 type_declaration_lhs = annotations type_identifier [ type_parameters ] .
 
-type_declaration_rhs = "type" tuple_type .
+type_declaration_rhs = ( "type" | "error" ) tuple_type .
 
 type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
 

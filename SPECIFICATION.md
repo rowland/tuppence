@@ -4,7 +4,7 @@
 
 ||||||
 | --- | --- | --- | --- | --- |
-| fn | effect |
+| fn | fx |
 | type  | error | enum | interface |
 | switch | for | if | else |
 | mut |
