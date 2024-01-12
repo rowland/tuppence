@@ -40,7 +40,6 @@ pub const Tokenizer = struct {
 
     const State = enum {
         start,
-        equal,
         question_mark,
         op_div,
         op_minus,
@@ -223,7 +222,6 @@ pub const Tokenizer = struct {
                         break;
                     },
                 },
-                .equal => {},
                 .question_mark => switch (c) {
                     '+' => {
                         typ = .op_checked_add;
