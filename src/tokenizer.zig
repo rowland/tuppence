@@ -66,11 +66,20 @@ pub const Tokenizer = struct {
         binary,
         hexadecimal,
         octal,
+        raw_string_literal,
+        raw_string_literal_end,
 
         interpolated_string_literal,
-        raw_string_literal,
         string_literal,
     };
+
+    fn peek(self: *Tokenizer) ?u8 {
+        if (self.index + 1 < self.source.len) {
+            return self.source[self.index + 1];
+        } else {
+            return null;
+        }
+    }
 
     pub fn next(self: *Tokenizer) Token {
         if (self.pending_invalid_token) |token| {
@@ -224,6 +233,10 @@ pub const Tokenizer = struct {
                     '1'...'9' => {
                         state = .int;
                         typ = .decimal_literal;
+                    },
+                    '`' => {
+                        state = .raw_string_literal;
+                        typ = .raw_string_literal;
                     },
 
                     '"' => {
@@ -522,9 +535,24 @@ pub const Tokenizer = struct {
                     },
                     else => break,
                 },
+                .raw_string_literal => switch (c) {
+                    0 => {
+                        invalid = true;
+                        break;
+                    },
+                    '`' => {
+                        state = .raw_string_literal_end;
+                    },
+                    else => {},
+                },
+                .raw_string_literal_end => switch (c) {
+                    '`' => {
+                        state = .raw_string_literal;
+                    },
+                    else => break,
+                },
 
                 .interpolated_string_literal => {},
-                .raw_string_literal => {},
                 .string_literal => {},
             }
         }
@@ -538,30 +566,6 @@ pub const Tokenizer = struct {
         };
     }
 };
-
-fn testTokenizeInvalid(source: []const u8, expected_token_tags: []const TokenType, invalid: bool) !void {
-    var tokenizer = Tokenizer.init(source, "test.zig");
-    for (expected_token_tags) |expected_token_tag| {
-        const token = tokenizer.next();
-        try std.testing.expectEqual(expected_token_tag, token.typ);
-        try std.testing.expectEqual(invalid, token.invalid);
-    }
-    const last_token = tokenizer.next();
-    try std.testing.expectEqual(TokenType.eof, last_token.typ);
-    try std.testing.expectEqual(source.len + 1, last_token.column);
-}
-
-fn testTokenize(source: []const u8, expected_token_tags: []const TokenType) !void {
-    var tokenizer = Tokenizer.init(source, "test.zig");
-    for (expected_token_tags) |expected_token_tag| {
-        const token = tokenizer.next();
-        try std.testing.expectEqual(expected_token_tag, token.typ);
-        try std.testing.expect(!token.invalid);
-    }
-    const last_token = tokenizer.next();
-    try std.testing.expectEqual(TokenType.eof, last_token.typ);
-    try std.testing.expectEqual(source.len + 1, last_token.column);
-}
 
 test "symbols" {
     try testTokenize(
@@ -825,4 +829,45 @@ test "hexadecimal literals" {
 
     try testTokenizeInvalid("0x1.", &.{.hexadecimal_literal}, true);
     try testTokenizeInvalid("0xF.", &.{.hexadecimal_literal}, true);
+}
+
+test "raw string literals" {
+    try testTokenizeValue("`abc`", .raw_string_literal, "`abc`", false);
+    try testTokenizeValue("`abc``def`", .raw_string_literal, "`abc``def`", false);
+    try testTokenizeValue("`abc``", .raw_string_literal, "`abc``", true);
+}
+
+fn testTokenizeInvalid(source: []const u8, expected_token_typs: []const TokenType, invalid: bool) !void {
+    var tokenizer = Tokenizer.init(source, "test.zig");
+    for (expected_token_typs) |expected_token_tag| {
+        const token = tokenizer.next();
+        try std.testing.expectEqual(expected_token_tag, token.typ);
+        try std.testing.expectEqual(invalid, token.invalid);
+    }
+    const last_token = tokenizer.next();
+    try std.testing.expectEqual(TokenType.eof, last_token.typ);
+    try std.testing.expectEqual(source.len + 1, last_token.column);
+}
+
+fn testTokenize(source: []const u8, expected_token_typs: []const TokenType) !void {
+    var tokenizer = Tokenizer.init(source, "test.zig");
+    for (expected_token_typs) |expected_token_tag| {
+        const token = tokenizer.next();
+        try std.testing.expectEqual(expected_token_tag, token.typ);
+        try std.testing.expect(!token.invalid);
+    }
+    const last_token = tokenizer.next();
+    try std.testing.expectEqual(TokenType.eof, last_token.typ);
+    try std.testing.expectEqual(source.len + 1, last_token.column);
+}
+
+fn testTokenizeValue(source: []const u8, token_typ: TokenType, value: []const u8, invalid: bool) !void {
+    var tokenizer = Tokenizer.init(source, "test.zig");
+    const token = tokenizer.next();
+    try std.testing.expectEqual(token_typ, token.typ);
+    try std.testing.expectEqual(invalid, token.invalid);
+    try std.testing.expectEqualStrings(value, token.value);
+    const last_token = tokenizer.next();
+    try std.testing.expectEqual(TokenType.eof, last_token.typ);
+    try std.testing.expectEqual(source.len + 1, last_token.column);
 }
