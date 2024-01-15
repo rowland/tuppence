@@ -85,7 +85,7 @@ generic_type    = type_identifier type_argument_list .
 
 hex_digit       = decimal_digit | "a"-"f" | "A"-"F" .
 
-hexadecimal_literal = "0x" hex_digit { hex_digit | "-" } .
+hexadecimal_literal = "0x" hex_digit { hex_digit | "_" } .
 
 identifier      = ( letter | "_" ) { letter | decimal_digit | "_" } .
 
@@ -182,7 +182,7 @@ primary_expression = literal
                 | indexed_access
                 | identifier .
 
-raw_string_literal = "`" { unicode_char - "`" | "``" } "`" .
+raw_string_literal = "`" { "``" | unicode_char - "`" } "`" .
 
 rel_op          = "==" | "<" | ">" | "<=" | ">=" | "!=" .
 

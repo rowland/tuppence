@@ -63,23 +63,18 @@ pub const Tokenizer = struct {
         exponent,
         exponent_sign,
         exponent_int,
+        binary_first,
         binary,
+        hexadecimal_first,
         hexadecimal,
+        octal_first,
         octal,
         raw_string_literal,
         raw_string_literal_end,
-
-        interpolated_string_literal,
         string_literal,
+        escape_sequence,
+        unicode_escape_sequence,
     };
-
-    fn peek(self: *Tokenizer) ?u8 {
-        if (self.index + 1 < self.source.len) {
-            return self.source[self.index + 1];
-        } else {
-            return null;
-        }
-    }
 
     pub fn next(self: *Tokenizer) Token {
         if (self.pending_invalid_token) |token| {
@@ -90,6 +85,7 @@ pub const Tokenizer = struct {
         var start = self.index;
         var typ: TokenType = .eof;
         var invalid = false;
+        var escape_digits: usize = 0;
         // var seen_escape_digits: usize = undefined;
         // _ = seen_escape_digits;
         // var remaining_code_units: usize = undefined;
@@ -238,7 +234,6 @@ pub const Tokenizer = struct {
                         state = .raw_string_literal;
                         typ = .raw_string_literal;
                     },
-
                     '"' => {
                         state = .string_literal;
                         typ = .string_literal;
@@ -427,15 +422,15 @@ pub const Tokenizer = struct {
                     },
                     'b' => {
                         typ = .binary_literal;
-                        state = .binary;
+                        state = .binary_first;
                     },
                     'o' => {
                         typ = .octal_literal;
-                        state = .octal;
+                        state = .octal_first;
                     },
                     'x' => {
                         typ = .hexadecimal_literal;
-                        state = .hexadecimal;
+                        state = .hexadecimal_first;
                     },
                     'A'...'Z', 'a', 'c'...'n', 'p'...'w', 'y'...'z' => {
                         invalid = true;
@@ -514,6 +509,19 @@ pub const Tokenizer = struct {
                         break;
                     },
                 },
+                .binary_first => switch (c) {
+                    '0'...'1' => {
+                        state = .binary;
+                    },
+                    '.', '2'...'9', 'A'...'Z', '_', 'a'...'z' => {
+                        state = .binary;
+                        invalid = true;
+                    },
+                    else => {
+                        invalid = true;
+                        break;
+                    },
+                },
                 .binary => switch (c) {
                     '0'...'1', '_' => {},
                     '.', '2'...'9', 'A'...'Z', 'a'...'z' => {
@@ -521,12 +529,40 @@ pub const Tokenizer = struct {
                     },
                     else => break,
                 },
+                .hexadecimal_first => switch (c) {
+                    '0'...'9', 'A'...'F', 'a'...'f' => {
+                        state = .hexadecimal;
+                    },
+                    '.', 'G'...'Z', '_', 'g'...'z' => {
+                        state = .hexadecimal;
+                        invalid = true;
+                    },
+                    else => {
+                        invalid = true;
+                        break;
+                    },
+                },
                 .hexadecimal => switch (c) {
                     '0'...'9', 'A'...'F', '_', 'a'...'f' => {},
                     '.', 'G'...'Z', 'g'...'z' => {
                         invalid = true;
                     },
-                    else => break,
+                    else => {
+                        break;
+                    },
+                },
+                .octal_first => switch (c) {
+                    '0'...'7' => {
+                        state = .octal;
+                    },
+                    '.', '8'...'9', 'A'...'Z', '_', 'a'...'z' => {
+                        state = .octal;
+                        invalid = true;
+                    },
+                    else => {
+                        invalid = true;
+                        break;
+                    },
                 },
                 .octal => switch (c) {
                     '0'...'7', '_' => {},
@@ -551,9 +587,53 @@ pub const Tokenizer = struct {
                     },
                     else => break,
                 },
-
-                .interpolated_string_literal => {},
-                .string_literal => {},
+                .string_literal => switch (c) {
+                    0 => {
+                        invalid = true;
+                        break;
+                    },
+                    '\\' => {
+                        state = .escape_sequence;
+                    },
+                    '"' => {
+                        self.index += 1;
+                        break;
+                    },
+                    else => {},
+                },
+                .escape_sequence => switch (c) {
+                    0 => {
+                        invalid = true;
+                        break;
+                    },
+                    'u' => {
+                        state = .unicode_escape_sequence;
+                        escape_digits = 0;
+                    },
+                    'n', 't', '"', '\'', '\\', 'r', 'b', 'f', 'v', '0' => {
+                        state = .string_literal;
+                    },
+                    else => {
+                        state = .string_literal;
+                        invalid = true;
+                    },
+                },
+                .unicode_escape_sequence => switch (c) {
+                    0 => {
+                        invalid = true;
+                        break;
+                    },
+                    '0'...'9', 'A'...'F', 'a'...'f' => {
+                        escape_digits += 1;
+                        if (escape_digits == 4) {
+                            state = .string_literal;
+                        }
+                    },
+                    else => {
+                        state = .string_literal;
+                        invalid = true;
+                    },
+                },
             }
         }
         return Token{
@@ -696,7 +776,7 @@ test "keywords" {
 }
 
 test "binary literals" {
-    try testTokenize("0b", &.{.binary_literal});
+    try testTokenizeInvalid("0b", &.{.binary_literal}, true);
     try testTokenize("0b0", &.{.binary_literal});
     try testTokenize("0b1", &.{.binary_literal});
     try testTokenize("0b10101100", &.{.binary_literal});
@@ -721,8 +801,8 @@ test "binary literals" {
     try testTokenizeInvalid("0b1.0", &.{.binary_literal}, true);
 
     try testTokenizeInvalid("0B0", &.{.decimal_literal}, true);
-    try testTokenizeInvalid("0b_", &.{.binary_literal}, false);
-    try testTokenizeInvalid("0b_0", &.{.binary_literal}, false);
+    try testTokenizeInvalid("0b_", &.{.binary_literal}, true);
+    try testTokenizeInvalid("0b_0", &.{.binary_literal}, true);
     try testTokenizeInvalid("0b1_", &.{.binary_literal}, false);
     try testTokenizeInvalid("0b0__1", &.{.binary_literal}, false);
     try testTokenizeInvalid("0b0_1_", &.{.binary_literal}, false);
@@ -772,14 +852,14 @@ test "octal literals" {
     try testTokenizeInvalid("0o7.0", &.{.octal_literal}, true);
 
     try testTokenizeInvalid("0O0", &.{.decimal_literal}, true);
-    try testTokenizeInvalid("0o_", &.{.octal_literal}, false);
-    try testTokenizeInvalid("0o_0", &.{.octal_literal}, false);
+    try testTokenizeInvalid("0o_", &.{.octal_literal}, true);
+    try testTokenizeInvalid("0o_0", &.{.octal_literal}, true);
     try testTokenizeInvalid("0o1_", &.{.octal_literal}, false);
     try testTokenizeInvalid("0o0__1", &.{.octal_literal}, false);
     try testTokenizeInvalid("0o0_1_", &.{.octal_literal}, false);
     try testTokenizeInvalid("0o1e", &.{.octal_literal}, true);
     try testTokenizeInvalid("0o1e0", &.{.octal_literal}, true);
-    try testTokenizeInvalid("0o_,", &.{ .octal_literal, .comma }, false);
+    try testTokenizeInvalid("0o_,", &.{ .octal_literal, .comma }, true);
 }
 
 test "hexadecimal literals" {
@@ -816,12 +896,12 @@ test "hexadecimal literals" {
     try testTokenize("0x0_1_2_3_4_5_6_7_8_9_A_B_C_D_E_F", &.{.hexadecimal_literal});
 
     try testTokenizeInvalid("0X0", &.{.decimal_literal}, true);
-    try testTokenizeInvalid("0x_", &.{.hexadecimal_literal}, false);
-    try testTokenizeInvalid("0x_1", &.{.hexadecimal_literal}, false);
+    try testTokenizeInvalid("0x_", &.{.hexadecimal_literal}, true);
+    try testTokenizeInvalid("0x_1", &.{.hexadecimal_literal}, true);
     try testTokenizeInvalid("0x1_", &.{.hexadecimal_literal}, false);
     try testTokenizeInvalid("0x0__1", &.{.hexadecimal_literal}, false);
     try testTokenizeInvalid("0x0_1_", &.{.hexadecimal_literal}, false);
-    try testTokenizeInvalid("0x_,", &.{ .hexadecimal_literal, .comma }, false);
+    try testTokenizeInvalid("0x_,", &.{ .hexadecimal_literal, .comma }, true);
 
     try testTokenizeInvalid("0x1.0", &.{.hexadecimal_literal}, true);
     try testTokenizeInvalid("0xF.0", &.{.hexadecimal_literal}, true);
@@ -837,12 +917,42 @@ test "raw string literals" {
     try testTokenizeValue("`abc``", .raw_string_literal, "`abc``", true);
 }
 
+test "string literals" {
+    try testTokenizeValue(
+        \\"abc"
+    , .string_literal,
+        \\"abc"
+    , false);
+    try testTokenizeValue(
+        \\"\n\t\"\'\\\r\b\f\v\0"
+    , .string_literal,
+        \\"\n\t\"\'\\\r\b\f\v\0"
+    , false);
+    try testTokenizeValue(
+        \\"\u1234"
+    , .string_literal,
+        \\"\u1234"
+    , false);
+
+    try testTokenizeInvalid(
+        \\"\u"
+    , &.{.string_literal}, true);
+    try testTokenizeInvalid(
+        \\"\u123"
+    , &.{.string_literal}, true);
+    try testTokenizeInvalid(
+        \\"\uXYZ"
+    , &.{.string_literal}, true);
+}
+
 fn testTokenizeInvalid(source: []const u8, expected_token_typs: []const TokenType, invalid: bool) !void {
     var tokenizer = Tokenizer.init(source, "test.zig");
-    for (expected_token_typs) |expected_token_tag| {
+    for (expected_token_typs, 0..) |expected_token_tag, index| {
         const token = tokenizer.next();
         try std.testing.expectEqual(expected_token_tag, token.typ);
-        try std.testing.expectEqual(invalid, token.invalid);
+        if (index == 0) {
+            try std.testing.expectEqual(invalid, token.invalid);
+        }
     }
     const last_token = tokenizer.next();
     try std.testing.expectEqual(TokenType.eof, last_token.typ);
