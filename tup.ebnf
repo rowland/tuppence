@@ -24,6 +24,8 @@ block           = "{" { statement } expression "}" .
 
 boolean_literal = "true" | "false" .
 
+byte_escape_sequence = "\\" "x" hex_digit hex_digit
+
 chained_expression = prec1_expression { "|>" prec1_expression } .
 
 character       = (* valid UTF-8 codepoint *) .
@@ -100,7 +102,7 @@ integer_literal = binary_literal
                 | octal_literal
                 | decimal_literal .
 
-interpolated_string_literal = '"' { unicode_escape_sequence | escape_sequence | interpolation | character - '"' } '"' .
+interpolated_string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - '"' } '"' .
 
 interpolation   =  "\\(" expression ")"
 
@@ -195,7 +197,7 @@ statement       = ( type_declaration
                   | assignment
                   ) .
 
-string_literal  = '"' { unicode_escape_sequence | escape_sequence | character - '"' } '"' .
+string_literal  = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' } '"' .
 
 top_level_item  = ( assignment
                   | type_declaration
