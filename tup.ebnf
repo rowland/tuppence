@@ -26,7 +26,7 @@ boolean_literal = "true" | "false" .
 
 byte_escape_sequence = "\\" "x" hex_digit hex_digit
 
-chained_expression = prec1_expression { "|>" prec1_expression } .
+chained_expression = prec1_expression { "|>" function_call } .
 
 character       = (* valid UTF-8 codepoint *) .
 
@@ -157,8 +157,6 @@ parameter       = annotations ( type | literal ) .
 parameters      = parameter { "," parameter } [ "," ] .
 
 partial_application = [ "," ] "*" .
-
-pipeline_expression = expression "|>" expression .
 
 prec1_expression = prec2_expression { "||" prec2_expression } .
 
