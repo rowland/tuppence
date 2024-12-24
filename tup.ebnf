@@ -209,7 +209,7 @@ tuple_literal   = "(" [ labeled_tuple_members | tuple_members ] ")" .
 
 tuple_member    = expression
 
-tuple_members   = tuple_member { "," tuple_member } [ "," ] .
+tuple_members   = tuple_member "," { tuple_member "," } [ tuple_member ] .
 
 tuple_type      = "(" [ labeled_tuple_type_members | tuple_type_members ] ")" .
 
