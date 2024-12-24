@@ -34,6 +34,8 @@ character       = (* valid UTF-8 codepoint *) .
 
 comment         = "#" { not_eol } eol
 
+condition       = expression .
+
 decimal_digit   = "0"-"9" .
 
 decimal_literal = decimal_digit { decimal_digit | "_" } .
@@ -63,9 +65,11 @@ float_literal   = decimal_digit { decimal_digit | "_" } "." decimal_digit { deci
 
 for_block       = "{" { statement } [ expression ] "}" .
 
-for_header      = assignment [ ";" expression [ ";" expression ] ] .
+for_expression  = "for" [ for_header | for_in_header ] for_block .
 
-for_expression  = "for" [ for_header ] for_block .
+for_header      = initializer [ ";" condition [ ";" step_expression ] ] .
+
+for_in_header   = initializer ";" assignment_lhs "in" iterable .
 
 function_call   = function_identifier "(" [ ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ] ")" .
 
@@ -93,11 +97,13 @@ hexadecimal_literal = "0x" hex_digit { hex_digit | "_" } .
 
 identifier      = ( letter | "_" ) { letter | decimal_digit | "_" } .
 
-if_expression   = "if" expression block { "else" "if" expression block } [ "else" block ] .
+if_expression   = "if" condition block { "else" "if" condition block } [ "else" block ] .
 
 index           = expression .
 
 indexed_access  = expression "[" index { "," index } "]" .
+
+initializer     = assignment .
 
 integer_literal = binary_literal
                 | hexadecimal_literal
@@ -107,6 +113,8 @@ integer_literal = binary_literal
 interpolated_string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - '"' } '"' .
 
 interpolation   =  "\\(" expression ")"
+
+iterable        = expression .
 
 labeled_argument = identifier ":" expression .
 
@@ -198,6 +206,8 @@ statement       = ( type_declaration
                   | assignment
                   | if_expression
                   ) .
+
+step_expression = expression .
 
 string_literal  = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' } '"' .
 

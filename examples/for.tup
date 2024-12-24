@@ -5,6 +5,7 @@
 for {
     v = input()
     if v == "exit" { break nil }
+    else if v.whitespace?() { continue }
 }
 
 # infinite loop with initializer, effectively
@@ -51,6 +52,10 @@ sum, _ = for (acc, i) = (0, 1) {
     (acc + i, i + 1)
 }
 
+# non-infinite loop defaults to initial value
+result = for i = 0; i < 0; i + 1 {}
+# result == 0
+
 # loop with tuple initializer and condition, effectively
 #   for (acc, i) = (0, 1); i <= 10; <block value>
 # (acc, i) takes the value of the block for successive iterations
@@ -73,3 +78,26 @@ sum, _ = for (acc, i) = (0, 1); i <= 10 {
     # the step expression
     # and any break statements
 sum, _ = for acc, i = (0, 1); i <= 10; (acc + i, i + 1) {}
+
+# for each loop with simple initializer
+some_ary = [1, 2, 3]
+sum = for acc = 0; i in some_ary { acc + i }
+
+# for each loop with tuple initializer
+some_ary = [1, 2, 3]
+sum, product = for acc, prod = (0, 1); i in some_ary {
+    (acc + i, prod * i)
+}
+
+# zip two arrays
+ary_a = [1, 2, 3]
+ary_b = [4, 5, 6, 7]
+zipped = for acc = []; a, b in (ary_a, ary_b) { acc << (a, b) }
+# [(1,4), (2, 5), (3, 6)]
+
+# number some words
+words = mut ["fee", "fie", "foe", "fum"]
+words, _ = for acc, n = ([], 1); w in words {
+    (acc << "\(n). \(w)", n + 1)
+}
+# ["1. fee", "2. fie", "3. foe", "4. fum"]
