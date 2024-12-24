@@ -1,0 +1,68 @@
+# simple if
+if is_active {
+    print("Active!")
+}
+
+# if with else
+if x > 10 {
+    print("x is greater than 10")
+} else {
+    print("x is 10 or less")
+}
+if result { print(result) } else { print("result not found") }
+
+
+# if else chain
+if temperature > 30 {
+    print("It's hot!")
+} else if temperature > 20 {
+    print("It's warm.")
+} else {
+    print("It's cold.")
+}
+
+# nested if statements
+if is_logged_in {
+    if has_access {
+        print("Access granted")
+    } else {
+        print("Access denied")
+    }
+} else {
+    print("Please log in")
+}
+
+# if expressions returning a value
+a = if b { 1 } else { 0 }
+max_value = if a > b { a } else { b }
+
+# if combined with another expression
+status = if is_online { "Online" } else { "Offline" }
+message = "User is \(status)"
+
+# if with complex condition
+if user.age >= 18 && user.has_id {
+    print("You may enter.")
+} else {
+    print("Entry denied.")
+}
+
+# if with tuple in condition
+if (a, b) == (1, 2) {
+    print("Match!")
+} else {
+    print("No match.")
+}
+
+# if in a loop
+for {
+    input = read()
+    if input == "exit" {
+        break
+    } else {
+        print("Input: \(input)")
+    }
+}
+
+# if in function call
+process(if a > b { a } else { b })
