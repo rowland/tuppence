@@ -24,6 +24,8 @@ block           = "{" { statement } expression "}" .
 
 boolean_literal = "true" | "false" .
 
+break_expression = "break" expression .
+
 byte_escape_sequence = "\\" "x" hex_digit hex_digit
 
 chained_expression = prec1_expression { "|>" function_call } .
@@ -177,6 +179,7 @@ primary_expression = literal
                 | for_expression
                 | function_call
                 | return_expression
+                | break_expression
                 | member_access
                 | tuple_update_expression
                 | indexed_access
