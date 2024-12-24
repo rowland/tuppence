@@ -193,6 +193,7 @@ return_type     = type .
 statement       = ( type_declaration
                   | function_declaration
                   | assignment
+                  | if_expression
                   ) .
 
 string_literal  = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' } '"' .
