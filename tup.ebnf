@@ -12,6 +12,8 @@ array_literal   = "[" [ array_members ] "]" .
 
 array_members   = expression { "," expression } [ "," ] .
 
+array_pattern   = "[" pattern { "," pattern } [ "," "..." [ identifier ] ] "]" .
+
 assignment      = assignment_lhs "=" [ "mut" ] expression .
 
 assignment_lhs  = identifier { "," identifier } | "(" assignment_lhs ")" .
@@ -28,6 +30,8 @@ break_expression = "break" expression .
 
 byte_escape_sequence = "\\" "x" hex_digit hex_digit
 
+case_block      = match_condition block .
+
 chained_expression = prec1_expression { "|>" function_call } .
 
 character       = (* valid UTF-8 codepoint *) .
@@ -36,9 +40,19 @@ comment         = "#" { not_eol } eol
 
 condition       = expression .
 
+constant        = literal
+                | scoped_identifier
+                | identifier .
+
 decimal_digit   = "0"-"9" .
 
 decimal_literal = decimal_digit { decimal_digit | "_" } .
+
+destructure_pattern = labeled_pattern
+                    | tuple_pattern
+                    | array_pattern .
+
+else_block      = "else" block .
 
 eol             = ( "\r\n" | "\r" | "\n" ) .
 
@@ -95,9 +109,9 @@ hex_digit       = decimal_digit | "a"-"f" | "A"-"F" .
 
 hexadecimal_literal = "0x" hex_digit { hex_digit | "_" } .
 
-identifier      = ( letter | "_" ) { letter | decimal_digit | "_" } .
+identifier      = ( lowercase_letter | "_" ) { letter | decimal_digit | "_" } .
 
-if_expression   = "if" condition block { "else" "if" condition block } [ "else" block ] .
+if_expression   = "if" condition block { "else" "if" condition block } [ else_block ] .
 
 index           = expression .
 
@@ -124,6 +138,8 @@ labeled_parameter = annotations identifier ":" parameter .
 
 labeled_parameters = labeled_parameter { "," labeled_parameter }  [ "," ] .
 
+labeled_pattern = "(" identifier ":" pattern { "," identifier ":" pattern } ")" .
+
 labeled_tuple_member = identifier ":" tuple_member .
 
 labeled_tuple_members = labeled_tuple_member { "," labeled_tuple_member } [ "," ] .
@@ -133,6 +149,8 @@ labeled_tuple_type_member = annotations identifier ":" tuple_type_member .
 labeled_tuple_type_members = labeled_tuple_type_member { "," labeled_tuple_type_member } .
 
 letter          = "a"-"z" | "A"-"Z" .
+
+list_match      = match_element { "," match_element } .
 
 literal         = number
                 | boolean_literal
@@ -144,13 +162,16 @@ literal         = number
 
 lowercase_letter = "a"-"z" .
 
+match_condition = list_match
+                | pattern_match .
+
+match_element   = constant | range .
+
 member_access   = expression "." ( decimal_literal | identifier ) .
 
 module          = { top_level_item } .
 
 mul_div_op      = "*" | "?*" | "/" | "?/" | "%" | "&" | "<<" | ">>" .
-
-named_or_base_type = identifier | named_tuple .
 
 named_tuple     = identifier tuple_type .
 
@@ -171,6 +192,14 @@ parameter       = annotations ( type | literal ) .
 parameters      = parameter { "," parameter } [ "," ] .
 
 partial_application = [ "," ] "*" .
+
+pattern         = labeled_pattern
+                | tuple_pattern
+                | identifier .
+
+pattern_match   = type_identifier "(" pattern ")" 
+                | destructure_pattern
+                | type_identifier .
 
 prec1_expression = prec2_expression { "||" prec2_expression } .
 
@@ -215,6 +244,8 @@ step_expression = expression .
 
 string_literal  = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' } '"' .
 
+switch_statement = "switch" expression "{" case_block { case_block } [ else_block ] "}" .
+
 top_level_item  = ( assignment
                   | type_declaration
                   | function_declaration
@@ -226,6 +257,8 @@ tuple_literal   = "(" [ labeled_tuple_members | tuple_members ] ")" .
 tuple_member    = expression
 
 tuple_members   = tuple_member "," { tuple_member "," } [ tuple_member ] .
+
+tuple_pattern   = "(" pattern { "," pattern } ")" .
 
 tuple_type      = "(" [ labeled_tuple_type_members | tuple_type_members ] ")" .
 
@@ -262,7 +295,7 @@ unary_expression = "-" primary_expression | "!" primary_expression | primary_exp
 unicode_escape_sequence = "\\" "u" hex_digit hex_digit hex_digit hex_digit
                         | "\\" "U" hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit .
 
-union_type      = named_or_base_type { "|" named_or_base_type } .
+union_type      = (identifier | named_tuple) { "|" (identifier | named_tuple) } .
 
 uppercase_letter = "A"-"Z" .
 

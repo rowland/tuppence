@@ -1,0 +1,149 @@
+# constant values (compared with eq?)
+switch value {
+    1 { "one" }
+    2 { "two" }
+    else { "plenty" }
+}
+
+# lists (compared with include?)
+switch value {
+    1, 3, 5, 7, 9 { "odd" }
+    0, 2, 4, 6, 8 { "even" }
+    else { "out of range" }
+}
+
+# ranges (compared with include?)
+switch value {
+    0..9 { "single" }
+    10..99 { "double" }
+    else { "lots" }
+}
+
+# unions (blocks are monomorphized for each type)
+switch value {
+    Int,
+    Int8,
+    Int16,
+    Int32,
+    Int64 { |i| i.string() }
+    Byte,
+    UInt8,
+    UInt16,
+    UInt32,
+    UInt64 { |u| u.string() }
+    Float,
+    Float32,
+    Float64 { |f| f.string(2) }
+    String { it }
+    else { "unknown" }
+}
+
+# pattern matching
+# exhaustive over union so else block is not required
+# not actually a great way to implement a deck of cards
+@card:suite "Hearts"
+Hearts = type(Int)
+
+@card:suite "Diamonds"
+Diamonds = type(Int)
+
+@card:suite "Spades"
+Spades = type(Int)
+
+@card:suite "Clubs"
+Clubs = type(Int)
+
+Card = Hearts | Diamonds | Spades | Clubs
+BogusCard = error(Card)
+
+value = get_card()
+switch value {
+    Hearts(1) { "Ace of Hearts" }
+    Hearts(2) { "Deuce of Hearts" }
+    Hearts(3..10) { |(n)| "\(n) of Hearts" }
+    Hearts(11) { "Jack of Hearts" }
+    Hearts(12) { "Queen of Hearts" }
+    Hearts(13) { "King of Hearts" }
+    Hearts { BogusCard(it) }
+
+    Diamonds(1) { "Ace of Diamonds" }
+    Diamonds(2) { "Deuce of Diamonds" }
+    Diamonds(3..10) { |(n)| "\(n) of Diamonds" }
+    Diamonds(11) { "Jack of Diamonds" }
+    Diamonds(12) { "Queen of Diamonds" }
+    Diamonds(13) { "King of Diamonds" }
+    Diamonds { BogusCard(it) }
+
+    Spades(1) { "Ace of Spades" }
+    Spades(2) { "Deuce of Spades" }
+    Spades(3..10) { |(n)| "\(n) of Spades" }
+    Spades(11) { "Jack of Spades" }
+    Spades(12) { "Queen of Spades" }
+    Spades(13) { "King of Spades" }
+    Spades { BogusCard(it) }
+
+    Clubs(1) { "Ace of Clubs" }
+    Clubs(2) { "Deuce of Clubs" }
+    Clubs(3..10) { |(n)| "\(n) of Clubs" }
+    Clubs(11) { "Jack of Clubs" }
+    Clubs(12) { "Queen of Clubs" }
+    Clubs(13) { "King of Clubs" }
+    Clubs { BogusCard(it) }
+}
+
+switch value {
+    Person(name: "Alice", age: 30) { "Alice, age 30" }
+    Person(name: _, age: n) { "Unknown person, age \(n)" }
+}
+
+switch value {
+    NamedTuple(x: 1, y: 2) { "Named tuple with (1, 2)" }
+    (1, 2) { "Anonymous tuple with (1, 2)" }
+    (x, y) { "Anonymous tuple with \(x) and \(y)" }
+    else { "Unknown tuple" }
+}
+
+switch value {
+    [1, 2, 3] { "Array [1, 2, 3]" }
+    [x, y, ...] { "Starts with \(x) and \(y)" }
+}
+
+switch value {
+    // Match a labeled tuple
+    Point(x: 0, y: 0) { "Origin" }
+    Point(x: x, y: y) { "Point at (\(x), \(y))" }
+
+    // Match a tuple by position
+    (0, 0) { "Origin (as tuple)" }
+    (x, y) { "Tuple at (\(x), \(y))" }
+
+    // Match an array
+    [] { "Empty array" }
+    [1, 2, 3] { "Array with specific values" }
+    [head, ...tail] { "Starts with \(head), remainder \(tail)" }
+
+    else { "Unknown pattern" }
+}
+
+a = "A"
+z = "Z"
+
+switch value {
+    1..10 { "Between 1 and 10" }
+    0x10..0x20 { "Hex range" }
+    a..z { "Alphabet" }
+    myNamespace.minValue..myNamespace.maxValue { "Scoped range" }
+    else { "Out of range" }
+}
+
+switch value {
+    "A".."Z", "a".."z" { "alpha" }
+    "0".."9" { "digit" }
+    "!", "-", ":", ";", "'", "\"", ",", ".", "?" { "punct" }
+    else { "other" }
+}
+
+switch value {
+    1..10, 15, 20..30 { "Special numbers" }
+    else { "Other numbers" }
+}
