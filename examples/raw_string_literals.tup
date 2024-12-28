@@ -1,0 +1,27 @@
+# simple strings
+hello = `Hello, World!` # Simple raw string
+numeric = `12345`       # Numeric content as a raw string
+special = `!@#$%^&*()`  # Special characters without escaping
+
+# strings with backticks
+escaped = `Use backticks like this: ``nested backticks`` in a raw string.`  # Escaped backticks
+
+# multilingual text
+japanese = `こんにちは世界` # Japanese (Hello, World)
+russian = `Привет, мир` # Russian (Hello, World)
+korean = `안녕하세요`      # Korean (Hello)
+
+# strings with escape sequences
+not_escaped = `This is a raw string, so \n is not a newline.` # Escape sequences are treated literally
+
+# multiline strings
+with_line_breaks = `This is a
+multiline
+raw string.` # Line breaks are preserved
+
+# edge cases
+empty = ``   # Empty raw string (just backticks)
+two = `````` # Two escaped backticks (result: ``)
+mixed = `Hello, this is a raw string
+that contains symbols like @#$%^&*()
+and includes "quotes" and 'apostrophes'.`
