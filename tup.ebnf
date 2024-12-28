@@ -150,6 +150,10 @@ module          = { top_level_item } .
 
 mul_div_op      = "*" | "?*" | "/" | "?/" | "%" | "&" | "<<" | ">>" .
 
+named_or_base_type = identifier | named_tuple .
+
+named_tuple     = identifier tuple_type .
+
 namespace       = letter { letter | decimal_digit | "_" } .
 
 nonzero_digit   = "1"-"9" .
@@ -199,7 +203,7 @@ rel_op          = "==" | "<" | ">" | "<=" | ">=" | "!=" .
 
 return_expression = "return" expression .
 
-return_type     = type .
+return_type     = type | union_type .
 
 statement       = ( type_declaration
                   | function_declaration
@@ -245,7 +249,7 @@ type_declaration = type_declaration_lhs "=" type_declaration_rhs .
 
 type_declaration_lhs = annotations type_identifier [ type_parameters ] .
 
-type_declaration_rhs = ( "type" | "error" ) tuple_type .
+type_declaration_rhs = ( "type" | "error" | "array" ) tuple_type | union_type .
 
 type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
 
@@ -257,6 +261,8 @@ unary_expression = "-" primary_expression | "!" primary_expression | primary_exp
 
 unicode_escape_sequence = "\\" "u" hex_digit hex_digit hex_digit hex_digit
                         | "\\" "U" hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit .
+
+union_type      = named_or_base_type { "|" named_or_base_type } .
 
 uppercase_letter = "A"-"Z" .
 

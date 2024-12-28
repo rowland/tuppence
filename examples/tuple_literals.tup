@@ -1,21 +1,21 @@
-()
-(1)
-(1,2)
-("a")
-("a","b")
-(1,"a")
-("a",1)
-("c"
-,"d")
-(
+empty = ()
+single_number = (1,)
+double_number = (1,2)
+single_string = ("a",)
+double_string = ("a","b")
+mixed_number_string = (1,"a")
+mixed_string_number = ("a",1)
+multi_line = ("c"
+           ,"d")
+multi_line2 = (
     "e",
     "f",
 )
-(a: 7)
-(a: 8, b: 9)
-(c: 1
-,d: 2)
-(
+single_labeled = (a: 7)
+multi_labeled = (a: 8, b: 9)
+multi_line_labeled = (c: 1
+                   ,d: 2)
+multi_line_labeled2 = (
     e: 3,
     f: 4,
 )

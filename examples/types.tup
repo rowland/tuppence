@@ -1,0 +1,42 @@
+# basic type
+Person = type (name: String, age: Int)
+
+# error type
+HttpError = error (code: Int, message: String)
+
+# basic array
+IntArray = array (Int)
+StringArray = array (String)
+
+# array of tuples
+TupleArray = array (Int, String)
+
+# array of labeled tuples
+LabeledTupleArray1 = array (element: Int)
+LabeledTupleArray2 = array (a: Int, b: String)
+
+# nested tuple with anonymous component
+NestedTuple = type (id: Int, data: (name: String, value: Float))
+
+@info:foo "metadata"
+AnnotatedTuple1 = type (key: String, value: Int)
+
+AnnotatedTuple2 = type (
+    @info: "metadata_key" key: String,
+    @info: "metadata_value" value: Int
+)
+
+GenericType[T] = type (key: String, value: T)
+
+SingleGeneric[T] = type (value: T)
+
+Pair[K, V] = type (key: K, value: V)
+
+List[T] = array (T)
+
+Matrix = array (array (Float))
+
+Key = Int | String
+Result = Data | HttpError
+
+ComplexKey = Int | String | ComplexTuple (primary: Int, secondary: String)

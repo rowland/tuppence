@@ -1,13 +1,20 @@
-[]
-[1]
-[1,2,3]
-["a"]
-["a","b"]
-["a",1]
-[1,"a"]
-[ "abc"
-, "def"]
-[
+empty = []
+one_int = [1]
+three_ints = [1, 2, 3]
+one_string = ["a"]
+two_strings = ["a", "b"]
+
+string_int = ["a", 1]
+int_string = [1, "a"]
+
+multi_line1 = [ "abc"
+            , "def"]
+multi_line2 = [ "abc",
+                "def"]
+multi_line3 = [
     "abc",
     "def",
 ]
+
+two_int32s = Int32[1, 2]
+three_int16s = Int16[1, 2, 3]
