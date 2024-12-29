@@ -59,3 +59,25 @@ sql = ```sql
       and last_name = 'Tables';
 ```
 
+foo = ```json
+  { "a": "b" }
+```
+
+context = (name: "Alice")
+bar = ```mustache(context)
+  Hello, {{name}}
+```
+
+options = (trim: true, escape: false)
+template = ```html(options)
+  <div>
+    <h1>\(title)</h1>
+    <p>\(description)</p>
+  </div>
+```
+
+render_hey = fn(context: Context) String {
+    ```mustache(context)
+      Hey, {{name}}!
+    ```
+}

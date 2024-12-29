@@ -44,6 +44,8 @@ constant        = literal
                 | scoped_identifier
                 | identifier .
 
+content_line    = { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - eol - "```" } eol .
+
 decimal_digit   = "0"-"9" .
 
 decimal_literal = decimal_digit { decimal_digit | "_" } .
@@ -87,6 +89,8 @@ for_in_header   = initializer ";" assignment_lhs "in" iterable .
 
 function_call   = function_identifier "(" [ ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ] ")" .
 
+function_call_context = function_identifier [ "(" arguments ")" ] .
+
 function_declaration = function_declaration_lhs "=" function_type block .
 
 function_declaration_lhs = function_identifier [ function_parameters ] .
@@ -112,6 +116,10 @@ hexadecimal_literal = "0x" hex_digit { hex_digit | "_" } .
 identifier      = ( lowercase_letter | "_" ) { letter | decimal_digit | "_" } .
 
 if_expression   = "if" condition block { "else" "if" condition block } [ else_block ] .
+
+indented_closing = leading_whitespace "```" eol .
+
+indented_line   = leading_whitespace content_line .
 
 index           = expression .
 
@@ -152,8 +160,6 @@ leading_whitespace = { " " | "\t" } .
 
 letter          = "a"-"z" | "A"-"Z" .
 
-line            = [ leading_whitespace ] { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - eol - "```" } eol .
-
 list_match      = match_element { "," match_element } .
 
 literal         = number
@@ -176,7 +182,7 @@ member_access   = expression "." ( decimal_literal | identifier ) .
 
 module          = { top_level_item } .
 
-multi_line_string_literal = "```" [ identifier ] eol { line } "```" .
+multi_line_string_literal = "```" [ function_call_context ] eol { indented_line } indented_closing .
 
 mul_div_op      = "*" | "?*" | "/" | "?/" | "%" | "&" | "<<" | ">>" .
 
