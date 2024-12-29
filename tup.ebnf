@@ -56,7 +56,7 @@ else_block      = "else" block .
 
 eol             = ( "\r\n" | "\r" | "\n" ) .
 
-escape_sequence = ( "\\n" | "\\t" | "\\\"" | "\\'" | "\\\\" | "\\r" | "\\b" | "\\f" | "\\v" | "\\0" ) .
+escape_sequence = ( "\\n" | "\\t" | "\\\"" | "\\'" | "\\\\" | "\\r" | "\\b" | "\\f" | "\\v" | "\\0" | "\\`" ) .
 
 exponent        = "e" [ "-" | "+" ] decimal_digit { decimal_digit } .
 
@@ -124,7 +124,7 @@ integer_literal = binary_literal
                 | octal_literal
                 | decimal_literal .
 
-interpolated_string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - '"' } '"' .
+interpolated_string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - '"' - eol } '"' .
 
 interpolation   =  "\\(" expression ")"
 
@@ -148,7 +148,11 @@ labeled_tuple_type_member = annotations identifier ":" tuple_type_member .
 
 labeled_tuple_type_members = labeled_tuple_type_member { "," labeled_tuple_type_member } .
 
+leading_whitespace = { " " | "\t" } .
+
 letter          = "a"-"z" | "A"-"Z" .
+
+line            = [ leading_whitespace ] { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - eol - "```" } eol .
 
 list_match      = match_element { "," match_element } .
 
@@ -157,6 +161,7 @@ literal         = number
                 | string_literal
                 | interpolated_string_literal
                 | raw_string_literal
+                | multi_line_string_literal
                 | tuple_literal
                 | array_literal .
 
@@ -170,6 +175,8 @@ match_element   = constant | range .
 member_access   = expression "." ( decimal_literal | identifier ) .
 
 module          = { top_level_item } .
+
+multi_line_string_literal = "```" [ identifier ] eol { line } "```" .
 
 mul_div_op      = "*" | "?*" | "/" | "?/" | "%" | "&" | "<<" | ">>" .
 
@@ -242,7 +249,7 @@ statement       = ( type_declaration
 
 step_expression = expression .
 
-string_literal  = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' } '"' .
+string_literal  = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' - eol } '"' .
 
 switch_statement = "switch" expression "{" case_block { case_block } [ else_block ] "}" .
 

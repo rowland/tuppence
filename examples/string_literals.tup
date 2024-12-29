@@ -1,0 +1,61 @@
+# Unicode Characters
+emoji = "\U1F600" # 😀
+accented = "café" # Raw UTF-8
+
+emoji_face = "\U1F642"  # 🙂 (slightly smiling face)
+heart = "\U2764"        # ❤️ (heart)
+music_note = "\U1F3B5"  # 🎵 (musical note)
+
+# Raw UTF-8 Strings
+greeting = "こんにちは"    # Hello (Japanese)
+russian = "До свидания" # Goodbye (Russian)
+korean = "안녕하세요"      # Hello (Korean)
+
+# Escaped Unicode
+escaped_cafe = "caf\u00E9"         # Café (using escaped "é")
+escaped_greek = "\u0394elta"       # Δelta (Delta in Greek)
+escaped_math = "x\u00B2 + y\u00B2" # x² + y²
+
+# strings with quotes
+double_quotes = "He said, \"Hello!\"" # Double quotes inside string
+
+# escape sequences
+tabbed = "Item\tQuantity\tPrice"    # Tabs between words
+newline = "First line\nSecond line" # Newline between lines
+backslash = "Path: C:\\Windows"     # Escaped backslash for Windows path
+
+# multilingual and emojis
+multilingual = "Hello, 世界, नमस्ते, مرحبا"  # English, Chinese, Hindi, Arabic
+emoji_combo = "😀 ❤️ 🎵"                   # Multiple emojis in a string
+
+# edge cases
+empty_string = ""  # Empty string
+only_escape = "\n\t"  # Newline and tab
+
+text1 = ```
+This is
+some text
+that allows newlines.
+```
+
+text2 = ```
+    This text
+    will have
+    leading whitespace
+    removed.
+```
+
+boys = ["Timmy", "Tommy", "Tony"]
+girls = ["Sally", "Susie", "Sandy"]
+text3 = ```
+    Girls: \(girls.join(", "))
+    Boys: \(boys.join(", "))
+```
+
+sql = ```sql
+    select *
+    from students
+    where first_name = 'Bobby'
+      and last_name = 'Tables';
+```
+
