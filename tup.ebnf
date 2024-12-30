@@ -286,7 +286,7 @@ tuple_pattern   = "(" pattern { "," pattern } ")" .
 
 tuple_type      = "(" [ labeled_tuple_type_members | tuple_type_members ] ")" .
 
-tuple_type_member = annotations ( type | literal ) .
+tuple_type_member = annotations ( type | union_type | literal ) .
 
 tuple_type_members = tuple_type_member { "," tuple_type_member } .
 
