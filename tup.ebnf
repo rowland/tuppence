@@ -14,11 +14,12 @@ array_literal   = "[" [ array_members ] "]" .
 
 array_members   = expression { "," expression } [ "," ] .
 
-array_pattern   = "[" pattern { "," pattern } [ "," "..." [ identifier ] ] "]" .
+array_pattern   = "[" pattern { "," pattern } [ "," rest_operator ] "]" .
 
 assignment      = assignment_lhs "=" [ "mut" ] expression .
 
-assignment_lhs  = identifier { "," identifier } | "(" assignment_lhs ")" .
+assignment_lhs  = identifier { "," identifier } [ "," rest_operator ] 
+                | "(" labeled_assignment_lhs ")" .
 
 binary_expression = chained_expression
 
@@ -144,6 +145,8 @@ labeled_argument = identifier ":" expression .
 
 labeled_arguments = labeled_argument { "," ( labeled_argument ) } [ "," ] .
 
+labeled_assignment_lhs = ( identifier | type_identifier ) { "," ( identifier | type_identifier ) } .
+
 labeled_parameter = annotations identifier ":" parameter .
 
 labeled_parameters = labeled_parameter { "," labeled_parameter }  [ "," ] .
@@ -246,6 +249,8 @@ raw_string_literal = "`" { "``" | unicode_char - "`" } "`" .
 
 rel_op          = "==" | "<" | ">" | "<=" | ">=" | "!=" .
 
+rest_operator   = "..." [ identifier ] .
+
 return_expression = "return" expression .
 
 return_type     = type | union_type .
@@ -264,6 +269,7 @@ switch_statement = "switch" expression "{" case_block { case_block } [ else_bloc
 
 top_level_item  = ( assignment
                   | type_declaration
+                  | type_alias_declaration
                   | function_declaration
                   | export_declaration
                   ) .
@@ -289,6 +295,8 @@ type            = identifier
                 | function_type
                 | generic_type .
 
+type_alias_declaration = type_identifier "=" member_access .
+
 type_argument   = type
                 | generic_type .
 
@@ -300,7 +308,9 @@ type_declaration = type_declaration_lhs "=" type_declaration_rhs .
 
 type_declaration_lhs = annotations type_identifier [ type_parameters ] .
 
-type_declaration_rhs = ( "type" | "error" | "array" ) tuple_type | union_type .
+type_declaration_rhs = ( "type" | "error" | "array" ) tuple_type 
+                     | union_type 
+                     | member_access .
 
 type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
 

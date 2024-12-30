@@ -1,0 +1,28 @@
+# valid labeled assignments
+(id, first_name, last_name) = find_person(tel: "123-456-7890")
+(Foo, bar) = import("foo")
+
+# invalid labeled assignments
+(id, first_name, ...rest) = find_person(tel: "123-456-7890")  # Error: Rest operator is not valid in labeled assignments.
+(x, ...) = (x: 1, y: 2)  # Error: Rest operator is not permitted in labeled assignments.
+Foo, bar = import("foo")  # Error: Labeled assignments require parentheses
+
+# valid ordinal assignments
+x, y = (1, 2)             # Assigns x = 1, y = 2
+x, ... = (1, 2, 3)        # x = 1, ignores the rest
+x, ...rest = (1, 2, 3)    # x = 1, rest = (2, 3)
+
+# invalid ordinal assignments
+x, ..., ... = (1, 2, 3)  # Error: Only one rest operator is allowed, and it must appear at the end of the assignment.
+Foo, bar, baz = 42  # Error: Right-hand side must be a tuple or module import
+
+# direct type alias
+Foo = import("foo").Foo   # Foo is an alias for foo.Foo.
+Bar = import("foo").Foo   # Bar is an alias for foo.Foo.
+
+# alias via variable
+foo = import("foo")
+Foo = foo.Foo   # Foo is an alias for foo.Foo.
+
+# invalid type alias
+Foo = 42   # Error: Uppercase identifiers are reserved for types.
