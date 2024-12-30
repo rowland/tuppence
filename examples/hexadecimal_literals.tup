@@ -1,10 +1,10 @@
-0x3F # Represents the decimal number 63.
-0xA5 # Represents the decimal number 165.
-0xFF # Represents the decimal number 255.
-0x2D # Represents the decimal number 45.
-0x10 # Represents the decimal number 16.
-0xBEEF # Represents the decimal number 48879.
-0xDEADBEEF # Represents the decimal number 3735928559.
-0xABC # Represents the decimal number 2748.
-0x20 # Represents the decimal number 32.
-0xC0FFEE # Represents the decimal number 12648430.
+sixty_three = 0x3F # Represents the decimal number 63.
+one_hundred_sixty_five = 0xA5 # Represents the decimal number 165.
+two_hundred_fifty_five = 0xFF # Represents the decimal number 255.
+forty_five = 0x2D # Represents the decimal number 45.
+sixteen = 0x10 # Represents the decimal number 16.
+forty_eight_thousand_eight_hundred_seventy_nine = 0xBEEF # Represents the decimal number 48879.
+three_billion_seven_hundred_thirty_five_million_nine_hundred_twenty_eight_thousand_five_hundred_fifty_nine = 0xDEADBEEF # Represents the decimal number 3735928559.
+two_thousand_seven_hundred_forty_eight = 0xABC # Represents the decimal number 2748.
+thirty_two = 0x20 # Represents the decimal number 32.
+twelve_million_six_hundred_forty_eight_thousand_four_hundred_thirty = 0xC0FFEE # Represents the decimal number 12648430.

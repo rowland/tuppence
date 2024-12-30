@@ -1,32 +1,32 @@
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-99
-100
-101
-999
-1000
-1001
-9999
-10_000
-10_001
-99_999
-100_000
-100_001
-999_999
-1_000_000
-1_000_001
-9_999_999
-10_000_000
-10_000_001
-2147483647
-2147483648
-4294967295
+zero = 0
+one = 1
+two = 2
+three = 3
+four = 4
+five = 5
+six = 6
+seven = 7
+eight = 8
+nine = 9
+ten = 10
+ninety_nine = 99
+one_hundred = 100
+one_hundred_one = 101
+nine_hundred_ninety_nine = 999
+one_thousand = 1000
+one_thousand_one = 1001
+nine_thousand_nine_hundred_ninety_nine = 9999
+ten_thousand = 10_000
+ten_thousand_one = 10_001
+ninety_nine_thousand_nine_hundred_ninty_nine = 99_999
+one_hundred_thousand = 100_000
+one_hundred_thousand_one = 100_001
+nine_hundred_ninety_nine_thousand_nine_hundred_ninety_nine = 999_999
+one_million = 1_000_000
+one_million_one = 1_000_001
+nine_million_nine_hundred_ninety_nine_thousand_nine_hundred_ninety_nine = 9_999_999
+ten_million = 10_000_000
+ten_million_one = 10_000_001
+two_billion_one_hundred_forty_seven_million_four_hundred_eighty_three_thousand_six_hundred_forty_seven = 2_147_483_647
+two_billion_one_hundred_forty_seven_million_four_hundred_eighty_three_thousand_six_hundred_forty_eight = 2_147_483_648
+four_billion_two_hundred_ninety_four_million_nine_hundred_sixty_seven_thousand_two_hundred_ninety_five = 4_294_967_295
