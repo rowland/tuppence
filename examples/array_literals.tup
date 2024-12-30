@@ -18,3 +18,9 @@ multi_line3 = [
 
 two_int32s = Int32[1, 2]
 three_int16s = Int16[1, 2, 3]
+
+UnionArray = array (Int | Bool)   # Defines a type for arrays of Int | Bool
+union_array = array (Int | Bool)[1, true, 0]  # Creates a value of anonymous array type coercible to UnionArray
+
+LabeledTupleArray = array (a: Int | Bool, b: String)   # Defines a type for labeled tuples
+labeled_tuple_array = array (a: Int | Bool, b: String)[(a: 1, b: "foo"), (a: true, b: "bar")]  # Creates a value

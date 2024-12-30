@@ -10,7 +10,9 @@ argument        = expression .
 
 arguments       = argument { "," argument } [ "," ] .
 
-array_literal   = "[" [ array_members ] "]" .
+array_literal   = "[" [ array_members ] "]"
+                | type_identifier "[" array_members "]"
+                | "array" ( tuple_type | "(" union_type ")" ) "[" array_members "]" .
 
 array_members   = expression { "," expression } [ "," ] .
 
