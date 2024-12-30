@@ -4,6 +4,8 @@ annotation      = "@" namespace ":" identifier annotation_value .
 
 annotations     = [ annotation { annotation } ] .
 
+annotation_value = string_literal | ["-"] number | boolean_literal .
+
 argument        = expression .
 
 arguments       = argument { "," argument } [ "," ] .
@@ -303,7 +305,9 @@ type_parameter  = letter { letter | decimal_digit | "_" } .
 
 type_parameters = "[" type_parameter { "," type_parameter } "]" .
 
-unary_expression = "-" primary_expression | "!" primary_expression | primary_expression .
+unary_expression = "-" valid_negatable_expression
+                 | "!" valid_negatable_expression
+                 | primary_expression .
 
 unicode_escape_sequence = "\\" "u" hex_digit hex_digit hex_digit hex_digit
                         | "\\" "U" hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit .
@@ -312,4 +316,11 @@ union_type      = (identifier | named_tuple) { "|" (identifier | named_tuple) } 
 
 uppercase_letter = "A"-"Z" .
 
-annotation_value = string_literal | ["-"] number | boolean_literal .
+valid_negatable_expression = literal
+                           | "(" expression ")"
+                           | block
+                           | function_call
+                           | member_access
+                           | tuple_update_expression
+                           | indexed_access
+                           | identifier .
