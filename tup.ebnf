@@ -334,7 +334,7 @@ type_declaration_rhs = "type" tuple_type
 
 type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
 
-type_parameter  = letter { letter | decimal_digit | "_" } .
+type_parameter  = uppercase_letter { letter | decimal_digit | "_" } .
 
 type_parameters = "[" type_parameter { "," type_parameter } "]" .
 
