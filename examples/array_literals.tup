@@ -19,8 +19,75 @@ multi_line3 = [
 two_int32s = Int32[1, 2]
 three_int16s = Int16[1, 2, 3]
 
-UnionArray = array (Int | Bool)   # Defines a type for arrays of Int | Bool
-union_array = array (Int | Bool)[1, true, 0]  # Creates a value of anonymous array type coercible to UnionArray
+IntOrBool = Int | Bool
+UnionArray = array (IntOrBool) # Defines a type for arrays of Int | Bool
+union_array = IntOrBool[1, true, 0] # Creates a value of anonymous array type coercible to UnionArray
 
 LabeledTupleArray = array (a: Int | Bool, b: String)   # Defines a type for labeled tuples
 labeled_tuple_array = array (a: Int | Bool, b: String)[(a: 1, b: "foo"), (a: true, b: "bar")]  # Creates a value
+
+IPv4Address = Byte[4]  # Fixed-size array of 4 bytes
+Matrix = Int[3, 3]     # 3x3 matrix of integers
+
+square = Matrix[
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+]
+
+SudokuSquare = Int[3, 3]        # A 3x3 fixed-size array of integers
+SudokuGame = SudokuSquare[3, 3] # A 3x3 fixed-size array of Sudoku squares
+
+square = SudokuSquare[
+    [4, 0, 3],
+    [5, 8, 0],
+    [0, 2, 0]
+]
+
+game = SudokuGame[
+    SudokuSquare[
+        [4, 0, 3],
+        [5, 8, 0],
+        [0, 2, 0]
+    ],
+    SudokuSquare[
+        [0, 0, 0],
+        [7, 1, 9],
+        [0, 6, 0]
+    ],
+    SudokuSquare[
+        [2, 0, 0],
+        [0, 3, 0],
+        [8, 0, 4]
+    ],
+    SudokuSquare[
+        [0, 6, 1],
+        [4, 0, 0],
+        [7, 0, 0]
+    ],
+    SudokuSquare[
+        [0, 0, 0],
+        [0, 5, 0],
+        [0, 0, 9]
+    ],
+    SudokuSquare[
+        [0, 0, 0],
+        [0, 0, 0],
+        [2, 0, 0]
+    ],
+    SudokuSquare[
+        [0, 0, 4],
+        [0, 0, 0],
+        [0, 0, 0]
+    ],
+    SudokuSquare[
+        [0, 8, 0],
+        [7, 0, 6],
+        [0, 0, 0]
+    ],
+    SudokuSquare[
+        [0, 0, 0],
+        [5, 0, 0],
+        [0, 7, 0]
+    ]
+]

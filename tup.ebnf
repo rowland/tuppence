@@ -10,9 +10,8 @@ argument        = expression .
 
 arguments       = argument { "," argument } [ "," ] .
 
-array_literal   = "[" [ array_members ] "]"
-                | type_identifier "[" array_members "]"
-                | "array" ( tuple_type | "(" union_type ")" ) "[" array_members "]" .
+array_literal   = "[" [ array_members | array_literal ] "]"
+                | type_identifier "[" [ array_members | array_literal ] "]" .
 
 array_members   = expression { "," expression } [ "," ] .
 
@@ -80,6 +79,8 @@ export_function_type_declaration = function_type_declaration_lhs ":" function_ty
 export_type_declaration = type_declaration_lhs ":" type_declaration_rhs .
 
 expression      = binary_expression | unary_expression .
+
+fixed_size_array = type_identifier "[" size { "," size } "]" .
 
 float_literal   = decimal_digit { decimal_digit | "_" } "." decimal_digit { decimal_digit | "_" } [ exponent ]
                 | decimal_digit { decimal_digit | "_" } exponent .
@@ -257,6 +258,8 @@ return_expression = "return" expression .
 
 return_type     = type | union_type .
 
+size            = decimal_literal | identifier .
+
 statement       = ( type_declaration
                   | function_declaration
                   | assignment
@@ -311,6 +314,7 @@ type_declaration = type_declaration_lhs "=" type_declaration_rhs .
 type_declaration_lhs = annotations type_identifier [ type_parameters ] .
 
 type_declaration_rhs = ( "type" | "error" | "array" ) tuple_type 
+                     | fixed_size_array
                      | union_type 
                      | member_access .
 
