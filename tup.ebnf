@@ -260,7 +260,7 @@ rest_operator   = "..." [ identifier ] .
 
 return_expression = "return" expression .
 
-return_type     = type | union_type .
+return_type     = type | "error" | union_with_error .
 
 size            = decimal_literal | identifier .
 
@@ -342,6 +342,8 @@ unicode_escape_sequence = "\\" "u" hex_digit hex_digit hex_digit hex_digit
                         | "\\" "U" hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit .
 
 union_type      = (type | named_tuple ) { "|" (type | named_tuple ) } .
+
+union_with_error = type { "|" ( type | "error" ) } .
 
 uppercase_letter = "A"-"Z" .
 
