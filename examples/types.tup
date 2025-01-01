@@ -40,3 +40,5 @@ Key = Int | String
 Result = Data | HttpError
 
 ComplexKey = Int | String | ComplexTuple (primary: Int, secondary: String)
+
+Foo[T] = Bar[T] | Baz[T]

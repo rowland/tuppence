@@ -262,7 +262,7 @@ rest_operator   = "..." [ identifier ] .
 
 return_expression = "return" expression .
 
-return_type     = type | "error" | union_with_error .
+return_type     = type | "error" | union_with_error | union_declaration_with_error .
 
 simple_annotation = "@" identifier .
 
@@ -345,9 +345,32 @@ unary_expression = "-" valid_negatable_expression
 unicode_escape_sequence = "\\" "u" hex_digit hex_digit hex_digit hex_digit
                         | "\\" "U" hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit .
 
-union_type      = (type | named_tuple ) { "|" (type | named_tuple ) } .
+union_declaration = "union" "(" eol union_members ")" .
 
-union_with_error = type { "|" ( type | "error" ) } .
+union_declaration_with_error = "union" "(" eol
+                             { union_member_declaration eol }
+                             [ "error" eol ]
+                             ")" .
+
+union_member    = type_identifier
+                | generic_type
+                | dynamic_array
+                | fixed_size_array
+                | named_tuple .
+
+union_members   = union_member_declaration { eol union_member_declaration } eol .
+
+union_member_declaration = [ annotations ] named_tuple
+                         | union_member_no_annotations .
+
+union_type      = union_member { "|" union_member } .
+
+union_member_no_annotations = type_identifier
+                            | generic_type
+                            | dynamic_array
+                            | fixed_size_array .
+
+union_with_error = union_member { "|" union_member } [ "|" "error" ] .
 
 uppercase_letter = "A"-"Z" .
 

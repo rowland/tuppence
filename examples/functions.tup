@@ -1,0 +1,32 @@
+# compact union return type
+get_value = fn() Int | String {
+  # implementation
+}
+
+# compact union with error
+get_value = fn() Int | String | error {
+  # implementation
+}
+
+# verbose union without error
+get_value = fn() union(
+  Int
+  String
+) {
+  # implementation
+}
+
+# verbose union with error
+process = fn() union(
+  Byte[]
+  Ok(Int)
+  Err(String)
+  error
+) {
+  # implementation
+}
+
+# compact complex union
+process = fn() Byte[] | Ok(Int) | Err(String) | error {
+  # implementation
+}
