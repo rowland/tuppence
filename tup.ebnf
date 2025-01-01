@@ -94,7 +94,7 @@ for_in_header   = initializer ";" assignment_lhs "in" iterable .
 
 function_call   = function_identifier "(" [ ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ] ")" .
 
-function_call_context = function_identifier [ "(" arguments ")" ] .
+function_call_context = function_identifier [ "(" ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ")" ] .
 
 function_declaration = function_declaration_lhs "=" function_type block .
 
