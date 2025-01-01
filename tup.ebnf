@@ -58,9 +58,13 @@ destructure_pattern = labeled_pattern
                     | tuple_pattern
                     | array_pattern .
 
+dynamic_array   = type_identifier "[" "]".
+
 else_block      = "else" block .
 
 eol             = ( "\r\n" | "\r" | "\n" ) .
+
+error_tuple     = "error" tuple_type .
 
 escape_sequence = ( "\\n" | "\\t" | "\\\"" | "\\'" | "\\\\" | "\\r" | "\\b" | "\\f" | "\\v" | "\\0" | "\\`" ) .
 
@@ -194,7 +198,7 @@ multi_line_string_literal = "```" [ function_call_context ] eol { indented_line 
 
 mul_div_op      = "*" | "?*" | "/" | "?/" | "%" | "&" | "<<" | ">>" .
 
-named_tuple     = identifier tuple_type .
+named_tuple     = type_identifier tuple_type .
 
 namespace       = letter { letter | decimal_digit | "_" } .
 
@@ -298,7 +302,10 @@ tuple_update_expression = expression "." tuple_literal .
 type            = type_identifier
                 | tuple_type
                 | function_type
-                | generic_type .
+                | generic_type
+                | dynamic_array
+                | fixed_size_array
+                | error_tuple .
 
 type_alias_declaration = type_identifier "=" member_access .
 
@@ -313,10 +320,13 @@ type_declaration = type_declaration_lhs "=" type_declaration_rhs .
 
 type_declaration_lhs = annotations type_identifier [ type_parameters ] .
 
-type_declaration_rhs = ( "type" | "error" | "array" ) tuple_type 
+type_declaration_rhs = "type" tuple_type
+                     | error_tuple
+                     | dynamic_array
                      | fixed_size_array
-                     | union_type 
-                     | member_access .
+                     | union_type
+                     | member_access
+                     | type_identifier .
 
 type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
 
@@ -331,7 +341,7 @@ unary_expression = "-" valid_negatable_expression
 unicode_escape_sequence = "\\" "u" hex_digit hex_digit hex_digit hex_digit
                         | "\\" "U" hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit .
 
-union_type      = (identifier | named_tuple) { "|" (identifier | named_tuple) } .
+union_type      = (type | named_tuple ) { "|" (type | named_tuple ) } .
 
 uppercase_letter = "A"-"Z" .
 

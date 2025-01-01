@@ -20,11 +20,8 @@ two_int32s = Int32[1, 2]
 three_int16s = Int16[1, 2, 3]
 
 IntOrBool = Int | Bool
-UnionArray = array (IntOrBool) # Defines a type for arrays of Int | Bool
-union_array = IntOrBool[1, true, 0] # Creates a value of anonymous array type coercible to UnionArray
-
-LabeledTupleArray = array (a: Int | Bool, b: String)   # Defines a type for labeled tuples
-labeled_tuple_array = array (a: Int | Bool, b: String)[(a: 1, b: "foo"), (a: true, b: "bar")]  # Creates a value
+UnionArray = IntOrBool[] # Defines a type for arrays of Int | Bool
+union_array = IntOrBool[1, true, 0]
 
 IPv4Address = Byte[4]  # Fixed-size array of 4 bytes
 Matrix = Int[3, 3]     # 3x3 matrix of integers
