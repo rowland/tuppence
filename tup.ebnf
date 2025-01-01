@@ -103,17 +103,17 @@ function_call_context = function_identifier [ "(" ( labeled_arguments | argument
 
 function_declaration = function_declaration_lhs "=" function_type block .
 
-function_declaration_lhs = function_identifier [ function_parameters ] .
+function_declaration_lhs = function_identifier [ function_parameter_types ] .
 
 function_identifier = lowercase_letter { letter | decimal_digit | "_" } [ "?" | "!" ] .
 
-function_parameters = "[" [ identifier { "," identifier } ] "]" .
+function_parameter_types = "[" [ local_type_reference { "," local_type_reference } ] "]" .
 
 function_type   = ( "fn" | "fx" ) "(" [ labeled_parameters | parameters ] ")" return_type .
 
 function_type_declaration = function_type_declaration_lhs "=" function_type .
 
-function_type_declaration_lhs = function_type_identifier [ function_parameters ] .
+function_type_declaration_lhs = function_type_identifier [ function_parameter_types ] .
 
 function_type_identifier = type_identifier .
 
@@ -182,6 +182,8 @@ literal         = number
                 | multi_line_string_literal
                 | tuple_literal
                 | array_literal .
+
+local_type_reference = type_identifier | identifier .
 
 lowercase_letter = "a"-"z" .
 
@@ -304,7 +306,7 @@ tuple_type_members = tuple_type_member { "," tuple_type_member } .
 
 tuple_update_expression = expression "." tuple_literal .
 
-type            = type_identifier
+type            = local_type_reference
                 | tuple_type
                 | function_type
                 | generic_type
@@ -353,7 +355,7 @@ union_declaration_with_error = "union" "(" eol
                              [ "error" eol ]
                              ")" .
 
-union_member    = type_identifier
+union_member    = local_type_reference
                 | generic_type
                 | dynamic_array
                 | fixed_size_array

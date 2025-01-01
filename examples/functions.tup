@@ -30,3 +30,69 @@ process = fn() union(
 process = fn() Byte[] | Ok(Int) | Err(String) | error {
   # implementation
 }
+
+# problem:
+
+int = fn(v: String) Int {
+  # implementation
+}
+
+int = fn(v: Int) Int {
+  v
+}
+
+string = fn(v: String) String {
+  v
+}
+
+string = fn(v: Int) String {
+  # implementation
+}
+
+# solution:
+
+int[String] = fn(v: String) Int {
+  # implementation
+}
+
+int[Int] = fn(v: Int) Int {
+  v
+}
+
+string[String] = fn(v: String) String {
+  v
+}
+
+string[String] = fn(v: Int) String {
+  # implementation
+}
+
+IntOrString = Int | String
+
+display = fn(list: IntOrString[]) {
+  (print) = import("io")
+
+  for line = 1; v in list {
+    switch v {
+      Int, String { print(v.string()) }
+    }
+    line + 1
+  }
+}
+
+values = IntOrString[1, "2", 3, "4"]
+display(values)
+
+sum = fn(list: IntOrString[]) Int {
+  for acc = 0; v in list {
+    acc + v.int()
+  }
+}
+
+identity[a] = fn(value: a) a {
+    value
+}
+
+transform[a, b] = fn(input: a, process: fn(a) b) b {
+    process(input)
+}
