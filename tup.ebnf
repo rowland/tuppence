@@ -1,6 +1,6 @@
 add_sub_op      = "+" | "?+" | "-" | "?-" | "|" .
 
-annotation      = "@" namespace ":" identifier annotation_value .
+annotation      = namespaced_annotation | simple_annotation .
 
 annotations     = [ annotation { annotation } ] .
 
@@ -202,6 +202,8 @@ named_tuple     = type_identifier tuple_type .
 
 namespace       = letter { letter | decimal_digit | "_" } .
 
+namespaced_annotation = "@" namespace ":" identifier annotation_value .
+
 nonzero_digit   = "1"-"9" .
 
 not_eol         = character - "\n" - "\r" .
@@ -261,6 +263,8 @@ rest_operator   = "..." [ identifier ] .
 return_expression = "return" expression .
 
 return_type     = type | "error" | union_with_error .
+
+simple_annotation = "@" identifier .
 
 size            = decimal_literal | identifier .
 
