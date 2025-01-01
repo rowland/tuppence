@@ -190,7 +190,9 @@ match_condition = list_match
 
 match_element   = constant | range .
 
-member_access   = expression "." ( decimal_literal | identifier ) .
+member_access   = expression "." ( decimal_literal 
+                                 | identifier 
+                                 | function_call ) .
 
 module          = { top_level_item } .
 
@@ -282,7 +284,6 @@ switch_statement = "switch" expression "{" case_block { case_block } [ else_bloc
 
 top_level_item  = ( assignment
                   | type_declaration
-                  | type_alias_declaration
                   | function_declaration
                   | export_declaration
                   ) .
@@ -311,8 +312,6 @@ type            = type_identifier
                 | fixed_size_array
                 | error_tuple .
 
-type_alias_declaration = type_identifier "=" member_access .
-
 type_argument   = type
                 | generic_type .
 
@@ -329,7 +328,7 @@ type_declaration_rhs = "type" tuple_type
                      | dynamic_array
                      | fixed_size_array
                      | union_type
-                     | member_access
+                     | type_reference
                      | type_identifier .
 
 type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
@@ -337,6 +336,8 @@ type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
 type_parameter  = uppercase_letter { letter | decimal_digit | "_" } .
 
 type_parameters = "[" type_parameter { "," type_parameter } "]" .
+
+type_reference  = identifier "." type_identifier .
 
 unary_expression = "-" valid_negatable_expression
                  | "!" valid_negatable_expression
@@ -360,7 +361,7 @@ union_member    = type_identifier
 
 union_members   = union_member_declaration { eol union_member_declaration } eol .
 
-union_member_declaration = [ annotations ] named_tuple
+union_member_declaration = annotations named_tuple
                          | union_member_no_annotations .
 
 union_type      = union_member { "|" union_member } .
