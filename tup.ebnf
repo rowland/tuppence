@@ -292,7 +292,7 @@ tuple_type_members = tuple_type_member { "," tuple_type_member } .
 
 tuple_update_expression = expression "." tuple_literal .
 
-type            = identifier
+type            = type_identifier
                 | tuple_type
                 | function_type
                 | generic_type .
