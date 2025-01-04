@@ -30,7 +30,7 @@ block           = "{" block_body "}" .
 
 block_body      = { statement } expression .
 
-block_expression = "{" [ block_parameters ] block_body "}" .
+function_block  = "{" [ block_parameters ] block_body "}" .
 
 block_parameters = "|" identifier { "," identifier } "|" .
 
@@ -103,7 +103,7 @@ for_header      = initializer [ ";" condition [ ";" step_expression ] ] .
 
 for_in_header   = initializer ";" assignment_lhs "in" iterable .
 
-function_call   = function_identifier "(" [ ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ] ")" [ block_expression ] .
+function_call   = function_identifier "(" [ ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ] ")" [ function_block ] .
 
 function_call_context = function_identifier [ "(" ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ")" ] .
 
