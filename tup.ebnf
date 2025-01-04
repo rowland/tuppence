@@ -26,7 +26,13 @@ binary_expression = chained_expression
 
 binary_literal  = "0b" ( "0" | "1" ) { "0" | "1" | "_" } .
 
-block           = "{" { statement } expression "}" .
+block           = "{" block_body "}" .
+
+block_body      = { statement } expression .
+
+block_expression = "{" [ block_parameters ] block_body "}" .
+
+block_parameters = "|" identifier { "," identifier } "|" .
 
 boolean_literal = "true" | "false" .
 
@@ -97,7 +103,7 @@ for_header      = initializer [ ";" condition [ ";" step_expression ] ] .
 
 for_in_header   = initializer ";" assignment_lhs "in" iterable .
 
-function_call   = function_identifier "(" [ ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ] ")" .
+function_call   = function_identifier "(" [ ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ] ")" [ block_expression ] .
 
 function_call_context = function_identifier [ "(" ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ")" ] .
 

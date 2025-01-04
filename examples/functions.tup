@@ -96,3 +96,11 @@ identity[a] = fn(value: a) a {
 transform[a, b] = fn(input: a, process: fn(a) b) b {
     process(input)
 }
+
+process_args = fn(args: ...Int, transform: fn(Int) Int) {
+  for acc = 0; v in args {
+    acc + transform(v)
+  }
+}
+
+process_args(1, 2, 3, 4) { |x| x * 2 }
