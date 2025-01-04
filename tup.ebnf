@@ -160,11 +160,13 @@ labeled_arguments = labeled_argument { "," ( labeled_argument ) } [ "," ] .
 
 labeled_assignment_lhs = ( identifier | type_identifier ) { "," ( identifier | type_identifier ) } .
 
-labeled_parameter = annotations identifier ":" parameter .
+labeled_parameter = annotations identifier ":" ( type | literal ) .
 
-labeled_parameters = labeled_parameter { "," labeled_parameter }  [ "," ] .
+labeled_parameters = ( labeled_parameter | labeled_rest_parameter ) { "," ( labeled_parameter | labeled_rest_parameter ) } [ "," ] .
 
 labeled_pattern = "(" identifier ":" pattern { "," identifier ":" pattern } ")" .
+
+labeled_rest_parameter = annotations identifier ":" "..." type .
 
 labeled_tuple_member = identifier ":" tuple_member .
 
@@ -226,7 +228,7 @@ octal_literal   = "0o" octal_digit { octal_digit } .
 
 parameter       = annotations ( type | literal ) .
 
-parameters      = parameter { "," parameter } [ "," ] .
+parameters      = ( parameter | rest_parameter ) { "," ( parameter | rest_parameter ) } [ "," ] .
 
 partial_application = [ "," ] "*" .
 
@@ -269,6 +271,8 @@ raw_string_literal = "`" { "``" | unicode_char - "`" } "`" .
 rel_op          = "==" | "<" | ">" | "<=" | ">=" | "!=" .
 
 rest_operator   = "..." [ identifier ] .
+
+rest_parameter  = "..." type .
 
 return_expression = "return" expression .
 
