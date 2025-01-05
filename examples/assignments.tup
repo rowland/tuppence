@@ -26,3 +26,10 @@ Foo = foo.Foo   # Foo is an alias for foo.Foo.
 
 # invalid type alias
 Foo = 42   # Error: Uppercase identifiers are reserved for types.
+
+# field renaming
+person1 = (id: 1, name: "Alice Chalmers")
+(id, full_name: name) = person1
+
+# type renaming on import (module "foo" has type Foo and value bar)
+(NewFoo: Foo, newBar: bar) = import("foo")

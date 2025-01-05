@@ -158,7 +158,7 @@ labeled_argument = identifier ":" expression .
 
 labeled_arguments = labeled_argument { "," ( labeled_argument ) } [ "," ] .
 
-labeled_assignment_lhs = ( identifier | type_identifier ) { "," ( identifier | type_identifier ) } .
+labeled_assignment_lhs = ( rename_assignment | rename_type ) { "," ( rename_assignment | rename_type ) } .
 
 labeled_parameter = annotations identifier ":" ( type | literal ) .
 
@@ -269,6 +269,10 @@ primary_expression = literal
 raw_string_literal = "`" { "``" | unicode_char - "`" } "`" .
 
 rel_op          = "==" | "<" | ">" | "<=" | ">=" | "!=" .
+
+rename_assignment = identifier [ ":" identifier ] .
+
+rename_type     = type_identifier [ ":" type_identifier ] .
 
 rest_operator   = "..." [ identifier ] .
 
