@@ -6,7 +6,7 @@ annotations     = [ annotation { annotation } ] .
 
 annotation_value = string_literal | ["-"] number | boolean_literal .
 
-argument        = expression .
+argument        = ( expression | spread_argument ) .
 
 arguments       = argument { "," argument } [ "," ] .
 
@@ -103,7 +103,13 @@ for_header      = initializer [ ";" condition [ ";" step_expression ] ] .
 
 for_in_header   = initializer ";" assignment_lhs "in" iterable .
 
-function_call   = function_identifier "(" [ ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ] ")" [ function_block ] .
+function_arguments = ( labeled_arguments
+                     | arguments [ "," labeled_arguments ] 
+                     ) [ partial_application ] .
+
+function_block  = "{" [ block_parameters ] block_body "}" .
+
+function_call   = function_identifier "(" [ function_arguments ] ")" [ function_block ] .
 
 function_call_context = function_identifier [ "(" ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ")" ] .
 
@@ -154,7 +160,7 @@ interpolation   =  "\\(" expression ")"
 
 iterable        = expression .
 
-labeled_argument = identifier ":" expression .
+labeled_argument = ( identifier ":" expression | spread_argument ) .
 
 labeled_arguments = labeled_argument { "," ( labeled_argument ) } [ "," ] .
 
@@ -285,6 +291,8 @@ return_type     = type | "error" | union_with_error | union_declaration_with_err
 simple_annotation = "@" identifier .
 
 size            = decimal_literal | identifier .
+
+spread_argument = "..." expression .
 
 statement       = ( type_declaration
                   | function_declaration
