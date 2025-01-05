@@ -104,3 +104,67 @@ process_args = fn(args: ...Int, transform: fn(Int) Int) {
 }
 
 process_args(1, 2, 3, 4) { |x| x * 2 }
+
+Address = type(city: String, state: String, zip: String)
+Person = type(id: Int, name: String, address: Address)
+
+people = Person[
+  (id: 1, name: "Alice", address: ("Hattiesburg", "MD", "12345")),
+  (id: 2, name: "Bob", address: ("Gatorburg", "FL", "23456")),
+  (id: 3, name: "Charlie", address: ("Dunnesville", "NM", "98765")),
+]
+
+each[a] = fx(items: a[], block: fx(a)) {
+  for item in items {
+    block(item)
+  }
+}
+
+# simple positional parameters
+people.each() { |id, name, _| print(id, name) }
+# equivalent to
+people.each() { |it|
+  id, name, _ = it
+  print(id, name)
+}
+
+# destructuring tuple fields by name
+people.each() { |(id, name)| print(id, name) }
+# equivalent to
+people.each() { |it|
+  (id, name) = it
+  print(id, name)
+}
+
+# renaming destructured fields
+people.each() { |(person_id: id, person_name: name)| print(person_id, person_name) }
+# equivalent to
+people.each() { |it|
+  (person_id: id, person_name: name) = it
+  print(person_id, person_name)
+}
+
+# mixed labeled and renamed destructuring
+people.each() { |(id, n: name)| print(id, n) }
+# equivalent to
+people.each() { |it|
+  (id, n: name) = it
+  print(id, n)
+}
+
+# invalid: no nested destructuring
+people.each() { |id, name, (city, state, zip)| print(id, name, city, state, zip) }
+# would have been equivalent to
+people.each() { |it|
+  id, name, (city, state, zip) = it
+  print(id, name, city, state, zip)
+}
+
+display = fn(id: Int, first: String, last: String, city: String, state: String, zip: String) {
+  print(id, first, last, city, state, zip)
+}
+
+person = (id: 1, first: "Alice", last: "Chalmers")
+addr = (city: "Hattiesburg", state: "MD", zip: "12345")
+
+display(...person, ...addr)

@@ -30,9 +30,7 @@ block           = "{" block_body "}" .
 
 block_body      = { statement } expression .
 
-function_block  = "{" [ block_parameters ] block_body "}" .
-
-block_parameters = "|" identifier { "," identifier } "|" .
+block_parameters = "|" assignment_lhs "|" .
 
 boolean_literal = "true" | "false" .
 
@@ -164,7 +162,7 @@ labeled_argument = ( identifier ":" expression | spread_argument ) .
 
 labeled_arguments = labeled_argument { "," ( labeled_argument ) } [ "," ] .
 
-labeled_assignment_lhs = ( rename_assignment | rename_type ) { "," ( rename_assignment | rename_type ) } .
+labeled_assignment_lhs = ( rename_identifier | rename_type ) { "," ( rename_identifier | rename_type ) } .
 
 labeled_parameter = annotations identifier ":" ( type | literal ) .
 
@@ -276,7 +274,7 @@ raw_string_literal = "`" { "``" | unicode_char - "`" } "`" .
 
 rel_op          = "==" | "<" | ">" | "<=" | ">=" | "!=" .
 
-rename_assignment = identifier [ ":" identifier ] .
+rename_identifier = identifier [ ":" identifier ] .
 
 rename_type     = type_identifier [ ":" type_identifier ] .
 
