@@ -63,7 +63,7 @@ string[String] = fn(v: String) String {
   v
 }
 
-string[String] = fn(v: Int) String {
+string[Int] = fn(v: Int) String {
   # implementation
 }
 
