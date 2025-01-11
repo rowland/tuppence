@@ -166,7 +166,11 @@ labeled_arguments = labeled_argument { "," ( labeled_argument ) } [ "," ] .
 
 labeled_assignment_lhs = ( rename_identifier | rename_type ) { "," ( rename_identifier | rename_type ) } .
 
-labeled_parameter = annotations identifier ":" ( type | literal ) .
+labeled_parameter = annotations identifier ":" ( nilable_type
+                                               | type
+                                               | literal
+                                               | union_type
+                                               | union_declaration ) .
 
 labeled_parameters = ( labeled_parameter | labeled_rest_parameter ) { "," ( labeled_parameter | labeled_rest_parameter ) } [ "," ] .
 
@@ -222,6 +226,8 @@ namespace       = letter { letter | decimal_digit | "_" } .
 
 namespaced_annotation = "@" namespace ":" identifier annotation_value .
 
+nilable_type    = "?" local_type_reference .
+
 nonzero_digit   = "1"-"9" .
 
 not_eol         = character - "\n" - "\r" .
@@ -232,7 +238,11 @@ octal_digit     = "0"-"7" .
 
 octal_literal   = "0o" octal_digit { octal_digit } .
 
-parameter       = annotations ( type | literal ) .
+parameter       = annotations ( nilable_type
+                              | type
+                              | literal
+                              | union_type 
+                              | union_declaration) .
 
 parameters      = ( parameter | rest_parameter ) { "," ( parameter | rest_parameter ) } [ "," ] .
 
@@ -287,7 +297,11 @@ rest_parameter  = "..." type .
 
 return_expression = "return" expression .
 
-return_type     = type | "error" | union_with_error | union_declaration_with_error .
+return_type     = nilable_type
+                | type
+                | "error"
+                | union_with_error
+                | union_declaration_with_error .
 
 simple_annotation = "@" identifier .
 
@@ -327,7 +341,11 @@ tuple_pattern   = "(" pattern { "," pattern } ")" .
 
 tuple_type      = "(" [ labeled_tuple_type_members | tuple_type_members ] ")" .
 
-tuple_type_member = annotations ( type | union_type | literal ) .
+tuple_type_member = annotations ( nilable_type
+                                | type
+                                | union_type
+                                | union_declaration
+                                | literal ) .
 
 tuple_type_members = tuple_type_member { "," tuple_type_member } .
 
@@ -352,11 +370,13 @@ type_declaration = type_declaration_lhs "=" type_declaration_rhs .
 
 type_declaration_lhs = annotations type_identifier [ type_parameters ] .
 
-type_declaration_rhs = "type" tuple_type
+type_declaration_rhs = nilable_type
+                     | "type" tuple_type
                      | error_tuple
                      | dynamic_array
                      | fixed_size_array
                      | union_type
+                     | union_declaration
                      | type_reference
                      | type_identifier .
 
@@ -400,7 +420,7 @@ union_member_no_annotations = type_identifier
                             | dynamic_array
                             | fixed_size_array .
 
-union_with_error = ( "?" union_member ) 
+union_with_error = ( "!" union_member ) 
                  | ( union_member { "|" union_member } [ "|" "error" ] ) .
 
 uppercase_letter = "A"-"Z" .
