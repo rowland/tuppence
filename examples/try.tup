@@ -1,0 +1,93 @@
+FooError = error(message: String)
+BarError = error(code: Int, message: String)
+
+foo = fn() SomeType | FooError {
+    # Implementation
+}
+
+bar = fn() OtherType | BarError {
+    # Implementation
+}
+
+baz = fn() SomeType | error {
+    result1 = foo()
+    value1 = switch result1 {
+        FooError { return result1 }
+        else { result1 }
+    }
+
+    result2 = bar()
+    value2 = switch result2 {
+        BarError { return result2 }
+        else { result2 }
+    }
+
+    # Perform computation with value1 and value2
+    value3 = compute(value1, value2)
+    return value3
+}
+
+# replace above with
+
+baz = fn() SomeType | error {
+    value1 = try foo()
+    value2 = try bar()
+    # Through type inference and implicit type narrowing,
+    # the results become the value type without the error.
+
+    # Perform computation with value1 and value2
+    compute(value1, value2)
+}
+
+# try is distributed through a multi-part expression:
+
+# try with member access
+
+value = try foo.bar().baz()
+
+# equivalent to
+
+value = {
+    switch foo {
+        error { return it }
+        else {
+            switch it.bar() {
+                error { return it }
+                else {
+                    switch it.baz() {
+                        error { return it }
+                        else { it }
+                    }
+                }
+            }
+        }
+    }
+}
+
+# try with chained functions
+
+value = try foo |> bar() |> baz()
+
+# equivalent to previous implementation, but steps after the first are limited to function invocations.
+
+# Define a function to process items and stop on error
+process_items = fn(items: Int[]) Int | error {
+    for sum = 0; item in items {
+        sum + try process_item(item)
+    }
+}
+
+# Define a function to sum valid items
+sum_valid = fn(items: Int[]) Int | error {
+    for sum = 0; item in items {
+        sum + try_break validate_item(item)
+    }
+}
+
+# Define a function to filter and process valid items
+filter_and_sum = fn(items: Int[]) Int {
+    for sum = 0; item in items {
+        sum + try_continue validate_item(item)
+    }
+}
+
