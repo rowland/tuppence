@@ -8,6 +8,12 @@ get_value = fn() Int | String | error {
   # implementation
 }
 
+# simple union with error
+# ?Int lowers to Int | error
+get_value = fn() ?Int {
+  # implementation
+}
+
 # verbose union without error
 get_value = fn() union(
   Int

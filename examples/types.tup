@@ -42,3 +42,8 @@ Result = Data | HttpError
 ComplexKey = Int | String | ComplexTuple (primary: Int, secondary: String)
 
 Foo[T] = Bar[T] | Baz[T]
+
+# A union of a union and a type or of two unions is flattened, e.g.
+Intish = Int32 | Int64
+Floatish = Float32 | Float64
+Number = Intish | Floatish # equivalent to Int32 | Int64 | Float32 | Float64
