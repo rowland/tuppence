@@ -265,6 +265,7 @@ primary_expression = literal
                 | type_constructor_call
                 | return_expression
                 | break_expression
+                | switch_statement
                 | member_access
                 | tuple_update_expression
                 | indexed_access
