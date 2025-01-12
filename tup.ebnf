@@ -101,7 +101,11 @@ for_expression  = "for" [ for_header | for_in_header ] for_block .
 
 for_header      = initializer [ ";" condition [ ";" step_expression ] ] .
 
-for_in_header   = initializer ";" assignment_lhs "in" iterable .
+for_in_header   = initializer ";" 
+                ( iterable_header 
+                | range_header ) .
+
+iterable        = expression .
 
 function_arguments = ( labeled_arguments
                      | arguments [ "," labeled_arguments ] 
@@ -159,6 +163,8 @@ interpolated_string_literal = '"' { byte_escape_sequence | unicode_escape_sequen
 interpolation   =  "\\(" expression ")"
 
 iterable        = expression .
+
+iterable_header = assignment_lhs "in" iterable .
 
 labeled_argument = ( identifier ":" expression | spread_argument ) .
 
@@ -268,8 +274,7 @@ prec5_expression = prec6_expression { mul_div_op prec6_expression } .
 
 prec6_expression = unary_expression { "^" unary_expression } .
 
-primary_expression = literal
-                | "(" expression ")"
+primary_expression = "(" expression ")"
                 | block
                 | if_expression
                 | for_expression
@@ -277,13 +282,28 @@ primary_expression = literal
                 | type_constructor_call
                 | return_expression
                 | break_expression
-                | switch_statement
                 | member_access
                 | tuple_update_expression
                 | indexed_access
-                | identifier .
+                | range
+                | identifier
+                | literal .
 
-range           = constant ".." constant .
+range           = range_start ".." range_end .
+
+range_start     = "(" expression ")"
+                | member_access
+                | indexed_access
+                | identifier
+                | literal .
+
+range_end       = "(" expression ")"
+                | member_access
+                | indexed_access
+                | identifier
+                | literal .
+
+range_header    = identifier "in" range .
 
 raw_string_literal = "`" { "``" | unicode_char - "`" } "`" .
 
