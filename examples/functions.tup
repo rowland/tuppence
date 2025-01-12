@@ -24,7 +24,7 @@ get_value = fn() union(
 
 # verbose union with error
 process = fn() union(
-  Byte[]
+  []Byte
   Ok(Int)
   Err(String)
   error
@@ -33,7 +33,7 @@ process = fn() union(
 }
 
 # compact complex union
-process = fn() Byte[] | Ok(Int) | Err(String) | error {
+process = fn() []Byte | Ok(Int) | Err(String) | error {
   # implementation
 }
 
@@ -75,7 +75,7 @@ string[Int] = fn(v: Int) String {
 
 IntOrString = Int | String
 
-display = fn(list: IntOrString[]) {
+display = fn(list: []IntOrString) {
   (print) = import("io")
 
   for line = 1; v in list {
@@ -89,7 +89,7 @@ display = fn(list: IntOrString[]) {
 values = IntOrString[1, "2", 3, "4"]
 display(values)
 
-sum = fn(list: IntOrString[]) Int {
+sum = fn(list: []IntOrString) Int {
   for acc = 0; v in list {
     acc + v.int()
   }
@@ -120,7 +120,7 @@ people = Person[
   (id: 3, name: "Charlie", address: ("Dunnesville", "NM", "98765")),
 ]
 
-each[a] = fx(items: a[], block: fx(a)) {
+each[a] = fx(items: []a, block: fx(a)) {
   for item in items {
     block(item)
   }

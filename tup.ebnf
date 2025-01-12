@@ -62,7 +62,7 @@ destructure_pattern = labeled_pattern
                     | tuple_pattern
                     | array_pattern .
 
-dynamic_array   = type_identifier "[" "]".
+dynamic_array   = "[" "]" type_identifier .
 
 else_block      = "else" block .
 
@@ -90,7 +90,7 @@ expression      = try_expression
                 | binary_expression
                 | unary_expression .
 
-fixed_size_array = type_identifier "[" size { "," size } "]" .
+fixed_size_array = "[" size { "," size } "]" type_identifier .
 
 float_literal   = decimal_digit { decimal_digit | "_" } "." decimal_digit { decimal_digit | "_" } [ exponent ]
                 | decimal_digit { decimal_digit | "_" } exponent .
@@ -373,12 +373,12 @@ tuple_type_members = tuple_type_member { "," tuple_type_member } .
 
 tuple_update_expression = expression "." tuple_literal .
 
-type            = local_type_reference
+type            = fixed_size_array
+                | dynamic_array
+                | generic_type
+                | local_type_reference
                 | tuple_type
                 | function_type
-                | generic_type
-                | dynamic_array
-                | fixed_size_array
                 | error_tuple .
 
 type_argument   = type

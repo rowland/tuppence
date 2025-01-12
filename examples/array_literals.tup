@@ -20,11 +20,11 @@ two_int32s = Int32[1, 2]
 three_int16s = Int16[1, 2, 3]
 
 IntOrBool = Int | Bool
-UnionArray = IntOrBool[] # Defines a type for arrays of Int | Bool
+UnionArray = []IntOrBool # Defines a type for arrays of Int | Bool
 union_array = IntOrBool[1, true, 0]
 
-IPv4Address = Byte[4]  # Fixed-size array of 4 bytes
-Matrix = Int[3, 3]     # 3x3 matrix of integers
+IPv4Address = [4]Byte  # Fixed-size array of 4 Bytes
+Matrix = [3, 3]Int     # 3x3 matrix of integers
 
 square = Matrix[
     [1, 2, 3],
@@ -32,8 +32,8 @@ square = Matrix[
     [7, 8, 9]
 ]
 
-SudokuSquare = Int[3, 3]        # A 3x3 fixed-size array of integers
-SudokuGame = SudokuSquare[3, 3] # A 3x3 fixed-size array of Sudoku squares
+SudokuSquare = [3, 3]Int        # A 3x3 fixed-size array of integers
+SudokuGame = [3, 3]SudokuSquare # A 3x3 fixed-size array of Sudoku squares
 
 square = SudokuSquare[
     [4, 0, 3],
