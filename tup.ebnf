@@ -283,6 +283,8 @@ primary_expression = literal
                 | indexed_access
                 | identifier .
 
+range           = constant ".." constant .
+
 raw_string_literal = "`" { "``" | unicode_char - "`" } "`" .
 
 rel_op          = "==" | "<" | ">" | "<=" | ">=" | "!=" .
