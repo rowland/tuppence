@@ -1,0 +1,74 @@
+(Cons, List, empty, singleton, map, reduce, head, tail, select, to_array, append) = import("list")
+
+# Create an empty list
+my_empty_list = empty[Int]()
+
+# Create a singleton list
+my_singleton = singleton(42)
+
+numbers = Cons(head: 1, tail: Cons(head: 2, tail: Cons(head: 3, tail: nil)))
+
+increment = fn(x: Int) Int {
+  x + 1
+}
+
+incremented_numbers1 = map(numbers, increment)
+# Result: Cons(head: 2, tail: Cons(head: 3, tail: Cons(head: 4, tail: nil)))
+
+incremented_numbers2 = numbers.map() { |num| num + 1 }
+
+incremented_numbers3 = numbers.map() { it + 1 }
+
+total = numbers.reduce(0) { |acc, x| acc + x }
+
+int_array = [1, 2, 3, 4]
+int_list = from_array(int_array)
+
+# Result: Cons(head: 1, tail: Cons(head: 2, tail: Cons(head: 3, tail: Cons(head: 4, tail: nil))))
+
+string_array = ["Alice", "Bob", "Charlie"]
+string_list = from_array(string_array)
+# Result: Cons(head: "Alice", tail: Cons(head: "Bob", tail: Cons(head: "Charlie", tail: nil)))
+
+# Access the head
+h = head(numbers)  # h = 1
+
+# Access the tail
+t = tail(numbers)  # t = Cons(head: 2, tail: Cons(head: 3, tail: nil))
+
+# Access the second element (head of the tail)
+h2 = head(t)  # h2 = 2
+
+# Handle empty list case
+empty = empty[Int]()
+h_e = head(empty)  # h_e = nil
+t_e = tail(empty)  # t_e = nil
+
+even_ints = from_array([1, 2, 3]).select() { |x| x % 2 == 0 }
+# Result: Cons(head: 2, tail: nil)
+
+even_int_array = to_array(even_ints)
+# Result: [2]
+
+five_ints = from_array([1, 2, 3, 4, 5])
+two_ints = five_ints.drop(3)  # Result: List[Int](Cons(4, Cons(5, nil)))
+
+even, odd = five_ints.partition() { it % 2 == 0 }
+# Result:
+# even = List[Int](Cons(2, Cons(4, nil)))  # In original order
+# odd = List[Int](Cons(1, Cons(3, Cons(5, nil))))  # In original order
+
+fm = five_ints.filter_map() {
+  if x % 2 == 0 { x * 10 } else { nil }
+}
+# fm = List[Int](Cons(20, Cons(40, nil)))
+
+f_l = five_ints.length() # f_l = 5
+
+combined = append(five_ints, two_ints)
+# combined == List[Int].from_array(Int[1, 2, 3, 4, 5, 4, 5])
+
+list1 = range(1, 10, 0)  # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+list2 = range(10, 1, -2) # [10, 8, 6, 4, 2]
+list3 = range(5, 5, 0)   # [5]
+list4 = range(1, 10, 1)  # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]

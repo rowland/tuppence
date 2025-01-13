@@ -1,0 +1,173 @@
+List[a]: union(
+  Nil
+  Cons(head: a, tail: List[a])
+)
+
+empty[a]: fn() List[a] {
+  nil
+}
+
+empty?[a]: fn(list: List[a]) Bool {
+  list == nil
+}
+
+singleton[a]: fn(head: a) List[a] {
+  Cons(head: head, tail: nil)
+}
+
+repeat[a]: fn(value: a, n: Int) List[a] {
+  for i, acc = (0, empty[a]()); i < n {
+    (i + 1, Cons(head: value, tail: acc))
+  }.1
+}
+
+map[a, b]: fn(list: List[a], fn: fn(a) b) List[b] {
+  for acc, current = (empty[b](), list); current != nil {
+    (Cons(head: fn(current.head), tail: acc), current.tail)
+  }.0.reverse()
+}
+
+reverse[a]: fn(list: List[a]) List[a] {
+  for acc, current = (empty[a](), list); current != nil {
+    (Cons(head: current.head, tail: acc), current.tail)
+  }.0
+}
+
+filter[a]: fn(list: List[a], predicate: fn(a) Bool) List[a] {
+  for acc, current = (empty[a](), list); current != nil {
+    if predicate(current.head) {
+      (Cons(head: current.head, tail: acc), current.tail)
+    } else {
+      (acc, current.tail)
+    }
+  }.0.reverse()
+}
+
+select: filter
+
+foldl[a, b]: fn(list: List[a], acc: b, fn: fn(b, a) b) b {
+  for acc, current = (acc, list); current != nil {
+    (fn(acc, current.head), current.tail)
+  }.0
+}
+
+reduce: foldl
+
+from_array[a]: fn(array: []a) List[a] {
+  for i, acc = (len(array) - 1, empty[a]()); i >= 0 {
+    (i - 1, Cons(head: array[i], tail: acc))
+  }.1
+}
+
+head[a]: fn(list: List[a]) ?a {
+  switch list {
+    Cons(head, _) { head }
+    Nil { nil }
+  }
+}
+
+tail[a]: fn(list: List[a]) List[a] {
+  switch list {
+    Cons(_, tail) { tail }
+    Nil { nil }
+  }
+}
+
+to_array[a]: fn(list: List[a]) []a {
+  for acc, current = (a[], list); current != nil {
+    (acc.append(current.head), current.tail)
+  }.0
+}
+
+take[a]: fn(list: List[a], n: Int) List[a] {
+  for i, acc, current = (0, empty[a](), list); i < n && current != nil {
+    (i + 1, Cons(head: current.head, tail: acc), current.tail)
+  }.1.reverse()
+}
+
+drop[a]: fn(list: List[a], n: Int) List[a] {
+  for i, current = (0, list); i < n && current != nil {
+    (i + 1, current.tail)
+  }.1
+}
+
+partition[a]: fn(list: List[a], predicate: fn(a) Bool) (List[a], List[a]) {
+  result = for true_acc, false_acc, current = (empty[a](), empty[a](), list); current != nil {
+    if predicate(current.head) {
+      (Cons(head: current.head, tail: true_acc), false_acc, current.tail)
+    } else {
+      (true_acc, Cons(head: current.head, tail: false_acc), current.tail)
+    }
+  }
+  (reverse(result.0), reverse(result.1))
+}
+
+filter_map[a, b]: fn(list: List[a], fn: fn(a) ?b) List[b] {
+  result = for acc, current = (empty[b](), list); current != nil {
+    transformed = fn(current.head)
+    if transformed != nil {
+      (Cons(head: transformed, tail: acc), current.tail)
+    } else {
+      (acc, current.tail)
+    }
+  }.0.reverse()
+}
+
+length[a]: fn(list: List[a]) Int {
+  for acc, current = (0, list); current != nil {
+    (acc + 1, current.tail)
+  }.0
+}
+
+member?[a]: fn(list: List[a], value: a) Bool {
+  for current = list; current != nil {
+    if current.head == value {
+      return true
+    }
+    current = current.tail
+  }
+  false
+}
+
+include?: member?
+
+any?[a]: fn(list: List[a], predicate: fn(a) Bool) Bool {
+  for current = list; current != nil {
+    if predicate(current.head) {
+      return true
+    }
+    current = current.tail
+  }
+  false
+}
+
+all?[a]: fn(list: List[a], predicate: fn(a) Bool) Bool {
+  for current = list; current != nil {
+    if !predicate(current.head) {
+      return false
+    }
+    current = current.tail
+  }
+  true
+}
+
+append[a]: fn(list1: List[a], list2: List[a]) List[a] {
+  for acc, current = (list2, reverse(list1)); current != nil {
+    (Cons(head: current.head, tail: acc), current.tail)
+  }.0
+}
+
+concat[a]: fn(lists: List[List[a]]) List[a] {
+  for acc, current = (empty[a](), lists); current != nil {
+    (append(acc, current.head), current.tail)
+  }.0
+}
+
+range: fn(start: Int, stop: Int, step: 1) List[Int] {
+  {
+    step = if step == 0 { 1 } else { step }
+    for acc, current = (empty[Int](), start); if step > 0 { current <= stop } else { current >= stop } {
+      (Cons(head: current, tail: acc), current + step)
+    }.0.reverse()
+  }
+}
