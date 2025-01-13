@@ -1,0 +1,5 @@
+Range[a]: type(lo: a, hi: a)
+
+include?[a]: fn(r: Range[a], v: a) Bool {
+    v >= r.lo && v <= r.hi
+}
