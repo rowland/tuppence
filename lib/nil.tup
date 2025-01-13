@@ -1,0 +1,4 @@
+@false
+Nil: type()
+
+nil: Nil()
