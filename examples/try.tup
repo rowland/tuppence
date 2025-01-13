@@ -1,3 +1,5 @@
+# define 2 functions that may return different errors
+
 FooError = error(message: String)
 BarError = error(code: Int, message: String)
 
@@ -8,6 +10,8 @@ foo = fn() SomeType | FooError {
 bar = fn() OtherType | BarError {
     # Implementation
 }
+
+# without try, call each function, returning early if an error
 
 baz = fn() SomeType | error {
     result1 = foo()
@@ -27,7 +31,7 @@ baz = fn() SomeType | error {
     return value3
 }
 
-# replace above with
+# same function using try
 
 baz = fn() SomeType | error {
     value1 = try foo()
@@ -71,21 +75,21 @@ value = try foo |> bar() |> baz()
 # equivalent to previous implementation, but steps after the first are limited to function invocations.
 
 # Define a function to process items and stop on error
-process_items = fn(items: Int[]) Int | error {
+process_items = fn(items: []Int) Int | error {
     for sum = 0; item in items {
         sum + try process_item(item)
     }
 }
 
 # Define a function to sum valid items
-sum_valid = fn(items: Int[]) Int | error {
+sum_valid = fn(items: []Int) Int | error {
     for sum = 0; item in items {
         sum + try_break validate_item(item)
     }
 }
 
 # Define a function to filter and process valid items
-filter_and_sum = fn(items: Int[]) Int {
+filter_and_sum = fn(items: []Int) Int {
     for sum = 0; item in items {
         sum + try_continue validate_item(item)
     }
