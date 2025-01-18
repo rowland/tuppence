@@ -119,8 +119,8 @@ function_call_context = function_identifier [ "(" ( labeled_arguments | argument
 
 function_declaration = function_declaration_lhs "=" function_declaration_type block .
 
-function_declaration_type = ( "fn" "(" [ labeled_parameters | parameters ] ")" return_type )
-                          | ( "fx" "(" [ labeled_parameters | parameters ] ")" [ return_type ] ) .
+function_declaration_type = ( "fn" "(" [ labeled_parameters | parameters ] ")" ( return_type | "_" ) )
+                          | ( "fx" "(" [ labeled_parameters | parameters ] ")" [ return_type | "_" ] ) .
 
 function_declaration_lhs = function_identifier [ function_parameter_types ] .
 
