@@ -1,34 +1,34 @@
-add_sub_op      = "+" | "?+" | "-" | "?-" | "|" .
+add_sub_op = "+" | "?+" | "-" | "?-" | "|" .
 
-annotation      = namespaced_annotation | simple_annotation .
+annotation = namespaced_annotation | simple_annotation .
 
-annotations     = [ annotation { annotation } ] .
+annotations = [ annotation { annotation } ] .
 
 annotation_value = string_literal | ["-"] number | boolean_literal .
 
-argument        = ( expression | spread_argument ) .
+argument = ( expression | spread_argument ) .
 
-arguments       = argument { "," argument } [ "," ] .
+arguments = argument { "," argument } [ "," ] .
 
-array_literal   = "[" [ array_members | array_literal ] "]"
-                | type_identifier "[" [ array_members | array_literal ] "]" .
+array_literal = "[" [ array_members | array_literal ] "]"
+              | type_identifier "[" [ array_members | array_literal ] "]" .
 
-array_members   = expression { "," expression } [ "," ] .
+array_members = expression { "," expression } [ "," ] .
 
-array_pattern   = "[" pattern { "," pattern } [ "," rest_operator ] "]" .
+array_pattern = "[" pattern { "," pattern } [ "," rest_operator ] "]" .
 
-assignment      = assignment_lhs "=" [ "mut" ] expression .
+assignment = assignment_lhs "=" [ "mut" ] expression .
 
-assignment_lhs  = identifier { "," identifier } [ "," rest_operator ] 
-                | "(" labeled_assignment_lhs ")" .
+assignment_lhs = identifier { "," identifier } [ "," rest_operator ] 
+               | "(" labeled_assignment_lhs ")" .
 
 binary_expression = chained_expression
 
-binary_literal  = "0b" ( "0" | "1" ) { "0" | "1" | "_" } .
+binary_literal = "0b" ( "0" | "1" ) { "0" | "1" | "_" } .
 
-block           = "{" block_body "}" .
+block = "{" block_body "}" .
 
-block_body      = { statement } expression .
+block_body = { statement } expression .
 
 block_parameters = "|" assignment_lhs "|" .
 
@@ -38,23 +38,23 @@ break_expression = "break" expression .
 
 byte_escape_sequence = "\\" "x" hex_digit hex_digit
 
-case_block      = match_condition block .
+case_block = match_condition block .
 
 chained_expression = prec1_expression { "|>" function_call } .
 
-character       = (* valid UTF-8 codepoint *) .
+character = (* valid UTF-8 codepoint *) .
 
-comment         = "#" { not_eol } eol
+comment = "#" { not_eol } eol
 
-condition       = expression .
+condition = expression .
 
-constant        = literal
-                | scoped_identifier
-                | identifier .
+constant = literal
+         | scoped_identifier
+         | identifier .
 
-content_line    = { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - eol - "```" } eol .
+content_line = { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - eol - "```" } eol .
 
-decimal_digit   = "0"-"9" .
+decimal_digit = "0"-"9" .
 
 decimal_literal = decimal_digit { decimal_digit | "_" } .
 
@@ -62,17 +62,17 @@ destructure_pattern = labeled_pattern
                     | tuple_pattern
                     | array_pattern .
 
-dynamic_array   = "[" "]" type_identifier .
+dynamic_array = "[" "]" type_identifier .
 
-else_block      = "else" block .
+else_block = "else" block .
 
-eol             = ( "\r\n" | "\r" | "\n" ) .
+eol = ( "\r\n" | "\r" | "\n" ) .
 
-error_tuple     = "error" tuple_type .
+error_tuple = "error" tuple_type .
 
 escape_sequence = ( "\\n" | "\\t" | "\\\"" | "\\'" | "\\\\" | "\\r" | "\\b" | "\\f" | "\\v" | "\\0" | "\\`" ) .
 
-exponent        = "e" [ "-" | "+" ] decimal_digit { decimal_digit } .
+exponent = "e" [ "-" | "+" ] decimal_digit { decimal_digit } .
 
 export_assignment = assignment_lhs ":" expression .
 
@@ -86,34 +86,34 @@ export_function_type_declaration = function_type_declaration_lhs ":" function_ty
 
 export_type_declaration = type_declaration_lhs ":" type_declaration_rhs .
 
-expression      = try_expression
-                | binary_expression
-                | unary_expression .
+expression = try_expression
+           | binary_expression
+           | unary_expression .
 
 fixed_size_array = "[" size { "," size } "]" type_identifier .
 
-float_literal   = decimal_digit { decimal_digit | "_" } "." decimal_digit { decimal_digit | "_" } [ exponent ]
-                | decimal_digit { decimal_digit | "_" } exponent .
+float_literal = decimal_digit { decimal_digit | "_" } "." decimal_digit { decimal_digit | "_" } [ exponent ]
+              | decimal_digit { decimal_digit | "_" } exponent .
 
-for_block       = "{" { statement } [ expression ] "}" .
+for_block = "{" { statement } [ expression ] "}" .
 
-for_expression  = "for" [ for_header | for_in_header ] for_block .
+for_expression = "for" [ for_header | for_in_header ] for_block .
 
-for_header      = initializer [ ";" condition [ ";" step_expression ] ] .
+for_header = initializer [ ";" condition [ ";" step_expression ] ] .
 
-for_in_header   = initializer ";" 
-                ( iterable_header 
-                | range_header ) .
+for_in_header = initializer ";" 
+              ( iterable_header 
+              | range_header ) .
 
-iterable        = expression .
+iterable = expression .
 
 function_arguments = ( labeled_arguments
                      | arguments [ "," labeled_arguments ] 
                      ) [ partial_application ] .
 
-function_block  = "{" [ block_parameters ] block_body "}" .
+function_block = "{" [ block_parameters ] block_body "}" .
 
-function_call   = function_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
+function_call = function_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
 
 function_call_context = function_identifier [ "(" ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ")" ] .
 
@@ -128,7 +128,7 @@ function_identifier = lowercase_letter { letter | decimal_digit | "_" } [ "?" | 
 
 function_parameter_types = "[" [ local_type_reference { "," local_type_reference } ] "]" .
 
-function_type   = ( "fn" | "fx" ) "(" [ labeled_parameters | parameters ] ")" return_type .
+function_type = ( "fn" | "fx" ) "(" [ labeled_parameters | parameters ] ")" return_type .
 
 function_type_declaration = function_type_declaration_lhs "=" function_type .
 
@@ -136,25 +136,25 @@ function_type_declaration_lhs = function_type_identifier [ function_parameter_ty
 
 function_type_identifier = type_identifier .
 
-generic_type    = type_identifier type_argument_list .
+generic_type = type_identifier type_argument_list .
 
-hex_digit       = decimal_digit | "a"-"f" | "A"-"F" .
+hex_digit = decimal_digit | "a"-"f" | "A"-"F" .
 
 hexadecimal_literal = "0x" hex_digit { hex_digit | "_" } .
 
-identifier      = ( lowercase_letter | "_" ) { letter | decimal_digit | "_" } .
+identifier = ( lowercase_letter | "_" ) { letter | decimal_digit | "_" } .
 
-if_expression   = "if" condition block { "else" "if" condition block } [ else_block ] .
+if_expression = "if" condition block { "else" "if" condition block } [ else_block ] .
 
 indented_closing = leading_whitespace "```" eol .
 
-indented_line   = leading_whitespace content_line .
+indented_line = leading_whitespace content_line .
 
-index           = expression .
+index = expression .
 
-indexed_access  = expression "[" index { "," index } "]" .
+indexed_access = expression "[" index { "," index } "]" .
 
-initializer     = assignment .
+initializer = assignment .
 
 integer_literal = binary_literal
                 | hexadecimal_literal
@@ -163,9 +163,9 @@ integer_literal = binary_literal
 
 interpolated_string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - '"' - eol } '"' .
 
-interpolation   =  "\\(" expression ")"
+interpolation = "\\(" expression ")"
 
-iterable        = expression .
+iterable = expression .
 
 iterable_header = assignment_lhs "in" iterable .
 
@@ -197,18 +197,18 @@ labeled_tuple_type_members = labeled_tuple_type_member { "," labeled_tuple_type_
 
 leading_whitespace = { " " | "\t" } .
 
-letter          = "a"-"z" | "A"-"Z" .
+letter = "a"-"z" | "A"-"Z" .
 
-list_match      = match_element { "," match_element } .
+list_match = match_element { "," match_element } .
 
-literal         = number
-                | boolean_literal
-                | string_literal
-                | interpolated_string_literal
-                | raw_string_literal
-                | multi_line_string_literal
-                | tuple_literal
-                | array_literal .
+literal = number
+        | boolean_literal
+        | string_literal
+        | interpolated_string_literal
+        | raw_string_literal
+        | multi_line_string_literal
+        | tuple_literal
+        | array_literal .
 
 local_type_reference = type_identifier | identifier .
 
@@ -217,53 +217,53 @@ lowercase_letter = "a"-"z" .
 match_condition = list_match
                 | pattern_match .
 
-match_element   = constant | range .
+match_element = constant | range .
 
-member_access   = expression "." ( decimal_literal 
-                                 | identifier 
-                                 | function_call ) .
+member_access = expression "." ( decimal_literal 
+                               | identifier 
+                               | function_call ) .
 
-module          = { top_level_item } .
+module = { top_level_item } .
 
 multi_line_string_literal = "```" [ function_call_context ] eol { indented_line } indented_closing .
 
-mul_div_op      = "*" | "?*" | "/" | "?/" | "%" | "&" | "<<" | ">>" .
+mul_div_op = "*" | "?*" | "/" | "?/" | "%" | "&" | "<<" | ">>" .
 
-named_tuple     = type_identifier tuple_type .
+named_tuple = type_identifier tuple_type .
 
-namespace       = letter { letter | decimal_digit | "_" } .
+namespace = letter { letter | decimal_digit | "_" } .
 
 namespaced_annotation = "@" namespace ":" identifier annotation_value .
 
-nilable_type    = "?" local_type_reference .
+nilable_type = "?" local_type_reference .
 
-nonzero_digit   = "1"-"9" .
+nonzero_digit = "1"-"9" .
 
-not_eol         = character - "\n" - "\r" .
+not_eol = character - "\n" - "\r" .
 
-number          = float_literal | integer_literal .
+number = float_literal | integer_literal .
 
-octal_digit     = "0"-"7" .
+octal_digit = "0"-"7" .
 
-octal_literal   = "0o" octal_digit { octal_digit } .
+octal_literal = "0o" octal_digit { octal_digit } .
 
-parameter       = annotations ( nilable_type
-                              | type
-                              | literal
-                              | union_type 
-                              | union_declaration) .
+parameter = annotations ( nilable_type
+                        | type
+                        | literal
+                        | union_type 
+                        | union_declaration ) .
 
-parameters      = ( parameter | rest_parameter ) { "," ( parameter | rest_parameter ) } [ "," ] .
+parameters = ( parameter | rest_parameter ) { "," ( parameter | rest_parameter ) } [ "," ] .
 
 partial_application = [ "," ] "*" .
 
-pattern         = labeled_pattern
-                | tuple_pattern
-                | identifier .
+pattern = labeled_pattern
+        | tuple_pattern
+        | identifier .
 
-pattern_match   = type_identifier "(" pattern ")" 
-                | destructure_pattern
-                | type_identifier .
+pattern_match = type_identifier "(" pattern ")" 
+              | destructure_pattern
+              | type_identifier .
 
 prec1_expression = prec2_expression { "||" prec2_expression } .
 
@@ -278,87 +278,87 @@ prec5_expression = prec6_expression { mul_div_op prec6_expression } .
 prec6_expression = unary_expression { "^" unary_expression } .
 
 primary_expression = "(" expression ")"
-                | block
-                | if_expression
-                | for_expression
-                | function_call
-                | type_constructor_call
-                | return_expression
-                | break_expression
-                | member_access
-                | tuple_update_expression
-                | indexed_access
-                | range
-                | identifier
-                | literal .
+                   | block
+                   | if_expression
+                   | for_expression
+                   | function_call
+                   | type_constructor_call
+                   | return_expression
+                   | break_expression
+                   | member_access
+                   | tuple_update_expression
+                   | indexed_access
+                   | range
+                   | identifier
+                   | literal .
 
-range           = range_bound ".." range_bound .
+range = range_bound ".." range_bound .
 
-range_bound     = "(" expression ")"
-                | member_access
-                | indexed_access
-                | identifier
-                | literal .
+range_bound = "(" expression ")"
+            | member_access
+            | indexed_access
+            | identifier
+            | literal .
 
-range_header    = identifier "in" range .
+range_header = identifier "in" range .
 
 raw_string_literal = "`" { "``" | unicode_char - "`" } "`" .
 
-rel_op          = "==" | "<" | ">" | "<=" | ">=" | "!=" .
+rel_op = "==" | "<" | ">" | "<=" | ">=" | "!=" .
 
 rename_identifier = identifier [ ":" identifier ] .
 
-rename_type     = type_identifier [ ":" type_identifier ] .
+rename_type = type_identifier [ ":" type_identifier ] .
 
-rest_operator   = "..." [ identifier ] .
+rest_operator = "..." [ identifier ] .
 
-rest_parameter  = "..." type .
+rest_parameter = "..." type .
 
 return_expression = "return" expression .
 
-return_type     = nilable_type
-                | type
-                | "error"
-                | union_with_error
-                | union_declaration_with_error .
+return_type = nilable_type
+            | type
+            | "error"
+            | union_with_error
+            | union_declaration_with_error .
 
 simple_annotation = "@" identifier .
 
-size            = decimal_literal | identifier .
+size = decimal_literal | identifier .
 
 spread_argument = "..." expression .
 
-statement       = ( type_declaration
-                  | function_declaration
-                  | assignment
-                  | if_expression
-                  ) .
+statement = ( type_declaration
+            | function_declaration
+            | assignment
+            | if_expression
+            ) .
 
 step_expression = expression .
 
-string_literal  = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' - eol } '"' .
+string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' - eol } '"' .
 
 switch_statement = "switch" expression "{" case_block { case_block } [ else_block ] "}" .
 
-top_level_item  = ( assignment
-                  | type_declaration
-                  | function_declaration
-                  | export_declaration
-                  ) .
+top_level_item = ( assignment
+                 | type_declaration
+                 | function_declaration
+                 | export_declaration
+                 ) .
 
-try_expression  = "try" expression
-                | "try_continue" [ expression ]
-                | "try_break" [ expression ] .
+try_expression = "try" expression
+               | "try_continue" [ expression ]
+               | "try_break" [ expression ] .
 
-tuple_literal   = "(" [ labeled_tuple_members | tuple_members ] ")" .
+tuple_literal = "(" [ labeled_tuple_members | tuple_members ] ")" .
 
-tuple_member    = expression
+tuple_member = expression
 
-tuple_members   = tuple_member "," { tuple_member "," } [ tuple_member ] .
+tuple_members = tuple_member "," { tuple_member "," } [ tuple_member ] .
 
-tuple_pattern   = "(" pattern { "," pattern } ")" .
+tuple_pattern = "(" pattern { "," pattern } ")" .
 
-tuple_type      = "(" [ labeled_tuple_type_members | tuple_type_members ] ")" .
+tuple_type = "(" [ labeled_tuple_type_members | tuple_type_members ] ")" .
 
 tuple_type_member = annotations ( nilable_type
                                 | type
@@ -370,18 +370,18 @@ tuple_type_members = tuple_type_member { "," tuple_type_member } .
 
 tuple_update_expression = expression "." tuple_literal .
 
-type            = fixed_size_array
-                | dynamic_array
-                | generic_type
-                | local_type_reference
-                | tuple_type
-                | function_type
-                | error_tuple .
+type = fixed_size_array
+     | dynamic_array
+     | generic_type
+     | local_type_reference
+     | tuple_type
+     | function_type
+     | error_tuple .
 
-type_argument   = type
-                | generic_type .
+type_argument = type
+              | generic_type .
 
-type_argument_list  = "[" type_argument { "," type_argument } "]" .
+type_argument_list = "[" type_argument { "," type_argument } "]" .
 
 type_constructor_call = type_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" .
 
@@ -401,11 +401,11 @@ type_declaration_rhs = nilable_type
 
 type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
 
-type_parameter  = uppercase_letter { letter | decimal_digit | "_" } .
+type_parameter = uppercase_letter { letter | decimal_digit | "_" } .
 
 type_parameters = "[" type_parameter { "," type_parameter } "]" .
 
-type_reference  = identifier "." type_identifier .
+type_reference = identifier "." type_identifier .
 
 unary_expression = "-" valid_negatable_expression
                  | "!" valid_negatable_expression
@@ -421,18 +421,18 @@ union_declaration_with_error = "union" "(" eol
                              [ "error" eol ]
                              ")" .
 
-union_member    = local_type_reference
-                | generic_type
-                | dynamic_array
-                | fixed_size_array
-                | named_tuple .
+union_member = local_type_reference
+             | generic_type
+             | dynamic_array
+             | fixed_size_array
+             | named_tuple .
 
-union_members   = union_member_declaration { eol union_member_declaration } eol .
+union_members = union_member_declaration { eol union_member_declaration } eol .
 
 union_member_declaration = annotations named_tuple
                          | union_member_no_annotations .
 
-union_type      = union_member { "|" union_member } .
+union_type = union_member { "|" union_member } .
 
 union_member_no_annotations = type_identifier
                             | generic_type
