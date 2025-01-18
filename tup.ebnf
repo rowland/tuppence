@@ -182,7 +182,7 @@ labeled_parameters = ( labeled_parameter | labeled_rest_parameter ) { "," ( labe
 
 labeled_pattern = "(" identifier ":" pattern { "," identifier ":" pattern } ")" .
 
-labeled_rest_parameter = annotations identifier ":" "..." type .
+labeled_rest_parameter = annotations identifier ":" rest_parameter .
 
 labeled_tuple_member = identifier ":" tuple_member .
 
@@ -289,15 +289,9 @@ primary_expression = "(" expression ")"
                 | identifier
                 | literal .
 
-range           = range_start ".." range_end .
+range           = range_bound ".." range_bound .
 
-range_start     = "(" expression ")"
-                | member_access
-                | indexed_access
-                | identifier
-                | literal .
-
-range_end       = "(" expression ")"
+range_bound     = "(" expression ")"
                 | member_access
                 | indexed_access
                 | identifier
