@@ -8,10 +8,6 @@
 | type  | error | enum | interface |
 | switch | for | if | else |
 | mut |
-| i8 | i16 | i32 | i64 |
-| u8 | u16 | u32| u64 |
-| f32 | f64 |
-| v128 |
 | import |
 | it |
 | typeof |
@@ -44,13 +40,24 @@
 | % | mod |
 | ^ | pow |
 | [] | index |
+| << | append(a, x) |
 | += | (a = a + x ) |
 | -= | (a = a - x ) |
 | *= | (a = a * x ) |
 | /= | (a = a / x ) |
-| << | (a = append(a, x) ) |
+| <<= | (a = append(a, x) ) |
 | \|> | (pipe) |
 | . | (dereference) |
+| ! | not |
+
+## Internal Types
+
+|||||
+| --- | --- | --- | --- |
+| I8 | I16 | I32 | I64 |
+| U8 | U16 | U32| U64 |
+| F32 | F64 |
+| V128 |
 
 ## Standard Types
 
