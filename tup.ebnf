@@ -80,7 +80,7 @@ export_declaration = ( export_type_declaration
                      | export_function_declaration
                      | export_assignment ) .
 
-export_function_declaration = function_declaration_lhs ":" function_type block .
+export_function_declaration = function_declaration_lhs ":" function_declaration_type block .
 
 export_function_type_declaration = function_type_declaration_lhs ":" function_type .
 
@@ -117,7 +117,10 @@ function_call   = function_identifier [ function_parameter_types ] "(" [ functio
 
 function_call_context = function_identifier [ "(" ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ")" ] .
 
-function_declaration = function_declaration_lhs "=" function_type block .
+function_declaration = function_declaration_lhs "=" function_declaration_type block .
+
+function_declaration_type = ( "fn" "(" [ labeled_parameters | parameters ] ")" return_type )
+                          | ( "fx" "(" [ labeled_parameters | parameters ] ")" [ return_type ] ) .
 
 function_declaration_lhs = function_identifier [ function_parameter_types ] .
 
