@@ -331,7 +331,7 @@ spread_argument = "..." expression .
 statement = ( type_declaration
             | function_declaration
             | assignment
-            | if_expression
+            | expression
             ) .
 
 step_expression = expression .
