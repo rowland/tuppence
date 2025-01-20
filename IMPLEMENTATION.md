@@ -63,3 +63,11 @@ Accessing Implicit Parameters:
 Optimization:
   * If a function does not require certain implicit parameters, the compiler may optimize their inclusion, reducing overhead for simple functions.
 
+## Symbols
+
+A symbol is represented as a tuple (hash, string).
+  * hash: The computed hash of the string (MurmurHash or CityHash for balance of speed and collision resistance)
+  * string: The original string for debugging or reverse mapping.
+  * Symbolic literals found in a module are precomputed at module compile or initialization time.
+  * Comparison function `eq?` compares only the hash portion.
+
