@@ -44,6 +44,8 @@ Error = type()
 
 `@bool` Annotation: Signifies that instances of a type are evaluated in control flow constructs like `if` or `switch` based on the result of a user-defined `true?` function. This allows for custom logic to determine the truthiness of a value, enabling flexible and expressive type behaviors. If a type annotated with `@bool` does not have a `true?` function in scope, it results in a compile-time error.
 
+`@cstruct` Annotation: Layout follows C standard for platform, rather than Tuppence-native optimized layouts.
+
 ## Function Parameter Packaging
 
 In Tuppence, all formal function parameters declared in the function signature are automatically packaged into a tuple at runtime. This tuple serves as a structured representation of the function’s input arguments. However, additional implicit parameters are also appended to this tuple to provide contextual and environmental information required for the function’s execution.
