@@ -208,7 +208,8 @@ literal = number
         | raw_string_literal
         | multi_line_string_literal
         | tuple_literal
-        | array_literal .
+        | array_literal
+        | symbol_literal .
 
 local_type_reference = type_identifier | identifier .
 
@@ -339,6 +340,8 @@ step_expression = expression .
 string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' - eol } '"' .
 
 switch_statement = "switch" expression "{" case_block { case_block } [ else_block ] "}" .
+
+symbol_literal = ":" identifier .
 
 top_level_item = ( assignment
                  | type_declaration
