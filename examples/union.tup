@@ -1,0 +1,28 @@
+# union of existing types
+Key = Int | String
+
+# unions can include arrays and errors
+Data = []Byte
+HttpError = error (code: Int, message: String)
+Result = Data | HttpError
+
+# a union can introduce a new type
+ComplexKey = Int | String | ComplexTuple (primary: Int, secondary: String)
+
+# a generic union type
+Bar[a] = type(a)
+Baz[a] = type(a)
+Foo[a] = Bar[a] | Baz[a]
+
+# a generic union that introduces new types
+Result[a] = union(
+    @true
+    Ok()
+    @false
+    Err(a)
+)
+
+# A union of a union and a type or of two unions is flattened, e.g.
+Intish = Int32 | Int64
+Floatish = Float32 | Float64
+Number = Intish | Floatish # equivalent to Int32 | Int64 | Float32 | Float64
