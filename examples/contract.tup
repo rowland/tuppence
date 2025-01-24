@@ -1,0 +1,45 @@
+Adder[a] = contract(
+    add[a] = fn(a, a) a
+)
+
+Multiplier[a] = contract(
+    mul[a] = fn(a, a) a
+)
+
+Stringer[a] = contract(
+    string[a] = fn(a) String
+)
+
+Numeric[a] = contract(
+    eq?[a] = fn(a, a) Bool
+    lt?[a] = fn(a, a) Bool
+    gt?[a] = fn(a, a) Bool
+    lte?[a] = fn(a, a) Bool
+    gte?[a] = fn(a, a) Bool
+    compare_to[a] = fn(a, a) Int
+
+    add[a] = fn(a, a) a
+    sub[a] = fn(a, a) a
+    mul[a] = fn(a, a) a
+    div[a] = fn(a, a) a
+    mod[a] = fn(a, a) a
+    pow[a] = fn(a, Int) a
+
+    checked_add[a] = fn(a, a) a
+    checked_sub[a] = fn(a, a) a
+    checked_mul[a] = fn(a, a) a
+    checked_div[a] = fn(a, a) a
+    checked_mod[a] = fn(a, a) a
+    checked_pow[a] = fn(a, Int) a
+)
+
+Ordered[a] = contract(
+    eq?[a] = fn(a, a) Bool
+    lt?[a] = fn(a, a) Bool
+)
+
+Printable[a] = contract(
+    string[a] = fn(a) String
+)
+
+OrderedPrintable[a] = Ordered[a] | Printable[a]

@@ -54,6 +54,12 @@ constant = literal
 
 content_line = { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - eol - "```" } eol .
 
+contract_declaration = "contract" "(" eol contract_members ")" .
+
+contract_members = contract_member_declaration { eol contract_member_declaration } eol .
+
+contract_member_declaration = annotations function_declaration_lhs "=" function_type .
+
 decimal_digit = "0"-"9" .
 
 decimal_literal = decimal_digit { decimal_digit | "_" } .
@@ -406,6 +412,7 @@ type_declaration_rhs = nilable_type
                      | union_type
                      | union_declaration
                      | enum_declaration
+                     | contract_declaration
                      | type_reference
                      | type_identifier .
 
