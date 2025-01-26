@@ -57,6 +57,7 @@ Card = Hearts | Diamonds | Spades | Clubs
 BogusCard = error(Card)
 
 value = get_card()
+# switch returns type String | BogusCard
 switch value {
     Hearts(1) { "Ace of Hearts" }
     Hearts(2) { "Deuce of Hearts" }
@@ -93,7 +94,7 @@ switch value {
 
 switch value {
     Person(name: "Alice", age: 30) { "Alice, age 30" }
-    Person(name: _, age: n) { "Unknown person, age \(n)" }
+    Person { |(n: age)| "Unknown person, age \(n)" }
 }
 
 switch value {
@@ -105,22 +106,22 @@ switch value {
 
 switch value {
     [1, 2, 3] { "Array [1, 2, 3]" }
-    [x, y, ...] { "Starts with \(x) and \(y)" }
+    [_, _, ...] { |x, y, ...| "Starts with \(x) and \(y)" }
 }
 
 switch value {
     // Match a labeled tuple
     Point(x: 0, y: 0) { "Origin" }
-    Point(x: x, y: y) { "Point at (\(x), \(y))" }
+    Point { |x, y| "Point at (\(x), \(y))" }
 
     // Match a tuple by position
     (0, 0) { "Origin (as tuple)" }
-    (x, y) { "Tuple at (\(x), \(y))" }
+    (_, _) { |x, y| "Tuple at (\(x), \(y))" }
 
     // Match an array
     [] { "Empty array" }
     [1, 2, 3] { "Array with specific values" }
-    [head, ...tail] { "Starts with \(head), remainder \(tail)" }
+    [_, ...] { |head, ...tail| "Starts with \(head), remainder \(tail)" }
 
     else { "Unknown pattern" }
 }
