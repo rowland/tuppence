@@ -26,12 +26,8 @@ AnnotatedTuple2 = type (
     @info: "metadata_value" value: Int
 )
 
-GenericType[T] = type (key: String, value: T)
+GenericType[a] = type (key: String, value: a)
 
-SingleGeneric[T] = type (value: T)
+SingleGeneric[a] = type (value: a)
 
-Pair[K, V] = type (key: K, value: V)
-
-List[T] = array (T)
-
-Matrix = array (array (Float))
+Pair[k, v] = type (key: k, value: v)
