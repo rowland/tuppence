@@ -290,12 +290,12 @@ However, named parts may be bound to new identifiers by specifying both new and 
 Literals may be divided into the simple, like booleans, numbers and strings, and the complex,
 like tuples and arrays, which are composed of simpler types.
 
-## Simple Literals
+### Simple Literals
 
 Whether or not a simple literal has been bound to an identifier, it is not coerced to a single precision
 or internal representation and carries no semantics.
 
-### Integers
+#### Integers
 
 Take, for example, the literal `1`:
 
@@ -330,13 +330,13 @@ do not have the correctness guarantees the language otherwise provides.
 Integers in the source code may be represented in binary, hexadecimal, octal or decimal format.
 Underscores may be included anywhere after any prefix and the first digit to aid in readability.
 
-#### Binary
+##### Binary
 
     binary_literal = "0b" ( "0" | "1" ) { "0" | "1" | "_" } .
 
     0b01001000_01001001 # HI
 
-#### Hexadecimal
+##### Hexadecimal
 
     hexadecimal_literal = "0x" hex_digit { hex_digit | "_" } .
     hex_digit = decimal_digit | "a"-"f" | "A"-"F" .
@@ -344,21 +344,21 @@ Underscores may be included anywhere after any prefix and the first digit to aid
 
     0xDEADBEEF # debug marker magic number
 
-#### Octal
+##### Octal
 
     octal_literal = "0o" octal_digit { octal_digit } .
     octal_digit = "0"-"7" .
 
     0o660 # read and write permissions
 
-#### Decimal
+##### Decimal
 
     decimal_literal = decimal_digit { decimal_digit | "_" } .
     decimal_digit = "0"-"9" .
 
     1_234_567_890
 
-### Floats
+#### Floats
 
 The literal `1.0` constrains internal representations to floating point types
 and byte arrays. If there is ambiguity, such as in the cases of overloaded
@@ -384,12 +384,12 @@ Underscores may be included anywhere after the first digit to aid in readability
     6.02214076e23 # one mole
     3e5 # speed of light in km/s
 
-### Booleans
+#### Booleans
 
 The boolean literals `true` and `false` can be represented by signed or unsigned
 integers of any precision, but will default to `Bool` if there is any ambiguity.
 
-### Strings
+#### Strings
 
 String literals are expected to be a sequence of bytes conforming to UTF-8, but
 byte escape sequences are supported, which may result in a binary string which is
@@ -402,7 +402,7 @@ used to construct user-defined types other than the standard library `String`, b
 Again, an identifier may be bound to a string literal without assuming a type
 until the point of use.
 
-#### Basic Strings
+##### Basic Strings
 
 The most basic syntax for a string is enclosed between double quotes and allows for a range of escape sequences.
 
@@ -432,7 +432,7 @@ The most basic syntax for a string is enclosed between double quotes and allows 
     "Bell: \\b, Form Feed: \\f, Vertical Tab: \\v"
     "Null: \\0, Backtick: \\`"
 
-#### Raw Strings
+##### Raw Strings
 
 Raw strings dispense with most escape sequences and allow newlines.
 
@@ -440,7 +440,7 @@ Raw strings dispense with most escape sequences and allow newlines.
 
 Backticks must be escaped, but any other valid UTF-8 sequence is permitted.
 
-#### Interpolated Strings
+##### Interpolated Strings
 
 An interpolated string is really an expression allowing substrings to be concatenated with interpolated expressions.
 
@@ -455,7 +455,7 @@ An interpolated string is really an expression allowing substrings to be concate
 
 There must be a `string` function matched to the type of each interpolated value.
 
-#### Multi-line Strings
+##### Multi-line Strings
 
 A multi-line string combines features from raw strings and interpolated strings, allowing newlines,
 escape sequences and interpolation. Leading whitespace from the first line will be removed and
@@ -482,6 +482,92 @@ Or, the processor function can accept parameters and do real work.
       Hello, {{name}}
     ```
 
+### Complex Literals
+
+#### Tuples
+
+We will consider values constructed with named types to be expressions, rather than literals.
+
+    p1 = Point(5, 10) # expression of type Point
+    p2 = (x: 5, y: 10) # tuple literal with named fields
+    p3 = (5, 10) # tuple literal with ordinal fields
+
+The result of an expression will have a type and a memory layout. A tuple literal, whether or not
+it has been bound to an identifier, is not coerced to a concrete type until the point of use.
+At its point of use, it may be coerced to the expected type, or it may assume an anonymous type.
+
+All anonymous types with matching shapes are unified and may be coerced to a named type with matching shape.
+
+Consider a drawing API with the following types and functions:
+
+    Point = type (x: Float, y: Float)
+    draw_circle = fx(center: Point, radius: Float)
+
+We may, of course, construct a value of type `Point` to be passed to `draw_circle`:
+
+    c1 = Point(5, 10)
+    draw_circle(c1, 6)
+
+Or we may construct the value right at the call site:
+
+    draw_circle(Point(5, 10), 6)
+
+But we may also bind an identifier to a literal and because the shape is compatible,
+it will be coerced at the call site:
+
+    c2 = (5, 10)
+    draw_circle(c2, 6)
+
+Or inline:
+
+    draw_circle((5, 10), 6)
+
+Note that it is not necessary in this case to write floating point literals:
+
+    c2 = (5.0, 10.0)
+
+because the binding allows that the literal could exist in multiple types and precisions.
+
+Similarly, we may return a value from a function with named return type without ceremony:
+
+    shift_southeast = fn(p: Point) Point {
+      (p.x + 10, p.y - 10)
+    }
+
+Only if there is ambiguity, such as in the cases of overloaded and generic functions,
+will the tuple type default to the composite of the most natural types for each component.
+
+Furthermore, a given binding may be used at multiple call sites with different parameters:
+
+    Point16 = type (Int16, Int16)
+    Point32 = type (Int32, Int32)
+    PointF = type (Float, Float)
+    circle_16 = fx(p: Point16, r: Int16)
+    circle_32 = fx(p: Point32, r: Int32)
+    circle_f = fx(p: PointF, r: Float)
+
+    c3 = (100, 200)
+    circle_16(c3, 15)
+    circle_32(c3, 15)
+
+#### Arrays
+
+Once again, we will consider values constructed with named types to be expressions, rather than literals.
+
+    a1 = Int[1, 3, 3] # expression of type array of Int
+    a2 = [1, 2, 3] # array literal
+
+`a1` is of known type and memory layout, but `a2` could match several possibilities.
+
+    sum_16 = fn(a: []Int16)
+    sum_32 = fn(a: []Int32)
+    sum_64 = fn(a: []Int64)
+    sum_f = fn(a: []Float)
+
+All four functions could take `a2` as an argument.
+
+Only if there is ambiguity, such as in the cases of overloaded and generic functions,
+will the array type default to the composite of the most natural types for each member.
 
 ## Function Invocation
 
