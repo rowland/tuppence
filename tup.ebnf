@@ -315,7 +315,7 @@ range_bound = "(" expression ")"
 
 range_header = identifier "in" range .
 
-raw_string_literal = "`" { "``" | unicode_char - "`" } "`" .
+raw_string_literal = "`" { "``" | character - "`" } "`" .
 
 rel_op = "==" | "<" | ">" | "<=" | ">=" | "!=" .
 
