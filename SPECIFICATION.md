@@ -140,12 +140,24 @@ Tuple types and arrays are instantiated using their constructors:
 
 Types are identified using an uppercase letter followed by any number of letters, decimal digits or underscores.
 
+    Car = type (make: String, model: String)
+    HttpError = error (code: Int, message: String)
+
 Functions, values, fields and parameters are identified using a lowercase letter or underscore,
 followed by any number of letters, decimal digits or underscores.
 
+    i = 1
+    point = (x: 5, y: 10)
+    my_first_car = Car(make: "Toyota", model: "Corona)
+
 A single underscore identifier serves as a placeholder and may be assigned to, but never accessed.
 
+    x, _ = point
+
 Function identifiers also allow a "?" or a "!" as the final character.
+
+    empty? = fn(a: []Int) { len(a) == 0 }
+    fail! = fx(message: String) { ... }
 
 ## Modules
 
