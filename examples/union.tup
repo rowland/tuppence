@@ -26,3 +26,30 @@ Result[a] = union(
 Intish = Int32 | Int64
 Floatish = Float32 | Float64
 Number = Intish | Floatish # equivalent to Int32 | Int64 | Float32 | Float64
+
+# The intersection of functions having a union's members as the first parameter type
+# will be available for dispatch on a value of that union.
+
+Cat = type(name: String)
+string[Cat] = fn(cat: Cat) String { "I am a cat named \(cat.name)." }
+
+Dog = type(name: String)
+string[Dog] = fn(dog: Dog) String { "I am a dog named \(dog.name)." }
+
+Animal = Cat | Dog
+
+describe = fn(animal: Animal) {
+    print(animal.string())
+}
+
+dog = Dog("Spot")
+describe(dog)
+
+# Compiler provides:
+string[Animal] = fn(Animal) String {
+    arg0, ...rest = it
+    switch arg0 {
+        Cat { it.string(...rest) }
+        Dog { it.string(...rest) }
+    }
+}
