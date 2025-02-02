@@ -570,6 +570,37 @@ All four functions could take `a2` as an argument.
 Only if there is ambiguity, such as in the cases of overloaded and generic functions,
 will the array type default to the composite of the most natural types for each member.
 
+## Function Declaration
+
+### Return Types
+
+#### Union Types in Function Return Types
+
+Tuppence supports concise union syntax for function return types, allowing functions to return values of multiple possible types.
+
+##### Basic Union Return Type
+
+A function can return a value of one of multiple types using the | operator:
+
+    foo = fn() String | Int { ... }
+
+This means foo can return either a String or an Int.
+
+##### Optional Parentheses for Clarity
+
+Parentheses are *optional but allowed* around unions in return types for readability:
+
+    bar = fn() (String | Int) { ... }  # parentheses allowed
+
+While parentheses *do not change behavior*, they can help visually distinguish unions in complex type signatures.
+
+##### Example With Multiple Types
+
+    baz = fn() []Byte | Ok(Int) | Err(String) | error { ... }  # allowed
+    qux = fn() ([]Byte | Ok(Int) | Err(String) | error) { ... }  # parentheses optional
+
+Both function signatures above are valid and equivalent.
+
 ## Function Invocation
 
 Tuppence supports both standard function-calling syntax:
