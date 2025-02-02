@@ -29,7 +29,7 @@ Matrix = [3, 3]Int     # 3x3 matrix of integers
 square = Matrix[
     [1, 2, 3],
     [4, 5, 6],
-    [7, 8, 9]
+    [7, 8, 9],
 ]
 
 SudokuSquare = [3, 3]Int        # A 3x3 fixed-size array of integers
@@ -38,53 +38,59 @@ SudokuGame = [3, 3]SudokuSquare # A 3x3 fixed-size array of Sudoku squares
 square = SudokuSquare[
     [4, 0, 3],
     [5, 8, 0],
-    [0, 2, 0]
+    [0, 2, 0],
 ]
 
 game = SudokuGame[
-    SudokuSquare[
-        [4, 0, 3],
-        [5, 8, 0],
-        [0, 2, 0]
+    [   # row 1
+        SudokuSquare[
+            [4, 0, 3],
+            [5, 8, 0],
+            [0, 2, 0],
+        ],
+        SudokuSquare[
+            [0, 0, 0],
+            [7, 1, 9],
+            [0, 6, 0],
+        ],
+        SudokuSquare[
+            [2, 0, 0],
+            [0, 3, 0],
+            [8, 0, 4],
+        ],
     ],
-    SudokuSquare[
-        [0, 0, 0],
-        [7, 1, 9],
-        [0, 6, 0]
+    [   # row 2
+        SudokuSquare[
+            [0, 6, 1],
+            [4, 0, 0],
+            [7, 0, 0],
+        ],
+        SudokuSquare[
+            [0, 0, 0],
+            [0, 5, 0],
+            [0, 0, 9],
+        ],
+        SudokuSquare[
+            [0, 0, 0],
+            [0, 0, 0],
+            [2, 0, 0],
+        ],
     ],
-    SudokuSquare[
-        [2, 0, 0],
-        [0, 3, 0],
-        [8, 0, 4]
-    ],
-    SudokuSquare[
-        [0, 6, 1],
-        [4, 0, 0],
-        [7, 0, 0]
-    ],
-    SudokuSquare[
-        [0, 0, 0],
-        [0, 5, 0],
-        [0, 0, 9]
-    ],
-    SudokuSquare[
-        [0, 0, 0],
-        [0, 0, 0],
-        [2, 0, 0]
-    ],
-    SudokuSquare[
-        [0, 0, 4],
-        [0, 0, 0],
-        [0, 0, 0]
-    ],
-    SudokuSquare[
-        [0, 8, 0],
-        [7, 0, 6],
-        [0, 0, 0]
-    ],
-    SudokuSquare[
-        [0, 0, 0],
-        [5, 0, 0],
-        [0, 7, 0]
+    [   # row 3
+        SudokuSquare[
+            [0, 0, 4],
+            [0, 0, 0],
+            [0, 0, 0],
+        ],
+        SudokuSquare[
+            [0, 8, 0],
+            [7, 0, 6],
+            [0, 0, 0],
+        ],
+        SudokuSquare[
+            [0, 0, 0],
+            [5, 0, 0],
+            [0, 7, 0],
+        ],
     ]
 ]
