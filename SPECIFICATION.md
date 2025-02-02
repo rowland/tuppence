@@ -112,9 +112,9 @@ Structurally, the two are the same, but they have different defaults and semanti
 
 A field may have a default value, which it will be created with if the field is not specified:
 
-  Account = type (name: String, balance: Money(0))
-  acct1 = Account("Acme") # name == "Acme", balance == 0
-  acct2 = Account("Bob", Money(1000)) # name == "Bob", balance == 1000
+    Account = type (name: String, balance: Money(0))
+    acct1 = Account("Acme") # name == "Acme", balance == 0
+    acct2 = Account("Bob", Money(1000)) # name == "Bob", balance == 1000
 
 ### Array Types
 
@@ -371,7 +371,7 @@ As with integer literals, byte array representations make it possible to impleme
 arbitrary-precision libraries.
 
 Floats in the source code are represented in by a sequence of one or more decimal digits,
-followd by a decimal point and at least one more decimal digit, followed by an optional exponent.
+followed by a decimal point and at least one more decimal digit, followed by an optional exponent.
 Alternatively, the decimal portion may be omitted if an exponent is present.
 Underscores may be included anywhere after the first digit to aid in readability.
 
@@ -512,7 +512,7 @@ Or we may construct the value right at the call site:
 
     draw_circle(Point(5, 10), 6)
 
-But we may also bind an identifier to a literal and because the shape is compatible,
+But we may also bind an identifier to a literal and, because the shape is compatible,
 it will be coerced at the call site:
 
     c2 = (5, 10)
@@ -528,7 +528,7 @@ Note that it is not necessary in this case to write floating point literals:
 
 because the binding allows that the literal could exist in multiple types and precisions.
 
-Similarly, we may return a value from a function with named return type without ceremony:
+Similarly, we may return a value from a function with a named return type without ceremony:
 
     shift_southeast = fn(p: Point) Point {
       (p.x + 10, p.y - 10)
@@ -549,6 +549,7 @@ Furthermore, a given binding may be used at multiple call sites with different p
     c3 = (100, 200)
     circle_16(c3, 15)
     circle_32(c3, 15)
+    circle_f(c3, 15)
 
 #### Arrays
 
