@@ -66,3 +66,14 @@ for {
 
 # if in function call
 process(if a > b { a } else { b })
+
+# if without else
+result = if x > 0 { "positive" }  # result is String | Nil
+
+# if ... else expressions produce a union type when branches return different types.
+result = if x > 0 { "positive" } else { 0 }
+# result is String | Int
+
+example = fn(x: Int) String { 
+    if x > 0 { "positive" }   # Compiler error: Expected String, got String | Nil
+}
