@@ -47,7 +47,7 @@ for i = 0; i < 10; i + 1 {}
 # or for the final expression to not match the shape of the initializer
 # the type and value of the for loop is determined by any break statements
 # in this case the sum of the integers 1..10
-sum, _ = for (acc, i) = (0, 1) {
+sum, _ = for acc, i = (0, 1) {
     if i > 10 { break acc }
     (acc + i, i + 1)
 }
@@ -57,7 +57,7 @@ result = for i = 0; i < 0; i + 1 {}
 # result == 0
 
 # loop with tuple initializer and condition, effectively
-#   for (acc, i) = (0, 1); i <= 10; <block value>
+#   for acc, i = (0, 1); i <= 10; <block value>
 # (acc, i) takes the value of the block for successive iterations
 # it is an error for the block to have no final expression
 # or for the final expression to not match the shape of the initializer
@@ -65,7 +65,7 @@ result = for i = 0; i < 0; i + 1 {}
 #   the initial or final expression
 #   and any break statements
 # in this case the sum of the integers 1..10
-sum, _ = for (acc, i) = (0, 1); i <= 10 {
+sum, _ = for acc, i = (0, 1); i <= 10 {
     (acc + i, i + 1)
 }
 
