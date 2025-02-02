@@ -14,7 +14,7 @@ x, ...rest = (1, 2, 3)    # x = 1, rest = (2, 3)
 
 # invalid ordinal assignments
 x, ..., ... = (1, 2, 3)  # Error: Only one rest operator is allowed, and it must appear at the end of the assignment.
-Foo, bar, baz = 42  # Error: Right-hand side must be a tuple or module import
+Foo, bar, baz = 42  # Error: Right-hand side must be a tuple, array or module import
 
 # direct type alias
 Foo = import("foo").Foo   # Foo is an alias for foo.Foo.
