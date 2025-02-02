@@ -168,6 +168,8 @@ indexed_access = expression "[" index { "," index } "]" .
 
 initializer = assignment .
 
+inline_union = "(" union_type ")" .
+
 integer_literal = binary_literal
                 | hexadecimal_literal
                 | octal_literal
@@ -329,11 +331,11 @@ rest_parameter = "..." type .
 
 return_expression = "return" expression .
 
-return_type = nilable_type
+return_type = union_with_error
+            | union_declaration_with_error
+            | nilable_type
             | type
-            | "error"
-            | union_with_error
-            | union_declaration_with_error .
+            | "error" .
 
 simple_annotation = "@" identifier .
 
@@ -387,11 +389,12 @@ tuple_update_expression = expression "." tuple_literal .
 
 type = fixed_size_array
      | dynamic_array
+     | function_type
+     | error_tuple
+     | tuple_type
      | generic_type
      | local_type_reference
-     | tuple_type
-     | function_type
-     | error_tuple .
+     | inline_union .
 
 type_argument = type
               | generic_type .
@@ -424,8 +427,7 @@ type_parameters = "[" type_parameter { "," type_parameter } "]" .
 
 type_reference = identifier "." type_identifier .
 
-unary_expression = "-" valid_negatable_expression
-                 | "!" valid_negatable_expression
+unary_expression = ( "-" | "!" ) valid_negatable_expression
                  | primary_expression .
 
 unicode_escape_sequence = "\\" "u" hex_digit hex_digit hex_digit hex_digit
