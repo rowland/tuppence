@@ -583,10 +583,10 @@ Once again, we will consider values constructed with named types to be expressio
 
 `a1` is of known type and memory layout, but `a2` could match several possibilities.
 
-    sum_16 = fn(a: []Int16)
-    sum_32 = fn(a: []Int32)
-    sum_64 = fn(a: []Int64)
-    sum_f = fn(a: []Float)
+    sum_16 = fn(a: []Int16) Int16
+    sum_32 = fn(a: []Int32) Int32
+    sum_64 = fn(a: []Int64) Int64
+    sum_f = fn(a: []Float) Float
 
 All four functions could take `a2` as an argument.
 
@@ -698,3 +698,70 @@ or using ordinal arguments followed by named arguments:
     foo = bar(baz, boom: boom)
 
 Using a combination of ordinal and named arguments is convenient when some parameters have default arguments.
+
+## Scope Resolution
+
+As per usual, identifiers are resolved from the inside out, from the current scope up to the module scope.
+
+    foo = fn() String { "foo 1" }
+    bar = fn() String {
+        foo = fn() String { "foo 2" }
+        foo()
+    }
+    bar() # returns "foo 2"
+
+Shadowing identifiers should be avoided, where possible, but this is the basic scope resolution order.
+
+A module may export a set of independent functions, but frequently a module will export a type and a
+set of functions for operating on that type. So, when a function is invoked using
+Uniform Function Call Syntax, which is to say, like it were a method of a type, the module takes
+precedence before local scopes.
+
+Without UFCS:
+
+    (Int, add, sub, mul, div) = import("int")
+    div(mul(3, add(2, 2)), 2) # (2 + 2) * 3 / 2 = 6
+
+With UFCS:
+
+    Int = import("int").Int
+    2.add(2).mul(3).div(2) # still 6
+
+Note that the operators in `(2 + 2) * 3 / 2` map to the function calls above, so user-defined types
+may use familiar syntax by implementing those functions.
+
+If the module where a type is declared does not implement a function, or at least a particular
+overloaded version of a function, then a function in the local scope can still apply.
+
+For example, the "string" module may export a type `String` without a `mul` function, but one
+could implement:
+
+    mul = fn(s: String, m: Int) String {
+        for acc, i = ("", 0); i < m {
+            acc + s, i + 1
+        }.0
+    }
+
+Then, one could invoke:
+
+    "5".mul(5) # "55555"
+
+Or, more naturally,
+
+    "5" * 5 # "55555"
+
+One more scope rule: If a function is invoked as if it is a method of a type:
+
+    List = import("list").List
+    List.empty()
+
+Then the scope is confined to the module implementing the type. It does not fall back to the local scope.
+This will frequently make it unnecessary to import both a module and a type from the module or else
+fully qualify the type.
+
+    list = import("list")
+
+    build_list = fn() list.List {
+        l = mut list.empty()
+        l << "abc << "def"
+    }
