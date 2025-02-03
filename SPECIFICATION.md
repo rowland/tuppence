@@ -765,3 +765,50 @@ fully qualify the type.
         l = mut list.empty()
         l << "abc << "def"
     }
+
+## Type Constructors
+
+When a type is declared:
+
+    Complex = type(a: Float, b: Float(0))
+
+A constructor function `new` is provided:
+
+    new[Complex, Float, Float] = fn(a: Float, b: Float(0)) Complex { it }
+
+The constructor parameters match the fields of the tuple type, including default values.
+
+If this type is declared in its own module, then instantiating an instance from another module
+would be reasonably convenient:
+
+    Complex = import("complex").Complex
+    c = Complex.new(2.2, 4.4)
+
+However, if `Complex` were to share a module with other numeric types, the scope resolution rule
+whereby `new` is located in the module declaring `Complex` could need help identifying which
+`new` function is being invoked, given that other `new` constructors are likely to also have one
+or two `Float` parameters.
+
+    Complex = import("numeric").Complex
+    c = Complex.new[Complex](2.2, 4.4)
+
+This is lacking, both ergonomically and aesthetically. Fortunately, there is a shorthand:
+
+    c = Complex(2.2, 4.4)
+
+Other type constructors may be implemented as well, provided the function signature does not match
+the default constructor.
+
+    ErrorInComplexFormat = error
+    # parse real and imaginary parts from string with format "a+b"
+    new[!Complex, String] = fn(s: String) !Complex {
+        a, b, ... = s.split("+").map { it.float() }
+        switch (a, b) {
+            (Float, Float) { Complex(a, b) }
+            (Float, _) { Complex(a) }
+            else { ErrorInComplexFormat() }
+        }
+    }
+
+The default constructors will always provide a concrete instance of the type.
+Additional constructors may elect to return unions with other types, such as `error` or `Nil`.
