@@ -161,6 +161,8 @@ Function identifiers also allow a "?" or a "!" as the final character.
 
 ## Modules
 
+A module is a namespaced unit of code that must be compiled together.
+
 A module name is derived from the file name up to the first character that is not a valid identifier.
 Multiple files with the same identifier prefix are combined for compilation purposes.
 
@@ -178,6 +180,27 @@ starting with `--` and continuing with OS and ARCH:
     filesystem--darwin.tup
     filesystem--linux.tup
     inference--darwin-arm64.tup
+
+A module is essentially a tuple with initialization code. Top-level assignments are available to
+the functions within the module. This includes values, functions, and types.
+
+    five = 5
+    fiver = fn() _ { five }
+    Quintet = type(a: Int, b: Int, c: Int, d: Int, e: Int)
+
+Exported symbols, like fields of a type or function parameters, are introduced by an identifer
+followed by a ":", e.g.
+
+    greeting: "Hello, world!"
+    new_quintet: fn(v: Int) { Quintet(v, v, v, v, v) }
+    Trio: type(a: Int, b: Int, c: Int)
+
+Only explicitly exported symbols are accessible outside the module.
+
+A module is imported using the `import` keyword.
+
+    io = import("io")
+    hello = fx() { io.print("Hello!") }
 
 ## Expressions
 
