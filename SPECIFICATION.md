@@ -595,6 +595,55 @@ will the array type default to the composite of the most natural types for each 
 
 ## Function Declaration
 
+### Fully-qualified Names
+
+A function is introduced with an identifier, as described above, but consider a function declared
+in module `strconv`:
+
+    atoi = fn(s: String) !Int { ... }
+
+It will implicitly have the name `strconv.atoi`, but within the `strconv` model, or when it has been
+imported into another module, it is not necessary to use the module-qualified function name.
+However, `strconv.atoi` is not the entirety of the fully-qualified name. The full name includes the
+types from the function signature, starting with the return type and continuing with the parameter types.
+
+    atoi[!Int, String] = fn(s: String) !Int { ... }
+
+When introducing an identifier into a namespace, such as a module, no two identifiers may be identical.
+However, it is only necessary to explicitly include what would otherwise be implicit until the two
+identifiers are no longer ambiguous.
+
+Consider a family of functions with different return types:
+
+    atoi[!Int16] = fn(s: String) !Int16 { ... }
+    atoi[!Int32] = fn(s: String) !Int32 { ... }
+    atoi[!Int64] = fn(s: String) !Int64 { ... }
+
+The complete identifier for the first function might be `atoi[!Int16,String]`, or the types may also
+include the module names where they were declared, but the rules for scope resolution make it
+unnecessary to use the most verbose version.
+
+Suppose we only want to convert to type `Int`, but we want for convert from either a `String` or an
+array of `Byte`:
+
+    atoi[!Int, String] = fn(s: String) !Int { ... }
+    atoi[!Int, []Byte] = fn(b: []Byte) !Int { ... }
+
+When declaring the two functions, they only differ starting with the second type argument, so both
+must be included in the function identifier.
+
+Invoking the functions have different ergonomic tradeoffs. In the first scenario, the arguments are
+of matching times, so the version of the function with the desired return type must be specified:
+
+    foo = atoi[!Int16]("123")
+    bar = atoi[:Int32]("456")
+
+In the second scenario, the type of the argument allows the compiler to resolve which version of
+the function to invoke:
+
+    foo = atoi("123")
+    bar = atoi([]Byte['4', '5', '6'])
+
 ### Return Types
 
 #### Union Types in Function Return Types
