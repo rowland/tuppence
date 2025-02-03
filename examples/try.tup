@@ -81,7 +81,7 @@ process_items = fn(items: []Int) Int | error {
     }
 }
 
-# Define a function to sum valid items
+# Define a function to sum valid items until an invalid item is encountered
 sum_valid = fn(items: []Int) Int | error {
     for sum = 0; item in items {
         sum + try_break validate_item(item)

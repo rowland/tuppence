@@ -97,10 +97,11 @@ switch value {
     Person { |(n: age)| "Unknown person, age \(n)" }
 }
 
+x, y = (3, 4)
 switch value {
     NamedTuple(x: 1, y: 2) { "Named tuple with (1, 2)" }
     (1, 2) { "Anonymous tuple with (1, 2)" }
-    (x, y) { "Anonymous tuple with \(x) and \(y)" }
+    (x, y) { |x, y| "Anonymous tuple with \(x) and \(y)" } # x and y shadow those from outer scope
     else { "Unknown tuple" }
 }
 
