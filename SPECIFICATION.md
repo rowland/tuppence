@@ -837,7 +837,7 @@ Example:
         sum + i
     }
 
-If the step expression is omitted from the header, it may appear as the last expression inside the block:
+If the step expression is omitted from the header, it must appear as the last expression inside the block:
 
     sum = for i = 0; i < 10 {
         sum + i
