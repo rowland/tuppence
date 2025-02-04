@@ -812,3 +812,66 @@ the default constructor.
 
 The default constructors will always provide a concrete instance of the type.
 Additional constructors may elect to return unions with other types, such as `error` or `Nil`.
+
+## For Loops
+
+Tuppence supports two primary forms of `for` loops:
+  1. Traditional `for` loops with an `initializer`, `condition`, and optional `step expression`.
+  2. `for`...`in` loops for iterating over iterable collections, including arrays, ranges, and user-defined iterables.
+
+### Traditional for Loops
+
+A conventional `for` loop consists of:
+  - An initializer (optional)
+  - A condition (mandatory)
+  - A step expression (optional, placed either in the loop header or at the end of the block)
+
+Example:
+
+    sum = for i = 0; i < 10; i + 1 {
+        sum + i
+    }
+
+If the step expression is omitted from the header, it may appear as the last expression inside the block:
+
+    sum = for i = 0; i < 10 {
+        sum + i
+        i + 1 # step expression
+    }
+
+The step expression, whether located in the header or at the end of the block, must be compatible with the initializer.
+
+### for ... in loops
+
+The `for`...`in` loop is designed for iterating over iterable collections and ranges. The syntax mirrors conventional `for` loops but replaces the condition with an iterable expression.
+
+    for i, value in numbers {
+        print(i, value)
+    }
+
+Tuple destructuring allows named access to structured data:
+
+    for (k: key, v: value) in hash_map {
+        print(k, v)
+    }
+
+#### Step Expressions in for...in Loops
+
+A `for`...`in` loop may optionally include an initializer and a step expression, just like a traditional for loop.
+
+    sum = for acc = 0; n in numbers; acc + n {}
+
+This behaves as:
+  - acc starts at 0.
+  - n iterates over numbers.
+  - The loop accumulates acc + n at each step.
+  - The final value of acc is returned.
+
+Similarly, an index can be managed alongside iteration:
+
+    for i = 0; a, b in collection; i + 1 {
+        print(i, a, b)
+    }
+
+If no initializer is present, the loop evaluates to `nil`.
+

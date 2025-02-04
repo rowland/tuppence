@@ -113,9 +113,8 @@ for_expression = "for" [ for_header | for_in_header ] for_block .
 
 for_header = initializer [ ";" condition [ ";" step_expression ] ] .
 
-for_in_header = initializer ";" 
-              ( iterable_header 
-              | range_header ) .
+for_in_header = ( initializer ";" assignment_lhs "in" iterable [ ";" step_expression ] )
+              | ( assignment_lhs "in" iterable ) .
 
 iterable = expression .
 
@@ -314,8 +313,6 @@ range_bound = "(" expression ")"
             | indexed_access
             | identifier
             | literal .
-
-range_header = identifier "in" range .
 
 raw_string_literal = "`" { "``" | character - "`" } "`" .
 
