@@ -815,6 +815,11 @@ Additional constructors may elect to return unions with other types, such as `er
 
 ## For Loops
 
+A `for` loop may be a little unusual in a functional language, but consider this: In a functional language with tail call optimization, the recursive calls are transformed into a loop under the hood. The functional semantics of immutable values are preserved without creating a dangerous number of stack frames.
+
+Tuppece `for` loops also preserve functional semantics while providing familiar syntax
+and, at least in some cases, improved readability.
+
 Tuppence supports two primary forms of `for` loops:
   1. Traditional `for` loops with an `initializer`, `condition`, and optional `step expression`.
   2. `for`...`in` loops for iterating over iterable collections, including arrays, ranges, and user-defined iterables.
