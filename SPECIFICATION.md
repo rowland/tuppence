@@ -636,7 +636,7 @@ Invoking the functions have different ergonomic tradeoffs. In the first scenario
 of matching times, so the version of the function with the desired return type must be specified:
 
     foo = atoi[!Int16]("123")
-    bar = atoi[:Int32]("456")
+    bar = atoi[!Int32]("456")
 
 In the second scenario, the type of the argument allows the compiler to resolve which version of
 the function to invoke:
