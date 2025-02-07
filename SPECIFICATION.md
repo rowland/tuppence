@@ -43,8 +43,10 @@
 | % | mod |
 | ^ | pow |
 | [] | index |
-| << | append(a, x) |
-| <<= | (a = append(a, x) ) |
+| << | shl(a, x) |
+| >> | shr(a, x) |
+| <<= | (a = shl(a, x) ) |
+| >>= | (a = shr(a, x) ) |
 | += | (a = a + x ) |
 | -= | (a = a - x ) |
 | *= | (a = a * x ) |
@@ -916,3 +918,131 @@ Similarly, an index can be managed alongside iteration:
 
 If no initializer is present, the loop evaluates to `nil`.
 
+## Operator Details
+
+Operators in Tuppence are *syntactic sugar* for function calls, allowing *overloading and customization*.
+Most operators *delegate* to functions that can be redefined, except for certain core operators that must
+be handled by the compiler (e.g., =, . for dereferencing, and logical short-circuiting operators && and ||).
+
+### Assignment (=)
+
+Assignment binds a value to an identifier. Unlike other operators, `=` *is not overloadable*.
+
+    x = 10
+    y = x + 5  # y is now 15
+
+### Equality (==)
+
+Equality comparison is handled by the function `eq?`.
+
+    eq?(3, 3)   # true
+    eq?("abc", "def")  # false
+
+This function can be overridden for custom types.
+
+### Pattern Matching (=~)
+
+The `matches?` function determines if a value matches a pattern.
+
+    matches?("hello", "\w+") # true (regex match)
+
+### Comparison (<, >, <=, >=, <=>)
+
+Comparison operators map to `lt?`, `gt?`, `lte?`, `gte?`, and `compare_to`. The `compare_to` function returns:
+
+    -1 if left-hand side is smaller,
+    0 if both are equal,
+    1 if left-hand side is larger.
+
+### Arithmetic (+, -, *, /, %)
+
+Arithmetic operators are function calls:
+
+    add(5, 3)   # 8
+    sub(10, 4)  # 6
+    mul(6, 7)   # 42
+    div(8, 2)   # 4
+    mod(10, 3)  # 1
+
+The checked arithmetic versions (`?+`, `?-`, etc.) return an error instead of overflowing.
+
+    checked_add(Int32.max, 1)  # error
+
+### Exponentiation (^)
+
+The `^` operator in Tuppence is used for exponentiation (raising a number to a power).
+It corresponds to the `pow` function.
+
+    result = base ^ exponent
+
+this is equivalent to:
+
+    result = pow(base, exponent)
+
+Examples:
+
+    x = 2 ^ 3   # x = 8
+    y = 5 ^ 0   # y = 1
+    z = 9 ^ 0.5 # z = 3.0 (square root of 9)
+
+Notes:
+
+  - The exponent can be an integer or a floating-point number.
+  - Negative exponents return fractional results (2 ^ -1 is 0.5).
+  - For integer bases with negative exponents, the result is a floating-point number.
+
+### Bitwise Operators (&, |, ^)
+
+These operators perform bitwise logic:
+
+    and(0b1010, 0b1100)  # 0b1000
+    or(0b1010, 0b1100)   # 0b1110
+
+### Bit Shifting (<<, >>)
+
+Bitwise shifting operators shift bits left or right. These call shl(a, x) and shr(a, x), which must be implemented for numeric types.
+
+    shl(0b0001, 2)  # 0b0100 (shift left)
+    shr(0b0100, 1)  # 0b0010 (shift right)
+
+Compound assignment variants (<<= and >>=) update in place:
+
+    x = mut 1
+    x <<= 3  # x is now 8
+
+### Indexing ([])
+
+Indexing calls `index(array, key)`. This can be overloaded for custom collections.
+
+    index(my_array, 2)  # Get 3rd element
+
+### Chaining (|>)
+
+The pipe operator passes results between functions:
+
+    "hello" |> upper() |> print()  # "HELLO"
+
+Equivalent to:
+
+    print(upper("hello"))
+
+### Logical Operators (&&, ||)
+
+Logical AND (`&&`) and OR (`||`) *short-circuit*, meaning evaluation stops early.
+
+    false && expensive_function()  # `expensive_function` is never called
+    true || expensive_function()   # `expensive_function` is never called
+
+### Dereferencing (.)
+
+The dot (`.`) operator accesses *tuple fields, module members, and function calls*.
+
+    point = (x: 3, y: 5)
+    print(point.x)  # 3
+
+### Negation (!)
+
+Boolean negation is overloadable via `not`:
+
+    not(true)   # false
+    not(false)  # true
