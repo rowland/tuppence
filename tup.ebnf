@@ -343,7 +343,9 @@ size = decimal_literal | identifier .
 
 spread_argument = "..." expression .
 
-statement = ( type_declaration
+statement = ( type_qualified_function_declaration
+            | type_qualified_declaration
+            | type_declaration
             | function_declaration
             | assignment
             | expression
@@ -357,9 +359,11 @@ switch_statement = "switch" expression "{" case_block { case_block } [ else_bloc
 
 symbol_literal = ":" identifier .
 
-top_level_item = ( assignment
+top_level_item = ( type_qualified_function_declaration
+                 | type_qualified_declaration
                  | type_declaration
                  | function_declaration
+                 | assignment
                  | export_declaration
                  ) .
 
@@ -424,6 +428,10 @@ type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
 type_parameter = uppercase_letter { letter | decimal_digit | "_" } .
 
 type_parameters = "[" type_parameter { "," type_parameter } "]" .
+
+type_qualified_declaration = type_identifier "." identifier "=" expression .
+
+type_qualified_function_declaration = type_identifier "." identifier "=" function_declaration_type block .
 
 type_reference = identifier "." type_identifier .
 

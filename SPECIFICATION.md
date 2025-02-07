@@ -788,58 +788,71 @@ Or, more naturally,
 
     "5" * 5 # "55555"
 
-One more scope rule: If a function is invoked as if it is a method of a type:
+### Type-qualified Declarations
 
-    List = import("list").List
-    List.empty()
+Tuppence allows defining values and functions directly associated with a type using type-qualified declarations. These declarations are always written in the form:
 
-Then the scope is confined to the module implementing the type. It does not fall back to the local scope.
-This will frequently make it unnecessary to import both a module and a type from the module or else
-fully qualify the type.
+    Type.identifier = expression
 
-    list = import("list")
+or:
 
-    build_list = fn() list.List {
-        l = mut list.empty()
-        l << "abc << "def"
+    Type.identifier = fn(...) { ... }
+
+This enables encapsulation of constants and functions within a type’s namespace.
+
+Type-qualified declarations *must be in the same scope as the type they belong to*.
+This ensures consistency and prevents modifying a type from an unrelated context.
+
+If a type is *declared at the module level*, its *type-qualified members* must also be at the module level.
+
+    Foo = type(x: Int, y: Int)
+
+    Foo.default = Foo(x: 0, y: 0) # Allowed: Foo.default is set in the same scope
+
+    Foo.describe = fn(self: Foo) String {
+        "Foo(\(self.x), \(self.y))"
+    }
+
+If a type is *declared inside a function, type-qualified members must also be declared inside the function*.
+
+    bar = fn() {
+        Baz = type(a: String)
+
+        Baz.example = Baz(a: "Hello") # Allowed: Declared in the same function scope
+    }
+
+Declaring type-qualified values outside of the scope where the type is defined is not allowed.
+
+    Foo = type(x: Int, y: Int)
+
+    bar = fn() {
+        Foo.default = Foo(x: 0, y: 0)  # Error: Foo was declared at module scope, but this is inside a function.
     }
 
 ## Type Constructors
 
-When a type is declared:
+When a type is declared in Tuppence, a default constructor is automatically provided.
+Constructors are now declared within the type’s namespace, ensuring clarity and preventing name conflicts.
+
+When defining a *new type*, a *default constructor* is automatically created with 
+*parameters matching the fields of the type*, including *default values*:
 
     Complex = type(a: Float, b: Float(0))
+    Complex.new = fn(a: Float, b: Float(0)) Complex { it } # compiler supplied default
 
-A constructor function `new` is provided:
-
-    new[Complex, Float, Float] = fn(a: Float, b: Float(0)) Complex { it }
-
-The constructor parameters match the fields of the tuple type, including default values.
-
-If this type is declared in its own module, then instantiating an instance from another module
-would be reasonably convenient:
-
-    Complex = import("complex").Complex
-    c = Complex.new(2.2, 4.4)
-
-However, if `Complex` were to share a module with other numeric types, the scope resolution rule
-whereby `new` is located in the module declaring `Complex` could need help identifying which
-`new` function is being invoked, given that other `new` constructors are likely to also have one
-or two `Float` parameters.
+If Complex is part of a large module containing multiple types, its constructor remains unambiguous
+because it is declared within its type’s namespace:
 
     Complex = import("numeric").Complex
-    c = Complex.new[Complex](2.2, 4.4)
-
-This is lacking, both ergonomically and aesthetically. Fortunately, there is a shorthand:
-
     c = Complex(2.2, 4.4)
 
-Other type constructors may be implemented as well, provided the function signature does not match
-the default constructor.
+### Defining Custom Constructors
+
+You can define additional constructors for a type within its namespace by declaring them as type-qualified functions.
 
     ErrorInComplexFormat = error
     # parse real and imaginary parts from string with format "a+b"
-    new[!Complex, String] = fn(s: String) !Complex {
+    Complex.from_string = fn(s: String) !Complex {
         a, b, ... = s.split("+").map { it.float() }
         switch (a, b) {
             (Float, Float) { Complex(a, b) }
