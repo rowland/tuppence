@@ -222,7 +222,8 @@ literal = number
         | multi_line_string_literal
         | tuple_literal
         | array_literal
-        | symbol_literal .
+        | symbol_literal
+        | rune_literal .
 
 local_type_reference = type_identifier | identifier .
 
@@ -333,6 +334,8 @@ return_type = union_with_error
             | nilable_type
             | type
             | "error" .
+
+rune_literal = "'" ( byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - eol ) "'" .
 
 simple_annotation = "@" identifier .
 

@@ -505,6 +505,42 @@ Or, the processor function can accept parameters and do real work.
       Hello, {{name}}
     ```
 
+#### Runes
+
+Tuppence uses rune literals to represent individual Unicode code points, similar to character literals in some languages, but with explicit support for Unicode. A rune is stored as a 32-bit integer (Rune), allowing it to represent any valid Unicode scalar value.
+
+A rune literal is written as a single character enclosed in single quotes ('), optionally including escape sequences:
+
+    'A'          # Unicode code point 65
+    'Ω'          # Unicode code point 937
+    '𝄞'          # Unicode code point 119070
+    '\n'         # Newline character (code point 10)
+    '\u03A9'     # Explicit Unicode escape for 'Ω'
+    '\U0001D11E' # Explicit Unicode escape for '𝄞'
+    '\\'         # Backslash character
+
+##### Properties of Rune Literals
+
+1. Equivalent to an Integer
+
+Since Rune is an alias for a 32-bit integer, rune literals can be used in integer operations:
+
+    b = 'A' + 1
+    print(b)  # 66 ('B')
+
+2. Supports Escape Sequences
+
+Rune literals accept the same escape sequences as string literals, including:
+
+    \n (newline)
+    \t (tab)
+    \r (carriage return)
+    \' (single quote)
+    \\ (backslash)
+    \xXX (byte escapes)
+    \uXXXX (Unicode escapes)
+    \UXXXXXXXX (Unicode escapes)
+
 ### Complex Literals
 
 #### Tuples
