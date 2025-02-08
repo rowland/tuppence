@@ -88,7 +88,9 @@ exponent = "e" [ "-" | "+" ] decimal_digit { decimal_digit } .
 
 export_assignment = assignment_lhs ":" expression .
 
-export_declaration = ( export_type_declaration
+export_declaration = ( export_type_qualified_function_declaration
+                     | export_type_qualified_declaration
+                     | export_type_declaration
                      | export_function_declaration
                      | export_assignment ) .
 
@@ -97,6 +99,10 @@ export_function_declaration = function_declaration_lhs ":" function_declaration_
 export_function_type_declaration = function_type_declaration_lhs ":" function_type .
 
 export_type_declaration = type_declaration_lhs ":" type_declaration_rhs .
+
+export_type_qualified_declaration = type_identifier "." identifier ":" expression .
+
+export_type_qualified_function_declaration = type_identifier "." function_declaration_lhs ":" function_declaration_type block .
 
 expression = try_expression
            | binary_expression
@@ -431,7 +437,7 @@ type_parameters = "[" type_parameter { "," type_parameter } "]" .
 
 type_qualified_declaration = type_identifier "." identifier "=" expression .
 
-type_qualified_function_declaration = type_identifier "." identifier "=" function_declaration_type block .
+type_qualified_function_declaration = type_identifier "." function_declaration_lhs "=" function_declaration_type block .
 
 type_reference = identifier "." type_identifier .
 

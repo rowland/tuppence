@@ -3,7 +3,7 @@ List[a]: union(
   Cons(head: a, tail: List[a])
 )
 
-empty[a]: fn() List[a] {
+List.empty[a]: fn() List[a] {
   nil
 }
 
@@ -11,11 +11,11 @@ empty?[a]: fn(list: List[a]) Bool {
   list == nil
 }
 
-singleton[a]: fn(head: a) List[a] {
+List.singleton[a]: fn(head: a) List[a] {
   Cons(head: head, tail: nil)
 }
 
-repeat[a]: fn(value: a, n: Int) List[a] {
+List.repeat[a]: fn(value: a, n: Int) List[a] {
   for i, acc = (0, empty[a]()); i < n {
     (i + 1, Cons(head: value, tail: acc))
   }.1
@@ -53,7 +53,7 @@ foldl[a, b]: fn(list: List[a], acc: b, fn: fn(b, a) b) b {
 
 reduce: foldl
 
-from_array[a]: fn(array: []a) List[a] {
+List.from_array[a]: fn(array: []a) List[a] {
   for i, acc = (len(array) - 1, empty[a]()); i >= 0 {
     (i - 1, Cons(head: array[i], tail: acc))
   }.1
@@ -163,7 +163,7 @@ concat[a]: fn(lists: List[List[a]]) List[a] {
   }.0
 }
 
-range: fn(start: Int, stop: Int, step: 1) List[Int] {
+List.range: fn(start: Int, stop: Int, step: 1) List[Int] {
   {
     step = if step == 0 { 1 } else { step }
     for acc, current = (empty[Int](), start); if step > 0 { current <= stop } else { current >= stop } {
