@@ -10,7 +10,7 @@
 | for | in | break | continue |
 | try | try_break | try_continue |
 | mut |
-| import |
+| import | array | cap | len |
 | it |
 | typeof |
 | true | false |

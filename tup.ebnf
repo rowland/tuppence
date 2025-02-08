@@ -10,6 +10,8 @@ argument = ( expression | spread_argument ) .
 
 arguments = argument { "," argument } [ "," ] .
 
+array_function_call = "array" "(" type_identifier "," expression ")" .
+
 array_literal = "[" [ array_members | array_literal ] "]"
               | type_identifier "[" [ array_members | array_literal ] "]" .
 
@@ -37,6 +39,8 @@ boolean_literal = "true" | "false" .
 break_expression = "break" expression .
 
 byte_escape_sequence = "\\" "x" hex_digit hex_digit
+
+cap_function_call = "cap" "(" expression ")" .
 
 case_block = match_condition block .
 
@@ -216,6 +220,8 @@ labeled_tuple_type_members = labeled_tuple_type_member { "," labeled_tuple_type_
 
 leading_whitespace = { " " | "\t" } .
 
+len_function_call = "len" "(" expression ")" .
+
 letter = "a"-"z" | "A"-"Z" .
 
 list_match = match_element { "," match_element } .
@@ -302,6 +308,9 @@ primary_expression = "(" expression ")"
                    | block
                    | if_expression
                    | for_expression
+                   | array_function_call
+                   | cap_function_call
+                   | len_function_call
                    | function_call
                    | type_constructor_call
                    | return_expression
