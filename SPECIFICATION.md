@@ -1059,3 +1059,66 @@ Boolean negation is overloadable via `not`:
 
     not(true)   # false
     not(false)  # true
+
+## Dynamic Array Instantiation
+
+Tuppence allows creating dynamic arrays with a specified capacity. This ensures memory is preallocated, avoiding frequent resizing.
+
+    arr = array(Int, 10)  # Creates a dynamic array of Int with capacity 10
+
+  - The first argument is the type of elements.
+  - The second argument is the initial capacity (optional, defaults to 0 if omitted).
+
+The built-in function `array` is joined by `cap` and `len`.
+
+    numbers = mut array(Int, 5)   # Allocates space for 5 integers but is empty initially
+    numbers <<= 42                # Appends a value
+    print(len(numbers))           # 1 (not 5, since length starts at 0)
+    print(cap(numbers))           # 5
+
+## Fixed-Size Array Initialization
+
+Fixed-size arrays are preallocated with a specific size and do not grow dynamically.
+The initialization block determines how values are assigned.
+
+### Examples
+
+1. Specify a Single Default Value
+
+Use one value to fill the entire array.
+
+    Zeroes = [5]Int
+    z = Zeroes[0]     # [0, 0, 0, 0, 0]
+
+All elements are initialized to zero.
+
+2. Specify All Values
+
+Provide explicit values.
+
+    Colors = [3]String
+    c = Colors["red", "green", "blue"]  # ["red", "green", "blue"]
+
+Must match exactly the array’s size.
+
+3. Index-Based Initialization
+
+Initialize using the index.
+
+    Indices = [8]Int
+    idx = Indices { it }  # [0, 1, 2, 3, 4, 5, 6, 7]
+
+Each element gets its index value.
+
+4. Multi-Dimensional Initialization
+
+    Table = [3, 3]Int
+    t = Table { |x, y| (x + 1) * (y + 1) }
+
+Creates:
+
+    [
+      [1, 2, 3],
+      [2, 4, 6],
+      [3, 6, 9]
+    ]
