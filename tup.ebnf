@@ -420,7 +420,7 @@ type_argument = type
 
 type_argument_list = "[" type_argument { "," type_argument } "]" .
 
-type_constructor_call = type_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" .
+type_constructor_call = type_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
 
 type_declaration = type_declaration_lhs "=" type_declaration_rhs .
 
