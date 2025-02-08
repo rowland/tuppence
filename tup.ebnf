@@ -474,7 +474,7 @@ union_members = union_member_declaration { eol union_member_declaration } eol .
 union_member_declaration = annotations named_tuple
                          | union_member_no_annotations .
 
-union_type = union_member { "|" union_member } .
+union_type = "any" | ( union_member { "|" union_member } ) .
 
 union_member_no_annotations = type_identifier
                             | generic_type
