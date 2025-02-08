@@ -52,7 +52,7 @@ sum, _ = for acc, i = (0, 1) {
     (acc + i, i + 1)
 }
 
-# non-infinite loop defaults to initial value
+# a for loop that never executes defaults to its initializer value
 result = for i = 0; i < 0; i + 1 {}
 # result == 0
 
