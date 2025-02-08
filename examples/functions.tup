@@ -57,19 +57,19 @@ string = fn(v: Int) String {
 
 # solution:
 
-int[String] = fn(v: String) Int {
+int[Int, String] = fn(v: String) Int {
   # implementation
 }
 
-int[Int] = fn(v: Int) Int {
+int[Int, Int] = fn(v: Int) Int {
   v
 }
 
-string[String] = fn(v: String) String {
+string[String, String] = fn(v: String) String {
   v
 }
 
-string[Int] = fn(v: Int) String {
+string[String, Int] = fn(v: Int) String {
   # implementation
 }
 
