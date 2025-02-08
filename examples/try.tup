@@ -49,6 +49,7 @@ baz = fn() SomeType | error {
 
 value = try foo.bar().baz()
 
+# lowers to try baz(try bar(try foo))
 # equivalent to
 
 value = {
