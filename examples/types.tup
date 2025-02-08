@@ -5,15 +5,18 @@ Person = type (name: String, age: Int)
 HttpError = error (code: Int, message: String)
 
 # basic array
-IntArray = array (Int)
-StringArray = array (String)
+IntArray = []Int
+StringArray = []String
 
 # array of tuples
-TupleArray = array (Int, String)
+IntString = type(Int, String)
+TupleArray = []IntString
 
 # array of labeled tuples
-LabeledTupleArray1 = array (element: Int)
-LabeledTupleArray2 = array (a: Int, b: String)
+Element = type(element: Int)
+LabeledTupleArray1 = []Element
+AB = type(a: Int, b: String)
+LabeledTupleArray2 = []AB
 
 # nested tuple with anonymous component
 NestedTuple = type (id: Int, data: (name: String, value: Float))
