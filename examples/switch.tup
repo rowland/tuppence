@@ -61,7 +61,7 @@ value = get_card()
 switch value {
     Hearts(1) { "Ace of Hearts" }
     Hearts(2) { "Deuce of Hearts" }
-    Hearts(3..10) { |(n)| "\(n) of Hearts" }
+    Hearts(3..10) { |n, ...| "\(n) of Hearts" }
     Hearts(11) { "Jack of Hearts" }
     Hearts(12) { "Queen of Hearts" }
     Hearts(13) { "King of Hearts" }
@@ -69,7 +69,7 @@ switch value {
 
     Diamonds(1) { "Ace of Diamonds" }
     Diamonds(2) { "Deuce of Diamonds" }
-    Diamonds(3..10) { |(n)| "\(n) of Diamonds" }
+    Diamonds(3..10) { |n, ...| "\(n) of Diamonds" }
     Diamonds(11) { "Jack of Diamonds" }
     Diamonds(12) { "Queen of Diamonds" }
     Diamonds(13) { "King of Diamonds" }
@@ -77,7 +77,7 @@ switch value {
 
     Spades(1) { "Ace of Spades" }
     Spades(2) { "Deuce of Spades" }
-    Spades(3..10) { |(n)| "\(n) of Spades" }
+    Spades(3..10) { |n, ...| "\(n) of Spades" }
     Spades(11) { "Jack of Spades" }
     Spades(12) { "Queen of Spades" }
     Spades(13) { "King of Spades" }
@@ -85,7 +85,7 @@ switch value {
 
     Clubs(1) { "Ace of Clubs" }
     Clubs(2) { "Deuce of Clubs" }
-    Clubs(3..10) { |(n)| "\(n) of Clubs" }
+    Clubs(3..10) { |n, ...| "\(n) of Clubs" }
     Clubs(11) { "Jack of Clubs" }
     Clubs(12) { "Queen of Clubs" }
     Clubs(13) { "King of Clubs" }
