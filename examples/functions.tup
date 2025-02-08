@@ -9,8 +9,8 @@ get_value = fn() Int | String | error {
 }
 
 # simple union with error
-# ?Int lowers to Int | error
-get_value = fn() ?Int {
+# !Int lowers to Int | error
+get_value = fn() !Int {
   # implementation
 }
 
