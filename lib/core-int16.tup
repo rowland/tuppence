@@ -90,10 +90,20 @@ xor[Int16]: fn(a: Int16, b: Int16) Int16 {
     # TODO: implement bitwise xor operation
 }
 
+not[Int16]: fn(x: Int16) Int16 {
+    x.xor(-1)  # Equivalent to flipping all bits
+}
+
 bit_cast[Int16]: fn(a: Float16) Int16 {
     a.0
 }
 
 index[Bool, Int16]: fn(x: Int16, n: Int) !Bool {
     if n < 0 || n >= 16 { false } else { x.shr(n).and(1) == 1 }
+}
+
+with[Int16]: fn(x: Int16, n: Int, b: Bool) Int16 {
+    if n < 0 || n >= 16 { x } # Out-of-bounds, return original value
+    else if b { x.or(1.shl(n)) } # Set nth bit to 1
+    else { x.and(1.shl(n).not()) } # Set nth bit to 0
 }

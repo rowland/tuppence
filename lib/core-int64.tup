@@ -90,6 +90,10 @@ xor[Int64]: fn(a: Int64, b: Int64) Int64 {
     # TODO: implement bitwise xor operation
 }
 
+not[Int64]: fn(x: Int64) Int64 {
+    x.xor(-1)  # Equivalent to flipping all bits
+}
+
 bit_cast[Int64]: fn(a: Float64) Int64 {
     a.0
 }
@@ -97,3 +101,10 @@ bit_cast[Int64]: fn(a: Float64) Int64 {
 index[Bool, Int64]: fn(x: Int64, n: Int) Bool {
     if n < 0 || n >= 64 { false } else { x.shr(n).and(1) == 1 }
 }
+
+with[Int64]: fn(x: Int64, n: Int, b: Bool) Int64 {
+    if n < 0 || n >= 64 { x } # Out-of-bounds, return original value
+    else if b { x.or(1.shl(n)) } # Set nth bit to 1
+    else { x.and(1.shl(n).not()) } # Set nth bit to 0
+}
+

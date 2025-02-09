@@ -451,7 +451,7 @@ type_qualified_function_declaration = type_identifier "." function_declaration_l
 
 type_reference = identifier "." type_identifier .
 
-unary_expression = ( "-" | "!" ) valid_negatable_expression
+unary_expression = ( "-" | "!" | "~" ) valid_negatable_expression
                  | primary_expression .
 
 unicode_escape_sequence = "\\" "u" hex_digit hex_digit hex_digit hex_digit

@@ -53,7 +53,8 @@
 | /= | (a = a / x ) |
 | \|> | (pipe) |
 | . | (dereference) |
-| ! | not |
+| ! | not (Bool) |
+| ~ | not (Int) |
 
 ## Internal Types
 
@@ -1053,12 +1054,67 @@ The dot (`.`) operator accesses *tuple fields, module members, and function call
     point = (x: 3, y: 5)
     print(point.x)  # 3
 
-### Negation (!)
+### Logical and Bitwise Negation (! and ~)
 
-Boolean negation is overloadable via `not`:
+#### Boolean Negation (!)
+
+The ! operator negates a boolean value and is overloadable via the `not` function.
+It is commonly used in logical expressions.
 
     not(true)   # false
     not(false)  # true
+
+Using the operator:
+
+    !true   # false
+    !false  # true
+
+For user-defined types, the `!` operator invokes the `not` function if the type is annotated with `@bool`:
+
+    UserDefined = type(x: Int)
+
+    not[Bool, UserDefined] = fn(u: UserDefined) Bool {
+        u.x == 0
+    }
+
+    a = UserDefined(0)
+    b = UserDefined(42)
+
+    !a   # true
+    !b   # false
+
+#### Bitwise Negation (~)
+
+The `~` operator inverts all bits of an integer (bitwise NOT).
+This operation is also overloadable via `not`, keeping naming consistent with other bitwise operations.
+
+    not[Int8] = fn(x: Int8) Int8 {
+        x.xor(-1)  # Flips all bits
+    }
+
+    not[Int16] = fn(x: Int16) Int16 {
+        x.xor(-1)
+    }
+
+    not[Int32] = fn(x: Int32) Int32 {
+        x.xor(-1)
+    }
+
+Using the operator:
+
+    ~0b00001111  # 0b11110000
+    ~42          # -43 (in two’s complement)
+
+For user-defined types, the ~ operator invokes the not function:
+
+    Flags = type(bits: Int8)
+
+    not[Flags] = fn(f: Flags) Flags {
+        Flags(~f.bits)
+    }
+
+    f = Flags(0b10101010)
+    ~f  # Flags(0b01010101)
 
 ## Dynamic Array Instantiation
 

@@ -90,6 +90,16 @@ xor[Int8]: fn(a: Int8, b: Int8) Int8 {
     # TODO: implement bitwise xor operation
 }
 
+not[Int8]: fn(x: Int8) Int8 {
+    x.xor(-1)  # Equivalent to flipping all bits
+}
+
 index[Bool, Int8]: fn(x: Int8, n: Int) Bool {
     if n < 0 || n >= 8 { false } else { x.shr(n).and(1) == 1 }
+}
+
+with[Int8]: fn(x: Int8, n: Int, b: Bool) Int8 {
+    if n < 0 || n >= 8 { x } # Out-of-bounds, return original value
+    else if b { x.or(1.shl(n)) } # Set nth bit to 1
+    else { x.and(1.shl(n).not()) } # Set nth bit to 0
 }
