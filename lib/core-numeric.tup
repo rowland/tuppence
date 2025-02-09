@@ -34,3 +34,50 @@ Numeric[a] = SignedInt[a] | UnsignedInt[a]
 
 sqr[a]: fn(x: Numeric[a]) a { x * x }
 abs[a]: fn(x: SignedInt[a]) a { if a < 0 { -x } else { x } }
+
+max_digits[a]: fn(x: Numeric[a], base: 10) Int {
+    switch sizeof(x) * 8 {
+        8   { switch base { 2 {8} 8 {3} 10 {3} 16 {2} else {8} } }
+        16  { switch base { 2 {16} 8 {6} 10 {5} 16 {4} else {16} } }
+        32  { switch base { 2 {32} 8 {11} 10 {10} 16 {8} else {32} } }
+        64  { switch base { 2 {64} 8 {22} 10 {20} 16 {17} else {64} } }
+        else { 64 }  # Fallback for unexpected types
+    }
+}
+
+string[String, a]: fn(x: SignedInt[a], base: 10) String {
+    if base < 2 || base > 16 {
+        return "invalid base"
+    }
+    if x == 0 {
+        return "0"
+    }
+    max_chars = max_digits(x, base)
+    digits = "0123456789ABCDEF"
+    neg = x < 0
+
+    reversed, _ = for acc, n = (array(Byte, max_chars), x.abs()); n > 0 {
+        r = digits[n.mod(base)] || { return "invalid digit access" }
+        (acc << Byte(r), n / base)
+    }
+
+    reverse(if neg { reversed << Byte('-') } else { reversed })
+}
+
+string[String, a]: fn(x: UnsignedInt[a], base: 10) String {
+    if base < 2 || base > 16 {
+        return "invalid base"
+    }
+    if x == 0 {
+        return "0"
+    }
+    max_chars = max_digits(x, base)
+    digits = "0123456789ABCDEF"
+
+    reversed, _ = for acc, n = (array(Byte, max_chars), x); n > 0 {
+        r = digits[n.mod(base)] || { return "invalid digit access" }
+        (acc << Byte(r), n / base)
+    }
+
+    reverse(reversed)
+}
