@@ -83,7 +83,7 @@ shl[Int64]: fn(x: Int64, n: Int) Int64 {
 
 # shift right
 shr[Int64]: fn(x: Int64, n: Int) Int64 {
-    # TODO: implement bitwise shift right operation    
+    # TODO: implement bitwise shift right operation
 }
 
 xor[Int64]: fn(a: Int64, b: Int64) Int64 {
@@ -96,6 +96,10 @@ not[Int64]: fn(x: Int64) Int64 {
 
 bit_cast[Int64]: fn(a: Float64) Int64 {
     a.0
+}
+
+neg[Int64]: fn(x: Int64) Int64 {
+     # TODO: negation
 }
 
 index[Bool, Int64]: fn(x: Int64, n: Int) Bool {

@@ -55,6 +55,7 @@
 | . | (dereference) |
 | ! | not (Bool) |
 | ~ | not (Int) |
+| - | neg (Int) |
 
 ## Internal Types
 

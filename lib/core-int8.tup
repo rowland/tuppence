@@ -94,6 +94,10 @@ not[Int8]: fn(x: Int8) Int8 {
     x.xor(-1)  # Equivalent to flipping all bits
 }
 
+neg[Int8]: fn(x: Int8) Int8 {
+     # TODO: negation
+}
+
 index[Bool, Int8]: fn(x: Int8, n: Int) Bool {
     if n < 0 || n >= 8 { false } else { x.shr(n).and(1) == 1 }
 }

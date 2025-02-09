@@ -23,7 +23,7 @@ BaseNumeric[a] = contract(
 )
 
 SignedInt[a] = BaseNumeric[a] | contract(
-    abs[a] = fn(a) a
+    neg[a] = fn(a) a
 )
 
 UnsignedInt[a] = BaseNumeric[a] | contract(

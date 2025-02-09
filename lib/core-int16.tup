@@ -98,6 +98,10 @@ bit_cast[Int16]: fn(a: Float16) Int16 {
     a.0
 }
 
+neg[Int16]: fn(x: Int16) Int16 {
+     # TODO: negation
+}
+
 index[Bool, Int16]: fn(x: Int16, n: Int) !Bool {
     if n < 0 || n >= 16 { false } else { x.shr(n).and(1) == 1 }
 }
