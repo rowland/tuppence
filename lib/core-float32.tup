@@ -1,0 +1,73 @@
+Float32: type(internal.F32)
+
+eq?[Bool, Float32]: fn(a: Float32, b: Float32) Bool {
+    # TODO: implement comparison
+}
+
+compare_to[Int, Float32]: fn(a: Float32, b: Float32) Int {
+    # TODO: implement comparison
+}
+
+lt?[Bool, Float32]: fn(a: Float32, b: Float32) Bool {
+    # TODO: implement comparison
+}
+
+gt?[Bool, Float32]: fn(a: Float32, b: Float32) Bool {
+    # TODO: implement comparison
+}
+
+lte?[Bool, Float32]: fn(a: Float32, b: Float32) Bool {
+    # TODO: implement comparison
+}
+
+gte?[Bool, Float32]: fn(a: Float32, b: Float32) Bool {
+    # TODO: implement comparison
+}
+
+add[Float32]: fn(a: Float32, b: Float32) Float32 {
+    # TODO: implement addition
+}
+
+sub[Float32]: fn(a: Float32, b: Float32) Float32 {
+    # TODO: implement subtraction
+}
+
+mul[Float32]: fn(a: Float32, b: Float32) Float32 {
+    # TODO: implement multiplication
+}
+
+div[Float32]: fn(a: Float32, b: Float32) Float32 {
+    # TODO: implement division
+}
+
+mod[Float32]: fn(a: Float32, b: Float32) Float32 {
+    # TODO: implement modulus
+}
+
+pow[Float32]: fn(base: Float32, exponent: Float32) Float32 {
+    # TODO: implement exponent
+}
+
+checked_add[Float32]: fn(a: Float32, b: Float32) !Float32 {
+    # TODO: implement checked addition
+}
+
+checked_sub[Float32]: fn(a: Float32, b: Float32) !Float32 {
+    # TODO: implement checked subtraction
+}
+
+checked_mul[Float32]: fn(a: Float32, b: Float32) !Float32 {
+    # TODO: implement checked multiplication
+}
+
+checked_div[Float32]: fn(a: Float32, b: Float32) !Float32 {
+    # TODO: implement checked division
+}
+
+checked_mod[Float32]: fn(a: Float32, b: Float32) !Float32 {
+    # TODO: implement checked modulus
+}
+
+bit_cast[Float32]: fn(a: Int32) Float32 {
+    a.0
+}

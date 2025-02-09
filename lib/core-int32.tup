@@ -1,0 +1,99 @@
+Int32 = type(internal.I32)
+
+eq?[Bool, Int32]: fn(a: Int32, b: Int32) Bool {
+    # TODO: implement comparison
+}
+
+compare_to[Int, Int32]: fn(a: Int32, b: Int32) Int {
+    # TODO: implement comparison
+}
+
+lt?[Bool, Int32]: fn(a: Int32, b: Int32) Bool {
+    # TODO: implement comparison
+}
+
+gt?[Bool, Int32]: fn(a: Int32, b: Int32) Bool {
+    # TODO: implement comparison
+}
+
+lte?[Bool, Int32]: fn(a: Int32, b: Int32) Bool {
+    # TODO: implement comparison
+}
+
+gte?[Bool, Int32]: fn(a: Int32, b: Int32) Bool {
+    # TODO: implement comparison
+}
+
+add[Int32]: fn(a: Int32, b: Int32) Int32 {
+    # TODO: implement addition
+}
+
+sub[Int32]: fn(a: Int32, b: Int32) Int32 {
+    # TODO: implement subtraction
+}
+
+mul[Int32]: fn(a: Int32, b: Int32) Int32 {
+    # TODO: implement multiplication
+}
+
+div[Int32]: fn(a: Int32, b: Int32) Int32 {
+    # TODO: implement division
+}
+
+mod[Int32]: fn(a: Int32, b: Int32) Int32 {
+    # TODO: implement modulus
+}
+
+pow[Int32]: fn(base: Int32, exponent: Int32) Int32 {
+    # TODO: implement exponent
+}
+
+checked_add[Int32]: fn(a: Int32, b: Int32) !Int32 {
+    # TODO: implement checked addition
+}
+
+checked_sub[Int32]: fn(a: Int32, b: Int32) !Int32 {
+    # TODO: implement checked subtraction
+}
+
+checked_mul[Int32]: fn(a: Int32, b: Int32) !Int32 {
+    # TODO: implement checked multiplication
+}
+
+checked_div[Int32]: fn(a: Int32, b: Int32) !Int32 {
+    # TODO: implement checked division
+}
+
+checked_mod[Int32]: fn(a: Int32, b: Int32) !Int32 {
+    # TODO: implement checked modulus
+}
+
+or[Int32]: fn(a: Int32, b: Int32) Int32 {
+    # TODO: implement bitwise or
+}
+
+and[Int32]: fn(a: Int32, b: Int32) Int32 {
+    # TODO: implement bitwise and
+}
+
+# shift left
+shl[Int32]: fn(x: Int32, n: Int) Int32 {
+    # TODO: implement bitwise shift left operation
+}
+
+# shift right
+shr[Int32]: fn(x: Int32, n: Int) Int32 {
+    # TODO: implement bitwise shift right operation    
+}
+
+xor[Int32]: fn(a: Int32, b: Int32) Int32 {
+    # TODO: implement bitwise xor operation
+}
+
+bit_cast[Int32]: fn(a: Float32) Int32 {
+    a.0
+}
+
+index[Bool, Int32]: fn(x: Int32, n: Int) Bool {
+    if n < 0 || n >= 32 { false } else { x.shr(n).and(1) == 1 }
+}

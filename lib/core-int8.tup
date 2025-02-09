@@ -1,0 +1,95 @@
+Int8: type(internal.I8)
+
+eq?[Bool, Int8]: fn(a: Int8, b: Int8) Bool {
+    # TODO: implement comparison
+}
+
+compare_to[Int, Int8]: fn(a: Int8, b: Int8) Int {
+    # TODO: implement comparison
+}
+
+lt?[Bool, Int8]: fn(a: Int8, b: Int8) Bool {
+    # TODO: implement comparison
+}
+
+gt?[Bool, Int8]: fn(a: Int8, b: Int8) Bool {
+    # TODO: implement comparison
+}
+
+lte?[Bool, Int8]: fn(a: Int8, b: Int8) Bool {
+    # TODO: implement comparison
+}
+
+gte?[Bool, Int8]: fn(a: Int8, b: Int8) Bool {
+    # TODO: implement comparison
+}
+
+add[Int8]: fn(a: Int8, b: Int8) Int8 {
+    # TODO: implement addition
+}
+
+sub[Int8]: fn(a: Int8, b: Int8) Int8 {
+    # TODO: implement subtraction
+}
+
+mul[Int8]: fn(a: Int8, b: Int8) Int8 {
+    # TODO: implement multiplication
+}
+
+div[Int8]: fn(a: Int8, b: Int8) Int8 {
+    # TODO: implement division
+}
+
+mod[Int8]: fn(a: Int8, b: Int8) Int8 {
+    # TODO: implement modulus
+}
+
+pow[Int8]: fn(base: Int8, exponent: Int8) Int8 {
+    # TODO: implement exponent
+}
+
+checked_add[Int8]: fn(a: Int8, b: Int8) !Int8 {
+    # TODO: implement checked addition
+}
+
+checked_sub[Int8]: fn(a: Int8, b: Int8) !Int8 {
+    # TODO: implement checked subtraction
+}
+
+checked_mul[Int8]: fn(a: Int8, b: Int8) !Int8 {
+    # TODO: implement checked multiplication
+}
+
+checked_div[Int8]: fn(a: Int8, b: Int8) !Int8 {
+    # TODO: implement checked division
+}
+
+checked_mod[Int8]: fn(a: Int8, b: Int8) !Int8 {
+    # TODO: implement checked modulus
+}
+
+or[Int8]: fn(a: Int8, b: Int8) Int8 {
+    # TODO: implement bitwise or
+}
+
+and[Int8]: fn(a: Int8, b: Int8) Int8 {
+    # TODO: implement bitwise and
+}
+
+# shift left
+shl[Int8]: fn(x: Int8, n: Int) Int8 {
+    # TODO: implement bitwise shift left operation
+}
+
+# shift right
+shr[Int8]: fn(x: Int8, n: Int) Int8 {
+    # TODO: implement bitwise shift right operation    
+}
+
+xor[Int8]: fn(a: Int8, b: Int8) Int8 {
+    # TODO: implement bitwise xor operation
+}
+
+index[Bool, Int8]: fn(x: Int8, n: Int) Bool {
+    if n < 0 || n >= 8 { false } else { x.shr(n).and(1) == 1 }
+}
