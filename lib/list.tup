@@ -1,6 +1,8 @@
-List[a]: union(
+Cons[a] = type(head: a, tail: List[a])
+
+List[a] = union(
   Nil
-  Cons(head: a, tail: List[a])
+  Cons[a]
 )
 
 List.empty[a]: fn() List[a] {
@@ -61,14 +63,14 @@ List.from_array[a]: fn(array: []a) List[a] {
 
 head[a]: fn(list: List[a]) ?a {
   switch list {
-    Cons(head, _) { head }
+    Cons[a] { |(head)| head }
     Nil { nil }
   }
 }
 
 tail[a]: fn(list: List[a]) List[a] {
   switch list {
-    Cons(_, tail) { tail }
+    Cons[a] { |(tail)| tail }
     Nil { nil }
   }
 }
