@@ -167,6 +167,8 @@ identifier = ( lowercase_letter | "_" ) { letter | decimal_digit | "_" } .
 
 if_expression = "if" condition block { "else" "if" condition block } [ else_block ] .
 
+import_expression = "import" "(" string_literal ")" .
+
 indented_closing = leading_whitespace "```" eol .
 
 indented_line = leading_whitespace content_line .
@@ -309,9 +311,8 @@ primary_expression = "(" expression ")"
                    | if_expression
                    | for_expression
                    | array_function_call
-                   | cap_function_call
-                   | len_function_call
                    | function_call
+                   | import_expression
                    | type_constructor_call
                    | return_expression
                    | break_expression
