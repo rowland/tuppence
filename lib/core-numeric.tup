@@ -1,4 +1,5 @@
-Numeric[a] = contract(
+# Base contract for all numeric types (both signed and unsigned)
+BaseNumeric[a] = contract(
     eq?[a] = fn(a, a) Bool
     lt?[a] = fn(a, a) Bool
     gt?[a] = fn(a, a) Bool
@@ -21,4 +22,15 @@ Numeric[a] = contract(
     checked_pow[a] = fn(a, Int) a
 )
 
+SignedInt[a] = BaseNumeric[a] | contract(
+    abs[a] = fn(a) a
+)
+
+UnsignedInt[a] = BaseNumeric[a] | contract(
+    leading_zeros[a] = fn(a) Int
+)
+
+Numeric[a] = SignedInt[a] | UnsignedInt[a]
+
 sqr[a]: fn(x: Numeric[a]) a { x * x }
+abs[a]: fn(x: SignedInt[a]) a { if a < 0 { -x } else { x } }

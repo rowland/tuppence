@@ -468,7 +468,8 @@ union_member = local_type_reference
              | generic_type
              | dynamic_array
              | fixed_size_array
-             | named_tuple .
+             | named_tuple
+             | contract_declaration .
 
 union_members = union_member_declaration { eol union_member_declaration } eol .
 
