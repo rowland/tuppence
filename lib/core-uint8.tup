@@ -1,4 +1,7 @@
 @type:implements UnsignedInt
+@type:min 0
+@type:max 255
+
 UInt8: type(internal.U8)
 
 eq?[Bool, UInt8]: fn(a: UInt8, b: UInt8) Bool {

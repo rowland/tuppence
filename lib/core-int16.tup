@@ -1,4 +1,7 @@
 @type:implements SignedInt
+@type:min -32_768
+@type:max 32_767
+
 Int16: type(internal.I16)
 
 eq?[Bool, Int16]: fn(a: Int16, b: Int16) Bool {

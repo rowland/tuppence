@@ -1,4 +1,7 @@
 @type:implements UnsignedInt
+@type:min 0
+@type:max 65_535
+
 UInt16: type(internal.U16)
 
 eq?[Bool, UInt16]: fn(a: UInt16, b: UInt16) Bool {

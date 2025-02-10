@@ -1,4 +1,7 @@
 @type:implements UnsignedInt
+@type:min 0
+@type:max 4_294_967_295
+
 UInt32: type(internal.U32)
 
 eq?[Bool, UInt32]: fn(a: UInt32, b: UInt32) Bool {

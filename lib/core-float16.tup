@@ -1,3 +1,6 @@
+@type:implements Numeric
+@type:min -65504.0
+@type:max 65504.0
 Float16: type(internal.F16)
 
 eq?[Bool, Float16]: fn(a: Float16, b: Float16) Bool {

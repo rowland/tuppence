@@ -1,4 +1,7 @@
 @type:implements SignedInt
+@type:min -128
+@type:max 127
+
 Int8: type(internal.I8)
 
 eq?[Bool, Int8]: fn(a: Int8, b: Int8) Bool {

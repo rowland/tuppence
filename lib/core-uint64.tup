@@ -1,4 +1,7 @@
 @type:implements UnsignedInt
+@type:min 0
+@type:max 18_446_744_073_709_551_615
+
 UInt64: type(internal.U64)
 
 eq?[Bool, UInt64]: fn(a: UInt64, b: UInt64) Bool {

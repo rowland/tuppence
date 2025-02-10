@@ -1,4 +1,7 @@
 @type:implements SignedInt
+@type:min -2_147_483_648
+@type:max 2_147_483_647
+
 Int32 = type(internal.I32)
 
 eq?[Bool, Int32]: fn(a: Int32, b: Int32) Bool {

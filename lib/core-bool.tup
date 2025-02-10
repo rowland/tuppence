@@ -1,0 +1,10 @@
+@bool
+@type:min false
+@type:max true
+
+Bool = type(internal.U8)
+
+true = Bool(1)
+false = Bool(0)
+
+true?[Bool, Bool] = fn(b: Bool) _ { b != false }

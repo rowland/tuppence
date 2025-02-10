@@ -1,3 +1,7 @@
+@type:implements Numeric
+@type:min  -1.7976931348623157e+308
+@type:max 1.7976931348623157e+308
+
 Float64: type(internal.F64)
 
 eq?[Bool, Float64]: fn(a: Float64, b: Float64) Bool {

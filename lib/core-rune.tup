@@ -1,1 +1,4 @@
 Rune: Int32
+
+Rune.min_rune: 0
+Rune.max_rune: 0x10FFFF  # Unicode max
