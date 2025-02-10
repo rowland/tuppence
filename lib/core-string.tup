@@ -1,0 +1,71 @@
+String = type([]Byte)
+
+# Equality & Comparison
+eq?[Bool, String] = fn(a: String, b: String) Bool { 
+    # TODO: Implement string equality
+}
+
+compare_to[Int, String] = fn(a: String, b: String) Int { 
+    # TODO: Implement lexicographic comparison
+}
+
+lt?[Bool, String] = fn(a: String, b: String) Bool { 
+    a.compare_to(b) < 0
+}
+
+gt?[Bool, String] = fn(a: String, b: String) Bool { 
+    a.compare_to(b) > 0
+}
+
+lte?[Bool, String] = fn(a: String, b: String) Bool { 
+    a.compare_to(b) <= 0
+}
+
+gte?[Bool, String] = fn(a: String, b: String) Bool { 
+    a.compare_to(b) >= 0
+}
+
+# Concatenation
+add[String, String] = fn(a: String, b: String) String { 
+    # TODO: Implement efficient string concatenation
+}
+
+# Multiplication (Repeat)
+mul[String, String, Int] = fn(s: String, n: Int) String { 
+    # TODO: Implement string repetition
+}
+
+# Indexing (Byte-based)
+index[Byte, String] = fn(s: String, n: Int) !Byte { 
+    # TODO: Implement string indexing (returning a Byte)
+}
+
+# Slice Extraction
+slice[String] = fn(s: String, start: Int, end: Int) String { 
+    # TODO: Implement string slicing
+}
+
+# Length
+len[Int, String] = fn(s: String) Int {
+    len(s.0)
+}
+
+# String Formatting (Alias)
+string[String, String] = fn(s: String) String { 
+    s
+}
+
+# Contains
+contains[Bool, String, String] = fn(haystack: String, needle: String) Bool { 
+    # TODO: Implement substring search
+}
+
+# Check if empty
+empty?[Bool, String] = fn(s: String) Bool { 
+    len(s.0) == 0
+}
+
+# Regexp comparison?
+matches?[Bool, String, String] = fn(a: String, b: String) Bool {
+    # TODO: implement string matching
+}
