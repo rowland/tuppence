@@ -1,0 +1,109 @@
+UInt32: type(internal.U32)
+
+eq?[Bool, UInt32]: fn(a: UInt32, b: UInt32) Bool {
+    # TODO: implement comparison
+}
+
+compare_to[Int, UInt32]: fn(a: UInt32, b: UInt32) Int {
+    # TODO: implement comparison
+}
+
+lt?[Bool, UInt32]: fn(a: UInt32, b: UInt32) Bool {
+    # TODO: implement comparison
+}
+
+gt?[Bool, UInt32]: fn(a: UInt32, b: UInt32) Bool {
+    # TODO: implement comparison
+}
+
+lte?[Bool, UInt32]: fn(a: UInt32, b: UInt32) Bool {
+    # TODO: implement comparison
+}
+
+gte?[Bool, UInt32]: fn(a: UInt32, b: UInt32) Bool {
+    # TODO: implement comparison
+}
+
+add[UInt32]: fn(a: UInt32, b: UInt32) UInt32 {
+    # TODO: implement addition
+}
+
+sub[UInt32]: fn(a: UInt32, b: UInt32) UInt32 {
+    # TODO: implement subtraction
+}
+
+mul[UInt32]: fn(a: UInt32, b: UInt32) UInt32 {
+    # TODO: implement multiplication
+}
+
+div[UInt32]: fn(a: UInt32, b: UInt32) UInt32 {
+    # TODO: implement division
+}
+
+mod[UInt32]: fn(a: UInt32, b: UInt32) UInt32 {
+    # TODO: implement modulus
+}
+
+pow[UInt32]: fn(base: UInt32, exponent: UInt32) UInt32 {
+    # TODO: implement exponent
+}
+
+checked_add[UInt32]: fn(a: UInt32, b: UInt32) !UInt32 {
+    # TODO: implement checked addition
+}
+
+checked_sub[UInt32]: fn(a: UInt32, b: UInt32) !UInt32 {
+    # TODO: implement checked subtraction
+}
+
+checked_mul[UInt32]: fn(a: UInt32, b: UInt32) !UInt32 {
+    # TODO: implement checked multiplication
+}
+
+checked_div[UInt32]: fn(a: UInt32, b: UInt32) !UInt32 {
+    # TODO: implement checked division
+}
+
+checked_mod[UInt32]: fn(a: UInt32, b: UInt32) !UInt32 {
+    # TODO: implement checked modulus
+}
+
+or[UInt32]: fn(a: UInt32, b: UInt32) UInt32 {
+    # TODO: implement bitwise or
+}
+
+and[UInt32]: fn(a: UInt32, b: UInt32) UInt32 {
+    # TODO: implement bitwise and
+}
+
+# shift left
+shl[UInt32]: fn(x: UInt32, n: Int) UInt32 {
+    # TODO: implement bitwise shift left operation
+}
+
+# shift right
+shr[UInt32]: fn(x: UInt32, n: Int) UInt32 {
+    # TODO: implement bitwise shift right operation    
+}
+
+xor[UInt32]: fn(a: UInt32, b: UInt32) UInt32 {
+    # TODO: implement bitwise xor operation
+}
+
+not[UInt32]: fn(x: UInt32) UInt32 {
+    x.xor(-1)  # Equivalent to flipping all bits
+}
+
+bit_cast[UInt32]: fn(a: Float32) UInt32 {
+    a.0
+}
+
+index[Bool, UInt32]: fn(x: UInt32, n: Int) !Bool {
+    if n < 0 || n >= 16 { false } else { x.shr(n).and(1) == 1 }
+}
+
+with[UInt32]: fn(x: UInt32, n: Int, b: Bool) UInt32 {
+    if n < 0 || n >= 16 { x } # Out-of-bounds, return original value
+    else if b { x.or(1.shl(n)) } # Set nth bit to 1
+    else { x.and(1.shl(n).not()) } # Set nth bit to 0
+}

@@ -1,0 +1,109 @@
+UInt16: type(internal.U16)
+
+eq?[Bool, UInt16]: fn(a: UInt16, b: UInt16) Bool {
+    # TODO: implement comparison
+}
+
+compare_to[Int, UInt16]: fn(a: UInt16, b: UInt16) Int {
+    # TODO: implement comparison
+}
+
+lt?[Bool, UInt16]: fn(a: UInt16, b: UInt16) Bool {
+    # TODO: implement comparison
+}
+
+gt?[Bool, UInt16]: fn(a: UInt16, b: UInt16) Bool {
+    # TODO: implement comparison
+}
+
+lte?[Bool, UInt16]: fn(a: UInt16, b: UInt16) Bool {
+    # TODO: implement comparison
+}
+
+gte?[Bool, UInt16]: fn(a: UInt16, b: UInt16) Bool {
+    # TODO: implement comparison
+}
+
+add[UInt16]: fn(a: UInt16, b: UInt16) UInt16 {
+    # TODO: implement addition
+}
+
+sub[UInt16]: fn(a: UInt16, b: UInt16) UInt16 {
+    # TODO: implement subtraction
+}
+
+mul[UInt16]: fn(a: UInt16, b: UInt16) UInt16 {
+    # TODO: implement multiplication
+}
+
+div[UInt16]: fn(a: UInt16, b: UInt16) UInt16 {
+    # TODO: implement division
+}
+
+mod[UInt16]: fn(a: UInt16, b: UInt16) UInt16 {
+    # TODO: implement modulus
+}
+
+pow[UInt16]: fn(base: UInt16, exponent: UInt16) UInt16 {
+    # TODO: implement exponent
+}
+
+checked_add[UInt16]: fn(a: UInt16, b: UInt16) !UInt16 {
+    # TODO: implement checked addition
+}
+
+checked_sub[UInt16]: fn(a: UInt16, b: UInt16) !UInt16 {
+    # TODO: implement checked subtraction
+}
+
+checked_mul[UInt16]: fn(a: UInt16, b: UInt16) !UInt16 {
+    # TODO: implement checked multiplication
+}
+
+checked_div[UInt16]: fn(a: UInt16, b: UInt16) !UInt16 {
+    # TODO: implement checked division
+}
+
+checked_mod[UInt16]: fn(a: UInt16, b: UInt16) !UInt16 {
+    # TODO: implement checked modulus
+}
+
+or[UInt16]: fn(a: UInt16, b: UInt16) UInt16 {
+    # TODO: implement bitwise or
+}
+
+and[UInt16]: fn(a: UInt16, b: UInt16) UInt16 {
+    # TODO: implement bitwise and
+}
+
+# shift left
+shl[UInt16]: fn(x: UInt16, n: Int) UInt16 {
+    # TODO: implement bitwise shift left operation
+}
+
+# shift right
+shr[UInt16]: fn(x: UInt16, n: Int) UInt16 {
+    # TODO: implement bitwise shift right operation    
+}
+
+xor[UInt16]: fn(a: UInt16, b: UInt16) UInt16 {
+    # TODO: implement bitwise xor operation
+}
+
+not[UInt16]: fn(x: UInt16) UInt16 {
+    x.xor(-1)  # Equivalent to flipping all bits
+}
+
+bit_cast[UInt16]: fn(a: Float16) UInt16 {
+    a.0
+}
+
+index[Bool, UInt16]: fn(x: UInt16, n: Int) !Bool {
+    if n < 0 || n >= 16 { false } else { x.shr(n).and(1) == 1 }
+}
+
+with[UInt16]: fn(x: UInt16, n: Int, b: Bool) UInt16 {
+    if n < 0 || n >= 16 { x } # Out-of-bounds, return original value
+    else if b { x.or(1.shl(n)) } # Set nth bit to 1
+    else { x.and(1.shl(n).not()) } # Set nth bit to 0
+}

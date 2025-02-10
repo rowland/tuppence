@@ -1,0 +1,109 @@
+UInt64: type(internal.U64)
+
+eq?[Bool, UInt64]: fn(a: UInt64, b: UInt64) Bool {
+    # TODO: implement comparison
+}
+
+compare_to[Int, UInt64]: fn(a: UInt64, b: UInt64) Int {
+    # TODO: implement comparison
+}
+
+lt?[Bool, UInt64]: fn(a: UInt64, b: UInt64) Bool {
+    # TODO: implement comparison
+}
+
+gt?[Bool, UInt64]: fn(a: UInt64, b: UInt64) Bool {
+    # TODO: implement comparison
+}
+
+lte?[Bool, UInt64]: fn(a: UInt64, b: UInt64) Bool {
+    # TODO: implement comparison
+}
+
+gte?[Bool, UInt64]: fn(a: UInt64, b: UInt64) Bool {
+    # TODO: implement comparison
+}
+
+add[UInt64]: fn(a: UInt64, b: UInt64) UInt64 {
+    # TODO: implement addition
+}
+
+sub[UInt64]: fn(a: UInt64, b: UInt64) UInt64 {
+    # TODO: implement subtraction
+}
+
+mul[UInt64]: fn(a: UInt64, b: UInt64) UInt64 {
+    # TODO: implement multiplication
+}
+
+div[UInt64]: fn(a: UInt64, b: UInt64) UInt64 {
+    # TODO: implement division
+}
+
+mod[UInt64]: fn(a: UInt64, b: UInt64) UInt64 {
+    # TODO: implement modulus
+}
+
+pow[UInt64]: fn(base: UInt64, exponent: UInt64) UInt64 {
+    # TODO: implement exponent
+}
+
+checked_add[UInt64]: fn(a: UInt64, b: UInt64) !UInt64 {
+    # TODO: implement checked addition
+}
+
+checked_sub[UInt64]: fn(a: UInt64, b: UInt64) !UInt64 {
+    # TODO: implement checked subtraction
+}
+
+checked_mul[UInt64]: fn(a: UInt64, b: UInt64) !UInt64 {
+    # TODO: implement checked multiplication
+}
+
+checked_div[UInt64]: fn(a: UInt64, b: UInt64) !UInt64 {
+    # TODO: implement checked division
+}
+
+checked_mod[UInt64]: fn(a: UInt64, b: UInt64) !UInt64 {
+    # TODO: implement checked modulus
+}
+
+or[UInt64]: fn(a: UInt64, b: UInt64) UInt64 {
+    # TODO: implement bitwise or
+}
+
+and[UInt64]: fn(a: UInt64, b: UInt64) UInt64 {
+    # TODO: implement bitwise and
+}
+
+# shift left
+shl[UInt64]: fn(x: UInt64, n: Int) UInt64 {
+    # TODO: implement bitwise shift left operation
+}
+
+# shift right
+shr[UInt64]: fn(x: UInt64, n: Int) UInt64 {
+    # TODO: implement bitwise shift right operation    
+}
+
+xor[UInt64]: fn(a: UInt64, b: UInt64) UInt64 {
+    # TODO: implement bitwise xor operation
+}
+
+not[UInt64]: fn(x: UInt64) UInt64 {
+    x.xor(-1)  # Equivalent to flipping all bits
+}
+
+bit_cast[UInt64]: fn(a: Float64) UInt64 {
+    a.0
+}
+
+index[Bool, UInt64]: fn(x: UInt64, n: Int) !Bool {
+    if n < 0 || n >= 16 { false } else { x.shr(n).and(1) == 1 }
+}
+
+with[UInt64]: fn(x: UInt64, n: Int, b: Bool) UInt64 {
+    if n < 0 || n >= 16 { x } # Out-of-bounds, return original value
+    else if b { x.or(1.shl(n)) } # Set nth bit to 1
+    else { x.and(1.shl(n).not()) } # Set nth bit to 0
+}

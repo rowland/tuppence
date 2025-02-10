@@ -1,0 +1,105 @@
+UInt8: type(internal.U8)
+
+eq?[Bool, UInt8]: fn(a: UInt8, b: UInt8) Bool {
+    # TODO: implement comparison
+}
+
+compare_to[Int, UInt8]: fn(a: UInt8, b: UInt8) Int {
+    # TODO: implement comparison
+}
+
+lt?[Bool, UInt8]: fn(a: UInt8, b: UInt8) Bool {
+    # TODO: implement comparison
+}
+
+gt?[Bool, UInt8]: fn(a: UInt8, b: UInt8) Bool {
+    # TODO: implement comparison
+}
+
+lte?[Bool, UInt8]: fn(a: UInt8, b: UInt8) Bool {
+    # TODO: implement comparison
+}
+
+gte?[Bool, UInt8]: fn(a: UInt8, b: UInt8) Bool {
+    # TODO: implement comparison
+}
+
+add[UInt8]: fn(a: UInt8, b: UInt8) UInt8 {
+    # TODO: implement addition
+}
+
+sub[UInt8]: fn(a: UInt8, b: UInt8) UInt8 {
+    # TODO: implement subtraction
+}
+
+mul[UInt8]: fn(a: UInt8, b: UInt8) UInt8 {
+    # TODO: implement multiplication
+}
+
+div[UInt8]: fn(a: UInt8, b: UInt8) UInt8 {
+    # TODO: implement division
+}
+
+mod[UInt8]: fn(a: UInt8, b: UInt8) UInt8 {
+    # TODO: implement modulus
+}
+
+pow[UInt8]: fn(base: UInt8, exponent: UInt8) UInt8 {
+    # TODO: implement exponent
+}
+
+checked_add[UInt8]: fn(a: UInt8, b: UInt8) !UInt8 {
+    # TODO: implement checked addition
+}
+
+checked_sub[UInt8]: fn(a: UInt8, b: UInt8) !UInt8 {
+    # TODO: implement checked subtraction
+}
+
+checked_mul[UInt8]: fn(a: UInt8, b: UInt8) !UInt8 {
+    # TODO: implement checked multiplication
+}
+
+checked_div[UInt8]: fn(a: UInt8, b: UInt8) !UInt8 {
+    # TODO: implement checked division
+}
+
+checked_mod[UInt8]: fn(a: UInt8, b: UInt8) !UInt8 {
+    # TODO: implement checked modulus
+}
+
+or[UInt8]: fn(a: UInt8, b: UInt8) UInt8 {
+    # TODO: implement bitwise or
+}
+
+and[UInt8]: fn(a: UInt8, b: UInt8) UInt8 {
+    # TODO: implement bitwise and
+}
+
+# shift left
+shl[UInt8]: fn(x: UInt8, n: Int) UInt8 {
+    # TODO: implement bitwise shift left operation
+}
+
+# shift right
+shr[UInt8]: fn(x: UInt8, n: Int) UInt8 {
+    # TODO: implement bitwise shift right operation    
+}
+
+xor[UInt8]: fn(a: UInt8, b: UInt8) UInt8 {
+    # TODO: implement bitwise xor operation
+}
+
+not[UInt8]: fn(x: UInt8) UInt8 {
+    x.xor(-1)  # Equivalent to flipping all bits
+}
+
+index[Bool, UInt8]: fn(x: UInt8, n: Int) Bool {
+    if n < 0 || n >= 8 { false } else { x.shr(n).and(1) == 1 }
+}
+
+with[UInt8]: fn(x: UInt8, n: Int, b: Bool) UInt8 {
+    if n < 0 || n >= 8 { x } # Out-of-bounds, return original value
+    else if b { x.or(1.shl(n)) } # Set nth bit to 1
+    else { x.and(1.shl(n).not()) } # Set nth bit to 0
+}
