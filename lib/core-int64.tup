@@ -111,4 +111,3 @@ with[Int64]: fn(x: Int64, n: Int, b: Bool) Int64 {
     else if b { x.or(1.shl(n)) } # Set nth bit to 1
     else { x.and(1.shl(n).not()) } # Set nth bit to 0
 }
-
