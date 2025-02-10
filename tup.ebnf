@@ -4,7 +4,7 @@ annotation = namespaced_annotation | simple_annotation .
 
 annotations = [ annotation { annotation } ] .
 
-annotation_value = string_literal | ["-"] number | boolean_literal .
+annotation_value = string_literal | ["-"] number | boolean_literal | type_reference .
 
 argument = ( expression | spread_argument ) .
 

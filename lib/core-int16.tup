@@ -1,3 +1,4 @@
+@type:implements SignedInt
 Int16: type(internal.I16)
 
 eq?[Bool, Int16]: fn(a: Int16, b: Int16) Bool {

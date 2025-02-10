@@ -1,3 +1,4 @@
+@type:implements SignedInt
 Int32 = type(internal.I32)
 
 eq?[Bool, Int32]: fn(a: Int32, b: Int32) Bool {

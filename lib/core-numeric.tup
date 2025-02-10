@@ -26,9 +26,7 @@ SignedInt[a] = BaseNumeric[a] | contract(
     neg[a] = fn(a) a
 )
 
-UnsignedInt[a] = BaseNumeric[a] | contract(
-    leading_zeros[a] = fn(a) Int
-)
+UnsignedInt[a] = BaseNumeric[a]
 
 Numeric[a] = SignedInt[a] | UnsignedInt[a]
 

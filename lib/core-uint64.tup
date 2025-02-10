@@ -1,3 +1,4 @@
+@type:implements UnsignedInt
 UInt64: type(internal.U64)
 
 eq?[Bool, UInt64]: fn(a: UInt64, b: UInt64) Bool {

@@ -1227,3 +1227,57 @@ r = Rune('λ')
 sum = UInt64(x) + UInt64(b)
 print(sum.string())  # "355"
 ```
+
+## **Contract Annotations**
+
+In Tuppence, **contracts** define a set of required functions that a type must implement. To formally associate
+a type with a contract, we use **annotations**.
+
+Tuppence supports **contract annotations** using the `@type:implements` directive, which allows a type to
+explicitly declare that it conforms to a contract. The compiler will enforce this by checking whether all 
+required functions are correctly implemented.
+
+### **Syntax**
+
+```tuppence
+@type:implements module.ContractName
+TypeName = type(...)
+```
+- `module.ContractName` must be a **valid contract**.
+- `TypeName` must implement all required functions.
+
+### **Example: Declaring an Unsigned Integer Type**
+
+Tuppence includes `UnsignedInt[a]`, a contract for unsigned integer types.
+We can declare a custom `UInt24` type and specify that it conforms to `UnsignedInt`.
+
+```tuppence
+@type:implements core.UnsignedInt
+UInt24 = type(lo: UInt8, mid: UInt8, hi: UInt8)
+```
+
+This means:
+- `UInt24` **must implement** all functions required by `core.UnsignedInt`.
+- If it **fails to do so**, the compiler will produce an **error**.
+
+### **Example: Declaring a Numeric Type**
+
+A `BigDecimal` type can declare that it satisfies the `math.Numeric` contract.
+
+```tuppence
+@type:implements math.Numeric
+BigDecimal = type(value: []Byte)
+```
+
+`BigDecimal` **must implement** functions like `add`, `sub`, `mul`, and `div`.  
+If it does **not** provide these functions, compilation will **fail**.
+
+### **Compiler Behavior**
+
+When encountering `@type:implements`, the compiler will:
+
+1. **Resolve the referenced contract** (`core.UnsignedInt`, `math.Numeric`, etc.).
+2. **Verify that all required functions** are implemented for `TypeName`.
+3. **Raise an error** if:
+   - The referenced contract does not exist.
+   - `TypeName` does not provide all required functions.
