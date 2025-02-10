@@ -64,7 +64,7 @@
 | I8 | I16 | I32 | I64 |
 | U8 | U16 | U32| U64 |
 | F16 | F32 | F64 |
-| V128 |
+| V128 | PTR |
 
 ## Standard Types
 
@@ -1281,3 +1281,19 @@ When encountering `@type:implements`, the compiler will:
 3. **Raise an error** if:
    - The referenced contract does not exist.
    - `TypeName` does not provide all required functions.
+
+## Type Introspection with typeof
+
+`typeof` retrieves a uniform type descriptor for any value or type.
+
+    typeof(expression)
+
+Returns a type descriptor, which can be used for type comparisons and introspection.
+
+If `typeof` is applied to a literal, the result is resolved at compile-time.
+
+To check if a value is an instance of a type:
+
+    if typeof(x) == typeof(Int) {
+        print("x is an integer")
+    }
