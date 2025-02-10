@@ -55,8 +55,8 @@ string[String, a]: fn(x: SignedInt[a], base: 10) String {
     neg = x < 0
 
     reversed, _ = for acc, n = (array(Byte, max_chars), x.abs()); n > 0 {
-        r = digits[n.mod(base)] || { return "invalid digit access" }
-        (acc << Byte(r), n / base)
+        b = digits[n.mod(base)] || { return "invalid digit access" }
+        (acc << b, n / base)
     }
 
     reverse(if neg { reversed << Byte('-') } else { reversed })
@@ -73,8 +73,8 @@ string[String, a]: fn(x: UnsignedInt[a], base: 10) String {
     digits = "0123456789ABCDEF"
 
     reversed, _ = for acc, n = (array(Byte, max_chars), x); n > 0 {
-        r = digits[n.mod(base)] || { return "invalid digit access" }
-        (acc << Byte(r), n / base)
+        b = digits[n.mod(base)] || { return "invalid digit access" }
+        (acc << b, n / base)
     }
 
     reverse(reversed)
