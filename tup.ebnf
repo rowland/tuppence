@@ -307,8 +307,9 @@ primary_expression = "(" expression ")"
                    | if_expression
                    | for_expression
                    | array_function_call
-                   | function_call
                    | import_expression
+                   | typeof_expression
+                   | function_call
                    | type_constructor_call
                    | return_expression
                    | break_expression
@@ -411,6 +412,8 @@ type = fixed_size_array
      | generic_type
      | local_type_reference
      | inline_union .
+
+typeof_expression = "typeof" "(" expression ")" .
 
 type_argument = type
               | generic_type .
