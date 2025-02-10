@@ -1179,3 +1179,51 @@ Creates:
       [2, 4, 6],
       [3, 6, 9]
     ]
+
+## Tuppence Type System
+
+### Integer Types
+
+Tuppence provides both signed and unsigned integer types of various bit widths. The naming convention follows `IntN` for signed integers and `UIntN` for unsigned integers, where `N` represents the bit width:
+
+| Signed Type | Unsigned Type | Alias |
+|------------|--------------|-------|
+| `Int8`  | `UInt8`  | `Byte` (alias for `UInt8`) |
+| `Int16` | `UInt16` | - |
+| `Int32` | `UInt32` | `Rune` (alias for `Int32`) |
+| `Int64` | `UInt64` | - |
+
+- **Signed integers** (`Int8`, `Int16`, `Int32`, `Int64`) support both positive and negative values.
+- **Unsigned integers** (`UInt8`, `UInt16`, `UInt32`, `UInt64`) only support non-negative values (0 and above).
+- **`Byte` is an alias for `UInt8`**, making it clear when working with raw byte-level data.
+
+### Character Representation
+- **`Rune` is an alias for `Int32`**, representing a Unicode code point.
+- Tuppence does not have a dedicated `char` type; instead, `Rune` provides full Unicode support.
+- Character literals use single quotes and are interpreted as their corresponding `Rune` integer values:
+  
+  ```tuppence
+  a = 'A'  # Equivalent to 65
+  euro = '€'  # Equivalent to 8364
+  ```
+
+### Type System Properties
+- All types in Tuppence are **immutable**.
+- Integer types are fixed-width, except for Int and UInt, which adjust to the architecture’s natural word size.
+
+- **Type aliases** (such as `Byte` and `Rune`) provide better readability but do not introduce new underlying types.
+
+### Operations
+- **Signed integers support arithmetic and bitwise operations** (`+`, `-`, `*`, `/`, `&`, `|`, `^`, `<<`, `>>`).
+- **Unsigned integers support the same operations** but **disallow negation (`-x`)**, ensuring safe unsigned arithmetic.
+- `UIntN` to `IntN` conversions must be explicit, and truncation rules apply when converting to a smaller bit width.
+
+### Example Usage
+```tuppence
+x = Int32(100)
+b = Byte(255)
+r = Rune('λ')
+
+sum = UInt64(x) + UInt64(b)
+print(sum.string())  # "355"
+```
