@@ -40,8 +40,6 @@ break_expression = "break" expression .
 
 byte_escape_sequence = "\\" "x" hex_digit hex_digit
 
-cap_function_call = "cap" "(" expression ")" .
-
 case_block = match_condition block .
 
 chained_expression = prec1_expression { "|>" function_call } .
@@ -221,8 +219,6 @@ labeled_tuple_type_member = annotations identifier ":" tuple_type_member .
 labeled_tuple_type_members = labeled_tuple_type_member { "," labeled_tuple_type_member } .
 
 leading_whitespace = { " " | "\t" } .
-
-len_function_call = "len" "(" expression ")" .
 
 letter = "a"-"z" | "A"-"Z" .
 
