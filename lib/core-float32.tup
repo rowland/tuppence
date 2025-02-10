@@ -71,3 +71,7 @@ checked_mod[Float32]: fn(a: Float32, b: Float32) !Float32 {
 bit_cast[Float32]: fn(a: Int32) Float32 {
     a.0
 }
+
+neg[Float32]: fn(x: Float32) Float32 {
+     # TODO: negation
+}
