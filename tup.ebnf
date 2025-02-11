@@ -177,6 +177,8 @@ indexed_access = expression "[" index { "," index } "]" .
 
 initializer = assignment .
 
+inline_for_expression = "inline" "for" for_in_header for_block .
+
 inline_union = "(" union_type ")" .
 
 integer_literal = binary_literal
@@ -306,6 +308,7 @@ primary_expression = "(" expression ")"
                    | block
                    | if_expression
                    | for_expression
+                   | inline_for_expression
                    | array_function_call
                    | import_expression
                    | typeof_expression

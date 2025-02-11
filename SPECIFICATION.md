@@ -937,7 +937,7 @@ If no initializer is present, the loop evaluates to `nil`.
 
 Operators in Tuppence are *syntactic sugar* for function calls, allowing *overloading and customization*.
 Most operators *delegate* to functions that can be redefined, except for certain core operators that must
-be handled by the compiler (e.g., =, . for dereferencing, and logical short-circuiting operators && and ||).
+be handled by the compiler (e.g., `=`, `.` for dereferencing, and logical short-circuiting operators `&&` and `||`).
 
 ### Assignment (=)
 
@@ -1297,3 +1297,55 @@ To check if a value is an instance of a type:
     if typeof(x) == typeof(Int) {
         print("x is an integer")
     }
+
+## Inline `for` Loops
+
+Inline `for` loops in Tuppence allow compile-time iteration over fixed-size structures, such as tuples. These loops are fully unrolled at compile time and enable operations like tuple transformation, filtering, or field-based computations.
+
+### Syntax
+
+An `inline for` loop follows this structure:
+
+```tuppence
+new_tuple = inline for acc = (); name, value in some_tuple {
+    # Compile-time transformation logic
+    (...acc, name: modified_value)
+}
+```
+
+- The loop iterates over `some_tuple`, producing named tuples `(name: Symbol, value: T)`, where `T` is the type of the corresponding tuple field.
+- The `acc` variable accumulates the transformed values as a new tuple.
+- Each iteration appends a new field to `acc`, potentially modifying field names and values.
+- The loop is unrolled at compile time, ensuring efficient and predictable behavior.
+
+### Example: Transforming Tuple Fields
+
+```tuppence
+ABC = type(a: Int, b: String, c: Float)
+abc = ABC(1, "Hello", 5.5)
+
+def = inline for acc = (); name, value in abc {
+    switch name {
+        :a { (...acc, d: value + 1) }
+        :b { (...acc, e: value + " World") }
+        :c { (...acc, f: value + 4.5) }
+    }
+}
+```
+
+Result:
+```tuppence
+def == (d: 2, e: "Hello World", f: 10.0)
+```
+
+### Compile-Time Constraints
+
+- The tuple fields are iterated in declaration order.
+- The `name` must be a known symbol at compile time; dynamic field generation is not permitted.
+- The `value` is statically known per iteration, allowing type specialization.
+
+### Use Cases
+
+- Renaming or restructuring tuples
+- Compile-time tuple field validation or filtering
+- Extracting metadata or generating derived values

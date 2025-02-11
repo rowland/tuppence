@@ -1,0 +1,11 @@
+ABC = type(a: Int, b: String, c: Float)
+abc = ABC(1, "Hello", 5.5)
+
+def = inline for acc = (); name, value in abc {
+    switch name {
+        :a { (...acc, d: value + 1) }
+        :b { (...acc, e: value + " World") }
+        :c { (...acc, f: value + 4.5) }
+    }
+}
+def == (d: 2, e: "Hello World", f: 10.0)
