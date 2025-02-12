@@ -1433,3 +1433,22 @@ $(include: "config.tup")
 - If a required file is missing: **Compiler error**.
 - If an expression is not compile-time evaluable: **Compiler error**.
 - If an unknown key is used: **Compiler error**.
+
+## sizeof build-in function
+
+Tuppence does **not** treat `sizeof` as a reserved keyword. Instead, it is a built-in function that follows normal scope resolution:
+
+- **Shadowing Allowed**: Users can define a local function named `sizeof`.
+- **Scope Resolution**:
+  - If `sizeof` exists in a local scope, it takes precedence.
+  - If used as `x.sizeof()`, it resolves based on `x`'s module.
+- **No Special Grammar Rule**: `sizeof` behaves like `cap` and `len`, remaining a standard function.
+
+Example Usage:
+```tuppence
+x = (a: 1, b: 2)
+size = sizeof(x)  # Resolves to built-in sizeof function
+
+sizeof = fn(x) 0  # Shadowing allowed
+size2 = sizeof(x)  # Calls the locally defined sizeof
+```
