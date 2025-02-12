@@ -66,9 +66,9 @@ decimal_digit = "0"-"9" .
 
 decimal_literal = decimal_digit { decimal_digit | "_" } .
 
-destructure_pattern = labeled_pattern
-                    | tuple_pattern
-                    | array_pattern .
+structured_match = labeled_pattern
+                 | tuple_pattern
+                 | array_pattern .
 
 dynamic_array = "[" "]" type_identifier .
 
@@ -293,7 +293,7 @@ pattern = labeled_pattern
         | identifier .
 
 pattern_match = type_identifier "(" pattern ")" 
-              | destructure_pattern
+              | structured_match
               | type_identifier .
 
 prec1_expression = prec2_expression { "||" prec2_expression } .
