@@ -331,7 +331,7 @@ range = range_bound ".." range_bound .
 
 range_bound = "(" expression ")"
             | member_access
-            | indexed_access
+            | safe_indexed_access
             | identifier
             | literal .
 
