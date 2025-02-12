@@ -1349,3 +1349,87 @@ def == (d: 2, e: "Hello World", f: 10.0)
 - Renaming or restructuring tuples
 - Compile-time tuple field validation or filtering
 - Extracting metadata or generating derived values
+
+## Tuppence Meta Functions and Use Cases
+
+Tuppence introduces `$()` as a **compile-time meta-function mechanism**, allowing key-value pairs in **labeled tuple syntax**. The compiler resolves these expressions at compile-time, embedding values or executing safe operations. The parsing phase treats `$()` as a labeled tuple, while the semantic phase determines validity and execution.
+
+### General Syntax
+
+```tuppence
+$(key: value, key2: value2)
+```
+
+- **`key`**: Identifies the meta-function (e.g., `file`, `hash`, `env`).
+- **`value`**: Can be a **string, expression, or compile-time evaluable function**.
+- **Order of keys does not matter**, as names provide disambiguation.
+
+### Use Cases
+
+#### 1. File Embedding
+
+Embed file contents as a string at compile-time:
+
+```tuppence
+data = $(file: "config.json")
+```
+
+Equivalent to:
+
+```tuppence
+data = "{\"key\": \"value\"}"
+```
+
+Embed a file as a function that returns the content:
+
+```tuppence
+get_config = $(embed: "config.json")
+```
+
+Equivalent to:
+
+```tuppence
+get_config = fn() String { "{\"key\": \"value\"}" }
+```
+
+#### 2. Environment Variables
+
+Retrieve environment variables at compile time:
+
+```tuppence
+home_dir = $(env: "HOME")
+```
+
+Equivalent to:
+
+```tuppence
+home_dir = "/Users/alice"
+```
+
+#### 3. Compile-Time Hashing
+
+Compute a hash at compile-time:
+
+```tuppence
+hash_value = $(hash: "hello", algorithm: "sha256")
+```
+
+Equivalent to:
+
+```tuppence
+hash_value = "2cf24dba5fb0a30e..."
+```
+
+#### 4. Including Other Tuppence Files
+
+Include another file at compile-time:
+
+```tuppence
+$(include: "config.tup")
+```
+
+### Error Handling and Validation
+
+- If a required file is missing: **Compiler error**.
+- If an expression is not compile-time evaluable: **Compiler error**.
+- If an unknown key is used: **Compiler error**.

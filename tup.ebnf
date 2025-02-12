@@ -212,6 +212,8 @@ labeled_pattern = "(" identifier ":" pattern { "," identifier ":" pattern } ")" 
 
 labeled_rest_parameter = annotations identifier ":" rest_parameter .
 
+labeled_tuple = "(" labeled_arguments ")" .
+
 labeled_tuple_member = identifier ":" tuple_member .
 
 labeled_tuple_members = labeled_tuple_member { "," labeled_tuple_member } [ "," ] .
@@ -249,6 +251,8 @@ match_element = constant | range .
 member_access = ( expression | type_identifier ) "." ( decimal_literal 
                                                      | identifier 
                                                      | function_call ) .
+
+meta_expression = "$" labeled_tuple .
 
 module = { top_level_item } .
 
