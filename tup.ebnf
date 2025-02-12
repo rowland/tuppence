@@ -461,7 +461,7 @@ unary_expression = ( "-" | "!" | "~" ) valid_negatable_expression
                  | primary_expression .
 
 unicode_escape_sequence = "\\" "u" hex_digit hex_digit hex_digit hex_digit
-                        | "\\" "U" hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit .
+                        | "\\" "U" hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit .
 
 union_declaration = "union" "(" eol union_members ")" .
 

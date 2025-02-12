@@ -545,6 +545,11 @@ Rune literals accept the same escape sequences as string literals, including:
     \uXXXX (Unicode escapes)
     \UXXXXXXXX (Unicode escapes)
 
+Tuppence supports two types of Unicode escape sequences:
+
+  - `\uXXXX` - 4-digit hexadecimal escape for Basic Multilingual Plane (BMP) code points.
+  - `\UXXXXXXXX` - 8-digit hexadecimal escape for full Unicode range (outside BMP).
+
 ### Complex Literals
 
 #### Tuples
