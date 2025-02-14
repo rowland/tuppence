@@ -1,0 +1,20 @@
+# invalid
+a = [4]Int[1,2,3]  # ERROR: Declared size 4, but only 3 elements provided.
+b = [3]Int[1,2,3,4]  # ERROR: Too many elements.
+c = [0]Int[]  # ERROR: Use a slice instead.
+inferred = [3][3][1,2,3]  # ERROR: Type must be explicit.
+
+correct = [9]Float[1,2,3,4,5,6,7,8,9]
+fill = [4]Int[0]  # Expands to [0,0,0,0]
+
+# multiple dimensions
+matrix = [3,3]Float[
+    [1.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0],
+    [0.0, 0.0, 1.0],
+]
+
+# concatenation
+a = [3]Int[1,2,3]
+b = [3]Int[4,5,6]
+c = a + b  # c is now a slice: Int[1,2,3,4,5,6]

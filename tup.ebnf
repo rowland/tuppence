@@ -112,6 +112,8 @@ expression = try_expression
 
 fixed_size_array = "[" size { "," size } "]" type_reference .
 
+fixed_size_array_literal = fixed_size_array "[" array_members "]" .
+
 float_literal = decimal_digit { decimal_digit | "_" } "." decimal_digit { decimal_digit | "_" } [ exponent ]
               | decimal_digit { decimal_digit | "_" } exponent .
 
@@ -237,7 +239,8 @@ literal = number
         | tuple_literal
         | array_literal
         | symbol_literal
-        | rune_literal .
+        | rune_literal
+        | fixed_size_array_literal .
 
 local_type_reference = type_reference | identifier .
 
