@@ -70,7 +70,7 @@ structured_match = labeled_pattern
                  | tuple_pattern
                  | array_pattern .
 
-dynamic_array = "[" "]" type_identifier .
+dynamic_array = "[" "]" type_reference .
 
 else_block = "else" block .
 
@@ -110,7 +110,7 @@ expression = try_expression
            | binary_expression
            | unary_expression .
 
-fixed_size_array = "[" size { "," size } "]" type_identifier .
+fixed_size_array = "[" size { "," size } "]" type_reference .
 
 float_literal = decimal_digit { decimal_digit | "_" } "." decimal_digit { decimal_digit | "_" } [ exponent ]
               | decimal_digit { decimal_digit | "_" } exponent .
@@ -155,7 +155,7 @@ function_type_declaration_lhs = function_type_identifier [ function_parameter_ty
 
 function_type_identifier = type_identifier .
 
-generic_type = type_identifier type_argument_list .
+generic_type = type_reference type_argument_list .
 
 hex_digit = decimal_digit | "a"-"f" | "A"-"F" .
 
@@ -239,7 +239,7 @@ literal = number
         | symbol_literal
         | rune_literal .
 
-local_type_reference = type_identifier | identifier .
+local_type_reference = type_reference | identifier .
 
 lowercase_letter = "a"-"z" .
 
@@ -292,9 +292,9 @@ pattern = labeled_pattern
         | tuple_pattern
         | identifier .
 
-pattern_match = type_identifier "(" pattern ")" 
+pattern_match = type_reference "(" pattern ")" 
               | structured_match
-              | type_identifier .
+              | type_reference .
 
 prec1_expression = prec2_expression { "||" prec2_expression } .
 
@@ -427,7 +427,7 @@ type_argument = type
 
 type_argument_list = "[" type_argument { "," type_argument } "]" .
 
-type_constructor_call = type_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
+type_constructor_call = type_reference [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
 
 type_declaration = type_declaration_lhs "=" type_declaration_rhs .
 
@@ -442,8 +442,7 @@ type_declaration_rhs = nilable_type
                      | union_declaration
                      | enum_declaration
                      | contract_declaration
-                     | type_reference
-                     | type_identifier .
+                     | type_reference .
 
 type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
 
@@ -455,7 +454,7 @@ type_qualified_declaration = type_identifier "." identifier "=" expression .
 
 type_qualified_function_declaration = type_identifier "." function_declaration_lhs "=" function_declaration_type block .
 
-type_reference = identifier "." type_identifier .
+type_reference = [ identifier { "." identifier } "." ] type_identifier .
 
 unary_expression = ( "-" | "!" | "~" ) valid_negatable_expression
                  | primary_expression .
@@ -484,7 +483,7 @@ union_member_declaration = annotations named_tuple
 
 union_type = "any" | ( union_member { "|" union_member } ) .
 
-union_member_no_annotations = type_identifier
+union_member_no_annotations = type_reference
                             | generic_type
                             | dynamic_array
                             | fixed_size_array .
