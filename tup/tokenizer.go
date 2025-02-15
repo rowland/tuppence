@@ -14,6 +14,7 @@ const (
 	stateOpPlus
 	stateOpPow
 	stateOpLessThan
+	stateOpLessThanEqual
 	stateOpGreaterThan
 	stateOpBitwiseAnd
 	stateOpLogicalAnd
@@ -202,6 +203,10 @@ outer:
 			case '=':
 				tokenType = TokenOpEqual
 				st = stateOpEqual
+			case '~':
+				tokenType = TokenOpBitwiseNot
+				t.index++
+				break outer
 			default:
 				// Identifier start: letters or underscore.
 				if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' {
@@ -230,26 +235,20 @@ outer:
 			case '+':
 				tokenType = TokenOpCheckedAdd
 				t.index++
-				break outer
 			case '/':
 				tokenType = TokenOpCheckedDiv
 				t.index++
-				break outer
 			case '%':
 				tokenType = TokenOpCheckedMod
 				t.index++
-				break outer
 			case '*':
 				tokenType = TokenOpCheckedMul
 				t.index++
-				break outer
 			case '-':
 				tokenType = TokenOpCheckedSub
 				t.index++
-				break outer
-			default:
-				break outer
 			}
+			break outer
 		case stateOpDiv:
 			if c == '=' {
 				tokenType = TokenOpDivEqual
@@ -299,19 +298,23 @@ outer:
 				break outer
 			} else if c == '=' {
 				tokenType = TokenOpLessEqual
-				t.index++
+				st = stateOpLessThanEqual
+			} else {
 				break outer
+			}
+		case stateOpLessThanEqual:
+			if c == '>' {
+				tokenType = TokenOpCompareTo
+				t.index++
 			}
 			break outer
 		case stateOpGreaterThan:
 			if c == '>' {
 				tokenType = TokenOpShiftRight
 				t.index++
-				break outer
 			} else if c == '=' {
 				tokenType = TokenOpGreaterEqual
 				t.index++
-				break outer
 			}
 			break outer
 		case stateOpBitwiseAnd:
@@ -321,7 +324,6 @@ outer:
 				break outer
 			} else if c == '&' {
 				tokenType = TokenOpLogicalAnd
-				// In this case we continue with the same character stream.
 				st = stateOpLogicalAnd
 			} else {
 				break outer
@@ -330,7 +332,6 @@ outer:
 			if c == '=' {
 				tokenType = TokenOpLogicalAndEqual
 				t.index++
-				break outer
 			}
 			break outer
 		case stateOpBitwiseOr:
@@ -348,12 +349,14 @@ outer:
 			if c == '=' {
 				tokenType = TokenOpLogicalOrEqual
 				t.index++
-				break outer
 			}
 			break outer
 		case stateOpEqual:
 			if c == '=' {
 				tokenType = TokenOpEqualEqual
+				t.index++
+			} else if c == '~' {
+				tokenType = TokenOpMatches
 				t.index++
 			}
 			break outer
@@ -447,7 +450,6 @@ outer:
 				// Continue exponent integer.
 			} else if (c >= 'A' && c <= 'Z') || c == '_' || (c >= 'a' && c <= 'z') {
 				invalid = true
-				break outer
 			} else {
 				invalid = true
 				break outer

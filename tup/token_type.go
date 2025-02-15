@@ -5,102 +5,228 @@ type TokenType int
 
 const (
 	// Symbols
-	TokenAt TokenType = iota
-	TokenCloseBrace
-	TokenCloseBracket
-	TokenCloseParen
-	TokenColon
-	TokenComma
-	TokenDot
-	TokenOpenBrace
-	TokenOpenBracket
-	TokenOpenParen
-	TokenQuestionMark
-	TokenSemiColon
+	TokenAt           TokenType = iota // @
+	TokenCloseBrace                    // }
+	TokenCloseBracket                  // ]
+	TokenCloseParen                    // )
+	TokenColon                         // :
+	TokenComma                         // ,
+	TokenDot                           // .
+	TokenOpenBrace                     // {
+	TokenOpenBracket                   // [
+	TokenOpenParen                     // (
+	TokenQuestionMark                  // ?
+	TokenSemiColon                     // ;
 
 	// Operators
-	TokenOpCheckedAdd
-	TokenOpCheckedDiv
-	TokenOpCheckedMod
-	TokenOpCheckedMul
-	TokenOpCheckedSub
-	TokenOpDiv
-	TokenOpMinus
-	TokenOpMod
-	TokenOpMul
-	TokenOpNot
-	TokenOpPlus
-	TokenOpPow
-	TokenOpShiftLeft
-	TokenOpShiftRight
+	TokenOpCheckedAdd // ?+
+	TokenOpCheckedDiv // ?/
+	TokenOpCheckedMod // ?%
+	TokenOpCheckedMul // ?*
+	TokenOpCheckedSub // ?-
+
+	TokenOpDiv        // /
+	TokenOpMinus      // -
+	TokenOpMod        // %
+	TokenOpMul        // *
+	TokenOpNot        // !
+	TokenOpPlus       // +
+	TokenOpPow        // ^
+	TokenOpShiftLeft  // <<
+	TokenOpShiftRight // >>
 
 	// Bitwise Operators
-	TokenOpBitwiseAnd
-	TokenOpBitwiseOr
+	TokenOpBitwiseAnd // &
+	TokenOpBitwiseOr  // |
+	TokenOpBitwiseNot // ~
 
 	// Relational Operators
-	TokenOpEqualEqual
-	TokenOpGreaterEqual
-	TokenOpGreaterThan
-	TokenOpLessEqual
-	TokenOpLessThan
-	TokenOpNotEqual
+	TokenOpEqualEqual   // ==
+	TokenOpGreaterEqual // >=
+	TokenOpGreaterThan  // >
+	TokenOpLessEqual    // <=
+	TokenOpLessThan     // <
+	TokenOpNotEqual     // !=
+	TokenOpMatches      // =~
+	TokenOpCompareTo    //<=>
 
 	// Logical Operators
-	TokenOpLogicalAnd
-	TokenOpLogicalOr
+	TokenOpLogicalAnd // &&
+	TokenOpLogicalOr  // ||
 
 	// Assignment
-	TokenOpBitwiseAndEqual
-	TokenOpBitwiseOrEqual
-	TokenOpDivEqual
-	TokenOpEqual
-	TokenOpLogicalAndEqual
-	TokenOpLogicalOrEqual
-	TokenOpMinusEqual
-	TokenOpModEqual
-	TokenOpMulEqual
-	TokenOpPlusEqual
-	TokenOpPowEqual
+	TokenOpBitwiseAndEqual // &=
+	TokenOpBitwiseOrEqual  // |=
+	TokenOpDivEqual        // /=
+	TokenOpEqual           // =
+	TokenOpLogicalAndEqual // &&=
+	TokenOpLogicalOrEqual  // ||=
+	TokenOpMinusEqual      // -=
+	TokenOpModEqual        // %=
+	TokenOpMulEqual        // *=
+	TokenOpPlusEqual       // +=
+	TokenOpPowEqual        // ^=
 
 	// Identifiers
-	TokenIdentifier
-	TokenTypeIdentifier
+	TokenIdentifier     // id
+	TokenTypeIdentifier // ID
 
 	// Keywords
-	TokenKeywordBreak
-	TokenKeywordElse
-	TokenKeywordEnum
-	TokenKeywordError
-	TokenKeywordFn
-	TokenKeywordFx
-	TokenKeywordFor
-	TokenKeywordIf
-	TokenKeywordImport
-	TokenKeywordMut
-	TokenKeywordReturn
-	TokenKeywordSwitch
-	TokenKeywordTry
-	TokenKeywordType
-	TokenKeywordTypeof
+	TokenKeywordArray       // array
+	TokenKeywordBreak       // break
+	TokenKeywordContinue    // continue
+	TokenKeywordContract    // contract
+	TokenKeywordElse        // else
+	TokenKeywordEnum        // enum
+	TokenKeywordError       // error
+	TokenKeywordFn          // fn
+	TokenKeywordFx          // fx
+	TokenKeywordFor         // for
+	TokenKeywordIf          // if
+	TokenKeywordIn          // in
+	TokenKeywordIt          // it
+	TokenKeywordImport      // import
+	TokenKeywordMut         // mut
+	TokenKeywordReturn      // return
+	TokenKeywordSwitch      // switch
+	TokenKeywordTry         // try
+	TokenKeywordTryBreak    // try_break
+	TokenKeywordTryContinue // try_continue
+	TokenKeywordType        // type
+	TokenKeywordTypeof      // typeof
+	TokenKeywordUnion       // union
 
 	// Literals
-	TokenBinaryLiteral
-	TokenBooleanLiteral
-	TokenCharacterLiteral
-	TokenDecimalLiteral
-	TokenFloatLiteral
-	TokenHexadecimalLiteral
-	TokenInterpolatedStringLiteral
-	TokenOctalLiteral
-	TokenRawStringLiteral
-	TokenStringLiteral
+	TokenBinaryLiteral             // 10101010
+	TokenBooleanLiteral            // false
+	TokenCharacterLiteral          // 'A'
+	TokenDecimalLiteral            // 1234567890
+	TokenFloatLiteral              // 123.456
+	TokenHexadecimalLiteral        // 0xDEADBEEF
+	TokenInterpolatedStringLiteral // "a\(b)c"
+	TokenOctalLiteral              // 0o777
+	TokenRawStringLiteral          // `\no\escapes`
+	TokenStringLiteral             // "Hello, World"
 
 	// Comments
-	TokenComment
+	TokenComment // #
 
 	// Special tokens
 	TokenEOL
 	TokenEOF
 	TokenInvalid
 )
+
+var TokenTypes = map[TokenType]string{
+	// Symbols
+	TokenAt:           "@",
+	TokenCloseBrace:   "}",
+	TokenCloseBracket: "]",
+	TokenCloseParen:   ")",
+	TokenColon:        ":",
+	TokenComma:        ",",
+	TokenDot:          ".",
+	TokenOpenBrace:    "{",
+	TokenOpenBracket:  "[",
+	TokenOpenParen:    "(",
+	TokenQuestionMark: "?",
+	TokenSemiColon:    ";",
+
+	// Operators
+	TokenOpCheckedAdd: "?+",
+	TokenOpCheckedDiv: "?/",
+	TokenOpCheckedMod: "?%",
+	TokenOpCheckedMul: "?*",
+	TokenOpCheckedSub: "?-",
+
+	TokenOpDiv:        "/",
+	TokenOpMinus:      "-",
+	TokenOpMod:        "%",
+	TokenOpMul:        "*",
+	TokenOpNot:        "!",
+	TokenOpPlus:       "+",
+	TokenOpPow:        "^",
+	TokenOpShiftLeft:  "<",
+	TokenOpShiftRight: ">",
+
+	// Bitwise Operators
+	TokenOpBitwiseAnd: "&",
+	TokenOpBitwiseOr:  "|",
+	TokenOpBitwiseNot: "~",
+
+	// Relational Operators
+	TokenOpEqualEqual:   "==",
+	TokenOpGreaterEqual: ">=",
+	TokenOpGreaterThan:  ">",
+	TokenOpLessEqual:    "<=",
+	TokenOpLessThan:     "<",
+	TokenOpNotEqual:     "!=",
+	TokenOpMatches:      "=~",
+	TokenOpCompareTo:    "<=>",
+
+	// Logical Operators
+	TokenOpLogicalAnd: "&&",
+	TokenOpLogicalOr:  "||",
+
+	// Assignment
+	TokenOpBitwiseAndEqual: "&=",
+	TokenOpBitwiseOrEqual:  "|=",
+	TokenOpDivEqual:        "/=",
+	TokenOpEqual:           "=",
+	TokenOpLogicalAndEqual: "&&=",
+	TokenOpLogicalOrEqual:  "||=",
+	TokenOpMinusEqual:      "-=",
+	TokenOpModEqual:        "%=",
+	TokenOpMulEqual:        "*=",
+	TokenOpPlusEqual:       "+=",
+	TokenOpPowEqual:        "^=",
+
+	// Identifiers
+	TokenIdentifier:     "identifier",
+	TokenTypeIdentifier: "TypeIdentifier",
+
+	// Keywords
+	TokenKeywordArray:       "array",
+	TokenKeywordBreak:       "break",
+	TokenKeywordContinue:    "continue",
+	TokenKeywordContract:    "contract",
+	TokenKeywordElse:        "else",
+	TokenKeywordEnum:        "enum",
+	TokenKeywordError:       "error",
+	TokenKeywordFn:          "fn",
+	TokenKeywordFx:          "fx",
+	TokenKeywordFor:         "for",
+	TokenKeywordIf:          "if",
+	TokenKeywordIn:          "in",
+	TokenKeywordIt:          "it",
+	TokenKeywordImport:      "import",
+	TokenKeywordMut:         "mut",
+	TokenKeywordReturn:      "return",
+	TokenKeywordSwitch:      "switch",
+	TokenKeywordTry:         "try",
+	TokenKeywordTryBreak:    "try_break",
+	TokenKeywordTryContinue: "try_continue",
+	TokenKeywordType:        "type",
+	TokenKeywordTypeof:      "typeof",
+	TokenKeywordUnion:       "union",
+
+	// Literals
+	TokenBinaryLiteral:             "binary literal",
+	TokenBooleanLiteral:            "boolean literal",
+	TokenCharacterLiteral:          "character literal",
+	TokenDecimalLiteral:            "decimal literal",
+	TokenFloatLiteral:              "float literal",
+	TokenHexadecimalLiteral:        "hexadecimal literal",
+	TokenInterpolatedStringLiteral: "interpolated string literal",
+	TokenOctalLiteral:              "octal literal",
+	TokenRawStringLiteral:          "raw string literal",
+	TokenStringLiteral:             "string literal",
+
+	// Comments
+	TokenComment: "#",
+
+	// Special tokens
+	TokenEOL:     "EOL",
+	TokenEOF:     "EOF",
+	TokenInvalid: "invalid",
+}

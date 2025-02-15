@@ -10,7 +10,7 @@ func testTokenizeSeq(t *testing.T, source string, expected []TokenType) {
 	for i, exp := range expected {
 		token := tokenizer.Next()
 		if token.Type != exp {
-			t.Errorf("At index %d: expected token type %v, got %v", i, exp, token.Type)
+			t.Errorf("At index %d: expected token type %v, got %v", i, TokenTypes[exp], TokenTypes[token.Type])
 		}
 		if token.Invalid {
 			t.Errorf("At index %d: expected valid token, got invalid for %q", i, token.Value)
@@ -18,7 +18,7 @@ func testTokenizeSeq(t *testing.T, source string, expected []TokenType) {
 	}
 	lastToken := tokenizer.Next()
 	if lastToken.Type != TokenEOF {
-		t.Errorf("Expected EOF token, got %v", lastToken.Type)
+		t.Errorf("Expected EOF token, got %v", TokenTypes[lastToken.Type])
 	}
 	expectedCol := len(source) + 1
 	if lastToken.Column != expectedCol {
@@ -130,20 +130,23 @@ func TestOperators(t *testing.T) {
 }
 
 func TestBitwiseOperators(t *testing.T) {
-	testTokenizeSeq(t, "& |", []TokenType{
+	testTokenizeSeq(t, "& | ~", []TokenType{
 		TokenOpBitwiseAnd,
 		TokenOpBitwiseOr,
+		TokenOpBitwiseNot,
 	})
 }
 
 func TestRelationalOperators(t *testing.T) {
-	testTokenizeSeq(t, "== >= > <= < !=", []TokenType{
+	testTokenizeSeq(t, "== >= > <= < != =~ <=>", []TokenType{
 		TokenOpEqualEqual,
 		TokenOpGreaterEqual,
 		TokenOpGreaterThan,
 		TokenOpLessEqual,
 		TokenOpLessThan,
 		TokenOpNotEqual,
+		TokenOpMatches,
+		TokenOpCompareTo,
 	})
 }
 
@@ -179,9 +182,13 @@ func TestIdentifiers(t *testing.T) {
 
 func TestKeywords(t *testing.T) {
 	testTokenizeSeq(t,
-		"break else enum error fn for fx if import mut return switch try type typeof",
+		"array break continue contract else enum error fn for fx if in it "+
+			"import mut return switch try try_break try_continue type typeof union",
 		[]TokenType{
+			TokenKeywordArray,
 			TokenKeywordBreak,
+			TokenKeywordContinue,
+			TokenKeywordContract,
 			TokenKeywordElse,
 			TokenKeywordEnum,
 			TokenKeywordError,
@@ -189,13 +196,18 @@ func TestKeywords(t *testing.T) {
 			TokenKeywordFor,
 			TokenKeywordFx,
 			TokenKeywordIf,
+			TokenKeywordIn,
+			TokenKeywordIt,
 			TokenKeywordImport,
 			TokenKeywordMut,
 			TokenKeywordReturn,
 			TokenKeywordSwitch,
 			TokenKeywordTry,
+			TokenKeywordTryBreak,
+			TokenKeywordTryContinue,
 			TokenKeywordType,
 			TokenKeywordTypeof,
+			TokenKeywordUnion,
 		})
 }
 
