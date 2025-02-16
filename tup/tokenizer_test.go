@@ -38,7 +38,7 @@ func testTokenizeInvalid(t *testing.T, source string, expectedType TokenType) {
 	tokenizer := NewTokenizer([]byte(source), "test.go")
 	token := tokenizer.Next()
 	if token.Type != expectedType {
-		t.Errorf("Expected token type %v, got %v for source %q", expectedType, token.Type, source)
+		t.Errorf("Expected token type %v, got %v for source %q", TokenTypes[expectedType], TokenTypes[token.Type], source)
 	}
 	if !token.Invalid {
 		t.Errorf("Expected invalid token for %q", source)
@@ -410,4 +410,28 @@ func TestComment(t *testing.T) {
 		TokenEOL,            // \n
 		TokenEOF,
 	})
+}
+
+func TestFloatLiterals(t *testing.T) {
+	// Valid floats
+	testTokenize(t, "0.5", TokenFloatLiteral)
+	testTokenize(t, "1.23", TokenFloatLiteral)
+	testTokenize(t, "12.34e+5", TokenFloatLiteral)
+	testTokenize(t, "12.34e-5", TokenFloatLiteral)
+	testTokenize(t, "9e9", TokenFloatLiteral)
+	testTokenize(t, "10e+10", TokenFloatLiteral)
+	testTokenize(t, "10e-10", TokenFloatLiteral)
+
+	// Examples with underscores
+	testTokenize(t, "1_2.3_4", TokenFloatLiteral)  // 12.34
+	testTokenize(t, "3.14_159", TokenFloatLiteral) // 3.14159
+
+	// Invalid floats
+	testTokenizeInvalid(t, "1.2.3", TokenFloatLiteral)   // multiple dots
+	testTokenizeInvalid(t, "1.2e", TokenFloatLiteral)    // missing exponent digits
+	testTokenizeInvalid(t, "1.2ez", TokenFloatLiteral)   // non-digit exponent suffix
+	testTokenizeInvalid(t, "1.2e++3", TokenFloatLiteral) // double sign
+	testTokenizeInvalid(t, "1..2", TokenFloatLiteral)    // extra dot
+	testTokenizeInvalid(t, "123e", TokenFloatLiteral)    // no exponent digits
+	testTokenizeInvalid(t, "12.34e-", TokenFloatLiteral) // minus with no digits
 }

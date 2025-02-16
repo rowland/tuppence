@@ -417,7 +417,7 @@ outer:
 		case stateIntDot:
 			if c >= '0' && c <= '9' {
 				st = stateFloat
-			} else if (c >= 'A' && c <= 'Z') || c == '_' || (c >= 'a' && c <= 'z') {
+			} else if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || c == '.' {
 				st = stateFloat
 				invalid = true
 			} else {
@@ -429,14 +429,16 @@ outer:
 				// Continue float.
 			} else if c == 'e' {
 				st = stateExponent
-			} else if (c >= 'A' && c <= 'd') || (c >= 'f' && c <= 'z') {
+			} else if (c >= 'A' && c <= 'd') || (c >= 'f' && c <= 'z') || (c == '.') {
 				invalid = true
 			} else {
 				break outer
 			}
 		case stateExponent:
-			if c == '+' || c == '-' || (c >= '0' && c <= '9') {
+			if c == '+' || c == '-' {
 				st = stateExponentSign
+			} else if c >= '0' && c <= '9' {
+				st = stateExponentInt
 			} else if (c >= 'A' && c <= 'Z') || c == '_' || (c >= 'a' && c <= 'z') {
 				invalid = true
 			} else {
@@ -446,7 +448,7 @@ outer:
 		case stateExponentSign:
 			if c >= '0' && c <= '9' {
 				st = stateExponentInt
-			} else if (c >= 'A' && c <= 'Z') || c == '_' || (c >= 'a' && c <= 'z') {
+			} else if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || c == '+' || c == '-' {
 				invalid = true
 			} else {
 				invalid = true
@@ -458,7 +460,6 @@ outer:
 			} else if (c >= 'A' && c <= 'Z') || c == '_' || (c >= 'a' && c <= 'z') {
 				invalid = true
 			} else {
-				invalid = true
 				break outer
 			}
 		case stateBinaryFirst:
