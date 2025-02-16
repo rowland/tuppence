@@ -396,3 +396,18 @@ func TestUnion(t *testing.T) {
 		TokenEOF,
 	})
 }
+
+func TestComment(t *testing.T) {
+	const source = "a = 5 # assign 5 to a\nb = 10\n"
+	testTokenizeSeq(t, source, []TokenType{
+		TokenIdentifier,     // a
+		TokenOpEqual,        // =
+		TokenDecimalLiteral, // 5
+		TokenComment,        // #
+		TokenIdentifier,     // b
+		TokenOpEqual,        // =
+		TokenDecimalLiteral, // 10
+		TokenEOL,            // \n
+		TokenEOF,
+	})
+}

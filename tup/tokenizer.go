@@ -41,6 +41,7 @@ const (
 	stateEscapeSequence
 	stateUnicodeEscapeSequence
 	stateByteEscapeSequence
+	stateComment
 )
 
 // Tokenizer holds the state of the lexer.
@@ -210,6 +211,9 @@ outer:
 				tokenType = TokenOpBitwiseNot
 				t.index++
 				break outer
+			case '#':
+				tokenType = TokenComment
+				st = stateComment
 			default:
 				// Identifier start: letters or underscore.
 				if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' {
@@ -575,6 +579,13 @@ outer:
 			} else {
 				st = stateStringLiteral
 				invalid = true
+			}
+		case stateComment:
+			if c == 0 {
+				break outer
+			} else if c == '\n' {
+				t.index++
+				break outer
 			}
 		}
 	}
