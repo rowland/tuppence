@@ -120,6 +120,9 @@ outer:
 				t.line++
 				start = t.index + 1
 				t.bol = start
+				tokenType = TokenEOL
+				t.index++
+				break outer
 			case '@':
 				tokenType = TokenAt
 				t.index++

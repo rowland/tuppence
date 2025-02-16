@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -20,7 +21,13 @@ func testTokenizeSeq(t *testing.T, source string, expected []TokenType) {
 	if lastToken.Type != TokenEOF {
 		t.Errorf("Expected EOF token, got %v", TokenTypes[lastToken.Type])
 	}
-	expectedCol := len(source) + 1
+	lastNewline := strings.LastIndexByte(source, '\n')
+	var expectedCol int
+	if lastNewline < 0 {
+		expectedCol = len(source) + 1
+	} else {
+		expectedCol = len(source) - lastNewline
+	}
 	if lastToken.Column != expectedCol {
 		t.Errorf("Expected column %d, got %d", expectedCol, lastToken.Column)
 	}
@@ -364,4 +371,28 @@ func TestStringLiterals(t *testing.T) {
 	testTokenizeInvalid(t, `"\u123"`, TokenStringLiteral)
 	testTokenizeInvalid(t, `"\uXYZ"`, TokenStringLiteral)
 	testTokenizeInvalid(t, `"\xXYZ"`, TokenStringLiteral)
+}
+
+func TestUnion(t *testing.T) {
+	const source = "List[a] = union(\n  Nil\n  Cons[a]\n)\n"
+	testTokenizeSeq(t, source, []TokenType{
+		TokenTypeIdentifier, // List
+		TokenOpenBracket,    // [
+		TokenIdentifier,     // a
+		TokenCloseBracket,   // ]
+		TokenOpEqual,        // =
+		TokenKeywordUnion,   // union
+		TokenOpenParen,      // (
+		TokenEOL,            // \n
+		TokenTypeIdentifier, // Nil
+		TokenEOL,            // \n
+		TokenTypeIdentifier, // Cons
+		TokenOpenBracket,    // [
+		TokenIdentifier,     // a
+		TokenCloseBracket,   // ]
+		TokenEOL,            // \n
+		TokenCloseParen,     // )
+		TokenEOL,            // \n
+		TokenEOF,
+	})
 }
