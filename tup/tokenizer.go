@@ -16,8 +16,10 @@ const (
 	stateOpPlus
 	stateOpPow
 	stateOpLessThan
+	stateOpShiftLeft
 	stateOpLessThanEqual
 	stateOpGreaterThan
+	stateOpShiftRight
 	stateOpBitwiseAnd
 	stateOpLogicalAnd
 	stateOpBitwiseOr
@@ -316,14 +318,19 @@ outer:
 			switch {
 			case c == '<':
 				tokenType = TokenOpShiftLeft
-				t.index++
-				break outer
+				st = stateOpShiftLeft
 			case c == '=':
 				tokenType = TokenOpLessEqual
 				st = stateOpLessThanEqual
 			default:
 				break outer
 			}
+		case stateOpShiftLeft:
+			if c == '=' {
+				tokenType = TokenOpShiftLeftEqual
+				t.index++
+			}
+			break outer
 		case stateOpLessThanEqual:
 			if c == '>' {
 				tokenType = TokenOpCompareTo
@@ -334,9 +341,17 @@ outer:
 			switch {
 			case c == '>':
 				tokenType = TokenOpShiftRight
-				t.index++
+				st = stateOpShiftRight
 			case c == '=':
 				tokenType = TokenOpGreaterEqual
+				t.index++
+				break outer
+			default:
+				break outer
+			}
+		case stateOpShiftRight:
+			if c == '=' {
+				tokenType = TokenOpShiftRightEqual
 				t.index++
 			}
 			break outer

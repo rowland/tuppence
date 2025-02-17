@@ -165,7 +165,7 @@ func TestLogicalOperators(t *testing.T) {
 }
 
 func TestAssignment(t *testing.T) {
-	testTokenizeSeq(t, "&= |= /= = &&= ||= -= %= *= += ^=", []TokenType{
+	testTokenizeSeq(t, "&= |= /= = &&= ||= -= %= *= += ^= <<= >>=", []TokenType{
 		TokenOpBitwiseAndEqual,
 		TokenOpBitwiseOrEqual,
 		TokenOpDivEqual,
@@ -177,6 +177,8 @@ func TestAssignment(t *testing.T) {
 		TokenOpMulEqual,
 		TokenOpPlusEqual,
 		TokenOpPowEqual,
+		TokenOpShiftLeftEqual,
+		TokenOpShiftRightEqual,
 	})
 }
 

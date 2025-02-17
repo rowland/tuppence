@@ -70,6 +70,8 @@ const (
 	TokenOpMulEqual        // *=
 	TokenOpPlusEqual       // +=
 	TokenOpPowEqual        // ^=
+	TokenOpShiftLeftEqual  // <<=
+	TokenOpShiftRightEqual // >>=
 
 	// Identifiers
 	TokenIdentifier     // id
@@ -188,6 +190,8 @@ var TokenTypes = map[TokenType]string{
 	TokenOpMulEqual:        "*=",
 	TokenOpPlusEqual:       "+=",
 	TokenOpPowEqual:        "^=",
+	TokenOpShiftLeftEqual:  "<<=",
+	TokenOpShiftRightEqual: ">>=",
 
 	// Identifiers
 	TokenIdentifier:     "identifier",
