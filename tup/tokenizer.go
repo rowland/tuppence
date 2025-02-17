@@ -101,6 +101,7 @@ func (t *Tokenizer) Next() Token {
 	tokenType := TokenEOF
 	invalid := false
 	escapeDigits := 0
+	escapeDigitsExpected := 0
 
 	// Use a labeled loop so we can “break out” when a token is complete.
 outer:
@@ -643,6 +644,11 @@ outer:
 			case c == 'u':
 				st = stateUnicodeEscapeSequence
 				escapeDigits = 0
+				escapeDigitsExpected = 4
+			case c == 'U':
+				st = stateUnicodeEscapeSequence
+				escapeDigits = 0
+				escapeDigitsExpected = 8
 			case c == 'n' || c == 't' || c == '"' || c == '\'' || c == '\\' ||
 				c == 'r' || c == 'b' || c == 'f' || c == 'v' || c == '0':
 				// Valid single-char escape; return to string literal
@@ -661,7 +667,7 @@ outer:
 				(c >= 'A' && c <= 'F') ||
 				(c >= 'a' && c <= 'f'):
 				escapeDigits++
-				if escapeDigits == 4 {
+				if escapeDigits == escapeDigitsExpected {
 					st = stateStringLiteral
 				}
 			default:

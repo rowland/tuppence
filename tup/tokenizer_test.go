@@ -354,10 +354,12 @@ func TestStringLiterals(t *testing.T) {
 	testTokenize(t, `"abc"`, TokenStringLiteral)
 	testTokenize(t, `"\n\t\"\'\\\r\b\f\v\0"`, TokenStringLiteral)
 	testTokenize(t, `"\u1234"`, TokenStringLiteral)
+	testTokenize(t, `"\U12345678"`, TokenStringLiteral)
 	testTokenize(t, `"\xEF\xBB\xBF"`, TokenStringLiteral)
 
 	testTokenizeInvalid(t, `"\u"`, TokenStringLiteral)
 	testTokenizeInvalid(t, `"\u123"`, TokenStringLiteral)
+	testTokenizeInvalid(t, `"\U1234"`, TokenStringLiteral)
 	testTokenizeInvalid(t, `"\uXYZ"`, TokenStringLiteral)
 	testTokenizeInvalid(t, `"\xXYZ"`, TokenStringLiteral)
 }
