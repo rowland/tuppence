@@ -43,8 +43,7 @@ const (
 	stateRawStringLiteralEnd
 	stateStringLiteral
 	stateEscapeSequence
-	stateUnicodeEscapeSequence
-	stateByteEscapeSequence
+	stateHexEscape
 	stateComment
 )
 
@@ -639,14 +638,15 @@ outer:
 				invalid = true
 				break outer
 			case c == 'x':
-				st = stateByteEscapeSequence
+				st = stateHexEscape
 				escapeDigits = 0
+				escapeDigitsExpected = 2
 			case c == 'u':
-				st = stateUnicodeEscapeSequence
+				st = stateHexEscape
 				escapeDigits = 0
 				escapeDigitsExpected = 4
 			case c == 'U':
-				st = stateUnicodeEscapeSequence
+				st = stateHexEscape
 				escapeDigits = 0
 				escapeDigitsExpected = 8
 			case c == 'n' || c == 't' || c == '"' || c == '\'' || c == '\\' ||
@@ -658,7 +658,7 @@ outer:
 				st = stateStringLiteral
 				invalid = true
 			}
-		case stateUnicodeEscapeSequence:
+		case stateHexEscape:
 			switch {
 			case c == 0:
 				invalid = true
@@ -668,22 +668,6 @@ outer:
 				(c >= 'a' && c <= 'f'):
 				escapeDigits++
 				if escapeDigits == escapeDigitsExpected {
-					st = stateStringLiteral
-				}
-			default:
-				st = stateStringLiteral
-				invalid = true
-			}
-		case stateByteEscapeSequence:
-			switch {
-			case c == 0:
-				invalid = true
-				break outer
-			case (c >= '0' && c <= '9') ||
-				(c >= 'A' && c <= 'F') ||
-				(c >= 'a' && c <= 'f'):
-				escapeDigits++
-				if escapeDigits == 2 {
 					st = stateStringLiteral
 				}
 			default:
