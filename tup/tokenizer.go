@@ -217,23 +217,23 @@ outer:
 			case '#':
 				tokenType = TokenComment
 				st = stateComment
+			case '0':
+				st = stateNumber
+				tokenType = TokenDecimalLiteral
+			case '`':
+				st = stateRawStringLiteral
+				tokenType = TokenRawStringLiteral
+			case '"':
+				st = stateStringLiteral
+				tokenType = TokenStringLiteral
 			default:
 				// Identifier start: letters or underscore.
 				if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' {
 					tokenType = TokenIdentifier
 					st = stateIdentifier
-				} else if c == '0' {
-					st = stateNumber
-					tokenType = TokenDecimalLiteral
 				} else if c >= '1' && c <= '9' {
 					st = stateInt
 					tokenType = TokenDecimalLiteral
-				} else if c == '`' {
-					st = stateRawStringLiteral
-					tokenType = TokenRawStringLiteral
-				} else if c == '"' {
-					st = stateStringLiteral
-					tokenType = TokenStringLiteral
 				} else {
 					tokenType = TokenInvalid
 					t.index++
