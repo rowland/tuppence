@@ -299,14 +299,15 @@ outer:
 			}
 			break outer
 		case stateOpLessThan:
-			if c == '<' {
+			switch {
+			case c == '<':
 				tokenType = TokenOpShiftLeft
 				t.index++
 				break outer
-			} else if c == '=' {
+			case c == '=':
 				tokenType = TokenOpLessEqual
 				st = stateOpLessThanEqual
-			} else {
+			default:
 				break outer
 			}
 		case stateOpLessThanEqual:
@@ -316,23 +317,25 @@ outer:
 			}
 			break outer
 		case stateOpGreaterThan:
-			if c == '>' {
+			switch {
+			case c == '>':
 				tokenType = TokenOpShiftRight
 				t.index++
-			} else if c == '=' {
+			case c == '=':
 				tokenType = TokenOpGreaterEqual
 				t.index++
 			}
 			break outer
 		case stateOpBitwiseAnd:
-			if c == '=' {
+			switch {
+			case c == '=':
 				tokenType = TokenOpBitwiseAndEqual
 				t.index++
 				break outer
-			} else if c == '&' {
+			case c == '&':
 				tokenType = TokenOpLogicalAnd
 				st = stateOpLogicalAnd
-			} else {
+			default:
 				break outer
 			}
 		case stateOpLogicalAnd:
@@ -342,14 +345,15 @@ outer:
 			}
 			break outer
 		case stateOpBitwiseOr:
-			if c == '|' {
+			switch {
+			case c == '|':
 				tokenType = TokenOpLogicalOr
 				st = stateOpLogicalOr
-			} else if c == '=' {
+			case c == '=':
 				tokenType = TokenOpBitwiseOrEqual
 				t.index++
 				break outer
-			} else {
+			default:
 				break outer
 			}
 		case stateOpLogicalOr:
@@ -359,18 +363,23 @@ outer:
 			}
 			break outer
 		case stateOpEqual:
-			if c == '=' {
+			switch {
+			case c == '=':
 				tokenType = TokenOpEqualEqual
 				t.index++
-			} else if c == '~' {
+			case c == '~':
 				tokenType = TokenOpMatches
 				t.index++
 			}
 			break outer
 		case stateIdentifier:
-			if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || (c >= '0' && c <= '9') {
+			switch {
+			case (c >= 'a' && c <= 'z') ||
+				(c >= 'A' && c <= 'Z') ||
+				c == '_' ||
+				(c >= '0' && c <= '9'):
 				// Continue identifier.
-			} else {
+			default:
 				lexeme := string(t.source[start:t.index])
 				if reserved, ok := GetReserved(lexeme); ok {
 					tokenType = reserved
@@ -395,198 +404,270 @@ outer:
 			case c == 'x':
 				tokenType = TokenHexadecimalLiteral
 				st = stateHexadecimalFirst
-			case (c >= 'A' && c <= 'Z') || c == 'a' || (c >= 'c' && c <= 'n') || (c >= 'p' && c <= 'w') || (c >= 'y' && c <= 'z'):
+			case (c >= 'A' && c <= 'Z') ||
+				c == 'a' ||
+				(c >= 'c' && c <= 'n') ||
+				(c >= 'p' && c <= 'w') ||
+				(c >= 'y' && c <= 'z'):
 				invalid = true
 			default:
 				break outer
 			}
 		case stateInt:
-			if (c >= '0' && c <= '9') || c == '_' {
+			switch {
+			case (c >= '0' && c <= '9') || c == '_':
 				// Continue int.
-			} else if c == '.' {
+			case c == '.':
 				tokenType = TokenFloatLiteral
 				st = stateIntDot
-			} else if c == 'e' {
+			case c == 'e':
 				tokenType = TokenFloatLiteral
 				st = stateExponent
-			} else if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'd') || (c >= 'f' && c <= 'z') {
+			case (c >= 'A' && c <= 'Z') ||
+				(c >= 'a' && c <= 'd') ||
+				(c >= 'f' && c <= 'z'):
 				invalid = true
-			} else {
+			default:
 				break outer
 			}
 		case stateIntDot:
-			if c >= '0' && c <= '9' {
+			switch {
+			case c >= '0' && c <= '9':
 				st = stateFloat
-			} else if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || c == '.' {
+			case (c >= 'A' && c <= 'Z') ||
+				(c >= 'a' && c <= 'z') ||
+				c == '_' || c == '.':
 				st = stateFloat
 				invalid = true
-			} else {
+			default:
 				invalid = true
 				break outer
 			}
 		case stateFloat:
-			if (c >= '0' && c <= '9') || c == '_' {
+			switch {
+			case (c >= '0' && c <= '9') || c == '_':
 				// Continue float.
-			} else if c == 'e' {
+			case c == 'e':
 				st = stateExponent
-			} else if (c >= 'A' && c <= 'd') || (c >= 'f' && c <= 'z') || (c == '.') {
+			case (c >= 'A' && c <= 'd') ||
+				(c >= 'f' && c <= 'z') ||
+				(c == '.'):
 				invalid = true
-			} else {
+			default:
 				break outer
 			}
 		case stateExponent:
-			if c == '+' || c == '-' {
+			switch {
+			case c == '+' || c == '-':
 				st = stateExponentSign
-			} else if c >= '0' && c <= '9' {
+			case c >= '0' && c <= '9':
 				st = stateExponentInt
-			} else if (c >= 'A' && c <= 'Z') || c == '_' || (c >= 'a' && c <= 'z') {
+			case (c >= 'A' && c <= 'Z') ||
+				c == '_' ||
+				(c >= 'a' && c <= 'z'):
 				invalid = true
-			} else {
+			default:
 				invalid = true
 				break outer
 			}
 		case stateExponentSign:
-			if c >= '0' && c <= '9' {
+			switch {
+			case c >= '0' && c <= '9':
 				st = stateExponentInt
-			} else if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || c == '+' || c == '-' {
+			case (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || c == '+' || c == '-':
 				invalid = true
-			} else {
+			default:
 				invalid = true
 				break outer
 			}
 		case stateExponentInt:
-			if c >= '0' && c <= '9' {
+			switch {
+			case c >= '0' && c <= '9':
 				// Continue exponent integer.
-			} else if (c >= 'A' && c <= 'Z') || c == '_' || (c >= 'a' && c <= 'z') {
+			case (c >= 'A' && c <= 'Z') ||
+				c == '_' ||
+				(c >= 'a' && c <= 'z'):
 				invalid = true
-			} else {
+			default:
 				break outer
 			}
 		case stateBinaryFirst:
-			if c >= '0' && c <= '1' {
+			switch {
+			case c >= '0' && c <= '1':
 				st = stateBinary
-			} else if c == '.' || (c >= '2' && c <= '9') || (c >= 'A' && c <= 'Z') || c == '_' || (c >= 'a' && c <= 'z') {
+			case c == '.' || (c >= '2' && c <= '9') ||
+				(c >= 'A' && c <= 'Z') || c == '_' ||
+				(c >= 'a' && c <= 'z'):
 				st = stateBinary
 				invalid = true
-			} else {
+			default:
 				invalid = true
 				break outer
 			}
 		case stateBinary:
-			if c == '0' || c == '1' || c == '_' {
+			switch {
+			case c == '0' || c == '1' || c == '_':
 				// Continue binary.
-			} else if c == '.' || (c >= '2' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') {
+			case c == '.' || (c >= '2' && c <= '9') ||
+				(c >= 'A' && c <= 'Z') ||
+				(c >= 'a' && c <= 'z'):
 				invalid = true
-			} else {
+			default:
 				break outer
 			}
 		case stateHexadecimalFirst:
-			if (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f') {
+			switch {
+			case (c >= '0' && c <= '9') ||
+				(c >= 'A' && c <= 'F') ||
+				(c >= 'a' && c <= 'f'):
 				st = stateHexadecimal
-			} else if c == '.' || (c >= 'G' && c <= 'Z') || c == '_' || (c >= 'g' && c <= 'z') {
+			case c == '.' ||
+				(c >= 'G' && c <= 'Z') ||
+				c == '_' ||
+				(c >= 'g' && c <= 'z'):
 				st = stateHexadecimal
 				invalid = true
-			} else {
+			default:
 				invalid = true
 				break outer
 			}
 		case stateHexadecimal:
-			if (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || c == '_' || (c >= 'a' && c <= 'f') {
+			switch {
+			case (c >= '0' && c <= '9') ||
+				(c >= 'A' && c <= 'F') || c == '_' ||
+				(c >= 'a' && c <= 'f'):
 				// Continue hexadecimal.
-			} else if c == '.' || (c >= 'G' && c <= 'Z') || (c >= 'g' && c <= 'z') {
+			case c == '.' || (c >= 'G' && c <= 'Z') || (c >= 'g' && c <= 'z'):
 				invalid = true
-			} else {
+			default:
 				break outer
 			}
 		case stateOctalFirst:
-			if c >= '0' && c <= '7' {
+			switch {
+			case c >= '0' && c <= '7':
 				st = stateOctal
-			} else if c == '.' || (c >= '8' && c <= '9') || (c >= 'A' && c <= 'Z') || c == '_' || (c >= 'a' && c <= 'z') {
+			case c == '.' ||
+				(c >= '8' && c <= '9') ||
+				(c >= 'A' && c <= 'Z') ||
+				c == '_' ||
+				(c >= 'a' && c <= 'z'):
 				st = stateOctal
 				invalid = true
-			} else {
+			default:
 				invalid = true
 				break outer
 			}
 		case stateOctal:
-			if (c >= '0' && c <= '7') || c == '_' {
+			switch {
+			case (c >= '0' && c <= '7') || c == '_':
 				// Continue octal.
-			} else if c == '.' || (c >= '8' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') {
+			case c == '.' ||
+				(c >= '8' && c <= '9') ||
+				(c >= 'A' && c <= 'Z') ||
+				(c >= 'a' && c <= 'z'):
 				invalid = true
-			} else {
+			default:
 				break outer
 			}
 		case stateRawStringLiteral:
-			if c == 0 {
+			switch {
+			case c == 0:
 				invalid = true
 				break outer
-			} else if c == '`' {
+			case c == '`':
 				st = stateRawStringLiteralEnd
+			default:
+				// do nothing, just continue reading characters
 			}
 		case stateRawStringLiteralEnd:
-			if c == '`' {
+			switch {
+			case c == '`':
 				st = stateRawStringLiteral
-			} else {
+			default:
 				break outer
 			}
 		case stateStringLiteral:
-			if c == 0 {
+			switch {
+			case c == 0:
 				invalid = true
 				break outer
-			} else if c == '\\' {
+			case c == '\\':
 				st = stateEscapeSequence
-			} else if c == '"' {
+			case c == '"':
 				t.index++
 				break outer
+			default:
+				// Just continue consuming characters in the string
 			}
 		case stateEscapeSequence:
-			if c == 0 {
+			switch {
+			case c == 0:
 				invalid = true
 				break outer
-			} else if c == 'x' {
+
+			case c == 'x':
 				st = stateByteEscapeSequence
 				escapeDigits = 0
-			} else if c == 'u' {
+
+			case c == 'u':
 				st = stateUnicodeEscapeSequence
 				escapeDigits = 0
-			} else if c == 'n' || c == 't' || c == '"' || c == '\'' || c == '\\' || c == 'r' || c == 'b' || c == 'f' || c == 'v' || c == '0' {
+
+			case c == 'n' || c == 't' || c == '"' || c == '\'' || c == '\\' ||
+				c == 'r' || c == 'b' || c == 'f' || c == 'v' || c == '0':
+				// Valid single-char escape; return to string literal
 				st = stateStringLiteral
-			} else {
+
+			default:
+				// Any other char => mark invalid but return to string literal
 				st = stateStringLiteral
 				invalid = true
 			}
 		case stateUnicodeEscapeSequence:
-			if c == 0 {
+			switch {
+			case c == 0:
 				invalid = true
 				break outer
-			} else if (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f') {
+
+			case (c >= '0' && c <= '9') ||
+				(c >= 'A' && c <= 'F') ||
+				(c >= 'a' && c <= 'f'):
 				escapeDigits++
 				if escapeDigits == 4 {
 					st = stateStringLiteral
 				}
-			} else {
+
+			default:
 				st = stateStringLiteral
 				invalid = true
 			}
 		case stateByteEscapeSequence:
-			if c == 0 {
+			switch {
+			case c == 0:
 				invalid = true
 				break outer
-			} else if (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f') {
+
+			case (c >= '0' && c <= '9') ||
+				(c >= 'A' && c <= 'F') ||
+				(c >= 'a' && c <= 'f'):
 				escapeDigits++
 				if escapeDigits == 2 {
 					st = stateStringLiteral
 				}
-			} else {
+
+			default:
 				st = stateStringLiteral
 				invalid = true
 			}
 		case stateComment:
-			if c == 0 {
+			switch {
+			case c == 0:
 				break outer
-			} else if c == '\n' {
+			case c == '\n':
 				t.index++
 				break outer
+			default:
+				// Continue consuming comment characters.
 			}
 		}
 	}
