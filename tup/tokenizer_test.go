@@ -491,3 +491,22 @@ func TestFloatMemberAccess(t *testing.T) {
 		TokenEOF,
 	})
 }
+
+func TestRangeOp(t *testing.T) {
+	const source = "1..2"
+	testTokenizeSeq(t, source, []TokenType{
+		TokenDecimalLiteral, // 1
+		TokenOpRange,        // ..
+		TokenDecimalLiteral, // 2
+		TokenEOF,
+	})
+}
+
+func TestRestOp(t *testing.T) {
+	const source = "...rest"
+	testTokenizeSeq(t, source, []TokenType{
+		TokenOpRest,     // ...
+		TokenIdentifier, // rest
+		TokenEOF,
+	})
+}

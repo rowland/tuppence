@@ -5,6 +5,8 @@ type state int
 
 const (
 	stateStart state = iota
+	stateDot
+	stateDotDot
 	stateQuestionMark
 	stateOpDiv
 	stateOpMinus
@@ -150,8 +152,7 @@ outer:
 				break outer
 			case '.':
 				tokenType = TokenDot
-				t.index++
-				break outer
+				st = stateDot
 			case '{':
 				tokenType = TokenOpenBrace
 				t.index++
@@ -237,6 +238,19 @@ outer:
 					break outer
 				}
 			}
+		case stateDot:
+			if c == '.' {
+				tokenType = TokenOpRange
+				st = stateDotDot
+			} else {
+				break outer
+			}
+		case stateDotDot:
+			if c == '.' {
+				tokenType = TokenOpRest
+				t.index++
+			}
+			break outer
 		case stateQuestionMark:
 			switch c {
 			case '+':

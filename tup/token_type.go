@@ -54,6 +54,10 @@ const (
 	TokenOpLogicalAnd // &&
 	TokenOpLogicalOr  // ||
 
+	// Range and Rest Operators
+	TokenOpRange
+	TokenOpRest
+
 	// Assignment
 	TokenOpBitwiseAndEqual // &=
 	TokenOpBitwiseOrEqual  // |=
@@ -167,6 +171,10 @@ var TokenTypes = map[TokenType]string{
 	// Logical Operators
 	TokenOpLogicalAnd: "&&",
 	TokenOpLogicalOr:  "||",
+
+	// Range and Rest Operators
+	TokenOpRange: "..",
+	TokenOpRest:  "...",
 
 	// Assignment
 	TokenOpBitwiseAndEqual: "&=",
