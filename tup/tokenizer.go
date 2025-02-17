@@ -434,13 +434,9 @@ outer:
 			switch {
 			case c >= '0' && c <= '9':
 				st = stateFloat
-			case (c >= 'A' && c <= 'Z') ||
-				(c >= 'a' && c <= 'z') ||
-				c == '_' || c == '.':
-				st = stateFloat
-				invalid = true
 			default:
-				invalid = true
+				tokenType = TokenDecimalLiteral
+				t.index--
 				break outer
 			}
 		case stateFloat:
@@ -449,9 +445,10 @@ outer:
 				// Continue float.
 			case c == 'e':
 				st = stateExponent
+			case c == '.':
+				break outer
 			case (c >= 'A' && c <= 'd') ||
-				(c >= 'f' && c <= 'z') ||
-				(c == '.'):
+				(c >= 'f' && c <= 'z'):
 				invalid = true
 			default:
 				break outer
@@ -484,8 +481,10 @@ outer:
 			switch {
 			case c >= '0' && c <= '9':
 				// Continue exponent integer.
-			case (c >= 'A' && c <= 'Z') ||
-				c == '_' ||
+			case c == '.':
+				break outer
+			case c == '_' ||
+				(c >= 'A' && c <= 'Z') ||
 				(c >= 'a' && c <= 'z'):
 				invalid = true
 			default:
@@ -508,7 +507,9 @@ outer:
 			switch {
 			case c == '0' || c == '1' || c == '_':
 				// Continue binary.
-			case c == '.' || (c >= '2' && c <= '9') ||
+			case c == '.':
+				break outer
+			case (c >= '2' && c <= '9') ||
 				(c >= 'A' && c <= 'Z') ||
 				(c >= 'a' && c <= 'z'):
 				invalid = true
@@ -537,7 +538,9 @@ outer:
 				(c >= 'A' && c <= 'F') || c == '_' ||
 				(c >= 'a' && c <= 'f'):
 				// Continue hexadecimal.
-			case c == '.' || (c >= 'G' && c <= 'Z') || (c >= 'g' && c <= 'z'):
+			case c == '.':
+				break outer
+			case (c >= 'G' && c <= 'Z') || (c >= 'g' && c <= 'z'):
 				invalid = true
 			default:
 				break outer
@@ -561,8 +564,9 @@ outer:
 			switch {
 			case (c >= '0' && c <= '7') || c == '_':
 				// Continue octal.
-			case c == '.' ||
-				(c >= '8' && c <= '9') ||
+			case c == '.':
+				break outer
+			case (c >= '8' && c <= '9') ||
 				(c >= 'A' && c <= 'Z') ||
 				(c >= 'a' && c <= 'z'):
 				invalid = true
@@ -604,20 +608,16 @@ outer:
 			case c == 0:
 				invalid = true
 				break outer
-
 			case c == 'x':
 				st = stateByteEscapeSequence
 				escapeDigits = 0
-
 			case c == 'u':
 				st = stateUnicodeEscapeSequence
 				escapeDigits = 0
-
 			case c == 'n' || c == 't' || c == '"' || c == '\'' || c == '\\' ||
 				c == 'r' || c == 'b' || c == 'f' || c == 'v' || c == '0':
 				// Valid single-char escape; return to string literal
 				st = stateStringLiteral
-
 			default:
 				// Any other char => mark invalid but return to string literal
 				st = stateStringLiteral
@@ -628,7 +628,6 @@ outer:
 			case c == 0:
 				invalid = true
 				break outer
-
 			case (c >= '0' && c <= '9') ||
 				(c >= 'A' && c <= 'F') ||
 				(c >= 'a' && c <= 'f'):
@@ -636,7 +635,6 @@ outer:
 				if escapeDigits == 4 {
 					st = stateStringLiteral
 				}
-
 			default:
 				st = stateStringLiteral
 				invalid = true
@@ -646,7 +644,6 @@ outer:
 			case c == 0:
 				invalid = true
 				break outer
-
 			case (c >= '0' && c <= '9') ||
 				(c >= 'A' && c <= 'F') ||
 				(c >= 'a' && c <= 'f'):
@@ -654,7 +651,6 @@ outer:
 				if escapeDigits == 2 {
 					st = stateStringLiteral
 				}
-
 			default:
 				st = stateStringLiteral
 				invalid = true

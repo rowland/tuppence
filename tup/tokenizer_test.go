@@ -240,9 +240,6 @@ func TestBinaryLiterals(t *testing.T) {
 	testTokenizeInvalid(t, "0bf", TokenBinaryLiteral)
 	testTokenizeInvalid(t, "0bz", TokenBinaryLiteral)
 
-	testTokenizeInvalid(t, "0b1.", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0b1.0", TokenBinaryLiteral)
-
 	// These tests assume that uppercase "0B" is not a valid binary literal.
 	testTokenizeInvalid(t, "0B0", TokenDecimalLiteral)
 	testTokenizeInvalid(t, "0b_", TokenBinaryLiteral)
@@ -291,9 +288,6 @@ func TestOctalLiterals(t *testing.T) {
 	testTokenize(t, "0o0123_4567", TokenOctalLiteral)
 	testTokenize(t, "0o01_23_45_67", TokenOctalLiteral)
 	testTokenize(t, "0o0_1_2_3_4_5_6_7", TokenOctalLiteral)
-
-	testTokenizeInvalid(t, "0o7.", TokenOctalLiteral)
-	testTokenizeInvalid(t, "0o7.0", TokenOctalLiteral)
 
 	testTokenizeInvalid(t, "0O0", TokenDecimalLiteral)
 	testTokenizeInvalid(t, "0o_", TokenOctalLiteral)
@@ -346,13 +340,6 @@ func TestHexadecimalLiterals(t *testing.T) {
 	testTokenize(t, "0x0__1", TokenHexadecimalLiteral)
 	testTokenize(t, "0x0_1_", TokenHexadecimalLiteral)
 	testTokenizeSeqInvalid(t, "0x_,", []TokenType{TokenHexadecimalLiteral, TokenComma}, true)
-
-	testTokenizeInvalid(t, "0x1.0", TokenHexadecimalLiteral)
-	testTokenizeInvalid(t, "0xF.0", TokenHexadecimalLiteral)
-	testTokenizeInvalid(t, "0xF.F", TokenHexadecimalLiteral)
-
-	testTokenizeInvalid(t, "0x1.", TokenHexadecimalLiteral)
-	testTokenizeInvalid(t, "0xF.", TokenHexadecimalLiteral)
 }
 
 func TestRawStringLiterals(t *testing.T) {
@@ -427,11 +414,80 @@ func TestFloatLiterals(t *testing.T) {
 	testTokenize(t, "3.14_159", TokenFloatLiteral) // 3.14159
 
 	// Invalid floats
-	testTokenizeInvalid(t, "1.2.3", TokenFloatLiteral)   // multiple dots
 	testTokenizeInvalid(t, "1.2e", TokenFloatLiteral)    // missing exponent digits
 	testTokenizeInvalid(t, "1.2ez", TokenFloatLiteral)   // non-digit exponent suffix
 	testTokenizeInvalid(t, "1.2e++3", TokenFloatLiteral) // double sign
-	testTokenizeInvalid(t, "1..2", TokenFloatLiteral)    // extra dot
+	// testTokenizeInvalid(t, "1..2", TokenFloatLiteral)    // TODO: range
 	testTokenizeInvalid(t, "123e", TokenFloatLiteral)    // no exponent digits
 	testTokenizeInvalid(t, "12.34e-", TokenFloatLiteral) // minus with no digits
+}
+
+func TestDecimalMemberAccess(t *testing.T) {
+	const source = "123.string()"
+	testTokenizeSeq(t, source, []TokenType{
+		TokenDecimalLiteral, // 123
+		TokenDot,            // .
+		TokenIdentifier,     // string
+		TokenOpenParen,      // (
+		TokenCloseParen,     // )
+		TokenEOF,
+	})
+}
+
+func TestBinaryMemberAccess(t *testing.T) {
+	const source = "0b1010.string()"
+	testTokenizeSeq(t, source, []TokenType{
+		TokenBinaryLiteral, // 0b1010
+		TokenDot,           // .
+		TokenIdentifier,    // string
+		TokenOpenParen,     // (
+		TokenCloseParen,    // )
+		TokenEOF,
+	})
+}
+
+func TestOctalMemberAccess(t *testing.T) {
+	const source = "0o123.string()"
+	testTokenizeSeq(t, source, []TokenType{
+		TokenOctalLiteral, // 0o123
+		TokenDot,          // .
+		TokenIdentifier,   // string
+		TokenOpenParen,    // (
+		TokenCloseParen,   // )
+		TokenEOF,
+	})
+}
+
+func TestHexadecimalMemberAccess(t *testing.T) {
+	const source = "0xDEADBEEF.string()"
+	testTokenizeSeq(t, source, []TokenType{
+		TokenHexadecimalLiteral, // 0xDEADBEEF
+		TokenDot,                // .
+		TokenIdentifier,         // string
+		TokenOpenParen,          // (
+		TokenCloseParen,         // )
+		TokenEOF,
+	})
+}
+
+func TestFloatMemberAccess(t *testing.T) {
+	const source1 = "123e456.string()"
+	testTokenizeSeq(t, source1, []TokenType{
+		TokenFloatLiteral, // 123e456
+		TokenDot,          // .
+		TokenIdentifier,   // string
+		TokenOpenParen,    // (
+		TokenCloseParen,   // )
+		TokenEOF,
+	})
+
+	const source2 = "123.456.string()"
+	testTokenizeSeq(t, source2, []TokenType{
+		TokenFloatLiteral, // 123.456
+		TokenDot,          // .
+		TokenIdentifier,   // string
+		TokenOpenParen,    // (
+		TokenCloseParen,   // )
+		TokenEOF,
+	})
 }
