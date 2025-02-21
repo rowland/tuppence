@@ -63,9 +63,13 @@ content_line = { byte_escape_sequence
 
 contract_declaration = "contract" "(" eol contract_members ")" .
 
-contract_members = contract_member_declaration { eol contract_member_declaration } eol .
+contract_members = contract_member { eol contract_member } eol .
 
-contract_member_declaration = annotations function_declaration_lhs "=" function_type .
+contract_member = contract_function | contract_field .
+
+contract_function = function_declaration_lhs "=" function_type .
+
+contract_field = identifier [ "[" type_parameter "]" ] ":" type .
 
 decimal_digit = "0"-"9" .
 
