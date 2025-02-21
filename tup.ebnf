@@ -54,7 +54,12 @@ constant = literal
          | scoped_identifier
          | identifier .
 
-content_line = { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - eol - "```" } eol .
+content_line = { byte_escape_sequence 
+               | unicode_escape_sequence 
+               | escape_sequence 
+               | interpolation 
+               | character - eol - "```" 
+               } eol .
 
 contract_declaration = "contract" "(" eol contract_members ")" .
 
