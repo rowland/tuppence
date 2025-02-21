@@ -35,10 +35,10 @@ func main() {
 	}
 	content := string(data)
 
-	// Split input into rule blocks (assuming one or more blank lines separate rules)
+	// Split input into rule blocks (assuming one or more blank lines separate rules).
 	ruleBlocks := splitRules(content)
 
-	// Extract rule name from each block (a valid identifier before the '=')
+	// Extract rule name from each block (a valid identifier before the "=").
 	var rules []Rule
 	ruleNameRegex := regexp.MustCompile(`^\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*=`)
 	for _, block := range ruleBlocks {
@@ -99,10 +99,23 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Also build a map from ruleName -> entire rule content for the "preview tooltip".
+	// We'll embed that in JS as well, so we can show it on hover.
+	ruleContents := make(map[string]string)
+	for _, r := range rules {
+		// Escape HTML for safe insertion. We'll wrap it in <code> in JS.
+		ruleContents[r.Name] = html.EscapeString(r.Content)
+	}
+	contentsJSON, err := json.Marshal(ruleContents)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error marshaling rule contents: %v\n", err)
+		os.Exit(1)
+	}
+
 	// Build the HTML.
 	var sb strings.Builder
 
-	// Reduced margins/padding, plus absolute-position popup that scrolls if needed:
+	// Minimal margins/padding, plus absolute-position popups, etc.
 	sb.WriteString(`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -157,9 +170,10 @@ func main() {
     .rule-name:hover { 
       text-decoration: underline; 
     }
+    /* Dependency popup (on click of self-reference) */
     #dependencyPopup {
       display: none;
-      position: absolute;  /* changed from fixed to absolute */
+      position: absolute;
       background: #fff;
       border: 2px solid #3498db;
       padding: 10px;
@@ -168,7 +182,7 @@ func main() {
       z-index: 1000;
       max-width: 400px;
       max-height: 300px;
-      overflow-y: auto; /* allow scrolling if the list is long */
+      overflow-y: auto;
       word-wrap: break-word;
     }
     #dependencyPopup ul {
@@ -181,6 +195,29 @@ func main() {
     }
     #dependencyPopup a {
       color: #3498db;
+    }
+
+    /* Preview tooltip (on hover over a link) */
+    #previewPopup {
+      display: none;
+      position: absolute;
+      background: #fff;
+      border: 1px solid #aaa;
+      border-radius: 3px;
+      padding: 6px;
+      max-width: 450px;
+      max-height: 200px;
+      overflow: hidden; /* keep it simple; no scrolling */
+      pointer-events: none; /* so it vanishes when mouse leaves the link */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      z-index: 2000;
+    }
+    #previewPopup code {
+      font-family: "Courier New", monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+      padding: 0;
     }
   </style>
 </head>
@@ -200,14 +237,19 @@ func main() {
 
 	sb.WriteString(`  </div>
   <div id="dependencyPopup"></div>
+  <div id="previewPopup"></div>
 `)
 
-	// JavaScript code:
-	// 1) Instead of inline onclick with ruleName, store data-rule in a span.
-	// 2) On click, position the popup absolutely near the clicked span.
-	// 3) Remove "Click here to close" text from the popup.
+	// JavaScript code for:
+	//   1) Dependencies (click on self-ref).
+	//   2) Rule content preview (hover on link).
 	jsBlock := "\n  <script>\n" +
+		"    // Reverse-dependency mapping\n" +
 		"    var dependents = " + string(depJSON) + ";\n\n" +
+		"    // Full rule text for preview tooltips\n" +
+		"    var ruleContents = " + string(contentsJSON) + ";\n\n" +
+
+		"    // Insert clickable self-reference spans or anchor links.\n" +
 		"    function processTextNodes(node, ruleID, pattern) {\n" +
 		"      if (node.nodeType === Node.TEXT_NODE) {\n" +
 		"        var replaced = node.textContent.replace(pattern, function(match) {\n" +
@@ -215,7 +257,8 @@ func main() {
 		"            // self-reference -> clickable span with data-rule\n" +
 		"            return `<span class=\"rule-name\" data-rule=\"${ruleID}\" onclick=\"showDeps(event)\">${match}</span>`;\n" +
 		"          } else {\n" +
-		"            return `<a href=\"#${match}\">${match}</a>`;\n" +
+		"            // normal link -> anchor with data-rule for tooltip\n" +
+		"            return `<a href=\"#${match}\" data-rule=\"${match}\">${match}</a>`;\n" +
 		"          }\n" +
 		"        });\n" +
 		"        var span = document.createElement(\"span\");\n" +
@@ -227,16 +270,24 @@ func main() {
 		"        });\n" +
 		"      }\n" +
 		"    }\n\n" +
+
 		"    document.addEventListener(\"DOMContentLoaded\", function() {\n" +
 		"      var ruleNames = Object.keys(dependents).sort();\n" +
 		"      var pattern = new RegExp(\"\\\\b(\" + ruleNames.join(\"|\") + \")\\\\b\", \"g\");\n" +
+		"      // Insert clickable spans or anchors.\n" +
 		"      document.querySelectorAll(\"div.rule > code\").forEach(function(codeElem) {\n" +
 		"        var ruleID = codeElem.parentElement.id;\n" +
 		"        processTextNodes(codeElem, ruleID, pattern);\n" +
+		"      });\n\n" +
+		"      // Now attach mouseenter/mouseleave for preview tooltips.\n" +
+		"      document.querySelectorAll(\"div.rule a[data-rule]\").forEach(function(linkElem) {\n" +
+		"        linkElem.addEventListener(\"mouseenter\", showPreview);\n" +
+		"        linkElem.addEventListener(\"mouseleave\", hidePreview);\n" +
 		"      });\n" +
 		"    });\n\n" +
+
+		"    // Show dependency popup near the clicked span.\n" +
 		"    function showDeps(e) {\n" +
-		"      // e.target is the clicked span with data-rule\n" +
 		"      var ruleName = e.target.dataset.rule;\n" +
 		"      var deps = dependents[ruleName] || [];\n" +
 		"      var message = \"\";\n" +
@@ -259,8 +310,8 @@ func main() {
 		"      popup.style.left = (window.scrollX + rect.left) + \"px\";\n" +
 		"      e.stopPropagation();\n" +
 		"    }\n\n" +
+		"    // Clicking outside hides the dependency popup.\n" +
 		"    document.addEventListener(\"click\", function(e) {\n" +
-		"      // If we click outside the popup or the rule-name span, hide the popup.\n" +
 		"      var popup = document.getElementById(\"dependencyPopup\");\n" +
 		"      if (popup.style.display === \"block\") {\n" +
 		"        var isPopup = popup.contains(e.target);\n" +
@@ -269,7 +320,26 @@ func main() {
 		"          popup.style.display = \"none\";\n" +
 		"        }\n" +
 		"      }\n" +
-		"    });\n" +
+		"    });\n\n" +
+
+		"    // Preview tooltip on hover.\n" +
+		"    function showPreview(e) {\n" +
+		"      var ruleName = e.target.dataset.rule;\n" +
+		"      if (!ruleName) return;\n" +
+		"      var content = ruleContents[ruleName] || \"(No content)\";\n" +
+		"      var popup = document.getElementById(\"previewPopup\");\n" +
+		"      popup.innerHTML = `<code>${content}</code>`;\n" +
+		"\n" +
+		"      // Position near the link.\n" +
+		"      var rect = e.target.getBoundingClientRect();\n" +
+		"      popup.style.display = \"block\";\n" +
+		"      popup.style.top = (window.scrollY + rect.bottom + 5) + \"px\";\n" +
+		"      popup.style.left = (window.scrollX + rect.left) + \"px\";\n" +
+		"    }\n\n" +
+		"    function hidePreview(e) {\n" +
+		"      var popup = document.getElementById(\"previewPopup\");\n" +
+		"      popup.style.display = \"none\";\n" +
+		"    }\n" +
 		"  </script>\n" +
 		"</body>\n" +
 		"</html>\n"
@@ -302,6 +372,7 @@ func extractReferences(ruleContent string, ruleSet map[string]bool) map[string]b
 	for i, r := range ruleContent {
 		if r == '"' {
 			inQuote = !inQuote
+			// If we just closed a quote, flush any token collected.
 			if token.Len() > 0 && !inQuote {
 				word := token.String()
 				if ruleSet[word] {
