@@ -24,7 +24,7 @@ assignment = assignment_lhs "=" [ "mut" ] expression .
 assignment_lhs = identifier { "," identifier } [ "," rest_operator ] 
                | "(" labeled_assignment_lhs ")" .
 
-binary_expression = chained_expression
+binary_expression = chained_expression .
 
 binary_literal = "0b" ( "0" | "1" ) { "0" | "1" | "_" } .
 
@@ -38,7 +38,7 @@ boolean_literal = "true" | "false" .
 
 break_expression = "break" expression .
 
-byte_escape_sequence = "\\" "x" hex_digit hex_digit
+byte_escape_sequence = "\\" "x" hex_digit hex_digit .
 
 case_block = match_condition block .
 
@@ -46,7 +46,7 @@ chained_expression = prec1_expression { "|>" function_call } .
 
 character = (* valid UTF-8 codepoint *) .
 
-comment = "#" { not_eol } eol
+comment = "#" { not_eol } eol .
 
 condition = expression .
 
@@ -190,7 +190,7 @@ integer_literal = binary_literal
 
 interpolated_string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - '"' - eol } '"' .
 
-interpolation = "\\(" expression ")"
+interpolation = "\\(" expression ")" .
 
 is_op = "is" .
 
@@ -400,7 +400,7 @@ try_expression = "try" expression
 
 tuple_literal = "(" [ labeled_tuple_members | tuple_members ] ")" .
 
-tuple_member = expression
+tuple_member = expression .
 
 tuple_members = tuple_member "," { tuple_member "," } [ tuple_member ] .
 
