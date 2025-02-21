@@ -69,7 +69,7 @@ contract_member = contract_function | contract_field .
 
 contract_function = function_declaration_lhs "=" function_type .
 
-contract_field = identifier [ "[" type_parameter "]" ] ":" type .
+contract_field = identifier [ "[" type_parameter "]" ] ":" ( nilable_type | type ) .
 
 decimal_digit = "0"-"9" .
 

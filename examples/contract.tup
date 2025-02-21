@@ -1,16 +1,16 @@
-Adder[a] = contract(
+Adder[a] = contract (
     add[a] = fn(a, a) a
 )
 
-Multiplier[a] = contract(
+Multiplier[a] = contract (
     mul[a] = fn(a, a) a
 )
 
-Stringer[a] = contract(
+Stringer[a] = contract (
     string[a] = fn(a) String
 )
 
-Numeric[a] = contract(
+Numeric[a] = contract (
     eq?[a] = fn(a, a) Bool
     lt?[a] = fn(a, a) Bool
     gt?[a] = fn(a, a) Bool
@@ -33,13 +33,30 @@ Numeric[a] = contract(
     checked_pow[a] = fn(a, Int) a
 )
 
-Ordered[a] = contract(
+Ordered[a] = contract (
     eq?[a] = fn(a, a) Bool
     lt?[a] = fn(a, a) Bool
 )
 
-Printable[a] = contract(
+Printable[a] = contract (
     string[a] = fn(a) String
 )
 
 OrderedPrintable[a] = Ordered[a] | Printable[a]
+
+# must have id field of type Int
+HasIntID = contract (
+    id: Int
+)
+
+# id may be returned, but no operations will be performed on it
+HasID = contract (
+    id[a]: a
+)
+
+# id's type must satisfy Numeric
+HasNumericID = contract (
+    id[a]: Numeric[a]
+)
+
+HasOptionalID = contract ( id[a]: ?Numeric[a] )
