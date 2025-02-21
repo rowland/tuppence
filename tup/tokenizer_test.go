@@ -7,6 +7,7 @@ import (
 
 // Helper: tokenize a sequence of tokens and check types.
 func testTokenizeSeq(t *testing.T, source string, expected []TokenType) {
+	t.Helper()
 	tokenizer := NewTokenizer([]byte(source), "test.go")
 	for i, exp := range expected {
 		token := tokenizer.Next()
@@ -35,6 +36,7 @@ func testTokenizeSeq(t *testing.T, source string, expected []TokenType) {
 
 // Helper for tokens that are expected to be invalid.
 func testTokenizeInvalid(t *testing.T, source string, expectedType TokenType) {
+	t.Helper()
 	tokenizer := NewTokenizer([]byte(source), "test.go")
 	token := tokenizer.Next()
 	if token.Type != expectedType {
@@ -58,6 +60,7 @@ func testTokenizeInvalid(t *testing.T, source string, expectedType TokenType) {
 
 // Helper for sequences where the first token may be marked invalid.
 func testTokenizeSeqInvalid(t *testing.T, source string, expected []TokenType, invalid bool) {
+	t.Helper()
 	tokenizer := NewTokenizer([]byte(source), "test.go")
 	for i, exp := range expected {
 		token := tokenizer.Next()
@@ -79,6 +82,7 @@ func testTokenizeSeqInvalid(t *testing.T, source string, expected []TokenType, i
 }
 
 func testTokenize(t *testing.T, source string, expectedType TokenType) {
+	t.Helper()
 	tokenizer := NewTokenizer([]byte(source), "test.go")
 	token := tokenizer.Next()
 	if token.Type != expectedType {
