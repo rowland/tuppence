@@ -43,6 +43,7 @@
 | % | mod |
 | ^ | pow |
 | [] | index |
+| []! | safe_index |
 | << | shl(a, x) |
 | >> | shr(a, x) |
 | <<= | (a = shl(a, x) ) |
@@ -1449,7 +1450,8 @@ Tuppence does **not** treat `sizeof` as a reserved keyword. Instead, it is a bui
   - If used as `x.sizeof()`, it resolves based on `x`'s module.
 - **No Special Grammar Rule**: `sizeof` behaves like `cap` and `len`, remaining a standard function.
 
-Example Usage:
+Example:
+
 ```tuppence
 x = (a: 1, b: 2)
 size = sizeof(x)  # Resolves to built-in sizeof function
@@ -1457,3 +1459,92 @@ size = sizeof(x)  # Resolves to built-in sizeof function
 sizeof = fn(x) 0  # Shadowing allowed
 size2 = sizeof(x)  # Calls the locally defined sizeof
 ```
+
+## Indexing in Tuppence
+
+Tuppence provides two forms of indexing for accessing elements within arrays and other collections:
+
+- Standard Indexing
+- Safe Indexing
+
+### Standard Indexing ([])
+
+Indexing an array or collection with `[]` calls `index(self, key)`, which should return either an element or an error.
+
+Example:
+
+```tuppence
+values = [5]Int[10, 20, 30, 40, 50]
+
+x = values[2]    # Ok: Returns 30
+y = values[10]   # ERROR: Returns ErrIndexOutOfBounds
+```
+
+The return type is a union of the element type and `ErrIndexOutOfBounds`.
+
+```tuppence
+value = values[10]  # Type: Int | ErrIndexOutOfBounds
+```
+
+### Custom Overloading
+
+Library authors can define `index()` for their own data structures.
+
+```tuppence
+Person = type (
+    id: Int
+    name: String
+    age: Int
+)
+
+People = type (
+    len: Int
+    # other fields organizing Person records
+)
+
+index = fn(self: People, key: Int) Person | ErrIndexOutOfBounds {
+    if key < 0 || key >= self.len { return ErrIndexOutOfBounds }
+    # code returning a Person value
+}
+```
+
+### Safe Indexing ([]!)
+
+Indexing an array or collection with `[]!` guarantees a valid result by calling `safe_index(array, key)`.
+
+If `safe_index` is not defined, an error is reported.
+
+Safe Indexing Rules
+
+Safe indexing is allowed when the compiler can prove the index is within bounds, such as:
+
+1. Compile-time constant indices
+
+```tuppence
+values = [5]Int[10, 20, 30, 40, 50]
+
+x = values[2]!   # Ok: Returns 30
+y = values[10]!  # Compile-time ERROR: Index out of bounds
+```
+
+2. Looping over a known range
+
+```tuppence
+for i in 0..4 {
+    print(values[i]!)  # Ok: Guaranteed in range
+}
+```
+
+3. Comparing index to constants
+
+```tuppence
+for i = 0; i < 100; i + 1 {
+    if i < len(values) && i >= -len(values) {
+        print(values[i]!)
+    }
+}
+```
+
+### Custom Overloading
+
+Until the compiler can ascertain the expected size of a custom data structure, the `[]!` operator cannot be supported.

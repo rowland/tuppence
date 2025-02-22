@@ -336,6 +336,7 @@ primary_expression = "(" expression ")"
                    | break_expression
                    | member_access
                    | tuple_update_expression
+                   | safe_indexed_access
                    | indexed_access
                    | range
                    | identifier
@@ -372,6 +373,8 @@ return_type = union_with_error
             | "error" .
 
 rune_literal = "'" ( byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - eol ) "'" .
+
+safe_indexed_access = expression "[" index { "," index } "]" "!" .
 
 simple_annotation = "@" identifier .
 
@@ -517,5 +520,6 @@ valid_negatable_expression = literal
                            | function_call
                            | member_access
                            | tuple_update_expression
+                           | safe_indexed_access
                            | indexed_access
                            | identifier .
