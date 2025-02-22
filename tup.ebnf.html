@@ -5,8 +5,7 @@
   <title>EBNF Grammar</title>
   <style>
     body { 
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0; 
       background-color: #f4f4f4; 
       font-family: Arial, sans-serif; 
       line-height: 1.6; 
@@ -14,8 +13,7 @@
     h1 { 
       text-align: center; 
       color: #2c3e50;
-      margin: 0;
-      padding: 10px 0;
+      margin: 0; padding: 10px 0;
     }
     .grammar { 
       max-width: 900px; 
@@ -35,8 +33,7 @@
       font-family: "Courier New", monospace; 
       white-space: pre-wrap;
       word-break: break-word;
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
     }
     .rule a { 
       color: #3498db; 
@@ -52,7 +49,7 @@
     .rule-name:hover { 
       text-decoration: underline; 
     }
-    /* Dependency popup (on click of self-reference) */
+     
     #dependencyPopup {
       display: none;
       position: absolute;
@@ -68,18 +65,11 @@
       word-wrap: break-word;
     }
     #dependencyPopup ul {
-      list-style-type: none;
-      padding-left: 0;
-      margin: 0;
+      list-style-type: none; padding-left: 0; margin: 0;
     }
-    #dependencyPopup li {
-      margin: 5px 0;
-    }
-    #dependencyPopup a {
-      color: #3498db;
-    }
-
-    /* Preview tooltip (on hover over a link) */
+    #dependencyPopup li { margin: 5px 0; }
+    #dependencyPopup a { color: #3498db; }
+     
     #previewPopup {
       display: none;
       position: absolute;
@@ -89,8 +79,8 @@
       padding: 6px;
       max-width: 450px;
       max-height: 200px;
-      overflow: hidden; /* keep it simple; no scrolling */
-      pointer-events: none; /* so it vanishes when mouse leaves the link */
+      overflow: hidden;
+      pointer-events: none;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       z-index: 2000;
     }
@@ -98,8 +88,7 @@
       font-family: "Courier New", monospace;
       white-space: pre-wrap;
       word-break: break-word;
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
     }
   </style>
 </head>
@@ -107,458 +96,458 @@
   <h1>EBNF Grammar</h1>
   <div class="grammar">
     <div class="rule" id="add_sub_op">
-      <code>add_sub_op = &#34;+&#34; | &#34;?+&#34; | &#34;-&#34; | &#34;?-&#34; | &#34;|&#34; .</code>
-    </div>
+  <code>add_sub_op = &#34;+&#34; | &#34;?+&#34; | &#34;-&#34; | &#34;?-&#34; | &#34;|&#34; .</code>
+</div>
 
-    <div class="rule" id="annotation">
-      <code>annotation = namespaced_annotation | simple_annotation .</code>
-    </div>
+<div class="rule" id="annotation">
+  <code>annotation = namespaced_annotation | simple_annotation .</code>
+</div>
 
-    <div class="rule" id="annotation_value">
-      <code>annotation_value = string_literal | [&#34;-&#34;] number | boolean_literal | type_reference .</code>
-    </div>
+<div class="rule" id="annotation_value">
+  <code>annotation_value = string_literal | [&#34;-&#34;] number | boolean_literal | type_reference .</code>
+</div>
 
-    <div class="rule" id="annotations">
-      <code>annotations = [ annotation { annotation } ] .</code>
-    </div>
+<div class="rule" id="annotations">
+  <code>annotations = [ annotation { annotation } ] .</code>
+</div>
 
-    <div class="rule" id="argument">
-      <code>argument = ( expression | spread_argument ) .</code>
-    </div>
+<div class="rule" id="argument">
+  <code>argument = ( expression | spread_argument ) .</code>
+</div>
 
-    <div class="rule" id="arguments">
-      <code>arguments = argument { &#34;,&#34; argument } [ &#34;,&#34; ] .</code>
-    </div>
+<div class="rule" id="arguments">
+  <code>arguments = argument { &#34;,&#34; argument } [ &#34;,&#34; ] .</code>
+</div>
 
-    <div class="rule" id="array_function_call">
-      <code>array_function_call = &#34;array&#34; &#34;(&#34; type_identifier &#34;,&#34; expression &#34;)&#34; .</code>
-    </div>
+<div class="rule" id="array_function_call">
+  <code>array_function_call = &#34;array&#34; &#34;(&#34; type_identifier &#34;,&#34; expression &#34;)&#34; .</code>
+</div>
 
-    <div class="rule" id="array_literal">
-      <code>array_literal = &#34;[&#34; [ array_members | array_literal ] &#34;]&#34;
+<div class="rule" id="array_literal">
+  <code>array_literal = &#34;[&#34; [ array_members | array_literal ] &#34;]&#34;
               | type_identifier &#34;[&#34; [ array_members | array_literal ] &#34;]&#34; .</code>
-    </div>
+</div>
 
-    <div class="rule" id="array_members">
-      <code>array_members = expression { &#34;,&#34; expression } [ &#34;,&#34; ] .</code>
-    </div>
+<div class="rule" id="array_members">
+  <code>array_members = expression { &#34;,&#34; expression } [ &#34;,&#34; ] .</code>
+</div>
 
-    <div class="rule" id="array_pattern">
-      <code>array_pattern = &#34;[&#34; pattern { &#34;,&#34; pattern } [ &#34;,&#34; rest_operator ] &#34;]&#34; .</code>
-    </div>
+<div class="rule" id="array_pattern">
+  <code>array_pattern = &#34;[&#34; pattern { &#34;,&#34; pattern } [ &#34;,&#34; rest_operator ] &#34;]&#34; .</code>
+</div>
 
-    <div class="rule" id="assignment">
-      <code>assignment = assignment_lhs &#34;=&#34; [ &#34;mut&#34; ] expression .</code>
-    </div>
+<div class="rule" id="assignment">
+  <code>assignment = assignment_lhs &#34;=&#34; [ &#34;mut&#34; ] expression .</code>
+</div>
 
-    <div class="rule" id="assignment_lhs">
-      <code>assignment_lhs = identifier { &#34;,&#34; identifier } [ &#34;,&#34; rest_operator ] 
+<div class="rule" id="assignment_lhs">
+  <code>assignment_lhs = identifier { &#34;,&#34; identifier } [ &#34;,&#34; rest_operator ] 
                | &#34;(&#34; labeled_assignment_lhs &#34;)&#34; .</code>
-    </div>
+</div>
 
-    <div class="rule" id="binary_expression">
-      <code>binary_expression = chained_expression .</code>
-    </div>
+<div class="rule" id="binary_expression">
+  <code>binary_expression = chained_expression .</code>
+</div>
 
-    <div class="rule" id="binary_literal">
-      <code>binary_literal = &#34;0b&#34; ( &#34;0&#34; | &#34;1&#34; ) { &#34;0&#34; | &#34;1&#34; | &#34;_&#34; } .</code>
-    </div>
+<div class="rule" id="binary_literal">
+  <code>binary_literal = &#34;0b&#34; ( &#34;0&#34; | &#34;1&#34; ) { &#34;0&#34; | &#34;1&#34; | &#34;_&#34; } .</code>
+</div>
 
-    <div class="rule" id="block">
-      <code>block = &#34;{&#34; block_body &#34;}&#34; .</code>
-    </div>
+<div class="rule" id="block">
+  <code>block = &#34;{&#34; block_body &#34;}&#34; .</code>
+</div>
 
-    <div class="rule" id="block_body">
-      <code>block_body = { statement } expression .</code>
-    </div>
+<div class="rule" id="block_body">
+  <code>block_body = { statement } expression .</code>
+</div>
 
-    <div class="rule" id="block_parameters">
-      <code>block_parameters = &#34;|&#34; assignment_lhs &#34;|&#34; .</code>
-    </div>
+<div class="rule" id="block_parameters">
+  <code>block_parameters = &#34;|&#34; assignment_lhs &#34;|&#34; .</code>
+</div>
 
-    <div class="rule" id="boolean_literal">
-      <code>boolean_literal = &#34;true&#34; | &#34;false&#34; .</code>
-    </div>
+<div class="rule" id="boolean_literal">
+  <code>boolean_literal = &#34;true&#34; | &#34;false&#34; .</code>
+</div>
 
-    <div class="rule" id="break_expression">
-      <code>break_expression = &#34;break&#34; expression .</code>
-    </div>
+<div class="rule" id="break_expression">
+  <code>break_expression = &#34;break&#34; expression .</code>
+</div>
 
-    <div class="rule" id="byte_escape_sequence">
-      <code>byte_escape_sequence = &#34;\\&#34; &#34;x&#34; hex_digit hex_digit .</code>
-    </div>
+<div class="rule" id="byte_escape_sequence">
+  <code>byte_escape_sequence = &#34;\\&#34; &#34;x&#34; hex_digit hex_digit .</code>
+</div>
 
-    <div class="rule" id="case_block">
-      <code>case_block = match_condition block .</code>
-    </div>
+<div class="rule" id="case_block">
+  <code>case_block = match_condition block .</code>
+</div>
 
-    <div class="rule" id="chained_expression">
-      <code>chained_expression = prec1_expression { &#34;|&gt;&#34; function_call } .</code>
-    </div>
+<div class="rule" id="chained_expression">
+  <code>chained_expression = prec1_expression { &#34;|&gt;&#34; function_call } .</code>
+</div>
 
-    <div class="rule" id="character">
-      <code>character = (* valid UTF-8 codepoint *) .</code>
-    </div>
+<div class="rule" id="character">
+  <code>character = (* valid UTF-8 codepoint *) .</code>
+</div>
 
-    <div class="rule" id="comment">
-      <code>comment = &#34;#&#34; { not_eol } eol .</code>
-    </div>
+<div class="rule" id="comment">
+  <code>comment = &#34;#&#34; { not_eol } eol .</code>
+</div>
 
-    <div class="rule" id="condition">
-      <code>condition = expression .</code>
-    </div>
+<div class="rule" id="condition">
+  <code>condition = expression .</code>
+</div>
 
-    <div class="rule" id="constant">
-      <code>constant = literal
+<div class="rule" id="constant">
+  <code>constant = literal
          | scoped_identifier
          | identifier .</code>
-    </div>
+</div>
 
-    <div class="rule" id="content_line">
-      <code>content_line = { byte_escape_sequence 
+<div class="rule" id="content_line">
+  <code>content_line = { byte_escape_sequence 
                | unicode_escape_sequence 
                | escape_sequence 
                | interpolation 
                | character - eol - &#34;```&#34; 
                } eol .</code>
-    </div>
+</div>
 
-    <div class="rule" id="contract_declaration">
-      <code>contract_declaration = &#34;contract&#34; &#34;(&#34; eol contract_members &#34;)&#34; .</code>
-    </div>
+<div class="rule" id="contract_declaration">
+  <code>contract_declaration = &#34;contract&#34; &#34;(&#34; eol contract_members &#34;)&#34; .</code>
+</div>
 
-    <div class="rule" id="contract_field">
-      <code>contract_field = identifier [ &#34;[&#34; type_parameter &#34;]&#34; ] &#34;:&#34; ( nilable_type | type ) .</code>
-    </div>
+<div class="rule" id="contract_field">
+  <code>contract_field = identifier [ &#34;[&#34; type_parameter &#34;]&#34; ] &#34;:&#34; ( nilable_type | type ) .</code>
+</div>
 
-    <div class="rule" id="contract_function">
-      <code>contract_function = function_declaration_lhs &#34;=&#34; function_type .</code>
-    </div>
+<div class="rule" id="contract_function">
+  <code>contract_function = function_declaration_lhs &#34;=&#34; function_type .</code>
+</div>
 
-    <div class="rule" id="contract_member">
-      <code>contract_member = contract_function | contract_field .</code>
-    </div>
+<div class="rule" id="contract_member">
+  <code>contract_member = contract_function | contract_field .</code>
+</div>
 
-    <div class="rule" id="contract_members">
-      <code>contract_members = contract_member { eol contract_member } eol .</code>
-    </div>
+<div class="rule" id="contract_members">
+  <code>contract_members = contract_member { eol contract_member } eol .</code>
+</div>
 
-    <div class="rule" id="decimal_digit">
-      <code>decimal_digit = &#34;0&#34;-&#34;9&#34; .</code>
-    </div>
+<div class="rule" id="decimal_digit">
+  <code>decimal_digit = &#34;0&#34;-&#34;9&#34; .</code>
+</div>
 
-    <div class="rule" id="decimal_literal">
-      <code>decimal_literal = decimal_digit { decimal_digit | &#34;_&#34; } .</code>
-    </div>
+<div class="rule" id="decimal_literal">
+  <code>decimal_literal = decimal_digit { decimal_digit | &#34;_&#34; } .</code>
+</div>
 
-    <div class="rule" id="dynamic_array">
-      <code>dynamic_array = &#34;[&#34; &#34;]&#34; type_reference .</code>
-    </div>
+<div class="rule" id="dynamic_array">
+  <code>dynamic_array = &#34;[&#34; &#34;]&#34; type_reference .</code>
+</div>
 
-    <div class="rule" id="else_block">
-      <code>else_block = &#34;else&#34; block .</code>
-    </div>
+<div class="rule" id="else_block">
+  <code>else_block = &#34;else&#34; block .</code>
+</div>
 
-    <div class="rule" id="enum_declaration">
-      <code>enum_declaration = &#34;enum&#34; &#34;(&#34; eol enum_members &#34;)&#34; .</code>
-    </div>
+<div class="rule" id="enum_declaration">
+  <code>enum_declaration = &#34;enum&#34; &#34;(&#34; eol enum_members &#34;)&#34; .</code>
+</div>
 
-    <div class="rule" id="enum_member_declaration">
-      <code>enum_member_declaration = annotations identifier [ &#34;=&#34; integer_literal ] .</code>
-    </div>
+<div class="rule" id="enum_member_declaration">
+  <code>enum_member_declaration = annotations identifier [ &#34;=&#34; integer_literal ] .</code>
+</div>
 
-    <div class="rule" id="enum_members">
-      <code>enum_members = enum_member_declaration { eol enum_member_declaration } eol .</code>
-    </div>
+<div class="rule" id="enum_members">
+  <code>enum_members = enum_member_declaration { eol enum_member_declaration } eol .</code>
+</div>
 
-    <div class="rule" id="eol">
-      <code>eol = ( &#34;\r\n&#34; | &#34;\r&#34; | &#34;\n&#34; ) .</code>
-    </div>
+<div class="rule" id="eol">
+  <code>eol = ( &#34;\r\n&#34; | &#34;\r&#34; | &#34;\n&#34; ) .</code>
+</div>
 
-    <div class="rule" id="error_tuple">
-      <code>error_tuple = &#34;error&#34; tuple_type .</code>
-    </div>
+<div class="rule" id="error_tuple">
+  <code>error_tuple = &#34;error&#34; tuple_type .</code>
+</div>
 
-    <div class="rule" id="escape_sequence">
-      <code>escape_sequence = ( &#34;\\n&#34; | &#34;\\t&#34; | &#34;\\\&#34;&#34; | &#34;\\&#39;&#34; | &#34;\\\\&#34; | &#34;\\r&#34; | &#34;\\b&#34; | &#34;\\f&#34; | &#34;\\v&#34; | &#34;\\0&#34; | &#34;\\`&#34; ) .</code>
-    </div>
+<div class="rule" id="escape_sequence">
+  <code>escape_sequence = ( &#34;\\n&#34; | &#34;\\t&#34; | &#34;\\\&#34;&#34; | &#34;\\&#39;&#34; | &#34;\\\\&#34; | &#34;\\r&#34; | &#34;\\b&#34; | &#34;\\f&#34; | &#34;\\v&#34; | &#34;\\0&#34; | &#34;\\`&#34; ) .</code>
+</div>
 
-    <div class="rule" id="exponent">
-      <code>exponent = &#34;e&#34; [ &#34;-&#34; | &#34;+&#34; ] decimal_digit { decimal_digit } .</code>
-    </div>
+<div class="rule" id="exponent">
+  <code>exponent = &#34;e&#34; [ &#34;-&#34; | &#34;+&#34; ] decimal_digit { decimal_digit } .</code>
+</div>
 
-    <div class="rule" id="export_assignment">
-      <code>export_assignment = assignment_lhs &#34;:&#34; expression .</code>
-    </div>
+<div class="rule" id="export_assignment">
+  <code>export_assignment = assignment_lhs &#34;:&#34; expression .</code>
+</div>
 
-    <div class="rule" id="export_declaration">
-      <code>export_declaration = ( export_type_qualified_function_declaration
+<div class="rule" id="export_declaration">
+  <code>export_declaration = ( export_type_qualified_function_declaration
                      | export_type_qualified_declaration
                      | export_type_declaration
                      | export_function_declaration
                      | export_assignment ) .</code>
-    </div>
+</div>
 
-    <div class="rule" id="export_function_declaration">
-      <code>export_function_declaration = annotations function_declaration_lhs &#34;:&#34; function_declaration_type block .</code>
-    </div>
+<div class="rule" id="export_function_declaration">
+  <code>export_function_declaration = annotations function_declaration_lhs &#34;:&#34; function_declaration_type block .</code>
+</div>
 
-    <div class="rule" id="export_function_type_declaration">
-      <code>export_function_type_declaration = function_type_declaration_lhs &#34;:&#34; function_type .</code>
-    </div>
+<div class="rule" id="export_function_type_declaration">
+  <code>export_function_type_declaration = function_type_declaration_lhs &#34;:&#34; function_type .</code>
+</div>
 
-    <div class="rule" id="export_type_declaration">
-      <code>export_type_declaration = type_declaration_lhs &#34;:&#34; type_declaration_rhs .</code>
-    </div>
+<div class="rule" id="export_type_declaration">
+  <code>export_type_declaration = type_declaration_lhs &#34;:&#34; type_declaration_rhs .</code>
+</div>
 
-    <div class="rule" id="export_type_qualified_declaration">
-      <code>export_type_qualified_declaration = type_identifier &#34;.&#34; identifier &#34;:&#34; expression .</code>
-    </div>
+<div class="rule" id="export_type_qualified_declaration">
+  <code>export_type_qualified_declaration = type_identifier &#34;.&#34; identifier &#34;:&#34; expression .</code>
+</div>
 
-    <div class="rule" id="export_type_qualified_function_declaration">
-      <code>export_type_qualified_function_declaration = annotations type_identifier &#34;.&#34; function_declaration_lhs &#34;:&#34; function_declaration_type block .</code>
-    </div>
+<div class="rule" id="export_type_qualified_function_declaration">
+  <code>export_type_qualified_function_declaration = annotations type_identifier &#34;.&#34; function_declaration_lhs &#34;:&#34; function_declaration_type block .</code>
+</div>
 
-    <div class="rule" id="expression">
-      <code>expression = try_expression
+<div class="rule" id="expression">
+  <code>expression = try_expression
            | binary_expression
            | unary_expression .</code>
-    </div>
+</div>
 
-    <div class="rule" id="fixed_size_array">
-      <code>fixed_size_array = &#34;[&#34; size { &#34;,&#34; size } &#34;]&#34; type_reference .</code>
-    </div>
+<div class="rule" id="fixed_size_array">
+  <code>fixed_size_array = &#34;[&#34; size { &#34;,&#34; size } &#34;]&#34; type_reference .</code>
+</div>
 
-    <div class="rule" id="fixed_size_array_literal">
-      <code>fixed_size_array_literal = fixed_size_array &#34;[&#34; array_members &#34;]&#34; .</code>
-    </div>
+<div class="rule" id="fixed_size_array_literal">
+  <code>fixed_size_array_literal = fixed_size_array &#34;[&#34; array_members &#34;]&#34; .</code>
+</div>
 
-    <div class="rule" id="float_literal">
-      <code>float_literal = decimal_digit { decimal_digit | &#34;_&#34; } &#34;.&#34; decimal_digit { decimal_digit | &#34;_&#34; } [ exponent ]
+<div class="rule" id="float_literal">
+  <code>float_literal = decimal_digit { decimal_digit | &#34;_&#34; } &#34;.&#34; decimal_digit { decimal_digit | &#34;_&#34; } [ exponent ]
               | decimal_digit { decimal_digit | &#34;_&#34; } exponent .</code>
-    </div>
+</div>
 
-    <div class="rule" id="for_block">
-      <code>for_block = &#34;{&#34; { statement } [ expression ] &#34;}&#34; .</code>
-    </div>
+<div class="rule" id="for_block">
+  <code>for_block = &#34;{&#34; { statement } [ expression ] &#34;}&#34; .</code>
+</div>
 
-    <div class="rule" id="for_expression">
-      <code>for_expression = &#34;for&#34; [ for_header | for_in_header ] for_block .</code>
-    </div>
+<div class="rule" id="for_expression">
+  <code>for_expression = &#34;for&#34; [ for_header | for_in_header ] for_block .</code>
+</div>
 
-    <div class="rule" id="for_header">
-      <code>for_header = initializer [ &#34;;&#34; condition [ &#34;;&#34; step_expression ] ] .</code>
-    </div>
+<div class="rule" id="for_header">
+  <code>for_header = initializer [ &#34;;&#34; condition [ &#34;;&#34; step_expression ] ] .</code>
+</div>
 
-    <div class="rule" id="for_in_header">
-      <code>for_in_header = ( initializer &#34;;&#34; assignment_lhs &#34;in&#34; iterable [ &#34;;&#34; step_expression ] )
+<div class="rule" id="for_in_header">
+  <code>for_in_header = ( initializer &#34;;&#34; assignment_lhs &#34;in&#34; iterable [ &#34;;&#34; step_expression ] )
               | ( assignment_lhs &#34;in&#34; iterable ) .</code>
-    </div>
+</div>
 
-    <div class="rule" id="function_arguments">
-      <code>function_arguments = ( labeled_arguments
+<div class="rule" id="function_arguments">
+  <code>function_arguments = ( labeled_arguments
                      | arguments [ &#34;,&#34; labeled_arguments ] 
                      ) [ partial_application ] .</code>
-    </div>
+</div>
 
-    <div class="rule" id="function_block">
-      <code>function_block = &#34;{&#34; [ block_parameters ] block_body &#34;}&#34; .</code>
-    </div>
+<div class="rule" id="function_block">
+  <code>function_block = &#34;{&#34; [ block_parameters ] block_body &#34;}&#34; .</code>
+</div>
 
-    <div class="rule" id="function_call">
-      <code>function_call = function_identifier [ function_parameter_types ] &#34;(&#34; [ function_arguments ] &#34;)&#34; [ function_block ] .</code>
-    </div>
+<div class="rule" id="function_call">
+  <code>function_call = function_identifier [ function_parameter_types ] &#34;(&#34; [ function_arguments ] &#34;)&#34; [ function_block ] .</code>
+</div>
 
-    <div class="rule" id="function_call_context">
-      <code>function_call_context = function_identifier [ &#34;(&#34; ( labeled_arguments | arguments [ &#34;,&#34; labeled_arguments ] ) [ partial_application ] &#34;)&#34; ] .</code>
-    </div>
+<div class="rule" id="function_call_context">
+  <code>function_call_context = function_identifier [ &#34;(&#34; ( labeled_arguments | arguments [ &#34;,&#34; labeled_arguments ] ) [ partial_application ] &#34;)&#34; ] .</code>
+</div>
 
-    <div class="rule" id="function_declaration">
-      <code>function_declaration = annotations function_declaration_lhs &#34;=&#34; function_declaration_type block .</code>
-    </div>
+<div class="rule" id="function_declaration">
+  <code>function_declaration = annotations function_declaration_lhs &#34;=&#34; function_declaration_type block .</code>
+</div>
 
-    <div class="rule" id="function_declaration_lhs">
-      <code>function_declaration_lhs = function_identifier [ function_parameter_types ] .</code>
-    </div>
+<div class="rule" id="function_declaration_lhs">
+  <code>function_declaration_lhs = function_identifier [ function_parameter_types ] .</code>
+</div>
 
-    <div class="rule" id="function_declaration_type">
-      <code>function_declaration_type = ( &#34;fn&#34; &#34;(&#34; [ labeled_parameters | parameters ] &#34;)&#34; ( return_type | &#34;_&#34; ) )
+<div class="rule" id="function_declaration_type">
+  <code>function_declaration_type = ( &#34;fn&#34; &#34;(&#34; [ labeled_parameters | parameters ] &#34;)&#34; ( return_type | &#34;_&#34; ) )
                           | ( &#34;fx&#34; &#34;(&#34; [ labeled_parameters | parameters ] &#34;)&#34; [ return_type | &#34;_&#34; ] ) .</code>
-    </div>
+</div>
 
-    <div class="rule" id="function_identifier">
-      <code>function_identifier = lowercase_letter { letter | decimal_digit | &#34;_&#34; } [ &#34;?&#34; | &#34;!&#34; ] .</code>
-    </div>
+<div class="rule" id="function_identifier">
+  <code>function_identifier = lowercase_letter { letter | decimal_digit | &#34;_&#34; } [ &#34;?&#34; | &#34;!&#34; ] .</code>
+</div>
 
-    <div class="rule" id="function_parameter_types">
-      <code>function_parameter_types = &#34;[&#34; [ local_type_reference { &#34;,&#34; local_type_reference } ] &#34;]&#34; .</code>
-    </div>
+<div class="rule" id="function_parameter_types">
+  <code>function_parameter_types = &#34;[&#34; [ local_type_reference { &#34;,&#34; local_type_reference } ] &#34;]&#34; .</code>
+</div>
 
-    <div class="rule" id="function_type">
-      <code>function_type = ( &#34;fn&#34; | &#34;fx&#34; ) &#34;(&#34; [ labeled_parameters | parameters ] &#34;)&#34; return_type .</code>
-    </div>
+<div class="rule" id="function_type">
+  <code>function_type = ( &#34;fn&#34; | &#34;fx&#34; ) &#34;(&#34; [ labeled_parameters | parameters ] &#34;)&#34; return_type .</code>
+</div>
 
-    <div class="rule" id="function_type_declaration">
-      <code>function_type_declaration = function_type_declaration_lhs &#34;=&#34; function_type .</code>
-    </div>
+<div class="rule" id="function_type_declaration">
+  <code>function_type_declaration = function_type_declaration_lhs &#34;=&#34; function_type .</code>
+</div>
 
-    <div class="rule" id="function_type_declaration_lhs">
-      <code>function_type_declaration_lhs = function_type_identifier [ function_parameter_types ] .</code>
-    </div>
+<div class="rule" id="function_type_declaration_lhs">
+  <code>function_type_declaration_lhs = function_type_identifier [ function_parameter_types ] .</code>
+</div>
 
-    <div class="rule" id="function_type_identifier">
-      <code>function_type_identifier = type_identifier .</code>
-    </div>
+<div class="rule" id="function_type_identifier">
+  <code>function_type_identifier = type_identifier .</code>
+</div>
 
-    <div class="rule" id="generic_type">
-      <code>generic_type = type_reference type_argument_list .</code>
-    </div>
+<div class="rule" id="generic_type">
+  <code>generic_type = type_reference type_argument_list .</code>
+</div>
 
-    <div class="rule" id="hex_digit">
-      <code>hex_digit = decimal_digit | &#34;a&#34;-&#34;f&#34; | &#34;A&#34;-&#34;F&#34; .</code>
-    </div>
+<div class="rule" id="hex_digit">
+  <code>hex_digit = decimal_digit | &#34;a&#34;-&#34;f&#34; | &#34;A&#34;-&#34;F&#34; .</code>
+</div>
 
-    <div class="rule" id="hexadecimal_literal">
-      <code>hexadecimal_literal = &#34;0x&#34; hex_digit { hex_digit | &#34;_&#34; } .</code>
-    </div>
+<div class="rule" id="hexadecimal_literal">
+  <code>hexadecimal_literal = &#34;0x&#34; hex_digit { hex_digit | &#34;_&#34; } .</code>
+</div>
 
-    <div class="rule" id="identifier">
-      <code>identifier = ( lowercase_letter | &#34;_&#34; ) { letter | decimal_digit | &#34;_&#34; } .</code>
-    </div>
+<div class="rule" id="identifier">
+  <code>identifier = ( lowercase_letter | &#34;_&#34; ) { letter | decimal_digit | &#34;_&#34; } .</code>
+</div>
 
-    <div class="rule" id="if_expression">
-      <code>if_expression = &#34;if&#34; condition block { &#34;else&#34; &#34;if&#34; condition block } [ else_block ] .</code>
-    </div>
+<div class="rule" id="if_expression">
+  <code>if_expression = &#34;if&#34; condition block { &#34;else&#34; &#34;if&#34; condition block } [ else_block ] .</code>
+</div>
 
-    <div class="rule" id="import_expression">
-      <code>import_expression = &#34;import&#34; &#34;(&#34; string_literal &#34;)&#34; .</code>
-    </div>
+<div class="rule" id="import_expression">
+  <code>import_expression = &#34;import&#34; &#34;(&#34; string_literal &#34;)&#34; .</code>
+</div>
 
-    <div class="rule" id="indented_closing">
-      <code>indented_closing = leading_whitespace &#34;```&#34; eol .</code>
-    </div>
+<div class="rule" id="indented_closing">
+  <code>indented_closing = leading_whitespace &#34;```&#34; eol .</code>
+</div>
 
-    <div class="rule" id="indented_line">
-      <code>indented_line = leading_whitespace content_line .</code>
-    </div>
+<div class="rule" id="indented_line">
+  <code>indented_line = leading_whitespace content_line .</code>
+</div>
 
-    <div class="rule" id="index">
-      <code>index = expression .</code>
-    </div>
+<div class="rule" id="index">
+  <code>index = expression .</code>
+</div>
 
-    <div class="rule" id="indexed_access">
-      <code>indexed_access = expression &#34;[&#34; index { &#34;,&#34; index } &#34;]&#34; .</code>
-    </div>
+<div class="rule" id="indexed_access">
+  <code>indexed_access = expression &#34;[&#34; index { &#34;,&#34; index } &#34;]&#34; .</code>
+</div>
 
-    <div class="rule" id="initializer">
-      <code>initializer = assignment .</code>
-    </div>
+<div class="rule" id="initializer">
+  <code>initializer = assignment .</code>
+</div>
 
-    <div class="rule" id="inline_for_expression">
-      <code>inline_for_expression = &#34;inline&#34; &#34;for&#34; for_in_header for_block .</code>
-    </div>
+<div class="rule" id="inline_for_expression">
+  <code>inline_for_expression = &#34;inline&#34; &#34;for&#34; for_in_header for_block .</code>
+</div>
 
-    <div class="rule" id="inline_union">
-      <code>inline_union = &#34;(&#34; union_type &#34;)&#34; .</code>
-    </div>
+<div class="rule" id="inline_union">
+  <code>inline_union = &#34;(&#34; union_type &#34;)&#34; .</code>
+</div>
 
-    <div class="rule" id="integer_literal">
-      <code>integer_literal = binary_literal
+<div class="rule" id="integer_literal">
+  <code>integer_literal = binary_literal
                 | hexadecimal_literal
                 | octal_literal
                 | decimal_literal .</code>
-    </div>
+</div>
 
-    <div class="rule" id="interpolated_string_literal">
-      <code>interpolated_string_literal = &#39;&#34;&#39; { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - &#39;&#34;&#39; - eol } &#39;&#34;&#39; .</code>
-    </div>
+<div class="rule" id="interpolated_string_literal">
+  <code>interpolated_string_literal = &#39;&#34;&#39; { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - &#39;&#34;&#39; - eol } &#39;&#34;&#39; .</code>
+</div>
 
-    <div class="rule" id="interpolation">
-      <code>interpolation = &#34;\\(&#34; expression &#34;)&#34; .</code>
-    </div>
+<div class="rule" id="interpolation">
+  <code>interpolation = &#34;\\(&#34; expression &#34;)&#34; .</code>
+</div>
 
-    <div class="rule" id="is_op">
-      <code>is_op = &#34;is&#34; .</code>
-    </div>
+<div class="rule" id="is_op">
+  <code>is_op = &#34;is&#34; .</code>
+</div>
 
-    <div class="rule" id="iterable">
-      <code>iterable = expression .</code>
-    </div>
+<div class="rule" id="iterable">
+  <code>iterable = expression .</code>
+</div>
 
-    <div class="rule" id="iterable">
-      <code>iterable = expression .</code>
-    </div>
+<div class="rule" id="iterable">
+  <code>iterable = expression .</code>
+</div>
 
-    <div class="rule" id="iterable_header">
-      <code>iterable_header = assignment_lhs &#34;in&#34; iterable .</code>
-    </div>
+<div class="rule" id="iterable_header">
+  <code>iterable_header = assignment_lhs &#34;in&#34; iterable .</code>
+</div>
 
-    <div class="rule" id="labeled_argument">
-      <code>labeled_argument = ( identifier &#34;:&#34; expression | spread_argument ) .</code>
-    </div>
+<div class="rule" id="labeled_argument">
+  <code>labeled_argument = ( identifier &#34;:&#34; expression | spread_argument ) .</code>
+</div>
 
-    <div class="rule" id="labeled_arguments">
-      <code>labeled_arguments = labeled_argument { &#34;,&#34; ( labeled_argument ) } [ &#34;,&#34; ] .</code>
-    </div>
+<div class="rule" id="labeled_arguments">
+  <code>labeled_arguments = labeled_argument { &#34;,&#34; ( labeled_argument ) } [ &#34;,&#34; ] .</code>
+</div>
 
-    <div class="rule" id="labeled_assignment_lhs">
-      <code>labeled_assignment_lhs = ( rename_identifier | rename_type ) { &#34;,&#34; ( rename_identifier | rename_type ) } .</code>
-    </div>
+<div class="rule" id="labeled_assignment_lhs">
+  <code>labeled_assignment_lhs = ( rename_identifier | rename_type ) { &#34;,&#34; ( rename_identifier | rename_type ) } .</code>
+</div>
 
-    <div class="rule" id="labeled_parameter">
-      <code>labeled_parameter = annotations identifier &#34;:&#34; ( nilable_type
+<div class="rule" id="labeled_parameter">
+  <code>labeled_parameter = annotations identifier &#34;:&#34; ( nilable_type
                                                | type
                                                | literal
                                                | union_type
                                                | union_declaration ) .</code>
-    </div>
+</div>
 
-    <div class="rule" id="labeled_parameters">
-      <code>labeled_parameters = ( labeled_parameter | labeled_rest_parameter ) { &#34;,&#34; ( labeled_parameter | labeled_rest_parameter ) } [ &#34;,&#34; ] .</code>
-    </div>
+<div class="rule" id="labeled_parameters">
+  <code>labeled_parameters = ( labeled_parameter | labeled_rest_parameter ) { &#34;,&#34; ( labeled_parameter | labeled_rest_parameter ) } [ &#34;,&#34; ] .</code>
+</div>
 
-    <div class="rule" id="labeled_pattern">
-      <code>labeled_pattern = &#34;(&#34; identifier &#34;:&#34; pattern { &#34;,&#34; identifier &#34;:&#34; pattern } &#34;)&#34; .</code>
-    </div>
+<div class="rule" id="labeled_pattern">
+  <code>labeled_pattern = &#34;(&#34; identifier &#34;:&#34; pattern { &#34;,&#34; identifier &#34;:&#34; pattern } &#34;)&#34; .</code>
+</div>
 
-    <div class="rule" id="labeled_rest_parameter">
-      <code>labeled_rest_parameter = annotations identifier &#34;:&#34; rest_parameter .</code>
-    </div>
+<div class="rule" id="labeled_rest_parameter">
+  <code>labeled_rest_parameter = annotations identifier &#34;:&#34; rest_parameter .</code>
+</div>
 
-    <div class="rule" id="labeled_tuple">
-      <code>labeled_tuple = &#34;(&#34; labeled_arguments &#34;)&#34; .</code>
-    </div>
+<div class="rule" id="labeled_tuple">
+  <code>labeled_tuple = &#34;(&#34; labeled_arguments &#34;)&#34; .</code>
+</div>
 
-    <div class="rule" id="labeled_tuple_member">
-      <code>labeled_tuple_member = identifier &#34;:&#34; tuple_member .</code>
-    </div>
+<div class="rule" id="labeled_tuple_member">
+  <code>labeled_tuple_member = identifier &#34;:&#34; tuple_member .</code>
+</div>
 
-    <div class="rule" id="labeled_tuple_members">
-      <code>labeled_tuple_members = labeled_tuple_member { &#34;,&#34; labeled_tuple_member } [ &#34;,&#34; ] .</code>
-    </div>
+<div class="rule" id="labeled_tuple_members">
+  <code>labeled_tuple_members = labeled_tuple_member { &#34;,&#34; labeled_tuple_member } [ &#34;,&#34; ] .</code>
+</div>
 
-    <div class="rule" id="labeled_tuple_type_member">
-      <code>labeled_tuple_type_member = annotations identifier &#34;:&#34; tuple_type_member .</code>
-    </div>
+<div class="rule" id="labeled_tuple_type_member">
+  <code>labeled_tuple_type_member = annotations identifier &#34;:&#34; tuple_type_member .</code>
+</div>
 
-    <div class="rule" id="labeled_tuple_type_members">
-      <code>labeled_tuple_type_members = labeled_tuple_type_member { &#34;,&#34; labeled_tuple_type_member } .</code>
-    </div>
+<div class="rule" id="labeled_tuple_type_members">
+  <code>labeled_tuple_type_members = labeled_tuple_type_member { &#34;,&#34; labeled_tuple_type_member } .</code>
+</div>
 
-    <div class="rule" id="leading_whitespace">
-      <code>leading_whitespace = { &#34; &#34; | &#34;\t&#34; } .</code>
-    </div>
+<div class="rule" id="leading_whitespace">
+  <code>leading_whitespace = { &#34; &#34; | &#34;\t&#34; } .</code>
+</div>
 
-    <div class="rule" id="letter">
-      <code>letter = &#34;a&#34;-&#34;z&#34; | &#34;A&#34;-&#34;Z&#34; .</code>
-    </div>
+<div class="rule" id="letter">
+  <code>letter = &#34;a&#34;-&#34;z&#34; | &#34;A&#34;-&#34;Z&#34; .</code>
+</div>
 
-    <div class="rule" id="list_match">
-      <code>list_match = match_element { &#34;,&#34; match_element } .</code>
-    </div>
+<div class="rule" id="list_match">
+  <code>list_match = match_element { &#34;,&#34; match_element } .</code>
+</div>
 
-    <div class="rule" id="literal">
-      <code>literal = number
+<div class="rule" id="literal">
+  <code>literal = number
         | boolean_literal
         | string_literal
         | interpolated_string_literal
@@ -569,137 +558,137 @@
         | symbol_literal
         | rune_literal
         | fixed_size_array_literal .</code>
-    </div>
+</div>
 
-    <div class="rule" id="local_type_reference">
-      <code>local_type_reference = type_reference | identifier .</code>
-    </div>
+<div class="rule" id="local_type_reference">
+  <code>local_type_reference = type_reference | identifier .</code>
+</div>
 
-    <div class="rule" id="lowercase_letter">
-      <code>lowercase_letter = &#34;a&#34;-&#34;z&#34; .</code>
-    </div>
+<div class="rule" id="lowercase_letter">
+  <code>lowercase_letter = &#34;a&#34;-&#34;z&#34; .</code>
+</div>
 
-    <div class="rule" id="match_condition">
-      <code>match_condition = list_match
+<div class="rule" id="match_condition">
+  <code>match_condition = list_match
                 | pattern_match .</code>
-    </div>
+</div>
 
-    <div class="rule" id="match_element">
-      <code>match_element = constant | range .</code>
-    </div>
+<div class="rule" id="match_element">
+  <code>match_element = constant | range .</code>
+</div>
 
-    <div class="rule" id="member_access">
-      <code>member_access = ( expression | type_identifier ) &#34;.&#34; ( decimal_literal 
+<div class="rule" id="member_access">
+  <code>member_access = ( expression | type_identifier ) &#34;.&#34; ( decimal_literal 
                                                      | identifier 
                                                      | function_call ) .</code>
-    </div>
+</div>
 
-    <div class="rule" id="meta_expression">
-      <code>meta_expression = &#34;$&#34; labeled_tuple .</code>
-    </div>
+<div class="rule" id="meta_expression">
+  <code>meta_expression = &#34;$&#34; labeled_tuple .</code>
+</div>
 
-    <div class="rule" id="module">
-      <code>module = { top_level_item } .</code>
-    </div>
+<div class="rule" id="module">
+  <code>module = { top_level_item } .</code>
+</div>
 
-    <div class="rule" id="mul_div_op">
-      <code>mul_div_op = &#34;*&#34; | &#34;?*&#34; | &#34;/&#34; | &#34;?/&#34; | &#34;%&#34; | &#34;&amp;&#34; | &#34;&lt;&lt;&#34; | &#34;&gt;&gt;&#34; .</code>
-    </div>
+<div class="rule" id="mul_div_op">
+  <code>mul_div_op = &#34;*&#34; | &#34;?*&#34; | &#34;/&#34; | &#34;?/&#34; | &#34;%&#34; | &#34;&amp;&#34; | &#34;&lt;&lt;&#34; | &#34;&gt;&gt;&#34; .</code>
+</div>
 
-    <div class="rule" id="multi_line_string_literal">
-      <code>multi_line_string_literal = &#34;```&#34; [ function_call_context ] eol { indented_line } indented_closing .</code>
-    </div>
+<div class="rule" id="multi_line_string_literal">
+  <code>multi_line_string_literal = &#34;```&#34; [ function_call_context ] eol { indented_line } indented_closing .</code>
+</div>
 
-    <div class="rule" id="named_tuple">
-      <code>named_tuple = type_identifier tuple_type .</code>
-    </div>
+<div class="rule" id="named_tuple">
+  <code>named_tuple = type_identifier tuple_type .</code>
+</div>
 
-    <div class="rule" id="namespace">
-      <code>namespace = letter { letter | decimal_digit | &#34;_&#34; } .</code>
-    </div>
+<div class="rule" id="namespace">
+  <code>namespace = letter { letter | decimal_digit | &#34;_&#34; } .</code>
+</div>
 
-    <div class="rule" id="namespaced_annotation">
-      <code>namespaced_annotation = &#34;@&#34; namespace &#34;:&#34; identifier annotation_value .</code>
-    </div>
+<div class="rule" id="namespaced_annotation">
+  <code>namespaced_annotation = &#34;@&#34; namespace &#34;:&#34; identifier annotation_value .</code>
+</div>
 
-    <div class="rule" id="nilable_type">
-      <code>nilable_type = &#34;?&#34; local_type_reference .</code>
-    </div>
+<div class="rule" id="nilable_type">
+  <code>nilable_type = &#34;?&#34; local_type_reference .</code>
+</div>
 
-    <div class="rule" id="nonzero_digit">
-      <code>nonzero_digit = &#34;1&#34;-&#34;9&#34; .</code>
-    </div>
+<div class="rule" id="nonzero_digit">
+  <code>nonzero_digit = &#34;1&#34;-&#34;9&#34; .</code>
+</div>
 
-    <div class="rule" id="not_eol">
-      <code>not_eol = character - &#34;\n&#34; - &#34;\r&#34; .</code>
-    </div>
+<div class="rule" id="not_eol">
+  <code>not_eol = character - &#34;\n&#34; - &#34;\r&#34; .</code>
+</div>
 
-    <div class="rule" id="number">
-      <code>number = float_literal | integer_literal .</code>
-    </div>
+<div class="rule" id="number">
+  <code>number = float_literal | integer_literal .</code>
+</div>
 
-    <div class="rule" id="octal_digit">
-      <code>octal_digit = &#34;0&#34;-&#34;7&#34; .</code>
-    </div>
+<div class="rule" id="octal_digit">
+  <code>octal_digit = &#34;0&#34;-&#34;7&#34; .</code>
+</div>
 
-    <div class="rule" id="octal_literal">
-      <code>octal_literal = &#34;0o&#34; octal_digit { octal_digit } .</code>
-    </div>
+<div class="rule" id="octal_literal">
+  <code>octal_literal = &#34;0o&#34; octal_digit { octal_digit } .</code>
+</div>
 
-    <div class="rule" id="parameter">
-      <code>parameter = annotations ( nilable_type
+<div class="rule" id="parameter">
+  <code>parameter = annotations ( nilable_type
                         | type
                         | literal
                         | union_type 
                         | union_declaration ) .</code>
-    </div>
+</div>
 
-    <div class="rule" id="parameters">
-      <code>parameters = ( parameter | rest_parameter ) { &#34;,&#34; ( parameter | rest_parameter ) } [ &#34;,&#34; ] .</code>
-    </div>
+<div class="rule" id="parameters">
+  <code>parameters = ( parameter | rest_parameter ) { &#34;,&#34; ( parameter | rest_parameter ) } [ &#34;,&#34; ] .</code>
+</div>
 
-    <div class="rule" id="partial_application">
-      <code>partial_application = [ &#34;,&#34; ] &#34;*&#34; .</code>
-    </div>
+<div class="rule" id="partial_application">
+  <code>partial_application = [ &#34;,&#34; ] &#34;*&#34; .</code>
+</div>
 
-    <div class="rule" id="pattern">
-      <code>pattern = labeled_pattern
+<div class="rule" id="pattern">
+  <code>pattern = labeled_pattern
         | tuple_pattern
         | identifier .</code>
-    </div>
+</div>
 
-    <div class="rule" id="pattern_match">
-      <code>pattern_match = type_reference &#34;(&#34; pattern &#34;)&#34; 
+<div class="rule" id="pattern_match">
+  <code>pattern_match = type_reference &#34;(&#34; pattern &#34;)&#34; 
               | structured_match
               | type_reference .</code>
-    </div>
+</div>
 
-    <div class="rule" id="prec1_expression">
-      <code>prec1_expression = prec2_expression { &#34;||&#34; prec2_expression } .</code>
-    </div>
+<div class="rule" id="prec1_expression">
+  <code>prec1_expression = prec2_expression { &#34;||&#34; prec2_expression } .</code>
+</div>
 
-    <div class="rule" id="prec2_expression">
-      <code>prec2_expression = prec3_expression { &#34;&amp;&amp;&#34; prec3_expression } .</code>
-    </div>
+<div class="rule" id="prec2_expression">
+  <code>prec2_expression = prec3_expression { &#34;&amp;&amp;&#34; prec3_expression } .</code>
+</div>
 
-    <div class="rule" id="prec3_expression">
-      <code>prec3_expression = type_comparison | relational_comparison .</code>
-    </div>
+<div class="rule" id="prec3_expression">
+  <code>prec3_expression = type_comparison | relational_comparison .</code>
+</div>
 
-    <div class="rule" id="prec4_expression">
-      <code>prec4_expression = prec5_expression { add_sub_op prec5_expression } .</code>
-    </div>
+<div class="rule" id="prec4_expression">
+  <code>prec4_expression = prec5_expression { add_sub_op prec5_expression } .</code>
+</div>
 
-    <div class="rule" id="prec5_expression">
-      <code>prec5_expression = prec6_expression { mul_div_op prec6_expression } .</code>
-    </div>
+<div class="rule" id="prec5_expression">
+  <code>prec5_expression = prec6_expression { mul_div_op prec6_expression } .</code>
+</div>
 
-    <div class="rule" id="prec6_expression">
-      <code>prec6_expression = unary_expression { &#34;^&#34; unary_expression } .</code>
-    </div>
+<div class="rule" id="prec6_expression">
+  <code>prec6_expression = unary_expression { &#34;^&#34; unary_expression } .</code>
+</div>
 
-    <div class="rule" id="primary_expression">
-      <code>primary_expression = &#34;(&#34; expression &#34;)&#34;
+<div class="rule" id="primary_expression">
+  <code>primary_expression = &#34;(&#34; expression &#34;)&#34;
                    | block
                    | if_expression
                    | for_expression
@@ -718,166 +707,166 @@
                    | range
                    | identifier
                    | literal .</code>
-    </div>
+</div>
 
-    <div class="rule" id="range">
-      <code>range = range_bound &#34;..&#34; range_bound .</code>
-    </div>
+<div class="rule" id="range">
+  <code>range = range_bound &#34;..&#34; range_bound .</code>
+</div>
 
-    <div class="rule" id="range_bound">
-      <code>range_bound = &#34;(&#34; expression &#34;)&#34;
+<div class="rule" id="range_bound">
+  <code>range_bound = &#34;(&#34; expression &#34;)&#34;
             | member_access
             | safe_indexed_access
             | identifier
             | literal .</code>
-    </div>
+</div>
 
-    <div class="rule" id="raw_string_literal">
-      <code>raw_string_literal = &#34;`&#34; { &#34;``&#34; | character - &#34;`&#34; } &#34;`&#34; .</code>
-    </div>
+<div class="rule" id="raw_string_literal">
+  <code>raw_string_literal = &#34;`&#34; { &#34;``&#34; | character - &#34;`&#34; } &#34;`&#34; .</code>
+</div>
 
-    <div class="rule" id="rel_op">
-      <code>rel_op = &#34;==&#34; | &#34;&lt;&#34; | &#34;&gt;&#34; | &#34;&lt;=&#34; | &#34;&gt;=&#34; | &#34;!=&#34; .</code>
-    </div>
+<div class="rule" id="rel_op">
+  <code>rel_op = &#34;==&#34; | &#34;&lt;&#34; | &#34;&gt;&#34; | &#34;&lt;=&#34; | &#34;&gt;=&#34; | &#34;!=&#34; .</code>
+</div>
 
-    <div class="rule" id="relational_comparison">
-      <code>relational_comparison = prec4_expression { rel_op prec4_expression } .</code>
-    </div>
+<div class="rule" id="relational_comparison">
+  <code>relational_comparison = prec4_expression { rel_op prec4_expression } .</code>
+</div>
 
-    <div class="rule" id="rename_identifier">
-      <code>rename_identifier = identifier [ &#34;:&#34; identifier ] .</code>
-    </div>
+<div class="rule" id="rename_identifier">
+  <code>rename_identifier = identifier [ &#34;:&#34; identifier ] .</code>
+</div>
 
-    <div class="rule" id="rename_type">
-      <code>rename_type = type_identifier [ &#34;:&#34; type_identifier ] .</code>
-    </div>
+<div class="rule" id="rename_type">
+  <code>rename_type = type_identifier [ &#34;:&#34; type_identifier ] .</code>
+</div>
 
-    <div class="rule" id="rest_operator">
-      <code>rest_operator = &#34;...&#34; [ identifier ] .</code>
-    </div>
+<div class="rule" id="rest_operator">
+  <code>rest_operator = &#34;...&#34; [ identifier ] .</code>
+</div>
 
-    <div class="rule" id="rest_parameter">
-      <code>rest_parameter = &#34;...&#34; type .</code>
-    </div>
+<div class="rule" id="rest_parameter">
+  <code>rest_parameter = &#34;...&#34; type .</code>
+</div>
 
-    <div class="rule" id="return_expression">
-      <code>return_expression = &#34;return&#34; expression .</code>
-    </div>
+<div class="rule" id="return_expression">
+  <code>return_expression = &#34;return&#34; expression .</code>
+</div>
 
-    <div class="rule" id="return_type">
-      <code>return_type = union_with_error
+<div class="rule" id="return_type">
+  <code>return_type = union_with_error
             | union_declaration_with_error
             | nilable_type
             | type
             | &#34;error&#34; .</code>
-    </div>
+</div>
 
-    <div class="rule" id="rune_literal">
-      <code>rune_literal = &#34;&#39;&#34; ( byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - eol ) &#34;&#39;&#34; .</code>
-    </div>
+<div class="rule" id="rune_literal">
+  <code>rune_literal = &#34;&#39;&#34; ( byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - eol ) &#34;&#39;&#34; .</code>
+</div>
 
-    <div class="rule" id="safe_indexed_access">
-      <code>safe_indexed_access = expression &#34;[&#34; index { &#34;,&#34; index } &#34;]&#34; &#34;!&#34; .</code>
-    </div>
+<div class="rule" id="safe_indexed_access">
+  <code>safe_indexed_access = expression &#34;[&#34; index { &#34;,&#34; index } &#34;]&#34; &#34;!&#34; .</code>
+</div>
 
-    <div class="rule" id="simple_annotation">
-      <code>simple_annotation = &#34;@&#34; identifier .</code>
-    </div>
+<div class="rule" id="simple_annotation">
+  <code>simple_annotation = &#34;@&#34; identifier .</code>
+</div>
 
-    <div class="rule" id="size">
-      <code>size = decimal_literal | identifier .</code>
-    </div>
+<div class="rule" id="size">
+  <code>size = decimal_literal | identifier .</code>
+</div>
 
-    <div class="rule" id="spread_argument">
-      <code>spread_argument = &#34;...&#34; expression .</code>
-    </div>
+<div class="rule" id="spread_argument">
+  <code>spread_argument = &#34;...&#34; expression .</code>
+</div>
 
-    <div class="rule" id="statement">
-      <code>statement = ( type_qualified_function_declaration
+<div class="rule" id="statement">
+  <code>statement = ( type_qualified_function_declaration
             | type_qualified_declaration
             | type_declaration
             | function_declaration
             | assignment
             | expression
             ) .</code>
-    </div>
+</div>
 
-    <div class="rule" id="step_expression">
-      <code>step_expression = expression .</code>
-    </div>
+<div class="rule" id="step_expression">
+  <code>step_expression = expression .</code>
+</div>
 
-    <div class="rule" id="string_literal">
-      <code>string_literal = &#39;&#34;&#39; { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - &#39;&#34;&#39; - eol } &#39;&#34;&#39; .</code>
-    </div>
+<div class="rule" id="string_literal">
+  <code>string_literal = &#39;&#34;&#39; { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - &#39;&#34;&#39; - eol } &#39;&#34;&#39; .</code>
+</div>
 
-    <div class="rule" id="structured_match">
-      <code>structured_match = labeled_pattern
+<div class="rule" id="structured_match">
+  <code>structured_match = labeled_pattern
                  | tuple_pattern
                  | array_pattern .</code>
-    </div>
+</div>
 
-    <div class="rule" id="switch_statement">
-      <code>switch_statement = &#34;switch&#34; expression &#34;{&#34; case_block { case_block } [ else_block ] &#34;}&#34; .</code>
-    </div>
+<div class="rule" id="switch_statement">
+  <code>switch_statement = &#34;switch&#34; expression &#34;{&#34; case_block { case_block } [ else_block ] &#34;}&#34; .</code>
+</div>
 
-    <div class="rule" id="symbol_literal">
-      <code>symbol_literal = &#34;:&#34; identifier .</code>
-    </div>
+<div class="rule" id="symbol_literal">
+  <code>symbol_literal = &#34;:&#34; identifier .</code>
+</div>
 
-    <div class="rule" id="top_level_item">
-      <code>top_level_item = ( type_qualified_function_declaration
+<div class="rule" id="top_level_item">
+  <code>top_level_item = ( type_qualified_function_declaration
                  | type_qualified_declaration
                  | type_declaration
                  | function_declaration
                  | assignment
                  | export_declaration
                  ) .</code>
-    </div>
+</div>
 
-    <div class="rule" id="try_expression">
-      <code>try_expression = &#34;try&#34; expression
+<div class="rule" id="try_expression">
+  <code>try_expression = &#34;try&#34; expression
                | &#34;try_continue&#34; [ expression ]
                | &#34;try_break&#34; [ expression ] .</code>
-    </div>
+</div>
 
-    <div class="rule" id="tuple_literal">
-      <code>tuple_literal = &#34;(&#34; [ labeled_tuple_members | tuple_members ] &#34;)&#34; .</code>
-    </div>
+<div class="rule" id="tuple_literal">
+  <code>tuple_literal = &#34;(&#34; [ labeled_tuple_members | tuple_members ] &#34;)&#34; .</code>
+</div>
 
-    <div class="rule" id="tuple_member">
-      <code>tuple_member = expression .</code>
-    </div>
+<div class="rule" id="tuple_member">
+  <code>tuple_member = expression .</code>
+</div>
 
-    <div class="rule" id="tuple_members">
-      <code>tuple_members = tuple_member &#34;,&#34; { tuple_member &#34;,&#34; } [ tuple_member ] .</code>
-    </div>
+<div class="rule" id="tuple_members">
+  <code>tuple_members = tuple_member &#34;,&#34; { tuple_member &#34;,&#34; } [ tuple_member ] .</code>
+</div>
 
-    <div class="rule" id="tuple_pattern">
-      <code>tuple_pattern = &#34;(&#34; pattern { &#34;,&#34; pattern } &#34;)&#34; .</code>
-    </div>
+<div class="rule" id="tuple_pattern">
+  <code>tuple_pattern = &#34;(&#34; pattern { &#34;,&#34; pattern } &#34;)&#34; .</code>
+</div>
 
-    <div class="rule" id="tuple_type">
-      <code>tuple_type = &#34;(&#34; [ labeled_tuple_type_members | tuple_type_members ] &#34;)&#34; .</code>
-    </div>
+<div class="rule" id="tuple_type">
+  <code>tuple_type = &#34;(&#34; [ labeled_tuple_type_members | tuple_type_members ] &#34;)&#34; .</code>
+</div>
 
-    <div class="rule" id="tuple_type_member">
-      <code>tuple_type_member = annotations ( nilable_type
+<div class="rule" id="tuple_type_member">
+  <code>tuple_type_member = annotations ( nilable_type
                                 | type
                                 | union_type
                                 | union_declaration
                                 | literal ) .</code>
-    </div>
+</div>
 
-    <div class="rule" id="tuple_type_members">
-      <code>tuple_type_members = tuple_type_member { &#34;,&#34; tuple_type_member } .</code>
-    </div>
+<div class="rule" id="tuple_type_members">
+  <code>tuple_type_members = tuple_type_member { &#34;,&#34; tuple_type_member } .</code>
+</div>
 
-    <div class="rule" id="tuple_update_expression">
-      <code>tuple_update_expression = expression &#34;.&#34; tuple_literal .</code>
-    </div>
+<div class="rule" id="tuple_update_expression">
+  <code>tuple_update_expression = expression &#34;.&#34; tuple_literal .</code>
+</div>
 
-    <div class="rule" id="type">
-      <code>type = fixed_size_array
+<div class="rule" id="type">
+  <code>type = fixed_size_array
      | dynamic_array
      | function_type
      | error_tuple
@@ -885,35 +874,35 @@
      | generic_type
      | local_type_reference
      | inline_union .</code>
-    </div>
+</div>
 
-    <div class="rule" id="type_argument">
-      <code>type_argument = type
+<div class="rule" id="type_argument">
+  <code>type_argument = type
               | generic_type .</code>
-    </div>
+</div>
 
-    <div class="rule" id="type_argument_list">
-      <code>type_argument_list = &#34;[&#34; type_argument { &#34;,&#34; type_argument } &#34;]&#34; .</code>
-    </div>
+<div class="rule" id="type_argument_list">
+  <code>type_argument_list = &#34;[&#34; type_argument { &#34;,&#34; type_argument } &#34;]&#34; .</code>
+</div>
 
-    <div class="rule" id="type_comparison">
-      <code>type_comparison = prec4_expression is_op (type_reference | inline_union) .</code>
-    </div>
+<div class="rule" id="type_comparison">
+  <code>type_comparison = prec4_expression is_op (type_reference | inline_union) .</code>
+</div>
 
-    <div class="rule" id="type_constructor_call">
-      <code>type_constructor_call = type_reference [ function_parameter_types ] &#34;(&#34; [ function_arguments ] &#34;)&#34; [ function_block ] .</code>
-    </div>
+<div class="rule" id="type_constructor_call">
+  <code>type_constructor_call = type_reference [ function_parameter_types ] &#34;(&#34; [ function_arguments ] &#34;)&#34; [ function_block ] .</code>
+</div>
 
-    <div class="rule" id="type_declaration">
-      <code>type_declaration = type_declaration_lhs &#34;=&#34; type_declaration_rhs .</code>
-    </div>
+<div class="rule" id="type_declaration">
+  <code>type_declaration = type_declaration_lhs &#34;=&#34; type_declaration_rhs .</code>
+</div>
 
-    <div class="rule" id="type_declaration_lhs">
-      <code>type_declaration_lhs = annotations type_identifier [ type_parameters ] .</code>
-    </div>
+<div class="rule" id="type_declaration_lhs">
+  <code>type_declaration_lhs = annotations type_identifier [ type_parameters ] .</code>
+</div>
 
-    <div class="rule" id="type_declaration_rhs">
-      <code>type_declaration_rhs = nilable_type
+<div class="rule" id="type_declaration_rhs">
+  <code>type_declaration_rhs = nilable_type
                      | &#34;type&#34; tuple_type
                      | error_tuple
                      | dynamic_array
@@ -923,97 +912,97 @@
                      | enum_declaration
                      | contract_declaration
                      | type_reference .</code>
-    </div>
+</div>
 
-    <div class="rule" id="type_identifier">
-      <code>type_identifier = uppercase_letter { letter | decimal_digit | &#34;_&#34; } .</code>
-    </div>
+<div class="rule" id="type_identifier">
+  <code>type_identifier = uppercase_letter { letter | decimal_digit | &#34;_&#34; } .</code>
+</div>
 
-    <div class="rule" id="type_parameter">
-      <code>type_parameter = identifier .</code>
-    </div>
+<div class="rule" id="type_parameter">
+  <code>type_parameter = identifier .</code>
+</div>
 
-    <div class="rule" id="type_parameters">
-      <code>type_parameters = &#34;[&#34; type_parameter { &#34;,&#34; type_parameter } &#34;]&#34; .</code>
-    </div>
+<div class="rule" id="type_parameters">
+  <code>type_parameters = &#34;[&#34; type_parameter { &#34;,&#34; type_parameter } &#34;]&#34; .</code>
+</div>
 
-    <div class="rule" id="type_qualified_declaration">
-      <code>type_qualified_declaration = type_identifier &#34;.&#34; identifier &#34;=&#34; expression .</code>
-    </div>
+<div class="rule" id="type_qualified_declaration">
+  <code>type_qualified_declaration = type_identifier &#34;.&#34; identifier &#34;=&#34; expression .</code>
+</div>
 
-    <div class="rule" id="type_qualified_function_declaration">
-      <code>type_qualified_function_declaration = annotations type_identifier &#34;.&#34; function_declaration_lhs &#34;=&#34; function_declaration_type block .</code>
-    </div>
+<div class="rule" id="type_qualified_function_declaration">
+  <code>type_qualified_function_declaration = annotations type_identifier &#34;.&#34; function_declaration_lhs &#34;=&#34; function_declaration_type block .</code>
+</div>
 
-    <div class="rule" id="type_reference">
-      <code>type_reference = [ identifier { &#34;.&#34; identifier } &#34;.&#34; ] type_identifier .</code>
-    </div>
+<div class="rule" id="type_reference">
+  <code>type_reference = [ identifier { &#34;.&#34; identifier } &#34;.&#34; ] type_identifier .</code>
+</div>
 
-    <div class="rule" id="typeof_expression">
-      <code>typeof_expression = &#34;typeof&#34; &#34;(&#34; expression &#34;)&#34; .</code>
-    </div>
+<div class="rule" id="typeof_expression">
+  <code>typeof_expression = &#34;typeof&#34; &#34;(&#34; expression &#34;)&#34; .</code>
+</div>
 
-    <div class="rule" id="unary_expression">
-      <code>unary_expression = ( &#34;-&#34; | &#34;!&#34; | &#34;~&#34; ) valid_negatable_expression
+<div class="rule" id="unary_expression">
+  <code>unary_expression = ( &#34;-&#34; | &#34;!&#34; | &#34;~&#34; ) valid_negatable_expression
                  | primary_expression .</code>
-    </div>
+</div>
 
-    <div class="rule" id="unicode_escape_sequence">
-      <code>unicode_escape_sequence = &#34;\\&#34; &#34;u&#34; hex_digit hex_digit hex_digit hex_digit
+<div class="rule" id="unicode_escape_sequence">
+  <code>unicode_escape_sequence = &#34;\\&#34; &#34;u&#34; hex_digit hex_digit hex_digit hex_digit
                         | &#34;\\&#34; &#34;U&#34; hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit .</code>
-    </div>
+</div>
 
-    <div class="rule" id="union_declaration">
-      <code>union_declaration = &#34;union&#34; &#34;(&#34; eol union_members &#34;)&#34; .</code>
-    </div>
+<div class="rule" id="union_declaration">
+  <code>union_declaration = &#34;union&#34; &#34;(&#34; eol union_members &#34;)&#34; .</code>
+</div>
 
-    <div class="rule" id="union_declaration_with_error">
-      <code>union_declaration_with_error = &#34;union&#34; &#34;(&#34; eol
+<div class="rule" id="union_declaration_with_error">
+  <code>union_declaration_with_error = &#34;union&#34; &#34;(&#34; eol
                              { union_member_declaration eol }
                              [ &#34;error&#34; eol ]
                              &#34;)&#34; .</code>
-    </div>
+</div>
 
-    <div class="rule" id="union_member">
-      <code>union_member = local_type_reference
+<div class="rule" id="union_member">
+  <code>union_member = local_type_reference
              | generic_type
              | dynamic_array
              | fixed_size_array
              | named_tuple
              | contract_declaration .</code>
-    </div>
+</div>
 
-    <div class="rule" id="union_member_declaration">
-      <code>union_member_declaration = annotations named_tuple
+<div class="rule" id="union_member_declaration">
+  <code>union_member_declaration = annotations named_tuple
                          | union_member_no_annotations .</code>
-    </div>
+</div>
 
-    <div class="rule" id="union_member_no_annotations">
-      <code>union_member_no_annotations = type_reference
+<div class="rule" id="union_member_no_annotations">
+  <code>union_member_no_annotations = type_reference
                             | generic_type
                             | dynamic_array
                             | fixed_size_array .</code>
-    </div>
+</div>
 
-    <div class="rule" id="union_members">
-      <code>union_members = union_member_declaration { eol union_member_declaration } eol .</code>
-    </div>
+<div class="rule" id="union_members">
+  <code>union_members = union_member_declaration { eol union_member_declaration } eol .</code>
+</div>
 
-    <div class="rule" id="union_type">
-      <code>union_type = &#34;any&#34; | ( union_member { &#34;|&#34; union_member } ) .</code>
-    </div>
+<div class="rule" id="union_type">
+  <code>union_type = &#34;any&#34; | ( union_member { &#34;|&#34; union_member } ) .</code>
+</div>
 
-    <div class="rule" id="union_with_error">
-      <code>union_with_error = ( &#34;!&#34; union_member ) 
+<div class="rule" id="union_with_error">
+  <code>union_with_error = ( &#34;!&#34; union_member ) 
                  | ( union_member { &#34;|&#34; union_member } [ &#34;|&#34; &#34;error&#34; ] ) .</code>
-    </div>
+</div>
 
-    <div class="rule" id="uppercase_letter">
-      <code>uppercase_letter = &#34;A&#34;-&#34;Z&#34; .</code>
-    </div>
+<div class="rule" id="uppercase_letter">
+  <code>uppercase_letter = &#34;A&#34;-&#34;Z&#34; .</code>
+</div>
 
-    <div class="rule" id="valid_negatable_expression">
-      <code>valid_negatable_expression = literal
+<div class="rule" id="valid_negatable_expression">
+  <code>valid_negatable_expression = literal
                            | &#34;(&#34; expression &#34;)&#34;
                            | block
                            | function_call
@@ -1022,113 +1011,104 @@
                            | safe_indexed_access
                            | indexed_access
                            | identifier .</code>
-    </div>
+</div>
+
 
   </div>
   <div id="dependencyPopup"></div>
   <div id="previewPopup"></div>
-
   <script>
-    // Reverse-dependency mapping
+    
     var dependents = {"add_sub_op":["prec4_expression"],"annotation":["annotations"],"annotation_value":["namespaced_annotation"],"annotations":["enum_member_declaration","export_function_declaration","export_type_qualified_function_declaration","function_declaration","labeled_parameter","labeled_rest_parameter","labeled_tuple_type_member","parameter","tuple_type_member","type_declaration_lhs","type_qualified_function_declaration","union_member_declaration"],"argument":["arguments"],"arguments":["function_arguments","function_call_context"],"array_function_call":["primary_expression"],"array_literal":["literal"],"array_members":["array_literal","fixed_size_array_literal"],"array_pattern":["structured_match"],"assignment":["initializer","statement","top_level_item"],"assignment_lhs":["assignment","block_parameters","export_assignment","for_in_header","iterable_header"],"binary_expression":["expression"],"binary_literal":["integer_literal"],"block":["case_block","else_block","export_function_declaration","export_type_qualified_function_declaration","function_declaration","if_expression","primary_expression","type_qualified_function_declaration","valid_negatable_expression"],"block_body":["block","function_block"],"block_parameters":["function_block"],"boolean_literal":["annotation_value","literal"],"break_expression":["primary_expression"],"byte_escape_sequence":["content_line","rune_literal"],"case_block":["switch_statement"],"chained_expression":["binary_expression"],"character":["content_line","not_eol","raw_string_literal","rune_literal"],"comment":null,"condition":["for_header","if_expression"],"constant":["match_element"],"content_line":["indented_line"],"contract_declaration":["type_declaration_rhs","union_member"],"contract_field":["contract_member"],"contract_function":["contract_member"],"contract_member":["contract_members"],"contract_members":["contract_declaration"],"decimal_digit":["decimal_literal","exponent","float_literal","function_identifier","hex_digit","identifier","namespace","type_identifier"],"decimal_literal":["integer_literal","member_access","size"],"dynamic_array":["type","type_declaration_rhs","union_member","union_member_no_annotations"],"else_block":["if_expression","switch_statement"],"enum_declaration":["type_declaration_rhs"],"enum_member_declaration":["enum_members"],"enum_members":["enum_declaration"],"eol":["comment","content_line","contract_declaration","contract_members","enum_declaration","enum_members","indented_closing","interpolated_string_literal","multi_line_string_literal","rune_literal","string_literal","union_declaration","union_declaration_with_error","union_members"],"error_tuple":["type","type_declaration_rhs"],"escape_sequence":["content_line","rune_literal"],"exponent":["float_literal"],"export_assignment":["export_declaration"],"export_declaration":["top_level_item"],"export_function_declaration":["export_declaration"],"export_function_type_declaration":null,"export_type_declaration":["export_declaration"],"export_type_qualified_declaration":["export_declaration"],"export_type_qualified_function_declaration":["export_declaration"],"expression":["argument","array_function_call","array_members","assignment","block_body","break_expression","condition","export_assignment","export_type_qualified_declaration","for_block","index","indexed_access","interpolation","iterable","labeled_argument","member_access","primary_expression","range_bound","return_expression","safe_indexed_access","spread_argument","statement","step_expression","switch_statement","try_expression","tuple_member","tuple_update_expression","type_qualified_declaration","typeof_expression","valid_negatable_expression"],"fixed_size_array":["fixed_size_array_literal","type","type_declaration_rhs","union_member","union_member_no_annotations"],"fixed_size_array_literal":["literal"],"float_literal":["number"],"for_block":["for_expression","inline_for_expression"],"for_expression":["primary_expression"],"for_header":["for_expression"],"for_in_header":["for_expression","inline_for_expression"],"function_arguments":["function_call","type_constructor_call"],"function_block":["function_call","type_constructor_call"],"function_call":["chained_expression","member_access","primary_expression","valid_negatable_expression"],"function_call_context":["multi_line_string_literal"],"function_declaration":["statement","top_level_item"],"function_declaration_lhs":["contract_function","export_function_declaration","export_type_qualified_function_declaration","function_declaration","type_qualified_function_declaration"],"function_declaration_type":["export_function_declaration","export_type_qualified_function_declaration","function_declaration","type_qualified_function_declaration"],"function_identifier":["function_call","function_call_context","function_declaration_lhs"],"function_parameter_types":["function_call","function_declaration_lhs","function_type_declaration_lhs","type_constructor_call"],"function_type":["contract_function","export_function_type_declaration","function_type_declaration","type"],"function_type_declaration":null,"function_type_declaration_lhs":["export_function_type_declaration","function_type_declaration"],"function_type_identifier":["function_type_declaration_lhs"],"generic_type":["type","type_argument","union_member","union_member_no_annotations"],"hex_digit":["byte_escape_sequence","hexadecimal_literal","unicode_escape_sequence"],"hexadecimal_literal":["integer_literal"],"identifier":["assignment_lhs","constant","contract_field","enum_member_declaration","export_type_qualified_declaration","labeled_argument","labeled_parameter","labeled_pattern","labeled_rest_parameter","labeled_tuple_member","labeled_tuple_type_member","local_type_reference","member_access","namespaced_annotation","pattern","primary_expression","range_bound","rename_identifier","rest_operator","simple_annotation","size","symbol_literal","type_parameter","type_qualified_declaration","type_reference","valid_negatable_expression"],"if_expression":["primary_expression"],"import_expression":["primary_expression"],"indented_closing":["multi_line_string_literal"],"indented_line":["multi_line_string_literal"],"index":["indexed_access","safe_indexed_access"],"indexed_access":["primary_expression","valid_negatable_expression"],"initializer":["for_header","for_in_header"],"inline_for_expression":["primary_expression"],"inline_union":["type","type_comparison"],"integer_literal":["enum_member_declaration","number"],"interpolated_string_literal":["literal"],"interpolation":["content_line"],"is_op":["type_comparison"],"iterable":["for_in_header","iterable_header"],"iterable_header":null,"labeled_argument":["labeled_arguments"],"labeled_arguments":["function_arguments","function_call_context","labeled_tuple"],"labeled_assignment_lhs":["assignment_lhs"],"labeled_parameter":["labeled_parameters"],"labeled_parameters":["function_declaration_type","function_type"],"labeled_pattern":["pattern","structured_match"],"labeled_rest_parameter":["labeled_parameters"],"labeled_tuple":["meta_expression"],"labeled_tuple_member":["labeled_tuple_members"],"labeled_tuple_members":["tuple_literal"],"labeled_tuple_type_member":["labeled_tuple_type_members"],"labeled_tuple_type_members":["tuple_type"],"leading_whitespace":["indented_closing","indented_line"],"letter":["function_identifier","identifier","namespace","type_identifier"],"list_match":["match_condition"],"literal":["constant","labeled_parameter","parameter","primary_expression","range_bound","tuple_type_member","valid_negatable_expression"],"local_type_reference":["function_parameter_types","nilable_type","type","union_member"],"lowercase_letter":["function_identifier","identifier"],"match_condition":["case_block"],"match_element":["list_match"],"member_access":["primary_expression","range_bound","valid_negatable_expression"],"meta_expression":null,"module":null,"mul_div_op":["prec5_expression"],"multi_line_string_literal":["literal"],"named_tuple":["union_member","union_member_declaration"],"namespace":["namespaced_annotation"],"namespaced_annotation":["annotation"],"nilable_type":["contract_field","labeled_parameter","parameter","return_type","tuple_type_member","type_declaration_rhs"],"nonzero_digit":null,"not_eol":["comment"],"number":["annotation_value","literal"],"octal_digit":["octal_literal"],"octal_literal":["integer_literal"],"parameter":["parameters"],"parameters":["function_declaration_type","function_type"],"partial_application":["function_arguments","function_call_context"],"pattern":["array_pattern","labeled_pattern","pattern_match","tuple_pattern"],"pattern_match":["match_condition"],"prec1_expression":["chained_expression"],"prec2_expression":["prec1_expression"],"prec3_expression":["prec2_expression"],"prec4_expression":["relational_comparison","type_comparison"],"prec5_expression":["prec4_expression"],"prec6_expression":["prec5_expression"],"primary_expression":["unary_expression"],"range":["match_element","primary_expression"],"range_bound":["range"],"raw_string_literal":["literal"],"rel_op":["relational_comparison"],"relational_comparison":["prec3_expression"],"rename_identifier":["labeled_assignment_lhs"],"rename_type":["labeled_assignment_lhs"],"rest_operator":["array_pattern","assignment_lhs"],"rest_parameter":["labeled_rest_parameter","parameters"],"return_expression":["primary_expression"],"return_type":["function_declaration_type","function_type"],"rune_literal":["literal"],"safe_indexed_access":["primary_expression","range_bound","valid_negatable_expression"],"simple_annotation":["annotation"],"size":["fixed_size_array"],"spread_argument":["argument","labeled_argument"],"statement":["block_body","for_block"],"step_expression":["for_header","for_in_header"],"string_literal":["annotation_value","import_expression","literal"],"structured_match":["pattern_match"],"switch_statement":null,"symbol_literal":["literal"],"top_level_item":["module"],"try_expression":["expression"],"tuple_literal":["literal","tuple_update_expression"],"tuple_member":["labeled_tuple_member","tuple_members"],"tuple_members":["tuple_literal"],"tuple_pattern":["pattern","structured_match"],"tuple_type":["error_tuple","named_tuple","type","type_declaration_rhs"],"tuple_type_member":["labeled_tuple_type_member","tuple_type_members"],"tuple_type_members":["tuple_type"],"tuple_update_expression":["primary_expression","valid_negatable_expression"],"type":["contract_field","labeled_parameter","parameter","rest_parameter","return_type","tuple_type_member","type_argument"],"type_argument":["type_argument_list"],"type_argument_list":["generic_type"],"type_comparison":["prec3_expression"],"type_constructor_call":["primary_expression"],"type_declaration":["statement","top_level_item"],"type_declaration_lhs":["export_type_declaration","type_declaration"],"type_declaration_rhs":["export_type_declaration","type_declaration"],"type_identifier":["array_function_call","array_literal","export_type_qualified_declaration","export_type_qualified_function_declaration","function_type_identifier","member_access","named_tuple","rename_type","type_declaration_lhs","type_qualified_declaration","type_qualified_function_declaration","type_reference"],"type_parameter":["contract_field","type_parameters"],"type_parameters":["type_declaration_lhs"],"type_qualified_declaration":["statement","top_level_item"],"type_qualified_function_declaration":["statement","top_level_item"],"type_reference":["annotation_value","dynamic_array","fixed_size_array","generic_type","local_type_reference","pattern_match","type_comparison","type_constructor_call","type_declaration_rhs","union_member_no_annotations"],"typeof_expression":["primary_expression"],"unary_expression":["expression","prec6_expression"],"unicode_escape_sequence":["content_line","rune_literal"],"union_declaration":["labeled_parameter","parameter","tuple_type_member","type_declaration_rhs"],"union_declaration_with_error":["return_type"],"union_member":["union_type","union_with_error"],"union_member_declaration":["union_declaration_with_error","union_members"],"union_member_no_annotations":["union_member_declaration"],"union_members":["union_declaration"],"union_type":["inline_union","labeled_parameter","parameter","tuple_type_member","type_declaration_rhs"],"union_with_error":["return_type"],"uppercase_letter":["type_identifier"],"valid_negatable_expression":["unary_expression"]};
-
-    // Full rule text for preview tooltips
     var ruleContents = {"add_sub_op":"add_sub_op = \u0026#34;+\u0026#34; | \u0026#34;?+\u0026#34; | \u0026#34;-\u0026#34; | \u0026#34;?-\u0026#34; | \u0026#34;|\u0026#34; .","annotation":"annotation = namespaced_annotation | simple_annotation .","annotation_value":"annotation_value = string_literal | [\u0026#34;-\u0026#34;] number | boolean_literal | type_reference .","annotations":"annotations = [ annotation { annotation } ] .","argument":"argument = ( expression | spread_argument ) .","arguments":"arguments = argument { \u0026#34;,\u0026#34; argument } [ \u0026#34;,\u0026#34; ] .","array_function_call":"array_function_call = \u0026#34;array\u0026#34; \u0026#34;(\u0026#34; type_identifier \u0026#34;,\u0026#34; expression \u0026#34;)\u0026#34; .","array_literal":"array_literal = \u0026#34;[\u0026#34; [ array_members | array_literal ] \u0026#34;]\u0026#34;\n              | type_identifier \u0026#34;[\u0026#34; [ array_members | array_literal ] \u0026#34;]\u0026#34; .","array_members":"array_members = expression { \u0026#34;,\u0026#34; expression } [ \u0026#34;,\u0026#34; ] .","array_pattern":"array_pattern = \u0026#34;[\u0026#34; pattern { \u0026#34;,\u0026#34; pattern } [ \u0026#34;,\u0026#34; rest_operator ] \u0026#34;]\u0026#34; .","assignment":"assignment = assignment_lhs \u0026#34;=\u0026#34; [ \u0026#34;mut\u0026#34; ] expression .","assignment_lhs":"assignment_lhs = identifier { \u0026#34;,\u0026#34; identifier } [ \u0026#34;,\u0026#34; rest_operator ] \n               | \u0026#34;(\u0026#34; labeled_assignment_lhs \u0026#34;)\u0026#34; .","binary_expression":"binary_expression = chained_expression .","binary_literal":"binary_literal = \u0026#34;0b\u0026#34; ( \u0026#34;0\u0026#34; | \u0026#34;1\u0026#34; ) { \u0026#34;0\u0026#34; | \u0026#34;1\u0026#34; | \u0026#34;_\u0026#34; } .","block":"block = \u0026#34;{\u0026#34; block_body \u0026#34;}\u0026#34; .","block_body":"block_body = { statement } expression .","block_parameters":"block_parameters = \u0026#34;|\u0026#34; assignment_lhs \u0026#34;|\u0026#34; .","boolean_literal":"boolean_literal = \u0026#34;true\u0026#34; | \u0026#34;false\u0026#34; .","break_expression":"break_expression = \u0026#34;break\u0026#34; expression .","byte_escape_sequence":"byte_escape_sequence = \u0026#34;\\\\\u0026#34; \u0026#34;x\u0026#34; hex_digit hex_digit .","case_block":"case_block = match_condition block .","chained_expression":"chained_expression = prec1_expression { \u0026#34;|\u0026gt;\u0026#34; function_call } .","character":"character = (* valid UTF-8 codepoint *) .","comment":"comment = \u0026#34;#\u0026#34; { not_eol } eol .","condition":"condition = expression .","constant":"constant = literal\n         | scoped_identifier\n         | identifier .","content_line":"content_line = { byte_escape_sequence \n               | unicode_escape_sequence \n               | escape_sequence \n               | interpolation \n               | character - eol - \u0026#34;```\u0026#34; \n               } eol .","contract_declaration":"contract_declaration = \u0026#34;contract\u0026#34; \u0026#34;(\u0026#34; eol contract_members \u0026#34;)\u0026#34; .","contract_field":"contract_field = identifier [ \u0026#34;[\u0026#34; type_parameter \u0026#34;]\u0026#34; ] \u0026#34;:\u0026#34; ( nilable_type | type ) .","contract_function":"contract_function = function_declaration_lhs \u0026#34;=\u0026#34; function_type .","contract_member":"contract_member = contract_function | contract_field .","contract_members":"contract_members = contract_member { eol contract_member } eol .","decimal_digit":"decimal_digit = \u0026#34;0\u0026#34;-\u0026#34;9\u0026#34; .","decimal_literal":"decimal_literal = decimal_digit { decimal_digit | \u0026#34;_\u0026#34; } .","dynamic_array":"dynamic_array = \u0026#34;[\u0026#34; \u0026#34;]\u0026#34; type_reference .","else_block":"else_block = \u0026#34;else\u0026#34; block .","enum_declaration":"enum_declaration = \u0026#34;enum\u0026#34; \u0026#34;(\u0026#34; eol enum_members \u0026#34;)\u0026#34; .","enum_member_declaration":"enum_member_declaration = annotations identifier [ \u0026#34;=\u0026#34; integer_literal ] .","enum_members":"enum_members = enum_member_declaration { eol enum_member_declaration } eol .","eol":"eol = ( \u0026#34;\\r\\n\u0026#34; | \u0026#34;\\r\u0026#34; | \u0026#34;\\n\u0026#34; ) .","error_tuple":"error_tuple = \u0026#34;error\u0026#34; tuple_type .","escape_sequence":"escape_sequence = ( \u0026#34;\\\\n\u0026#34; | \u0026#34;\\\\t\u0026#34; | \u0026#34;\\\\\\\u0026#34;\u0026#34; | \u0026#34;\\\\\u0026#39;\u0026#34; | \u0026#34;\\\\\\\\\u0026#34; | \u0026#34;\\\\r\u0026#34; | \u0026#34;\\\\b\u0026#34; | \u0026#34;\\\\f\u0026#34; | \u0026#34;\\\\v\u0026#34; | \u0026#34;\\\\0\u0026#34; | \u0026#34;\\\\`\u0026#34; ) .","exponent":"exponent = \u0026#34;e\u0026#34; [ \u0026#34;-\u0026#34; | \u0026#34;+\u0026#34; ] decimal_digit { decimal_digit } .","export_assignment":"export_assignment = assignment_lhs \u0026#34;:\u0026#34; expression .","export_declaration":"export_declaration = ( export_type_qualified_function_declaration\n                     | export_type_qualified_declaration\n                     | export_type_declaration\n                     | export_function_declaration\n                     | export_assignment ) .","export_function_declaration":"export_function_declaration = annotations function_declaration_lhs \u0026#34;:\u0026#34; function_declaration_type block .","export_function_type_declaration":"export_function_type_declaration = function_type_declaration_lhs \u0026#34;:\u0026#34; function_type .","export_type_declaration":"export_type_declaration = type_declaration_lhs \u0026#34;:\u0026#34; type_declaration_rhs .","export_type_qualified_declaration":"export_type_qualified_declaration = type_identifier \u0026#34;.\u0026#34; identifier \u0026#34;:\u0026#34; expression .","export_type_qualified_function_declaration":"export_type_qualified_function_declaration = annotations type_identifier \u0026#34;.\u0026#34; function_declaration_lhs \u0026#34;:\u0026#34; function_declaration_type block .","expression":"expression = try_expression\n           | binary_expression\n           | unary_expression .","fixed_size_array":"fixed_size_array = \u0026#34;[\u0026#34; size { \u0026#34;,\u0026#34; size } \u0026#34;]\u0026#34; type_reference .","fixed_size_array_literal":"fixed_size_array_literal = fixed_size_array \u0026#34;[\u0026#34; array_members \u0026#34;]\u0026#34; .","float_literal":"float_literal = decimal_digit { decimal_digit | \u0026#34;_\u0026#34; } \u0026#34;.\u0026#34; decimal_digit { decimal_digit | \u0026#34;_\u0026#34; } [ exponent ]\n              | decimal_digit { decimal_digit | \u0026#34;_\u0026#34; } exponent .","for_block":"for_block = \u0026#34;{\u0026#34; { statement } [ expression ] \u0026#34;}\u0026#34; .","for_expression":"for_expression = \u0026#34;for\u0026#34; [ for_header | for_in_header ] for_block .","for_header":"for_header = initializer [ \u0026#34;;\u0026#34; condition [ \u0026#34;;\u0026#34; step_expression ] ] .","for_in_header":"for_in_header = ( initializer \u0026#34;;\u0026#34; assignment_lhs \u0026#34;in\u0026#34; iterable [ \u0026#34;;\u0026#34; step_expression ] )\n              | ( assignment_lhs \u0026#34;in\u0026#34; iterable ) .","function_arguments":"function_arguments = ( labeled_arguments\n                     | arguments [ \u0026#34;,\u0026#34; labeled_arguments ] \n                     ) [ partial_application ] .","function_block":"function_block = \u0026#34;{\u0026#34; [ block_parameters ] block_body \u0026#34;}\u0026#34; .","function_call":"function_call = function_identifier [ function_parameter_types ] \u0026#34;(\u0026#34; [ function_arguments ] \u0026#34;)\u0026#34; [ function_block ] .","function_call_context":"function_call_context = function_identifier [ \u0026#34;(\u0026#34; ( labeled_arguments | arguments [ \u0026#34;,\u0026#34; labeled_arguments ] ) [ partial_application ] \u0026#34;)\u0026#34; ] .","function_declaration":"function_declaration = annotations function_declaration_lhs \u0026#34;=\u0026#34; function_declaration_type block .","function_declaration_lhs":"function_declaration_lhs = function_identifier [ function_parameter_types ] .","function_declaration_type":"function_declaration_type = ( \u0026#34;fn\u0026#34; \u0026#34;(\u0026#34; [ labeled_parameters | parameters ] \u0026#34;)\u0026#34; ( return_type | \u0026#34;_\u0026#34; ) )\n                          | ( \u0026#34;fx\u0026#34; \u0026#34;(\u0026#34; [ labeled_parameters | parameters ] \u0026#34;)\u0026#34; [ return_type | \u0026#34;_\u0026#34; ] ) .","function_identifier":"function_identifier = lowercase_letter { letter | decimal_digit | \u0026#34;_\u0026#34; } [ \u0026#34;?\u0026#34; | \u0026#34;!\u0026#34; ] .","function_parameter_types":"function_parameter_types = \u0026#34;[\u0026#34; [ local_type_reference { \u0026#34;,\u0026#34; local_type_reference } ] \u0026#34;]\u0026#34; .","function_type":"function_type = ( \u0026#34;fn\u0026#34; | \u0026#34;fx\u0026#34; ) \u0026#34;(\u0026#34; [ labeled_parameters | parameters ] \u0026#34;)\u0026#34; return_type .","function_type_declaration":"function_type_declaration = function_type_declaration_lhs \u0026#34;=\u0026#34; function_type .","function_type_declaration_lhs":"function_type_declaration_lhs = function_type_identifier [ function_parameter_types ] .","function_type_identifier":"function_type_identifier = type_identifier .","generic_type":"generic_type = type_reference type_argument_list .","hex_digit":"hex_digit = decimal_digit | \u0026#34;a\u0026#34;-\u0026#34;f\u0026#34; | \u0026#34;A\u0026#34;-\u0026#34;F\u0026#34; .","hexadecimal_literal":"hexadecimal_literal = \u0026#34;0x\u0026#34; hex_digit { hex_digit | \u0026#34;_\u0026#34; } .","identifier":"identifier = ( lowercase_letter | \u0026#34;_\u0026#34; ) { letter | decimal_digit | \u0026#34;_\u0026#34; } .","if_expression":"if_expression = \u0026#34;if\u0026#34; condition block { \u0026#34;else\u0026#34; \u0026#34;if\u0026#34; condition block } [ else_block ] .","import_expression":"import_expression = \u0026#34;import\u0026#34; \u0026#34;(\u0026#34; string_literal \u0026#34;)\u0026#34; .","indented_closing":"indented_closing = leading_whitespace \u0026#34;```\u0026#34; eol .","indented_line":"indented_line = leading_whitespace content_line .","index":"index = expression .","indexed_access":"indexed_access = expression \u0026#34;[\u0026#34; index { \u0026#34;,\u0026#34; index } \u0026#34;]\u0026#34; .","initializer":"initializer = assignment .","inline_for_expression":"inline_for_expression = \u0026#34;inline\u0026#34; \u0026#34;for\u0026#34; for_in_header for_block .","inline_union":"inline_union = \u0026#34;(\u0026#34; union_type \u0026#34;)\u0026#34; .","integer_literal":"integer_literal = binary_literal\n                | hexadecimal_literal\n                | octal_literal\n                | decimal_literal .","interpolated_string_literal":"interpolated_string_literal = \u0026#39;\u0026#34;\u0026#39; { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - \u0026#39;\u0026#34;\u0026#39; - eol } \u0026#39;\u0026#34;\u0026#39; .","interpolation":"interpolation = \u0026#34;\\\\(\u0026#34; expression \u0026#34;)\u0026#34; .","is_op":"is_op = \u0026#34;is\u0026#34; .","iterable":"iterable = expression .","iterable_header":"iterable_header = assignment_lhs \u0026#34;in\u0026#34; iterable .","labeled_argument":"labeled_argument = ( identifier \u0026#34;:\u0026#34; expression | spread_argument ) .","labeled_arguments":"labeled_arguments = labeled_argument { \u0026#34;,\u0026#34; ( labeled_argument ) } [ \u0026#34;,\u0026#34; ] .","labeled_assignment_lhs":"labeled_assignment_lhs = ( rename_identifier | rename_type ) { \u0026#34;,\u0026#34; ( rename_identifier | rename_type ) } .","labeled_parameter":"labeled_parameter = annotations identifier \u0026#34;:\u0026#34; ( nilable_type\n                                               | type\n                                               | literal\n                                               | union_type\n                                               | union_declaration ) .","labeled_parameters":"labeled_parameters = ( labeled_parameter | labeled_rest_parameter ) { \u0026#34;,\u0026#34; ( labeled_parameter | labeled_rest_parameter ) } [ \u0026#34;,\u0026#34; ] .","labeled_pattern":"labeled_pattern = \u0026#34;(\u0026#34; identifier \u0026#34;:\u0026#34; pattern { \u0026#34;,\u0026#34; identifier \u0026#34;:\u0026#34; pattern } \u0026#34;)\u0026#34; .","labeled_rest_parameter":"labeled_rest_parameter = annotations identifier \u0026#34;:\u0026#34; rest_parameter .","labeled_tuple":"labeled_tuple = \u0026#34;(\u0026#34; labeled_arguments \u0026#34;)\u0026#34; .","labeled_tuple_member":"labeled_tuple_member = identifier \u0026#34;:\u0026#34; tuple_member .","labeled_tuple_members":"labeled_tuple_members = labeled_tuple_member { \u0026#34;,\u0026#34; labeled_tuple_member } [ \u0026#34;,\u0026#34; ] .","labeled_tuple_type_member":"labeled_tuple_type_member = annotations identifier \u0026#34;:\u0026#34; tuple_type_member .","labeled_tuple_type_members":"labeled_tuple_type_members = labeled_tuple_type_member { \u0026#34;,\u0026#34; labeled_tuple_type_member } .","leading_whitespace":"leading_whitespace = { \u0026#34; \u0026#34; | \u0026#34;\\t\u0026#34; } .","letter":"letter = \u0026#34;a\u0026#34;-\u0026#34;z\u0026#34; | \u0026#34;A\u0026#34;-\u0026#34;Z\u0026#34; .","list_match":"list_match = match_element { \u0026#34;,\u0026#34; match_element } .","literal":"literal = number\n        | boolean_literal\n        | string_literal\n        | interpolated_string_literal\n        | raw_string_literal\n        | multi_line_string_literal\n        | tuple_literal\n        | array_literal\n        | symbol_literal\n        | rune_literal\n        | fixed_size_array_literal .","local_type_reference":"local_type_reference = type_reference | identifier .","lowercase_letter":"lowercase_letter = \u0026#34;a\u0026#34;-\u0026#34;z\u0026#34; .","match_condition":"match_condition = list_match\n                | pattern_match .","match_element":"match_element = constant | range .","member_access":"member_access = ( expression | type_identifier ) \u0026#34;.\u0026#34; ( decimal_literal \n                                                     | identifier \n                                                     | function_call ) .","meta_expression":"meta_expression = \u0026#34;$\u0026#34; labeled_tuple .","module":"module = { top_level_item } .","mul_div_op":"mul_div_op = \u0026#34;*\u0026#34; | \u0026#34;?*\u0026#34; | \u0026#34;/\u0026#34; | \u0026#34;?/\u0026#34; | \u0026#34;%\u0026#34; | \u0026#34;\u0026amp;\u0026#34; | \u0026#34;\u0026lt;\u0026lt;\u0026#34; | \u0026#34;\u0026gt;\u0026gt;\u0026#34; .","multi_line_string_literal":"multi_line_string_literal = \u0026#34;```\u0026#34; [ function_call_context ] eol { indented_line } indented_closing .","named_tuple":"named_tuple = type_identifier tuple_type .","namespace":"namespace = letter { letter | decimal_digit | \u0026#34;_\u0026#34; } .","namespaced_annotation":"namespaced_annotation = \u0026#34;@\u0026#34; namespace \u0026#34;:\u0026#34; identifier annotation_value .","nilable_type":"nilable_type = \u0026#34;?\u0026#34; local_type_reference .","nonzero_digit":"nonzero_digit = \u0026#34;1\u0026#34;-\u0026#34;9\u0026#34; .","not_eol":"not_eol = character - \u0026#34;\\n\u0026#34; - \u0026#34;\\r\u0026#34; .","number":"number = float_literal | integer_literal .","octal_digit":"octal_digit = \u0026#34;0\u0026#34;-\u0026#34;7\u0026#34; .","octal_literal":"octal_literal = \u0026#34;0o\u0026#34; octal_digit { octal_digit } .","parameter":"parameter = annotations ( nilable_type\n                        | type\n                        | literal\n                        | union_type \n                        | union_declaration ) .","parameters":"parameters = ( parameter | rest_parameter ) { \u0026#34;,\u0026#34; ( parameter | rest_parameter ) } [ \u0026#34;,\u0026#34; ] .","partial_application":"partial_application = [ \u0026#34;,\u0026#34; ] \u0026#34;*\u0026#34; .","pattern":"pattern = labeled_pattern\n        | tuple_pattern\n        | identifier .","pattern_match":"pattern_match = type_reference \u0026#34;(\u0026#34; pattern \u0026#34;)\u0026#34; \n              | structured_match\n              | type_reference .","prec1_expression":"prec1_expression = prec2_expression { \u0026#34;||\u0026#34; prec2_expression } .","prec2_expression":"prec2_expression = prec3_expression { \u0026#34;\u0026amp;\u0026amp;\u0026#34; prec3_expression } .","prec3_expression":"prec3_expression = type_comparison | relational_comparison .","prec4_expression":"prec4_expression = prec5_expression { add_sub_op prec5_expression } .","prec5_expression":"prec5_expression = prec6_expression { mul_div_op prec6_expression } .","prec6_expression":"prec6_expression = unary_expression { \u0026#34;^\u0026#34; unary_expression } .","primary_expression":"primary_expression = \u0026#34;(\u0026#34; expression \u0026#34;)\u0026#34;\n                   | block\n                   | if_expression\n                   | for_expression\n                   | inline_for_expression\n                   | array_function_call\n                   | import_expression\n                   | typeof_expression\n                   | function_call\n                   | type_constructor_call\n                   | return_expression\n                   | break_expression\n                   | member_access\n                   | tuple_update_expression\n                   | safe_indexed_access\n                   | indexed_access\n                   | range\n                   | identifier\n                   | literal .","range":"range = range_bound \u0026#34;..\u0026#34; range_bound .","range_bound":"range_bound = \u0026#34;(\u0026#34; expression \u0026#34;)\u0026#34;\n            | member_access\n            | safe_indexed_access\n            | identifier\n            | literal .","raw_string_literal":"raw_string_literal = \u0026#34;`\u0026#34; { \u0026#34;``\u0026#34; | character - \u0026#34;`\u0026#34; } \u0026#34;`\u0026#34; .","rel_op":"rel_op = \u0026#34;==\u0026#34; | \u0026#34;\u0026lt;\u0026#34; | \u0026#34;\u0026gt;\u0026#34; | \u0026#34;\u0026lt;=\u0026#34; | \u0026#34;\u0026gt;=\u0026#34; | \u0026#34;!=\u0026#34; .","relational_comparison":"relational_comparison = prec4_expression { rel_op prec4_expression } .","rename_identifier":"rename_identifier = identifier [ \u0026#34;:\u0026#34; identifier ] .","rename_type":"rename_type = type_identifier [ \u0026#34;:\u0026#34; type_identifier ] .","rest_operator":"rest_operator = \u0026#34;...\u0026#34; [ identifier ] .","rest_parameter":"rest_parameter = \u0026#34;...\u0026#34; type .","return_expression":"return_expression = \u0026#34;return\u0026#34; expression .","return_type":"return_type = union_with_error\n            | union_declaration_with_error\n            | nilable_type\n            | type\n            | \u0026#34;error\u0026#34; .","rune_literal":"rune_literal = \u0026#34;\u0026#39;\u0026#34; ( byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - eol ) \u0026#34;\u0026#39;\u0026#34; .","safe_indexed_access":"safe_indexed_access = expression \u0026#34;[\u0026#34; index { \u0026#34;,\u0026#34; index } \u0026#34;]\u0026#34; \u0026#34;!\u0026#34; .","simple_annotation":"simple_annotation = \u0026#34;@\u0026#34; identifier .","size":"size = decimal_literal | identifier .","spread_argument":"spread_argument = \u0026#34;...\u0026#34; expression .","statement":"statement = ( type_qualified_function_declaration\n            | type_qualified_declaration\n            | type_declaration\n            | function_declaration\n            | assignment\n            | expression\n            ) .","step_expression":"step_expression = expression .","string_literal":"string_literal = \u0026#39;\u0026#34;\u0026#39; { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - \u0026#39;\u0026#34;\u0026#39; - eol } \u0026#39;\u0026#34;\u0026#39; .","structured_match":"structured_match = labeled_pattern\n                 | tuple_pattern\n                 | array_pattern .","switch_statement":"switch_statement = \u0026#34;switch\u0026#34; expression \u0026#34;{\u0026#34; case_block { case_block } [ else_block ] \u0026#34;}\u0026#34; .","symbol_literal":"symbol_literal = \u0026#34;:\u0026#34; identifier .","top_level_item":"top_level_item = ( type_qualified_function_declaration\n                 | type_qualified_declaration\n                 | type_declaration\n                 | function_declaration\n                 | assignment\n                 | export_declaration\n                 ) .","try_expression":"try_expression = \u0026#34;try\u0026#34; expression\n               | \u0026#34;try_continue\u0026#34; [ expression ]\n               | \u0026#34;try_break\u0026#34; [ expression ] .","tuple_literal":"tuple_literal = \u0026#34;(\u0026#34; [ labeled_tuple_members | tuple_members ] \u0026#34;)\u0026#34; .","tuple_member":"tuple_member = expression .","tuple_members":"tuple_members = tuple_member \u0026#34;,\u0026#34; { tuple_member \u0026#34;,\u0026#34; } [ tuple_member ] .","tuple_pattern":"tuple_pattern = \u0026#34;(\u0026#34; pattern { \u0026#34;,\u0026#34; pattern } \u0026#34;)\u0026#34; .","tuple_type":"tuple_type = \u0026#34;(\u0026#34; [ labeled_tuple_type_members | tuple_type_members ] \u0026#34;)\u0026#34; .","tuple_type_member":"tuple_type_member = annotations ( nilable_type\n                                | type\n                                | union_type\n                                | union_declaration\n                                | literal ) .","tuple_type_members":"tuple_type_members = tuple_type_member { \u0026#34;,\u0026#34; tuple_type_member } .","tuple_update_expression":"tuple_update_expression = expression \u0026#34;.\u0026#34; tuple_literal .","type":"type = fixed_size_array\n     | dynamic_array\n     | function_type\n     | error_tuple\n     | tuple_type\n     | generic_type\n     | local_type_reference\n     | inline_union .","type_argument":"type_argument = type\n              | generic_type .","type_argument_list":"type_argument_list = \u0026#34;[\u0026#34; type_argument { \u0026#34;,\u0026#34; type_argument } \u0026#34;]\u0026#34; .","type_comparison":"type_comparison = prec4_expression is_op (type_reference | inline_union) .","type_constructor_call":"type_constructor_call = type_reference [ function_parameter_types ] \u0026#34;(\u0026#34; [ function_arguments ] \u0026#34;)\u0026#34; [ function_block ] .","type_declaration":"type_declaration = type_declaration_lhs \u0026#34;=\u0026#34; type_declaration_rhs .","type_declaration_lhs":"type_declaration_lhs = annotations type_identifier [ type_parameters ] .","type_declaration_rhs":"type_declaration_rhs = nilable_type\n                     | \u0026#34;type\u0026#34; tuple_type\n                     | error_tuple\n                     | dynamic_array\n                     | fixed_size_array\n                     | union_type\n                     | union_declaration\n                     | enum_declaration\n                     | contract_declaration\n                     | type_reference .","type_identifier":"type_identifier = uppercase_letter { letter | decimal_digit | \u0026#34;_\u0026#34; } .","type_parameter":"type_parameter = identifier .","type_parameters":"type_parameters = \u0026#34;[\u0026#34; type_parameter { \u0026#34;,\u0026#34; type_parameter } \u0026#34;]\u0026#34; .","type_qualified_declaration":"type_qualified_declaration = type_identifier \u0026#34;.\u0026#34; identifier \u0026#34;=\u0026#34; expression .","type_qualified_function_declaration":"type_qualified_function_declaration = annotations type_identifier \u0026#34;.\u0026#34; function_declaration_lhs \u0026#34;=\u0026#34; function_declaration_type block .","type_reference":"type_reference = [ identifier { \u0026#34;.\u0026#34; identifier } \u0026#34;.\u0026#34; ] type_identifier .","typeof_expression":"typeof_expression = \u0026#34;typeof\u0026#34; \u0026#34;(\u0026#34; expression \u0026#34;)\u0026#34; .","unary_expression":"unary_expression = ( \u0026#34;-\u0026#34; | \u0026#34;!\u0026#34; | \u0026#34;~\u0026#34; ) valid_negatable_expression\n                 | primary_expression .","unicode_escape_sequence":"unicode_escape_sequence = \u0026#34;\\\\\u0026#34; \u0026#34;u\u0026#34; hex_digit hex_digit hex_digit hex_digit\n                        | \u0026#34;\\\\\u0026#34; \u0026#34;U\u0026#34; hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit .","union_declaration":"union_declaration = \u0026#34;union\u0026#34; \u0026#34;(\u0026#34; eol union_members \u0026#34;)\u0026#34; .","union_declaration_with_error":"union_declaration_with_error = \u0026#34;union\u0026#34; \u0026#34;(\u0026#34; eol\n                             { union_member_declaration eol }\n                             [ \u0026#34;error\u0026#34; eol ]\n                             \u0026#34;)\u0026#34; .","union_member":"union_member = local_type_reference\n             | generic_type\n             | dynamic_array\n             | fixed_size_array\n             | named_tuple\n             | contract_declaration .","union_member_declaration":"union_member_declaration = annotations named_tuple\n                         | union_member_no_annotations .","union_member_no_annotations":"union_member_no_annotations = type_reference\n                            | generic_type\n                            | dynamic_array\n                            | fixed_size_array .","union_members":"union_members = union_member_declaration { eol union_member_declaration } eol .","union_type":"union_type = \u0026#34;any\u0026#34; | ( union_member { \u0026#34;|\u0026#34; union_member } ) .","union_with_error":"union_with_error = ( \u0026#34;!\u0026#34; union_member ) \n                 | ( union_member { \u0026#34;|\u0026#34; union_member } [ \u0026#34;|\u0026#34; \u0026#34;error\u0026#34; ] ) .","uppercase_letter":"uppercase_letter = \u0026#34;A\u0026#34;-\u0026#34;Z\u0026#34; .","valid_negatable_expression":"valid_negatable_expression = literal\n                           | \u0026#34;(\u0026#34; expression \u0026#34;)\u0026#34;\n                           | block\n                           | function_call\n                           | member_access\n                           | tuple_update_expression\n                           | safe_indexed_access\n                           | indexed_access\n                           | identifier ."};
-
-    // Insert clickable self-reference spans or anchor links.
+  </script>
+  <script>
     function processTextNodes(node, ruleID, pattern) {
-      if (node.nodeType === Node.TEXT_NODE) {
-        var replaced = node.textContent.replace(pattern, function(match) {
-          if (match === ruleID) {
-            // self-reference -> clickable span with data-rule
-            return `<span class="rule-name" data-rule="${ruleID}" onclick="showDeps(event)">${match}</span>`;
-          } else {
-            // normal link -> anchor with data-rule for tooltip
-            return `<a href="#${match}" data-rule="${match}">${match}</a>`;
-          }
-        });
-        var span = document.createElement("span");
-        span.innerHTML = replaced;
-        node.parentNode.replaceChild(span, node);
-      } else if (node.nodeType === Node.ELEMENT_NODE && !node.classList.contains("rule-name")) {
-        Array.from(node.childNodes).forEach(function(child) {
-          processTextNodes(child, ruleID, pattern);
-        });
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-      var ruleNames = Object.keys(dependents).sort();
-      var pattern = new RegExp("\\b(" + ruleNames.join("|") + ")\\b", "g");
-      // Insert clickable spans or anchors.
-      document.querySelectorAll("div.rule > code").forEach(function(codeElem) {
-        var ruleID = codeElem.parentElement.id;
-        processTextNodes(codeElem, ruleID, pattern);
-      });
-
-      // Now attach mouseenter/mouseleave for preview tooltips.
-      document.querySelectorAll("div.rule a[data-rule]").forEach(function(linkElem) {
-        linkElem.addEventListener("mouseenter", showPreview);
-        linkElem.addEventListener("mouseleave", hidePreview);
-      });
-    });
-
-    // Show dependency popup near the clicked span.
-    function showDeps(e) {
-      var ruleName = e.target.dataset.rule;
-      var deps = dependents[ruleName] || [];
-      var message = "";
-      if (deps.length === 0) {
-        message = `<strong>${ruleName}</strong> is not referenced by any other rule.`;
-      } else {
-        message = `<strong>Rules that depend on ${ruleName}:</strong><br><ul>`;
-        deps.forEach(function(dep) {
-          message += `<li><a href="#${dep}">${dep}</a></li>`;
-        });
-        message += "</ul>";
-      }
-      var popup = document.getElementById("dependencyPopup");
-      popup.innerHTML = message;
-
-      // Position the popup near the clicked span.
-      var rect = e.target.getBoundingClientRect();
-      popup.style.display = "block";
-      popup.style.top = (window.scrollY + rect.bottom + 5) + "px";
-      popup.style.left = (window.scrollX + rect.left) + "px";
-      e.stopPropagation();
-    }
-
-    // Clicking outside hides the dependency popup.
-    document.addEventListener("click", function(e) {
-      var popup = document.getElementById("dependencyPopup");
-      if (popup.style.display === "block") {
-        var isPopup = popup.contains(e.target);
-        var isRuleName = e.target.classList && e.target.classList.contains("rule-name");
-        if (!isPopup && !isRuleName) {
-          popup.style.display = "none";
+    if (node.nodeType === Node.TEXT_NODE) {
+      var replaced = node.textContent.replace(pattern, function(match) {
+        if (match === ruleID) {
+          // Self-reference becomes a clickable span.
+          return `<span class="rule-name" data-rule="${ruleID}" onclick="showDeps(event)">${match}</span>`;
+        } else {
+          // Other rule references become anchor links.
+          return `<a href="#${match}" data-rule="${match}">${match}</a>`;
         }
-      }
+      });
+      var span = document.createElement("span");
+      span.innerHTML = replaced;
+      node.parentNode.replaceChild(span, node);
+    } else if (node.nodeType === Node.ELEMENT_NODE && !node.classList.contains("rule-name")) {
+      Array.from(node.childNodes).forEach(function(child) {
+        processTextNodes(child, ruleID, pattern);
+      });
+    }
+  }
+  
+  document.addEventListener("DOMContentLoaded", function() {
+    var ruleNames = Object.keys(dependents).sort();
+    var pattern = new RegExp("\\b(" + ruleNames.join("|") + ")\\b", "g");
+    document.querySelectorAll("div.rule > code").forEach(function(codeElem) {
+      var ruleID = codeElem.parentElement.id;
+      processTextNodes(codeElem, ruleID, pattern);
     });
-
-    // Preview tooltip on hover.
-    function showPreview(e) {
-      var ruleName = e.target.dataset.rule;
-      if (!ruleName) return;
-      var content = ruleContents[ruleName] || "(No content)";
-      var popup = document.getElementById("previewPopup");
-      popup.innerHTML = `<code>${content}</code>`;
-
-      // Position near the link.
-      var rect = e.target.getBoundingClientRect();
-      popup.style.display = "block";
-      popup.style.top = (window.scrollY + rect.bottom + 5) + "px";
-      popup.style.left = (window.scrollX + rect.left) + "px";
+    
+    // Attach tooltip events to all anchor links.
+    document.querySelectorAll("div.rule a[data-rule]").forEach(function(linkElem) {
+      linkElem.addEventListener("mouseenter", showPreview);
+      linkElem.addEventListener("mouseleave", hidePreview);
+    });
+  });
+  
+  function showDeps(e) {
+    var ruleName = e.target.dataset.rule;
+    var deps = dependents[ruleName] || [];
+    var message = "";
+    if (deps.length === 0) {
+      message = `<strong>${ruleName}</strong> is not referenced by any other rule.`;
+    } else {
+      message = `<strong>Rules that depend on ${ruleName}:</strong><br><ul>`;
+      deps.forEach(function(dep) {
+        message += `<li><a href="#${dep}">${dep}</a></li>`;
+      });
+      message += `</ul>`;
     }
-
-    function hidePreview(e) {
-      var popup = document.getElementById("previewPopup");
-      popup.style.display = "none";
+    var popup = document.getElementById("dependencyPopup");
+    popup.innerHTML = message;
+    var rect = e.target.getBoundingClientRect();
+    popup.style.display = "block";
+    popup.style.top = (window.scrollY + rect.bottom + 5) + "px";
+    popup.style.left = (window.scrollX + rect.left) + "px";
+    e.stopPropagation();
+  }
+  
+  document.addEventListener("click", function(e) {
+    var popup = document.getElementById("dependencyPopup");
+    if (popup.style.display === "block") {
+      var isPopup = popup.contains(e.target);
+      var isRuleName = e.target.classList && e.target.classList.contains("rule-name");
+      if (!isPopup && !isRuleName) {
+        popup.style.display = "none";
+      }
     }
+  });
+  
+  function showPreview(e) {
+    var ruleName = e.target.dataset.rule;
+    if (!ruleName) return;
+    var content = ruleContents[ruleName] || "(No content)";
+    var popup = document.getElementById("previewPopup");
+    popup.innerHTML = `<code>${content}</code>`;
+    var rect = e.target.getBoundingClientRect();
+    popup.style.display = "block";
+    popup.style.top = (window.scrollY + rect.bottom + 5) + "px";
+    popup.style.left = (window.scrollX + rect.left) + "px";
+  }
+  
+  function hidePreview(_) {
+    var popup = document.getElementById("previewPopup");
+    popup.style.display = "none";
+  }
+
   </script>
 </body>
 </html>

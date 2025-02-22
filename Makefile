@@ -4,12 +4,14 @@
 TUP = tup.ebnf
 HTML = tup.ebnf.html
 FMT = tools/fmt_ebnf.go
+FMT_HTML = tools/fmt_ebnf.html
+FMT_JS = tools/fmt_ebnf.js
 
 # Default target.
 all: $(HTML)
 
 # Generate tup.ebnf.html when tup.ebnf (or the Go formatter) is newer.
-$(HTML): $(TUP) $(FMT)
+$(HTML): $(TUP) $(FMT) $(FMT_HTML) $(FMT_JS)
 	@echo "Updating $(HTML) from $(TUP)..."
 	go run $(FMT) -i $(TUP) -o $(HTML)
 
