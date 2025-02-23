@@ -45,6 +45,9 @@ const (
 	stateEscapeSequence
 	stateHexEscape
 	stateComment
+	stateColon
+	stateSymbol
+	stateQuotedSymbol
 )
 
 // Tokenizer holds the state of the lexer.
@@ -146,8 +149,7 @@ outer:
 				break outer
 			case ':':
 				tokenType = TokenColon
-				t.index++
-				break outer
+				st = stateColon
 			case ',':
 				tokenType = TokenComma
 				t.index++
@@ -239,6 +241,39 @@ outer:
 					t.index++
 					break outer
 				}
+			}
+		case stateColon:
+			switch {
+			case (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_':
+				tokenType = TokenSymbolLiteral
+				st = stateSymbol
+			case c >= '0' && c <= '9':
+				tokenType = TokenSymbolLiteral
+				st = stateSymbol
+				invalid = true
+			case c == '"':
+				tokenType = TokenSymbolLiteral
+				st = stateQuotedSymbol
+			default:
+				break outer
+			}
+		case stateSymbol:
+			switch {
+			case (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_':
+				// continue symbol
+			default:
+				break outer
+			}
+		case stateQuotedSymbol:
+			switch c {
+			case 0:
+				invalid = true
+				break outer
+			case '"':
+				t.index++
+				break outer
+			case '\n':
+				invalid = true
 			}
 		case stateDot:
 			if c == '.' {

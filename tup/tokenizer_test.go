@@ -58,22 +58,23 @@ func testTokenizeInvalid(t *testing.T, source string, expectedType TokenType) {
 	}
 }
 
-// Helper for sequences where the first token may be marked invalid.
 func testTokenizeSeqInvalid(t *testing.T, source string, expected []TokenType, invalid bool) {
 	t.Helper()
+	invalidTokenSeen := false
 	tokenizer := NewTokenizer([]byte(source), "test.go")
 	for i, exp := range expected {
 		token := tokenizer.Next()
 		if token.Type != exp {
-			t.Errorf("At index %d: expected token type %v, got %v", i, exp, token.Type)
+			t.Errorf("At index %d: expected token type %v, got %v", i, TokenTypes[exp], TokenTypes[token.Type])
 		}
-		if i == 0 && token.Invalid != invalid {
-			t.Errorf("At index %d: expected invalid=%v, got %v", i, invalid, token.Invalid)
-		}
+		invalidTokenSeen = invalidTokenSeen || token.Invalid
 	}
 	lastToken := tokenizer.Next()
 	if lastToken.Type != TokenEOF {
 		t.Errorf("Expected EOF token, got %v", lastToken.Type)
+	}
+	if invalid && !invalidTokenSeen {
+		t.Errorf("Expected to find invalid token")
 	}
 	expectedCol := len(source) + 1
 	if lastToken.Column != expectedCol {
@@ -352,6 +353,7 @@ func TestRawStringLiterals(t *testing.T) {
 	testTokenize(t, "`abc`", TokenRawStringLiteral)
 	testTokenize(t, "`abc``def`", TokenRawStringLiteral)
 	testTokenizeInvalid(t, "`abc``", TokenRawStringLiteral)
+	testTokenizeInvalid(t, "`abc", TokenRawStringLiteral)
 }
 
 func TestStringLiterals(t *testing.T) {
@@ -517,4 +519,48 @@ func TestRestOp(t *testing.T) {
 		TokenIdentifier, // rest
 		TokenEOF,
 	})
+}
+
+func TestSymbolLiterals(t *testing.T) {
+	testTokenize(t, ":A", TokenSymbolLiteral)
+	testTokenize(t, ":Z", TokenSymbolLiteral)
+	testTokenize(t, ":a", TokenSymbolLiteral)
+	testTokenize(t, ":z", TokenSymbolLiteral)
+	testTokenize(t, ":ABCDEFGHIJKLMNOPQRSTUVWXYZ", TokenSymbolLiteral)
+	testTokenize(t, ":abcdefghijklmnopqrstuvwxyz", TokenSymbolLiteral)
+
+	testTokenize(t, `:"anything but a newline"`, TokenSymbolLiteral)
+
+	testTokenizeInvalid(t, ":0", TokenSymbolLiteral)
+	testTokenizeInvalid(t, ":1", TokenSymbolLiteral)
+	testTokenizeInvalid(t, ":9", TokenSymbolLiteral)
+	testTokenizeInvalid(t, `:"this symbol does not end`, TokenSymbolLiteral)
+	testTokenizeInvalid(t, ":\"no\nnewlines!", TokenSymbolLiteral)
+
+	const source1 = "foo = :foo"
+	testTokenizeSeq(t, source1, []TokenType{
+		TokenIdentifier,    // foo
+		TokenOpEqual,       // :
+		TokenSymbolLiteral, // :foo
+		TokenEOF,
+	})
+
+	const source2 = `:foo == Symbol("foo")`
+	testTokenizeSeq(t, source2, []TokenType{
+		TokenSymbolLiteral,  // :foo
+		TokenOpEqualEqual,   // ==
+		TokenTypeIdentifier, // Symbol
+		TokenOpenParen,      // (
+		TokenStringLiteral,  // "foo"
+		TokenCloseParen,     // )
+		TokenEOF,
+	})
+
+	const source3 = `foo = :"foo`
+	testTokenizeSeqInvalid(t, source3, []TokenType{
+		TokenIdentifier,    // foo
+		TokenOpEqual,       // :
+		TokenSymbolLiteral, // :"foo
+		TokenEOF,
+	}, true)
 }
