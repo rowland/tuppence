@@ -806,7 +806,7 @@ or:
 
     Type.identifier = fn(...) { ... }
 
-This enables encapsulation of constants and functions within a type’s namespace.
+This enables encapsulation of constants and functions within a type's namespace.
 
 Type-qualified declarations *must be in the same scope as the type they belong to*.
 This ensures consistency and prevents modifying a type from an unrelated context.
@@ -840,7 +840,7 @@ Declaring type-qualified values outside of the scope where the type is defined i
 ## Type Constructors
 
 When a type is declared in Tuppence, a default constructor is automatically provided.
-Constructors are now declared within the type’s namespace, ensuring clarity and preventing name conflicts.
+Constructors are now declared within the type's namespace, ensuring clarity and preventing name conflicts.
 
 When defining a *new type*, a *default constructor* is automatically created with 
 *parameters matching the fields of the type*, including *default values*:
@@ -849,7 +849,7 @@ When defining a *new type*, a *default constructor* is automatically created wit
     Complex.new = fn(a: Float, b: Float(0)) Complex { it } # compiler supplied default
 
 If Complex is part of a large module containing multiple types, its constructor remains unambiguous
-because it is declared within its type’s namespace:
+because it is declared within its type's namespace:
 
     Complex = import("numeric").Complex
     c = Complex(2.2, 4.4)
@@ -1110,7 +1110,7 @@ This operation is also overloadable via `not`, keeping naming consistent with ot
 Using the operator:
 
     ~0b00001111  # 0b11110000
-    ~42          # -43 (in two’s complement)
+    ~42          # -43 (in two's complement)
 
 For user-defined types, the ~ operator invokes the not function:
 
@@ -1162,7 +1162,7 @@ Provide explicit values.
     Colors = [3]String
     c = Colors["red", "green", "blue"]  # ["red", "green", "blue"]
 
-Must match exactly the array’s size.
+Must match exactly the array's size.
 
 3. Index-Based Initialization
 
@@ -1173,18 +1173,44 @@ Initialize using the index.
 
 Each element gets its index value.
 
-4. Multi-Dimensional Initialization
+4. Multi-dimensional Arrays
 
-    Table = [3, 3]Int
-    t = Table { |x, y| (x + 1) * (y + 1) }
+The fixed-size array type is recursive, allowing direct declaration of multi-dimensional arrays:
 
-Creates:
+    Matrix = [3][3]Int  # A 3x3 matrix of integers
+    Cube = [2][2][2]Int  # A 2x2x2 cube of integers
 
-    [
-      [1, 2, 3],
-      [2, 4, 6],
-      [3, 6, 9]
+These can be initialized with nested array literals:
+
+    m = Matrix[
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
     ]
+
+    c = Cube[
+        [  # First layer
+            [1, 2],
+            [3, 4],
+        ],
+        [  # Second layer
+            [5, 6],
+            [7, 8],
+        ],
+    ]
+
+The type of inner arrays is inferred from the outer array type, so there's no need
+to specify the type of each inner array. For example, in the Matrix initialization above,
+each inner array is automatically inferred to be of type [3]Int.
+
+Accessing elements uses chained indexing:
+
+    first = m[0][0]  # 1 (first row, first column)
+    middle = m[1][1]  # 5 (middle of matrix)
+    last = m[2][2]  # 9 (last row, last column)
+
+    corner = c[0][0][0]  # 1 (first element of cube)
+    center = c[1][1][1]  # 8 (last element of cube)
 
 ## Tuppence Type System
 
@@ -1215,7 +1241,7 @@ Tuppence provides both signed and unsigned integer types of various bit widths. 
 
 ### Type System Properties
 - All types in Tuppence are immutable.
-- Integer types are fixed-width, except for Int and UInt, which adjust to the architecture’s natural word size.
+- Integer types are fixed-width, except for Int and UInt, which adjust to the architecture's natural word size.
 
 - **Type aliases** (such as `Byte` and `Rune`) provide better readability but do not introduce new underlying types.
 

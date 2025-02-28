@@ -19,6 +19,8 @@ array_members = expression { "," expression } [ "," ] .
 
 array_pattern = "[" pattern { "," pattern } [ "," rest_operator ] "]" .
 
+array_type = fixed_size_array | dynamic_array .
+
 assignment = assignment_lhs "=" [ "mut" ] expression .
 
 assignment_lhs = identifier { "," identifier } [ "," rest_operator ] 
@@ -79,7 +81,7 @@ structured_match = labeled_pattern
                  | tuple_pattern
                  | array_pattern .
 
-dynamic_array = "[" "]" type_reference .
+dynamic_array = "[" "]" (type_reference | array_type) .
 
 else_block = "else" block .
 
@@ -119,7 +121,7 @@ expression = try_expression
            | binary_expression
            | unary_expression .
 
-fixed_size_array = "[" size { "," size } "]" type_reference .
+fixed_size_array = "[" size "]" (type_reference | array_type) .
 
 fixed_size_array_literal = fixed_size_array "[" array_members "]" .
 
@@ -184,7 +186,7 @@ indented_line = leading_whitespace content_line .
 
 index = expression .
 
-indexed_access = expression "[" index { "," index } "]" .
+indexed_access = expression "[" index "]" .
 
 initializer = assignment .
 
@@ -374,7 +376,7 @@ return_type = union_with_error
 
 rune_literal = "'" ( byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - eol ) "'" .
 
-safe_indexed_access = expression "[" index { "," index } "]" "!" .
+safe_indexed_access = expression "[" index "]" "!" .
 
 simple_annotation = "@" identifier .
 

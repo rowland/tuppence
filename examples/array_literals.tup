@@ -24,73 +24,74 @@ UnionArray = []IntOrBool # Defines a type for arrays of Int | Bool
 union_array = IntOrBool[1, true, 0]
 
 IPv4Address = [4]Byte  # Fixed-size array of 4 Bytes
-Matrix = [3, 3]Int     # 3x3 matrix of integers
+
+# Multi-dimensional arrays for grid structures
+Matrix = [3][3]Int  # A 3x3 grid of integers
 
 square = Matrix[
-    [1, 2, 3],
+    [1, 2, 3],  # Inner array type is inferred
     [4, 5, 6],
     [7, 8, 9],
 ]
 
-SudokuSquare = [3, 3]Int        # A 3x3 fixed-size array of integers
-SudokuGame = [3, 3]SudokuSquare # A 3x3 fixed-size array of Sudoku squares
+# Sudoku example using multi-dimensional arrays
+SudokuSquare = [3][3]Int  # A 3x3 grid of cells
+SudokuGame = [3][3]SudokuSquare  # Complete 9x9 Sudoku grid as 3x3 grid of squares
 
-square = SudokuSquare[
-    [4, 0, 3],
-    [5, 8, 0],
-    [0, 2, 0],
-]
-
+# Example of a partially filled Sudoku grid
 game = SudokuGame[
-    [   # row 1
-        SudokuSquare[
+    # Top row of squares
+    [  # First row of squares
+        [  # Top-left square
             [4, 0, 3],
             [5, 8, 0],
             [0, 2, 0],
         ],
-        SudokuSquare[
+        [  # Top-middle square
             [0, 0, 0],
             [7, 1, 9],
             [0, 6, 0],
         ],
-        SudokuSquare[
+        [  # Top-right square
             [2, 0, 0],
             [0, 3, 0],
             [8, 0, 4],
         ],
     ],
-    [   # row 2
-        SudokuSquare[
+    # Middle row of squares
+    [
+        [  # Middle-left square
             [0, 6, 1],
             [4, 0, 0],
             [7, 0, 0],
         ],
-        SudokuSquare[
+        [  # Center square
             [0, 0, 0],
             [0, 5, 0],
             [0, 0, 9],
         ],
-        SudokuSquare[
+        [  # Middle-right square
             [0, 0, 0],
             [0, 0, 0],
             [2, 0, 0],
         ],
     ],
-    [   # row 3
-        SudokuSquare[
+    # Bottom row of squares
+    [
+        [  # Bottom-left square
             [0, 0, 4],
             [0, 0, 0],
             [0, 0, 0],
         ],
-        SudokuSquare[
+        [  # Bottom-middle square
             [0, 8, 0],
             [7, 0, 6],
             [0, 0, 0],
         ],
-        SudokuSquare[
+        [  # Bottom-right square
             [0, 0, 0],
             [5, 0, 0],
             [0, 7, 0],
         ],
-    ]
+    ],
 ]
