@@ -1214,7 +1214,7 @@ Tuppence provides both signed and unsigned integer types of various bit widths. 
   ```
 
 ### Type System Properties
-- All types in Tuppence are **immutable**.
+- All types in Tuppence are immutable.
 - Integer types are fixed-width, except for Int and UInt, which adjust to the architecture’s natural word size.
 
 - **Type aliases** (such as `Byte` and `Rune`) provide better readability but do not introduce new underlying types.
@@ -1234,7 +1234,7 @@ sum = UInt64(x) + UInt64(b)
 print(sum.string())  # "355"
 ```
 
-## **Contract Annotations**
+## Contract Annotations
 
 In Tuppence, **contracts** define a set of required functions that a type must implement. To formally associate
 a type with a contract, we use **annotations**.
@@ -1243,7 +1243,7 @@ Tuppence supports **contract annotations** using the `@type:implements` directiv
 explicitly declare that it conforms to a contract. The compiler will enforce this by checking whether all 
 required functions are correctly implemented.
 
-### **Syntax**
+### Syntax
 
 ```tuppence
 @type:implements module.ContractName
@@ -1252,7 +1252,7 @@ TypeName = type(...)
 - `module.ContractName` must be a **valid contract**.
 - `TypeName` must implement all required functions.
 
-### **Example: Declaring an Unsigned Integer Type**
+### Example: Declaring an Unsigned Integer Type
 
 Tuppence includes `UnsignedInt[a]`, a contract for unsigned integer types.
 We can declare a custom `UInt24` type and specify that it conforms to `UnsignedInt`.
@@ -1263,10 +1263,10 @@ UInt24 = type(lo: UInt8, mid: UInt8, hi: UInt8)
 ```
 
 This means:
-- `UInt24` **must implement** all functions required by `core.UnsignedInt`.
-- If it **fails to do so**, the compiler will produce an **error**.
+- `UInt24` must implement all functions required by `core.UnsignedInt`.
+- If it fails to do so, the compiler will produce an error.
 
-### **Example: Declaring a Numeric Type**
+### Example: Declaring a Numeric Type
 
 A `BigDecimal` type can declare that it satisfies the `math.Numeric` contract.
 
@@ -1275,10 +1275,10 @@ A `BigDecimal` type can declare that it satisfies the `math.Numeric` contract.
 BigDecimal = type(value: []Byte)
 ```
 
-`BigDecimal` **must implement** functions like `add`, `sub`, `mul`, and `div`.  
-If it does **not** provide these functions, compilation will **fail**.
+`BigDecimal` must implement functions like `add`, `sub`, `mul`, and `div`.  
+If it does not provide these functions, compilation will fail.
 
-### **Compiler Behavior**
+### Compiler Behavior
 
 When encountering `@type:implements`, the compiler will:
 
@@ -1367,7 +1367,7 @@ $(key: value, key2: value2)
 ```
 
 - **`key`**: Identifies the meta-function (e.g., `file`, `hash`, `env`).
-- **`value`**: Can be a **string, expression, or compile-time evaluable function**.
+- **`value`**: Can be a string, expression, or compile-time evaluable function.
 - **Order of keys does not matter**, as names provide disambiguation.
 
 ### Use Cases
