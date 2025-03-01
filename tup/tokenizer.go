@@ -28,6 +28,7 @@ const (
 	stateColon
 	stateSymbol
 	stateQuotedSymbol
+	stateMultiLineStringBody
 )
 
 // Tokenizer holds the state of the lexer.
@@ -37,6 +38,7 @@ type Tokenizer struct {
 	index    int
 	line     int
 	bol      int // beginning-of-line index
+	states   []state
 }
 
 // NewTokenizer initializes a new Tokenizer.
@@ -54,6 +56,18 @@ func NewTokenizer(source []byte, filename string) *Tokenizer {
 		line:     1,
 		bol:      idx,
 	}
+}
+
+// pushState pushes the current state onto the stack.
+func (t *Tokenizer) pushState(s state) {
+	t.states = append(t.states, s)
+}
+
+// popState pops the last state from the stack.
+func (t *Tokenizer) popState() state {
+	s := t.states[len(t.states)-1]
+	t.states = t.states[:len(t.states)-1]
+	return s
 }
 
 // peek returns the next n bytes from the current position without advancing the index.
@@ -330,9 +344,13 @@ outer:
 				st = stateNumber
 			case '`':
 				if t.peek(3) == "```" {
-					// Multi-line string literal
+					t.index += 3
 					tokenType = TokenMultiLineStringLiteral
-					return t.processMultiLineString()
+					invalid = t.skipMultiLineHeader()
+					if invalid {
+						break outer
+					}
+					st = stateMultiLineStringBody
 				} else {
 					// Regular raw string literal
 					tokenType = TokenRawStringLiteral
@@ -599,8 +617,7 @@ outer:
 				}
 			case c == '\n':
 				t.line++
-				t.index++
-				t.bol = t.index
+				t.bol = t.index + 1
 			default:
 				// Continue reading characters
 			}
@@ -619,11 +636,49 @@ outer:
 					}
 					t.index--
 				} else {
+					t.pushState(st)
 					st = stateEscapeSequence
 				}
 			case c == '"':
 				t.index++
 				break outer
+			default:
+				// Just continue consuming characters in the string
+			}
+		case stateMultiLineStringBody:
+			switch {
+			case c == 0:
+				invalid = true
+				break outer
+			case c == '\\':
+				if t.peek(2) == "\\(" {
+					t.index += 2 // Skip the `\(`
+					invalid = t.skipInterpolation()
+					if invalid {
+						break outer
+					}
+					t.index--
+				} else {
+					t.pushState(st)
+					st = stateEscapeSequence
+				}
+			case c == '`':
+				if t.peek(3) == "```" {
+					// Check if we have a newline before the closing sequence
+					// Look backwards for a newline, skipping any whitespace
+					i := t.index - 1
+					for i >= 0 && (t.source[i] == ' ' || t.source[i] == '\t') {
+						i--
+					}
+					if i >= 0 && t.source[i] != '\n' {
+						invalid = true
+					}
+					t.index += 3
+					break outer
+				}
+			case c == '\n':
+				t.line++
+				t.bol = t.index + 1
 			default:
 				// Just continue consuming characters in the string
 			}
@@ -646,10 +701,10 @@ outer:
 				escapeDigitsExpected = 8
 			case isSimpleEscape(c):
 				// Valid single-char escape; return to string literal
-				st = stateStringLiteral
+				st = t.popState()
 			default:
 				// Any other char => mark invalid but return to string literal
-				st = stateStringLiteral
+				st = t.popState()
 				invalid = true
 			}
 		case stateHexEscape:
@@ -660,10 +715,10 @@ outer:
 			case isHexDigit(c):
 				escapeDigits++
 				if escapeDigits == escapeDigitsExpected {
-					st = stateStringLiteral
+					st = t.popState()
 				}
 			default:
-				st = stateStringLiteral
+				st = t.popState()
 				invalid = true
 			}
 		case stateComment:
@@ -716,67 +771,18 @@ func (t *Tokenizer) skipInterpolation() (invalid bool) {
 	}
 }
 
-// InterpolationTokenizer processes expressions within \( ... )
-type InterpolationTokenizer struct {
-	*Tokenizer
-	parenCount int
-}
-
-// MultiLineStringTokenizer handles tokenization of multi-line strings
-type MultiLineStringTokenizer struct {
-	*Tokenizer
-}
-
-// HeaderTokenizer processes the function call context until EOL
-type HeaderTokenizer struct {
-	*Tokenizer
-}
-
-// processMultiLineString handles tokenization of a multi-line string
-func (t *Tokenizer) processMultiLineString() Token {
-	return Token{
-		Type:     TokenMultiLineStringLiteral,
-		Invalid:  false,
-		Line:     t.line,
-		Column:   t.index - t.bol + 1,
-		Value:    string(t.source[t.bol:t.index]),
-		Filename: t.filename,
-	}
-}
-
-// Next for HeaderTokenizer returns the next token until EOL
-func (t *HeaderTokenizer) Next() Token {
-	token := t.Tokenizer.Next()
-
-	// If we hit EOL or EOF, we're done
-	if token.Type == TokenEOL || token.Type == TokenEOF {
-		return token
-	}
-
-	return token
-}
-
-// Next for InterpolationTokenizer returns the next token until matching )
-func (t *InterpolationTokenizer) Next() Token {
-	token := t.Tokenizer.Next()
-
-	// Track paren count to handle nested expressions
-	if token.Type == TokenOpenParen {
-		t.parenCount++
-	} else if token.Type == TokenCloseParen {
-		t.parenCount--
-		if t.parenCount == 0 {
-			return token
+// skipMultiLineHeader skips the multi-line string header until it finds a newline
+// returns true if the header is invalid, false otherwise
+func (t *Tokenizer) skipMultiLineHeader() (invalid bool) {
+	for {
+		token := t.Next()
+		switch {
+		case token.Type == TokenEOF:
+			return true
+		case token.Type == TokenEOL:
+			return false
 		}
 	}
-
-	// If we hit EOF, we're done with an error
-	if token.Type == TokenEOF {
-		token.Invalid = true
-		return token
-	}
-
-	return token
 }
 
 // isHexDigit returns true if c is a valid hexadecimal digit
