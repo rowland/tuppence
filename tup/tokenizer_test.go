@@ -22,6 +22,8 @@ func testTokenizeSeq(t *testing.T, source string, expected []TokenType) {
 	if lastToken.Type != TokenEOF {
 		t.Errorf("Expected EOF token, got %v", TokenTypes[lastToken.Type])
 	}
+
+	// For multi-line tokens, the column should be relative to the last line
 	lastNewline := strings.LastIndexByte(source, '\n')
 	var expectedCol int
 	if lastNewline < 0 {
@@ -45,16 +47,33 @@ func testTokenizeInvalid(t *testing.T, source string, expectedType TokenType) {
 	if !token.Invalid {
 		t.Errorf("Expected invalid token for %q", source)
 	}
-	if token.Value != source {
-		t.Errorf("Expected token value %q, got %q", source, token.Value)
+	// For invalid tokens that contain a newline, we only expect the value up to the newline
+	lastNewline := strings.IndexByte(source, '\n')
+	expectedValue := source
+	if lastNewline >= 0 {
+		expectedValue = source[:lastNewline]
 	}
-	lastToken := tokenizer.Next()
-	if lastToken.Type != TokenEOF {
-		t.Errorf("Expected EOF token, got %v", lastToken.Type)
+	if token.Value != expectedValue {
+		t.Errorf("Expected token value %q, got %q", expectedValue, token.Value)
 	}
-	expectedCol := len(source) + 1
-	if lastToken.Column != expectedCol {
-		t.Errorf("Expected column %d, got %d", expectedCol, lastToken.Column)
+
+	// Get the next token - it could be EOL, EOF, or something else
+	nextToken := tokenizer.Next()
+	if lastNewline >= 0 && nextToken.Type != TokenEOL {
+		t.Errorf("Expected EOL token after newline in invalid token, got %v", TokenTypes[nextToken.Type])
+	}
+
+	// For invalid tokens, we need to find where the token became invalid
+	var expectedCol int
+	if lastNewline < 0 {
+		expectedCol = len(source) + 1
+	} else {
+		// For invalid tokens that contain a newline, the column should be
+		// the length up to the newline
+		expectedCol = lastNewline + 1
+	}
+	if nextToken.Column != expectedCol {
+		t.Errorf("Expected column %d, got %d", expectedCol, nextToken.Column)
 	}
 }
 
@@ -76,7 +95,15 @@ func testTokenizeSeqInvalid(t *testing.T, source string, expected []TokenType, i
 	if invalid && !invalidTokenSeen {
 		t.Errorf("Expected to find invalid token")
 	}
-	expectedCol := len(source) + 1
+
+	// For multi-line tokens, the column should be relative to the last line
+	lastNewline := strings.LastIndexByte(source, '\n')
+	var expectedCol int
+	if lastNewline < 0 {
+		expectedCol = len(source) + 1
+	} else {
+		expectedCol = len(source) - lastNewline
+	}
 	if lastToken.Column != expectedCol {
 		t.Errorf("Expected column %d, got %d", expectedCol, lastToken.Column)
 	}
@@ -99,7 +126,15 @@ func testTokenize(t *testing.T, source string, expectedType TokenType) {
 	if lastToken.Type != TokenEOF {
 		t.Errorf("Expected EOF token, got %v", lastToken.Type)
 	}
-	expectedCol := len(source) + 1
+
+	// For multi-line tokens, the column should be relative to the last line
+	lastNewline := strings.LastIndexByte(source, '\n')
+	var expectedCol int
+	if lastNewline < 0 {
+		expectedCol = len(source) + 1
+	} else {
+		expectedCol = len(source) - lastNewline
+	}
 	if lastToken.Column != expectedCol {
 		t.Errorf("Expected column %d, got %d", expectedCol, lastToken.Column)
 	}
@@ -350,6 +385,10 @@ func TestHexadecimalLiterals(t *testing.T) {
 }
 
 func TestRawStringLiterals(t *testing.T) {
+	testTokenize(t, "``", TokenRawStringLiteral)
+	// any literal starting with 3 backticks are multi-line strings
+	testTokenizeInvalid(t, "````", TokenRawStringLiteral)   // not a raw string with 1 escaped backtick, not a valid multi-line string
+	testTokenizeInvalid(t, "``````", TokenRawStringLiteral) // not a raw string with 2 escaped backticks, not a valid multi-line string
 	testTokenize(t, "`abc`", TokenRawStringLiteral)
 	testTokenize(t, "`abc``def`", TokenRawStringLiteral)
 	testTokenizeInvalid(t, "`abc``", TokenRawStringLiteral)
@@ -368,6 +407,11 @@ func TestStringLiterals(t *testing.T) {
 	testTokenizeInvalid(t, `"\U1234"`, TokenStringLiteral)
 	testTokenizeInvalid(t, `"\uXYZ"`, TokenStringLiteral)
 	testTokenizeInvalid(t, `"\xXYZ"`, TokenStringLiteral)
+}
+
+func TestMultiLineStringLiteral(t *testing.T) {
+	const source1 = "```\nSome text\n```"
+	testTokenize(t, source1, TokenMultiLineStringLiteral)
 }
 
 func TestUnion(t *testing.T) {

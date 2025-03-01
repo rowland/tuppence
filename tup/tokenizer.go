@@ -1,30 +1,14 @@
 package main
 
+import (
+	"strings"
+)
+
 // We define a state machine for tokenizing.
 type state int
 
 const (
 	stateStart state = iota
-	stateDot
-	stateDotDot
-	stateQuestionMark
-	stateOpDiv
-	stateOpMinus
-	stateOpMod
-	stateOpMul
-	stateOpNot
-	stateOpPlus
-	stateOpPow
-	stateOpLessThan
-	stateOpShiftLeft
-	stateOpLessThanEqual
-	stateOpGreaterThan
-	stateOpShiftRight
-	stateOpBitwiseAnd
-	stateOpLogicalAnd
-	stateOpBitwiseOr
-	stateOpLogicalOr
-	stateOpEqual
 	stateIdentifier
 	stateNumber
 	stateInt
@@ -52,12 +36,20 @@ const (
 
 // Tokenizer holds the state of the lexer.
 type Tokenizer struct {
-	source              []byte
-	filename            string
-	index               int
-	line                int
-	bol                 int // beginning-of-line index
-	pendingInvalidToken *Token
+	source   []byte
+	filename string
+	index    int
+	line     int
+	bol      int // beginning-of-line index
+}
+
+// peek returns the next n bytes from the current position without advancing the index.
+// If there aren't enough bytes remaining, it returns an empty string.
+func (t *Tokenizer) peek(n int) string {
+	if t.index+n > len(t.source) {
+		return ""
+	}
+	return string(t.source[t.index : t.index+n])
 }
 
 // NewTokenizer initializes a new Tokenizer.
@@ -93,19 +85,15 @@ func Tokenize(source []byte, filename string) ([]Token, error) {
 
 // Next returns the next token from the input.
 func (t *Tokenizer) Next() Token {
-	if t.pendingInvalidToken != nil {
-		token := *t.pendingInvalidToken
-		t.pendingInvalidToken = nil
-		return token
-	}
 	st := stateStart
 	start := t.index
 	tokenType := TokenEOF
 	invalid := false
 	escapeDigits := 0
 	escapeDigitsExpected := 0
+	col := 0 // Initialize column position
 
-	// Use a labeled loop so we can “break out” when a token is complete.
+	// Use a labeled loop so we can "break out" when a token is complete.
 outer:
 	for ; t.index <= len(t.source); t.index++ {
 		var c byte
@@ -125,11 +113,11 @@ outer:
 			case ' ', '\t', '\r':
 				start = t.index + 1
 			case '\n':
-				t.line++
-				start = t.index + 1
-				t.bol = start
 				tokenType = TokenEOL
+				col = t.index - t.bol + 1 // Calculate column before updating line tracking
 				t.index++
+				t.line++
+				t.bol = t.index
 				break outer
 			case '@':
 				tokenType = TokenAt
@@ -155,8 +143,20 @@ outer:
 				t.index++
 				break outer
 			case '.':
-				tokenType = TokenDot
-				st = stateDot
+				// Check 3-character operators first
+				if t.peek(3) == "..." {
+					tokenType = TokenOpRest
+					t.index += 2
+				} else if t.peek(2) == ".." {
+					// Then 2-character operators
+					tokenType = TokenOpRange
+					t.index++
+				} else {
+					// Finally, single character operator
+					tokenType = TokenDot
+				}
+				t.index++
+				break outer
 			case '{':
 				tokenType = TokenOpenBrace
 				t.index++
@@ -170,48 +170,158 @@ outer:
 				t.index++
 				break outer
 			case '?':
-				tokenType = TokenQuestionMark
-				st = stateQuestionMark
+				if t.index+1 < len(t.source) {
+					switch t.source[t.index+1] {
+					case '+':
+						tokenType = TokenOpCheckedAdd
+						t.index++
+					case '/':
+						tokenType = TokenOpCheckedDiv
+						t.index++
+					case '%':
+						tokenType = TokenOpCheckedMod
+						t.index++
+					case '*':
+						tokenType = TokenOpCheckedMul
+						t.index++
+					case '-':
+						tokenType = TokenOpCheckedSub
+						t.index++
+					default:
+						tokenType = TokenQuestionMark
+					}
+				} else {
+					tokenType = TokenQuestionMark
+				}
+				t.index++
+				break outer
 			case ';':
 				tokenType = TokenSemiColon
 				t.index++
 				break outer
 			case '/':
-				tokenType = TokenOpDiv
-				st = stateOpDiv
+				if t.peek(2) == "/=" {
+					tokenType = TokenOpDivEqual
+					t.index++
+				} else {
+					tokenType = TokenOpDiv
+				}
+				t.index++
+				break outer
 			case '-':
-				tokenType = TokenOpMinus
-				st = stateOpMinus
+				if t.peek(2) == "-=" {
+					tokenType = TokenOpMinusEqual
+					t.index++
+				} else {
+					tokenType = TokenOpMinus
+				}
+				t.index++
+				break outer
 			case '%':
-				tokenType = TokenOpMod
-				st = stateOpMod
+				if t.peek(2) == "%=" {
+					tokenType = TokenOpModEqual
+					t.index++
+				} else {
+					tokenType = TokenOpMod
+				}
+				t.index++
+				break outer
 			case '*':
-				tokenType = TokenOpMul
-				st = stateOpMul
+				if t.peek(2) == "*=" {
+					tokenType = TokenOpMulEqual
+					t.index++
+				} else {
+					tokenType = TokenOpMul
+				}
+				t.index++
+				break outer
 			case '!':
-				tokenType = TokenOpNot
-				st = stateOpNot
+				if t.peek(2) == "!=" {
+					tokenType = TokenOpNotEqual
+					t.index++
+				} else {
+					tokenType = TokenOpNot
+				}
+				t.index++
+				break outer
 			case '+':
-				tokenType = TokenOpPlus
-				st = stateOpPlus
+				if t.peek(2) == "+=" {
+					tokenType = TokenOpPlusEqual
+					t.index++
+				} else {
+					tokenType = TokenOpPlus
+				}
+				t.index++
+				break outer
 			case '^':
-				tokenType = TokenOpPow
-				st = stateOpPow
-			case '<':
-				tokenType = TokenOpLessThan
-				st = stateOpLessThan
+				if t.peek(2) == "^=" {
+					tokenType = TokenOpPowEqual
+					t.index++
+				} else {
+					tokenType = TokenOpPow
+				}
+				t.index++
+				break outer
 			case '>':
-				tokenType = TokenOpGreaterThan
-				st = stateOpGreaterThan
+				// Check 3-character operators first
+				if t.peek(3) == ">>=" {
+					tokenType = TokenOpShiftRightEqual
+					t.index += 2
+				} else if t.peek(2) == ">>" {
+					// Then 2-character operators
+					tokenType = TokenOpShiftRight
+					t.index++
+				} else if t.peek(2) == ">=" {
+					tokenType = TokenOpGreaterEqual
+					t.index++
+				} else {
+					// Finally, single character operator
+					tokenType = TokenOpGreaterThan
+				}
+				t.index++
+				break outer
 			case '&':
-				tokenType = TokenOpBitwiseAnd
-				st = stateOpBitwiseAnd
+				if t.peek(3) == "&&=" {
+					tokenType = TokenOpLogicalAndEqual
+					t.index += 2
+				} else if t.peek(2) == "&&" {
+					tokenType = TokenOpLogicalAnd
+					t.index++
+				} else if t.peek(2) == "&=" {
+					tokenType = TokenOpBitwiseAndEqual
+					t.index++
+				} else {
+					tokenType = TokenOpBitwiseAnd
+				}
+				t.index++
+				break outer
 			case '|':
-				tokenType = TokenOpBitwiseOr
-				st = stateOpBitwiseOr
+				if t.peek(3) == "||=" {
+					tokenType = TokenOpLogicalOrEqual
+					t.index += 2
+				} else if t.peek(2) == "||" {
+					tokenType = TokenOpLogicalOr
+					t.index++
+				} else if t.peek(2) == "|=" {
+					tokenType = TokenOpBitwiseOrEqual
+					t.index++
+				} else {
+					tokenType = TokenOpBitwiseOr
+				}
+				t.index++
+				break outer
 			case '=':
-				tokenType = TokenOpEqual
-				st = stateOpEqual
+				if t.peek(2) == "==" {
+					tokenType = TokenOpEqualEqual
+					t.index++
+				} else if t.peek(2) == "=~" {
+					tokenType = TokenOpMatches
+					t.index++
+				} else {
+					tokenType = TokenOpEqual
+				}
+				t.index++
+				break outer
 			case '~':
 				tokenType = TokenOpBitwiseNot
 				t.index++
@@ -220,20 +330,49 @@ outer:
 				tokenType = TokenComment
 				st = stateComment
 			case '0':
-				st = stateNumber
 				tokenType = TokenDecimalLiteral
+				st = stateNumber
 			case '`':
-				st = stateRawStringLiteral
-				tokenType = TokenRawStringLiteral
+				if t.peek(3) == "```" {
+					// Multi-line string literal
+					tokenType = TokenMultiLineStringLiteral
+					return t.processMultiLineString()
+				} else {
+					// Regular raw string literal
+					tokenType = TokenRawStringLiteral
+					st = stateRawStringLiteral
+				}
 			case '"':
-				st = stateStringLiteral
 				tokenType = TokenStringLiteral
+				st = stateStringLiteral
+			case '<':
+				// Check 3-character operators first
+				if t.peek(3) == "<=>" {
+					tokenType = TokenOpCompareTo
+					t.index += 2
+				} else if t.peek(3) == "<<=" {
+					tokenType = TokenOpShiftLeftEqual
+					t.index += 2
+				} else if t.peek(2) == "<<" {
+					// Then 2-character operators
+					tokenType = TokenOpShiftLeft
+					t.index++
+				} else if t.peek(2) == "<=" {
+					tokenType = TokenOpLessEqual
+					t.index++
+				} else {
+					// Finally, single character operator
+					tokenType = TokenOpLessThan
+				}
+				t.index++
+				break outer
 			default:
 				// Identifier start: letters or underscore.
-				if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' {
+				if isIdentifierStart(c) {
 					tokenType = TokenIdentifier
 					st = stateIdentifier
-				} else if c >= '1' && c <= '9' {
+				} else if isDecimalDigit(c) {
+					// Safe to use isDecimalDigit here since '0' is handled in its own case above
 					st = stateInt
 					tokenType = TokenDecimalLiteral
 				} else {
@@ -244,10 +383,10 @@ outer:
 			}
 		case stateColon:
 			switch {
-			case (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_':
+			case isIdentifierStart(c):
 				tokenType = TokenSymbolLiteral
 				st = stateSymbol
-			case c >= '0' && c <= '9':
+			case isDecimalDigit(c):
 				tokenType = TokenSymbolLiteral
 				st = stateSymbol
 				invalid = true
@@ -259,7 +398,7 @@ outer:
 			}
 		case stateSymbol:
 			switch {
-			case (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_':
+			case isIdentifierStart(c):
 				// continue symbol
 			default:
 				break outer
@@ -274,174 +413,13 @@ outer:
 				break outer
 			case '\n':
 				invalid = true
-			}
-		case stateDot:
-			if c == '.' {
-				tokenType = TokenOpRange
-				st = stateDotDot
-			} else {
-				break outer
-			}
-		case stateDotDot:
-			if c == '.' {
-				tokenType = TokenOpRest
-				t.index++
-			}
-			break outer
-		case stateQuestionMark:
-			switch c {
-			case '+':
-				tokenType = TokenOpCheckedAdd
-				t.index++
-			case '/':
-				tokenType = TokenOpCheckedDiv
-				t.index++
-			case '%':
-				tokenType = TokenOpCheckedMod
-				t.index++
-			case '*':
-				tokenType = TokenOpCheckedMul
-				t.index++
-			case '-':
-				tokenType = TokenOpCheckedSub
-				t.index++
-			}
-			break outer
-		case stateOpDiv:
-			if c == '=' {
-				tokenType = TokenOpDivEqual
-				t.index++
-			}
-			break outer
-		case stateOpMinus:
-			if c == '=' {
-				tokenType = TokenOpMinusEqual
-				t.index++
-			}
-			break outer
-		case stateOpMod:
-			if c == '=' {
-				tokenType = TokenOpModEqual
-				t.index++
-			}
-			break outer
-		case stateOpMul:
-			if c == '=' {
-				tokenType = TokenOpMulEqual
-				t.index++
-			}
-			break outer
-		case stateOpNot:
-			if c == '=' {
-				tokenType = TokenOpNotEqual
-				t.index++
-			}
-			break outer
-		case stateOpPlus:
-			if c == '=' {
-				tokenType = TokenOpPlusEqual
-				t.index++
-			}
-			break outer
-		case stateOpPow:
-			if c == '=' {
-				tokenType = TokenOpPowEqual
-				t.index++
-			}
-			break outer
-		case stateOpLessThan:
-			switch {
-			case c == '<':
-				tokenType = TokenOpShiftLeft
-				st = stateOpShiftLeft
-			case c == '=':
-				tokenType = TokenOpLessEqual
-				st = stateOpLessThanEqual
-			default:
-				break outer
-			}
-		case stateOpShiftLeft:
-			if c == '=' {
-				tokenType = TokenOpShiftLeftEqual
-				t.index++
-			}
-			break outer
-		case stateOpLessThanEqual:
-			if c == '>' {
-				tokenType = TokenOpCompareTo
-				t.index++
-			}
-			break outer
-		case stateOpGreaterThan:
-			switch {
-			case c == '>':
-				tokenType = TokenOpShiftRight
-				st = stateOpShiftRight
-			case c == '=':
-				tokenType = TokenOpGreaterEqual
-				t.index++
 				break outer
 			default:
-				break outer
+				// Just continue consuming characters in the string
 			}
-		case stateOpShiftRight:
-			if c == '=' {
-				tokenType = TokenOpShiftRightEqual
-				t.index++
-			}
-			break outer
-		case stateOpBitwiseAnd:
-			switch {
-			case c == '=':
-				tokenType = TokenOpBitwiseAndEqual
-				t.index++
-				break outer
-			case c == '&':
-				tokenType = TokenOpLogicalAnd
-				st = stateOpLogicalAnd
-			default:
-				break outer
-			}
-		case stateOpLogicalAnd:
-			if c == '=' {
-				tokenType = TokenOpLogicalAndEqual
-				t.index++
-			}
-			break outer
-		case stateOpBitwiseOr:
-			switch {
-			case c == '|':
-				tokenType = TokenOpLogicalOr
-				st = stateOpLogicalOr
-			case c == '=':
-				tokenType = TokenOpBitwiseOrEqual
-				t.index++
-				break outer
-			default:
-				break outer
-			}
-		case stateOpLogicalOr:
-			if c == '=' {
-				tokenType = TokenOpLogicalOrEqual
-				t.index++
-			}
-			break outer
-		case stateOpEqual:
-			switch {
-			case c == '=':
-				tokenType = TokenOpEqualEqual
-				t.index++
-			case c == '~':
-				tokenType = TokenOpMatches
-				t.index++
-			}
-			break outer
 		case stateIdentifier:
 			switch {
-			case (c >= 'a' && c <= 'z') ||
-				(c >= 'A' && c <= 'Z') ||
-				c == '_' ||
-				(c >= '0' && c <= '9'):
+			case isIdentifierStart(c) || isDecimalDigit(c):
 				// Continue identifier.
 			default:
 				lexeme := string(t.source[start:t.index])
@@ -454,7 +432,7 @@ outer:
 			}
 		case stateNumber:
 			switch {
-			case (c >= '0' && c <= '9') || c == '_':
+			case isDecimalDigit(c) || c == '_':
 				st = stateInt
 			case c == '.':
 				tokenType = TokenFloatLiteral
@@ -468,18 +446,14 @@ outer:
 			case c == 'x':
 				tokenType = TokenHexadecimalLiteral
 				st = stateHexadecimalFirst
-			case (c >= 'A' && c <= 'Z') ||
-				c == 'a' ||
-				(c >= 'c' && c <= 'n') ||
-				(c >= 'p' && c <= 'w') ||
-				(c >= 'y' && c <= 'z'):
+			case isInvalidNumberLetter(c):
 				invalid = true
 			default:
 				break outer
 			}
 		case stateInt:
 			switch {
-			case (c >= '0' && c <= '9') || c == '_':
+			case isDecimalDigit(c) || c == '_':
 				// Continue int.
 			case c == '.':
 				tokenType = TokenFloatLiteral
@@ -487,16 +461,14 @@ outer:
 			case c == 'e':
 				tokenType = TokenFloatLiteral
 				st = stateExponent
-			case (c >= 'A' && c <= 'Z') ||
-				(c >= 'a' && c <= 'd') ||
-				(c >= 'f' && c <= 'z'):
+			case isInvalidIntegerLetter(c):
 				invalid = true
 			default:
 				break outer
 			}
 		case stateIntDot:
 			switch {
-			case c >= '0' && c <= '9':
+			case isDecimalDigit(c):
 				st = stateFloat
 			default:
 				tokenType = TokenDecimalLiteral
@@ -505,14 +477,13 @@ outer:
 			}
 		case stateFloat:
 			switch {
-			case (c >= '0' && c <= '9') || c == '_':
+			case isDecimalDigit(c) || c == '_':
 				// Continue float.
 			case c == 'e':
 				st = stateExponent
 			case c == '.':
 				break outer
-			case (c >= 'A' && c <= 'd') ||
-				(c >= 'f' && c <= 'z'):
+			case isInvalidIntegerLetter(c):
 				invalid = true
 			default:
 				break outer
@@ -521,11 +492,9 @@ outer:
 			switch {
 			case c == '+' || c == '-':
 				st = stateExponentSign
-			case c >= '0' && c <= '9':
+			case isDecimalDigit(c):
 				st = stateExponentInt
-			case (c >= 'A' && c <= 'Z') ||
-				c == '_' ||
-				(c >= 'a' && c <= 'z'):
+			case isInvalidExponentIntChar(c):
 				invalid = true
 			default:
 				invalid = true
@@ -533,9 +502,9 @@ outer:
 			}
 		case stateExponentSign:
 			switch {
-			case c >= '0' && c <= '9':
+			case isDecimalDigit(c):
 				st = stateExponentInt
-			case (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || c == '+' || c == '-':
+			case isInvalidExponentSignChar(c):
 				invalid = true
 			default:
 				invalid = true
@@ -543,13 +512,11 @@ outer:
 			}
 		case stateExponentInt:
 			switch {
-			case c >= '0' && c <= '9':
+			case isDecimalDigit(c):
 				// Continue exponent integer.
 			case c == '.':
 				break outer
-			case c == '_' ||
-				(c >= 'A' && c <= 'Z') ||
-				(c >= 'a' && c <= 'z'):
+			case isInvalidExponentIntChar(c):
 				invalid = true
 			default:
 				break outer
@@ -558,9 +525,7 @@ outer:
 			switch {
 			case c >= '0' && c <= '1':
 				st = stateBinary
-			case c == '.' || (c >= '2' && c <= '9') ||
-				(c >= 'A' && c <= 'Z') || c == '_' ||
-				(c >= 'a' && c <= 'z'):
+			case isInvalidBinaryFirstChar(c):
 				st = stateBinary
 				invalid = true
 			default:
@@ -573,23 +538,16 @@ outer:
 				// Continue binary.
 			case c == '.':
 				break outer
-			case (c >= '2' && c <= '9') ||
-				(c >= 'A' && c <= 'Z') ||
-				(c >= 'a' && c <= 'z'):
+			case isInvalidBinaryChar(c):
 				invalid = true
 			default:
 				break outer
 			}
 		case stateHexadecimalFirst:
 			switch {
-			case (c >= '0' && c <= '9') ||
-				(c >= 'A' && c <= 'F') ||
-				(c >= 'a' && c <= 'f'):
+			case isHexDigit(c):
 				st = stateHexadecimal
-			case c == '.' ||
-				(c >= 'G' && c <= 'Z') ||
-				c == '_' ||
-				(c >= 'g' && c <= 'z'):
+			case !isHexDigit(c):
 				st = stateHexadecimal
 				invalid = true
 			default:
@@ -598,26 +556,20 @@ outer:
 			}
 		case stateHexadecimal:
 			switch {
-			case (c >= '0' && c <= '9') ||
-				(c >= 'A' && c <= 'F') || c == '_' ||
-				(c >= 'a' && c <= 'f'):
+			case isHexDigit(c) || c == '_':
 				// Continue hexadecimal.
 			case c == '.':
 				break outer
-			case (c >= 'G' && c <= 'Z') || (c >= 'g' && c <= 'z'):
+			case isInvalidHexadecimalChar(c):
 				invalid = true
 			default:
 				break outer
 			}
 		case stateOctalFirst:
 			switch {
-			case c >= '0' && c <= '7':
+			case isOctalDigit(c):
 				st = stateOctal
-			case c == '.' ||
-				(c >= '8' && c <= '9') ||
-				(c >= 'A' && c <= 'Z') ||
-				c == '_' ||
-				(c >= 'a' && c <= 'z'):
+			case isInvalidOctalFirstChar(c):
 				st = stateOctal
 				invalid = true
 			default:
@@ -626,13 +578,11 @@ outer:
 			}
 		case stateOctal:
 			switch {
-			case (c >= '0' && c <= '7') || c == '_':
+			case isOctalDigit(c) || c == '_':
 				// Continue octal.
 			case c == '.':
 				break outer
-			case (c >= '8' && c <= '9') ||
-				(c >= 'A' && c <= 'Z') ||
-				(c >= 'a' && c <= 'z'):
+			case isInvalidOctalChar(c):
 				invalid = true
 			default:
 				break outer
@@ -643,16 +593,20 @@ outer:
 				invalid = true
 				break outer
 			case c == '`':
-				st = stateRawStringLiteralEnd
+				// Check if it's a double backtick (escaped backtick)
+				if t.peek(2) == "``" {
+					t.index++ // Skip the second backtick
+				} else {
+					// Single backtick - end of string
+					t.index++
+					break outer
+				}
+			case c == '\n':
+				t.line++
+				t.index++
+				t.bol = t.index
 			default:
-				// do nothing, just continue reading characters
-			}
-		case stateRawStringLiteralEnd:
-			switch {
-			case c == '`':
-				st = stateRawStringLiteral
-			default:
-				break outer
+				// Continue reading characters
 			}
 		case stateStringLiteral:
 			switch {
@@ -684,8 +638,7 @@ outer:
 				st = stateHexEscape
 				escapeDigits = 0
 				escapeDigitsExpected = 8
-			case c == 'n' || c == 't' || c == '"' || c == '\'' || c == '\\' ||
-				c == 'r' || c == 'b' || c == 'f' || c == 'v' || c == '0':
+			case isSimpleEscape(c):
 				// Valid single-char escape; return to string literal
 				st = stateStringLiteral
 			default:
@@ -698,9 +651,7 @@ outer:
 			case c == 0:
 				invalid = true
 				break outer
-			case (c >= '0' && c <= '9') ||
-				(c >= 'A' && c <= 'F') ||
-				(c >= 'a' && c <= 'f'):
+			case isHexDigit(c):
 				escapeDigits++
 				if escapeDigits == escapeDigitsExpected {
 					st = stateStringLiteral
@@ -721,13 +672,295 @@ outer:
 			}
 		}
 	}
-	col := t.index - t.bol + 1
+	line := t.line
+	if tokenType == TokenEOL {
+		line--
+	} else {
+		col = t.index - t.bol + 1
+	}
 	return Token{
 		Type:     tokenType,
 		Invalid:  invalid,
-		Line:     t.line,
+		Line:     line,
 		Column:   col,
 		Value:    string(t.source[start:t.index]),
 		Filename: t.filename,
 	}
+}
+
+// MultiLineStringTokenizer handles tokenization of multi-line strings
+type MultiLineStringTokenizer struct {
+	*Tokenizer
+	indentLevel string // Track the whitespace prefix
+	inHeader    bool   // Are we in the header section?
+}
+
+// HeaderTokenizer processes the function call context until EOL
+type HeaderTokenizer struct {
+	*Tokenizer
+}
+
+// InterpolationTokenizer processes expressions within \( ... )
+type InterpolationTokenizer struct {
+	*Tokenizer
+	parenCount int
+}
+
+// processMultiLineString handles tokenization of a multi-line string
+func (t *Tokenizer) processMultiLineString() Token {
+	start := t.index // Start at the first backtick
+	invalid := false
+
+	// Skip the opening ```
+	t.index += 3
+
+	// Process optional function call context in header
+	for t.index < len(t.source) && t.source[t.index] != '\n' {
+		t.index++
+	}
+	if t.index < len(t.source) && t.source[t.index] == '\n' {
+		t.index++ // consume the newline
+		t.line++
+		t.bol = t.index
+	} else {
+		invalid = true
+	}
+
+	// Process content lines
+	indentLevel := ""
+	firstLine := true
+
+	for t.index < len(t.source) {
+		// Check for leading whitespace
+		wsStart := t.index
+		for t.index < len(t.source) {
+			c := t.source[t.index]
+			if c != ' ' && c != '\t' {
+				break
+			}
+			t.index++
+		}
+
+		// On first line, capture the indent level
+		if firstLine {
+			indentLevel = string(t.source[wsStart:t.index])
+			firstLine = false
+		} else {
+			// Check if indentation matches
+			indent := string(t.source[wsStart:t.index])
+			if !strings.HasPrefix(indent, indentLevel) {
+				invalid = true
+			}
+		}
+
+		// Check for closing sequence
+		if t.peek(3) == "```" {
+			if t.peek(4) == "```\n" || t.peek(4) == "```" {
+				t.index += 3
+				if t.index < len(t.source) && t.source[t.index] == '\n' {
+					t.index++ // consume the newline
+					t.line++
+					t.bol = t.index
+				}
+				break
+			}
+		}
+
+		// Process content line
+		for t.index < len(t.source) {
+			if t.peek(2) == "\\(" {
+				t.index += 2 // Skip \(
+				// Handle interpolation
+				interpolationTokenizer := &InterpolationTokenizer{
+					Tokenizer:  t,
+					parenCount: 1,
+				}
+				for {
+					token := interpolationTokenizer.Next()
+					if token.Invalid || token.Type == TokenEOF {
+						invalid = true
+						break
+					}
+					if token.Type == TokenCloseParen && interpolationTokenizer.parenCount == 0 {
+						break
+					}
+				}
+			} else if t.peek(1) == "\\" {
+				t.index++ // Skip backslash
+				if t.index >= len(t.source) {
+					invalid = true
+					break
+				}
+				// Handle escape sequence
+				if isSimpleEscape(t.source[t.index]) {
+					t.index++
+				} else {
+					invalid = true
+				}
+			} else if t.source[t.index] == '\n' {
+				t.line++
+				t.index++
+				t.bol = t.index
+				break
+			} else {
+				t.index++
+			}
+		}
+	}
+
+	if t.index >= len(t.source) {
+		invalid = true
+	}
+
+	// Calculate column as the total length from the start of the token
+	length := t.index - start
+
+	return Token{
+		Type:     TokenMultiLineStringLiteral,
+		Invalid:  invalid,
+		Line:     t.line,
+		Column:   length,
+		Value:    string(t.source[start:t.index]),
+		Filename: t.filename,
+	}
+}
+
+// Next for HeaderTokenizer returns the next token until EOL
+func (t *HeaderTokenizer) Next() Token {
+	token := t.Tokenizer.Next()
+
+	// If we hit EOL or EOF, we're done
+	if token.Type == TokenEOL || token.Type == TokenEOF {
+		return token
+	}
+
+	// First token must be a function identifier
+	if t.index == t.bol+1 {
+		if token.Type != TokenIdentifier {
+			token.Invalid = true
+			return token
+		}
+		return token
+	}
+
+	// After identifier, we can have:
+	// 1. EOL - valid end
+	// 2. ( - start of arguments
+	// 3. anything else - invalid
+	if t.index == t.bol+len(token.Value)+1 && token.Type != TokenOpenParen {
+		token.Invalid = true
+		return token
+	}
+
+	return token
+}
+
+// Next for InterpolationTokenizer returns the next token until matching )
+func (t *InterpolationTokenizer) Next() Token {
+	token := t.Tokenizer.Next()
+
+	// Track paren count to handle nested expressions
+	if token.Type == TokenOpenParen {
+		t.parenCount++
+	} else if token.Type == TokenCloseParen {
+		t.parenCount--
+		if t.parenCount == 0 {
+			return token
+		}
+	}
+
+	// If we hit EOF, we're done with an error
+	if token.Type == TokenEOF {
+		token.Invalid = true
+		return token
+	}
+
+	return token
+}
+
+// isHexDigit returns true if c is a valid hexadecimal digit
+func isHexDigit(c byte) bool {
+	return (c >= '0' && c <= '9') ||
+		(c >= 'a' && c <= 'f') ||
+		(c >= 'A' && c <= 'F')
+}
+
+// isSimpleEscape returns true if c is a valid single-character escape sequence
+func isSimpleEscape(c byte) bool {
+	return c == 'n' || c == 't' || c == '"' || c == '\'' || c == '\\' ||
+		c == 'r' || c == 'b' || c == 'f' || c == 'v' || c == '0'
+}
+
+// isOctalDigit returns true if c is a valid octal digit
+func isOctalDigit(c byte) bool {
+	return c >= '0' && c <= '7'
+}
+
+// isDecimalDigit returns true if c is a valid decimal digit
+func isDecimalDigit(c byte) bool {
+	return c >= '0' && c <= '9'
+}
+
+// isLetter returns true if c is a letter (A-Z or a-z)
+func isLetter(c byte) bool {
+	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+}
+
+// isIdentifierStart returns true if c is a letter or underscore
+func isIdentifierStart(c byte) bool {
+	return isLetter(c) || c == '_'
+}
+
+// isInvalidNumberLetter returns true if c is a letter that would make a number invalid
+// This excludes 'b', 'o', and 'x' which are handled separately as valid number prefixes
+func isInvalidNumberLetter(c byte) bool {
+	return isLetter(c) && c != 'b' && c != 'o' && c != 'x'
+}
+
+// isInvalidIntegerLetter returns true if c is a letter that would make an integer invalid
+// This excludes 'e' which is handled separately as an exponent marker
+func isInvalidIntegerLetter(c byte) bool {
+	return isLetter(c) && c != 'e'
+}
+
+// isInvalidExponentSignChar returns true if c is an invalid character after an exponent sign
+// This includes letters, underscore, and signs (+ or -) since we've already handled the sign
+func isInvalidExponentSignChar(c byte) bool {
+	return isLetter(c) || c == '_' || c == '+' || c == '-'
+}
+
+// isInvalidExponentIntChar returns true if c is an invalid character in an exponent's integer part
+// This includes letters and underscore since only digits are allowed
+func isInvalidExponentIntChar(c byte) bool {
+	return isLetter(c) || c == '_'
+}
+
+// isInvalidBinaryFirstChar returns true if c is an invalid character for the first position of a binary number
+// This includes any character that is not 0 or 1
+func isInvalidBinaryFirstChar(c byte) bool {
+	return (c >= '2' && c <= '9') || isLetter(c) || c == '_' || c == '.'
+}
+
+// isInvalidBinaryChar returns true if c is an invalid character for a binary number
+// This includes any character that is not 0, 1, or underscore
+func isInvalidBinaryChar(c byte) bool {
+	return (c >= '2' && c <= '9') || isLetter(c)
+}
+
+// isInvalidOctalChar returns true if c is an invalid character for an octal number
+// This includes any character that is not an octal digit (0-7) or underscore
+func isInvalidOctalChar(c byte) bool {
+	return (c >= '8' && c <= '9') || isLetter(c)
+}
+
+// isInvalidOctalFirstChar returns true if c is an invalid character for the first position of an octal number
+// This includes any character that is not an octal digit (0-7)
+func isInvalidOctalFirstChar(c byte) bool {
+	return (c >= '8' && c <= '9') || isLetter(c) || c == '_' || c == '.'
+}
+
+// isInvalidHexadecimalChar returns true if c is a letter that would make a hexadecimal number invalid
+// This includes letters G-Z and g-z, since A-F and a-f are valid hex digits
+func isInvalidHexadecimalChar(c byte) bool {
+	return (c >= 'G' && c <= 'Z') || (c >= 'g' && c <= 'z')
 }

@@ -113,6 +113,7 @@ const (
 	TokenOctalLiteral              // 0o777
 	TokenRawStringLiteral          // `\no\escapes`
 	TokenStringLiteral             // "Hello, World"
+	TokenMultiLineStringLiteral    // ```\nHello, World\n```
 	TokenSymbolLiteral             // :ok
 
 	// Comments
@@ -234,6 +235,7 @@ var TokenTypes = map[TokenType]string{
 	TokenOctalLiteral:              "octal literal",
 	TokenRawStringLiteral:          "raw string literal",
 	TokenStringLiteral:             "string literal",
+	TokenMultiLineStringLiteral:    "multi-line string literal",
 	TokenSymbolLiteral:             "symbol literal",
 
 	// Comments
