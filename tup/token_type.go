@@ -125,6 +125,10 @@ const (
 	TokenInvalid
 )
 
+func (t TokenType) String() string {
+	return TokenTypes[t]
+}
+
 var TokenTypes = map[TokenType]string{
 	// Symbols
 	TokenAt:           "@",

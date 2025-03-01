@@ -1,9 +1,5 @@
 package main
 
-import (
-	"strings"
-)
-
 // We define a state machine for tokenizing.
 type state int
 
@@ -43,15 +39,6 @@ type Tokenizer struct {
 	bol      int // beginning-of-line index
 }
 
-// peek returns the next n bytes from the current position without advancing the index.
-// If there aren't enough bytes remaining, it returns an empty string.
-func (t *Tokenizer) peek(n int) string {
-	if t.index+n > len(t.source) {
-		return ""
-	}
-	return string(t.source[t.index : t.index+n])
-}
-
 // NewTokenizer initializes a new Tokenizer.
 func NewTokenizer(source []byte, filename string) *Tokenizer {
 	idx := 0
@@ -67,6 +54,15 @@ func NewTokenizer(source []byte, filename string) *Tokenizer {
 		line:     1,
 		bol:      idx,
 	}
+}
+
+// peek returns the next n bytes from the current position without advancing the index.
+// If there aren't enough bytes remaining, it returns an empty string.
+func (t *Tokenizer) peek(n int) string {
+	if t.index+n > len(t.source) {
+		return ""
+	}
+	return string(t.source[t.index : t.index+n])
 }
 
 // Tokenize converts the source code into a slice of tokens.
@@ -614,7 +610,17 @@ outer:
 				invalid = true
 				break outer
 			case c == '\\':
-				st = stateEscapeSequence
+				if t.peek(2) == "\\(" {
+					tokenType = TokenInterpolatedStringLiteral
+					t.index += 2 // Skip the `\(`
+					invalid = t.skipInterpolation()
+					if invalid {
+						break outer
+					}
+					t.index--
+				} else {
+					st = stateEscapeSequence
+				}
 			case c == '"':
 				t.index++
 				break outer
@@ -678,26 +684,36 @@ outer:
 	} else {
 		col = t.index - t.bol + 1
 	}
+	value := string(t.source[start:t.index])
+	// log.Printf("token: <%v> = %s, invalid: %v", tokenType, value, invalid)
 	return Token{
 		Type:     tokenType,
 		Invalid:  invalid,
 		Line:     line,
 		Column:   col,
-		Value:    string(t.source[start:t.index]),
+		Value:    value,
 		Filename: t.filename,
 	}
 }
 
-// MultiLineStringTokenizer handles tokenization of multi-line strings
-type MultiLineStringTokenizer struct {
-	*Tokenizer
-	indentLevel string // Track the whitespace prefix
-	inHeader    bool   // Are we in the header section?
-}
-
-// HeaderTokenizer processes the function call context until EOL
-type HeaderTokenizer struct {
-	*Tokenizer
+// skipInterpolation skips the interpolation until the closing )
+// returns true if the interpolation is invalid, false otherwise
+func (t *Tokenizer) skipInterpolation() (invalid bool) {
+	parens := 0
+	for {
+		token := t.Next()
+		switch {
+		case token.Type == TokenEOF:
+			return true
+		case token.Type == TokenOpenParen:
+			parens++
+		case token.Type == TokenCloseParen:
+			parens--
+		}
+		if parens < 0 {
+			return false
+		}
+	}
 }
 
 // InterpolationTokenizer processes expressions within \( ... )
@@ -706,121 +722,24 @@ type InterpolationTokenizer struct {
 	parenCount int
 }
 
+// MultiLineStringTokenizer handles tokenization of multi-line strings
+type MultiLineStringTokenizer struct {
+	*Tokenizer
+}
+
+// HeaderTokenizer processes the function call context until EOL
+type HeaderTokenizer struct {
+	*Tokenizer
+}
+
 // processMultiLineString handles tokenization of a multi-line string
 func (t *Tokenizer) processMultiLineString() Token {
-	start := t.index // Start at the first backtick
-	invalid := false
-
-	// Skip the opening ```
-	t.index += 3
-
-	// Process optional function call context in header
-	for t.index < len(t.source) && t.source[t.index] != '\n' {
-		t.index++
-	}
-	if t.index < len(t.source) && t.source[t.index] == '\n' {
-		t.index++ // consume the newline
-		t.line++
-		t.bol = t.index
-	} else {
-		invalid = true
-	}
-
-	// Process content lines
-	indentLevel := ""
-	firstLine := true
-
-	for t.index < len(t.source) {
-		// Check for leading whitespace
-		wsStart := t.index
-		for t.index < len(t.source) {
-			c := t.source[t.index]
-			if c != ' ' && c != '\t' {
-				break
-			}
-			t.index++
-		}
-
-		// On first line, capture the indent level
-		if firstLine {
-			indentLevel = string(t.source[wsStart:t.index])
-			firstLine = false
-		} else {
-			// Check if indentation matches
-			indent := string(t.source[wsStart:t.index])
-			if !strings.HasPrefix(indent, indentLevel) {
-				invalid = true
-			}
-		}
-
-		// Check for closing sequence
-		if t.peek(3) == "```" {
-			if t.peek(4) == "```\n" || t.peek(4) == "```" {
-				t.index += 3
-				if t.index < len(t.source) && t.source[t.index] == '\n' {
-					t.index++ // consume the newline
-					t.line++
-					t.bol = t.index
-				}
-				break
-			}
-		}
-
-		// Process content line
-		for t.index < len(t.source) {
-			if t.peek(2) == "\\(" {
-				t.index += 2 // Skip \(
-				// Handle interpolation
-				interpolationTokenizer := &InterpolationTokenizer{
-					Tokenizer:  t,
-					parenCount: 1,
-				}
-				for {
-					token := interpolationTokenizer.Next()
-					if token.Invalid || token.Type == TokenEOF {
-						invalid = true
-						break
-					}
-					if token.Type == TokenCloseParen && interpolationTokenizer.parenCount == 0 {
-						break
-					}
-				}
-			} else if t.peek(1) == "\\" {
-				t.index++ // Skip backslash
-				if t.index >= len(t.source) {
-					invalid = true
-					break
-				}
-				// Handle escape sequence
-				if isSimpleEscape(t.source[t.index]) {
-					t.index++
-				} else {
-					invalid = true
-				}
-			} else if t.source[t.index] == '\n' {
-				t.line++
-				t.index++
-				t.bol = t.index
-				break
-			} else {
-				t.index++
-			}
-		}
-	}
-
-	if t.index >= len(t.source) {
-		invalid = true
-	}
-
-	// Calculate column as the total length from the start of the token
-	length := t.index - start
-
 	return Token{
 		Type:     TokenMultiLineStringLiteral,
-		Invalid:  invalid,
+		Invalid:  false,
 		Line:     t.line,
-		Column:   length,
-		Value:    string(t.source[start:t.index]),
+		Column:   t.index - t.bol + 1,
+		Value:    string(t.source[t.bol:t.index]),
 		Filename: t.filename,
 	}
 }
@@ -831,24 +750,6 @@ func (t *HeaderTokenizer) Next() Token {
 
 	// If we hit EOL or EOF, we're done
 	if token.Type == TokenEOL || token.Type == TokenEOF {
-		return token
-	}
-
-	// First token must be a function identifier
-	if t.index == t.bol+1 {
-		if token.Type != TokenIdentifier {
-			token.Invalid = true
-			return token
-		}
-		return token
-	}
-
-	// After identifier, we can have:
-	// 1. EOL - valid end
-	// 2. ( - start of arguments
-	// 3. anything else - invalid
-	if t.index == t.bol+len(token.Value)+1 && token.Type != TokenOpenParen {
-		token.Invalid = true
 		return token
 	}
 

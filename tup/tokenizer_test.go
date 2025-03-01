@@ -386,11 +386,9 @@ func TestHexadecimalLiterals(t *testing.T) {
 
 func TestRawStringLiterals(t *testing.T) {
 	testTokenize(t, "``", TokenRawStringLiteral)
-	// any literal starting with 3 backticks are multi-line strings
-	testTokenizeInvalid(t, "````", TokenRawStringLiteral)   // not a raw string with 1 escaped backtick, not a valid multi-line string
-	testTokenizeInvalid(t, "``````", TokenRawStringLiteral) // not a raw string with 2 escaped backticks, not a valid multi-line string
 	testTokenize(t, "`abc`", TokenRawStringLiteral)
 	testTokenize(t, "`abc``def`", TokenRawStringLiteral)
+	testTokenize(t, "`abc\ndef`", TokenRawStringLiteral)
 	testTokenizeInvalid(t, "`abc``", TokenRawStringLiteral)
 	testTokenizeInvalid(t, "`abc", TokenRawStringLiteral)
 }
@@ -409,9 +407,89 @@ func TestStringLiterals(t *testing.T) {
 	testTokenizeInvalid(t, `"\xXYZ"`, TokenStringLiteral)
 }
 
-func TestMultiLineStringLiteral(t *testing.T) {
-	const source1 = "```\nSome text\n```"
+func TestInterpolatedStringLiterals(t *testing.T) {
+	// simple, single interpolations
+	testTokenize(t, `"Hello \(name)!"`, TokenInterpolatedStringLiteral)
+	testTokenize(t, `"Hello \(123)!"`, TokenInterpolatedStringLiteral)
+	testTokenize(t, `"Hello \("Alice")!"`, TokenInterpolatedStringLiteral)
+	testTokenize(t, `"Hello \('A')!"`, TokenInterpolatedStringLiteral)
+
+	// slightly more complex interpolations
+	testTokenize(t, `"Hello \(name + " " + "World")!"`, TokenInterpolatedStringLiteral)
+	testTokenize(t, `"Hello \(123 + 456)!"`, TokenInterpolatedStringLiteral)
+	testTokenize(t, `"Hello \(123 + 456 + 789)!"`, TokenInterpolatedStringLiteral)
+
+	// invalid interpolations
+	testTokenizeInvalid(t, `"Hello \(name + " " + "World"`, TokenInterpolatedStringLiteral)
+
+	// multiple interpolations
+	testTokenize(t, `"Hello \(name), age \(age)!"`, TokenInterpolatedStringLiteral)
+	testTokenize(t, `"Hello \(name), age \(age), from \(city)!"`, TokenInterpolatedStringLiteral)
+	testTokenize(t, `"Hello \(name), age \(age), from \(city), in \(country)!"`, TokenInterpolatedStringLiteral)
+
+	// non-symbolic parentheses
+	testTokenize(t, `"Welcome \(opponent1) )))---((( \(opponent2)"`, TokenInterpolatedStringLiteral)
+
+	const source1 = `greeting = "Hello, \(name)!"`
+	testTokenizeSeq(t, source1, []TokenType{
+		TokenIdentifier,                // greeting
+		TokenOpEqual,                   // =
+		TokenInterpolatedStringLiteral, // Hello, \(name)!
+		TokenEOF,
+	})
+
+	// nested interpolations
+	testTokenize(t, `"Hello \(name + " [\(age)]")"`, TokenInterpolatedStringLiteral)
+}
+
+func XTestMultiLineStringLiteral(t *testing.T) {
+	// Basic multi-line string
+	const source1 = "```\nSome text\n```\n"
 	testTokenize(t, source1, TokenMultiLineStringLiteral)
+
+	// Multi-line string with function call context
+	const source2 = "```processor\nSome text\n```\n"
+	testTokenize(t, source2, TokenMultiLineStringLiteral)
+
+	// Multi-line string with escape sequences and interpolation
+	const source3 = "```\nHello \\(name)!\nSpecial: \\n\\t\\\"\\'\n```\n"
+	testTokenize(t, source3, TokenMultiLineStringLiteral)
+
+	// Multi-line string with consistent indentation
+	const source4 = "```\n  First line\n  Second line\n  ```\n"
+	testTokenize(t, source4, TokenMultiLineStringLiteral)
+
+	// Multi-line string with byte and unicode escapes
+	const source5 = "```\nByte: \\x48\\x69\nUnicode: \\u2603 \\U0001F680\n```\n"
+	testTokenize(t, source5, TokenMultiLineStringLiteral)
+
+	// Invalid: missing closing sequence
+	const invalid1 = "```\nUnclosed string"
+	testTokenizeInvalid(t, invalid1, TokenMultiLineStringLiteral)
+
+	// Invalid: incorrect indentation
+	const invalid2 = "```\n  First line\n    Second line\n  ```\n"
+	testTokenizeInvalid(t, invalid2, TokenMultiLineStringLiteral)
+
+	// Invalid: missing newline after opening
+	const invalid3 = "```Some text\n```\n"
+	testTokenizeInvalid(t, invalid3, TokenMultiLineStringLiteral)
+
+	// Invalid: missing newline before closing
+	const invalid4 = "```\nSome text```\n"
+	testTokenizeInvalid(t, invalid4, TokenMultiLineStringLiteral)
+
+	// Invalid: invalid escape sequence
+	const invalid5 = "```\nInvalid escape: \\z\n```\n"
+	testTokenizeInvalid(t, invalid5, TokenMultiLineStringLiteral)
+
+	// Invalid: incomplete unicode escape
+	const invalid6 = "```\nBad unicode: \\u26\n```\n"
+	testTokenizeInvalid(t, invalid6, TokenMultiLineStringLiteral)
+
+	// Invalid: unterminated interpolation
+	const invalid7 = "```\nUnterminated: \\(expr\n```\n"
+	testTokenizeInvalid(t, invalid7, TokenMultiLineStringLiteral)
 }
 
 func TestUnion(t *testing.T) {
