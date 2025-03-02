@@ -52,3 +52,7 @@ func (t *Token) Line() int {
 func (t *Token) Column() int {
 	return t.File.Column(t.Offset)
 }
+
+func (t *Token) Position() (int, int) {
+	return t.File.Position(t.Offset)
+}
