@@ -534,12 +534,12 @@ outer:
 			switch {
 			case isHexDigit(c):
 				st = stateHexadecimal
-			case !isHexDigit(c):
-				st = stateHexadecimal
-				invalid = true
-			default:
+			case c == 0:
 				invalid = true
 				break outer
+			default:
+				st = stateHexadecimal
+				invalid = true
 			}
 		case stateHexadecimal:
 			switch {
