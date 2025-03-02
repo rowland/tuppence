@@ -105,7 +105,7 @@ func (t *Tokenizer) Next() Token {
 
 	// Use a labeled loop so we can "break out" when a token is complete.
 outer:
-	for ; t.index <= len(t.source); t.index++ {
+	for done := false; t.index <= len(t.source) && !done; t.index++ {
 		var c byte
 		if t.index < len(t.source) {
 			c = t.source[t.index]
@@ -125,33 +125,27 @@ outer:
 			case '\n':
 				tokenType = TokenEOL
 				col = t.index - t.bol + 1 // Calculate column before updating line tracking
-				t.index++
 				t.line++
-				t.bol = t.index
-				break outer
+				t.bol = t.index + 1
+				done = true
 			case '@':
 				tokenType = TokenAt
-				t.index++
-				break outer
+				done = true
 			case '}':
 				tokenType = TokenCloseBrace
-				t.index++
-				break outer
+				done = true
 			case ']':
 				tokenType = TokenCloseBracket
-				t.index++
-				break outer
+				done = true
 			case ')':
 				tokenType = TokenCloseParen
-				t.index++
-				break outer
+				done = true
 			case ':':
 				tokenType = TokenColon
 				st = stateColon
 			case ',':
 				tokenType = TokenComma
-				t.index++
-				break outer
+				done = true
 			case '.':
 				// Check 3-character operators first
 				if t.peek(3) == "..." {
@@ -165,20 +159,16 @@ outer:
 					// Finally, single character operator
 					tokenType = TokenDot
 				}
-				t.index++
-				break outer
+				done = true
 			case '{':
 				tokenType = TokenOpenBrace
-				t.index++
-				break outer
+				done = true
 			case '[':
 				tokenType = TokenOpenBracket
-				t.index++
-				break outer
+				done = true
 			case '(':
 				tokenType = TokenOpenParen
-				t.index++
-				break outer
+				done = true
 			case '?':
 				if t.index+1 < len(t.source) {
 					switch t.source[t.index+1] {
@@ -203,12 +193,10 @@ outer:
 				} else {
 					tokenType = TokenQuestionMark
 				}
-				t.index++
-				break outer
+				done = true
 			case ';':
 				tokenType = TokenSemiColon
-				t.index++
-				break outer
+				done = true
 			case '/':
 				if t.peek(2) == "/=" {
 					tokenType = TokenOpDivEqual
@@ -216,8 +204,7 @@ outer:
 				} else {
 					tokenType = TokenOpDiv
 				}
-				t.index++
-				break outer
+				done = true
 			case '-':
 				if t.peek(2) == "-=" {
 					tokenType = TokenOpMinusEqual
@@ -225,8 +212,7 @@ outer:
 				} else {
 					tokenType = TokenOpMinus
 				}
-				t.index++
-				break outer
+				done = true
 			case '%':
 				if t.peek(2) == "%=" {
 					tokenType = TokenOpModEqual
@@ -234,8 +220,7 @@ outer:
 				} else {
 					tokenType = TokenOpMod
 				}
-				t.index++
-				break outer
+				done = true
 			case '*':
 				if t.peek(2) == "*=" {
 					tokenType = TokenOpMulEqual
@@ -243,8 +228,7 @@ outer:
 				} else {
 					tokenType = TokenOpMul
 				}
-				t.index++
-				break outer
+				done = true
 			case '!':
 				if t.peek(2) == "!=" {
 					tokenType = TokenOpNotEqual
@@ -252,8 +236,7 @@ outer:
 				} else {
 					tokenType = TokenOpNot
 				}
-				t.index++
-				break outer
+				done = true
 			case '+':
 				if t.peek(2) == "+=" {
 					tokenType = TokenOpPlusEqual
@@ -261,8 +244,7 @@ outer:
 				} else {
 					tokenType = TokenOpPlus
 				}
-				t.index++
-				break outer
+				done = true
 			case '^':
 				if t.peek(2) == "^=" {
 					tokenType = TokenOpPowEqual
@@ -270,8 +252,7 @@ outer:
 				} else {
 					tokenType = TokenOpPow
 				}
-				t.index++
-				break outer
+				done = true
 			case '>':
 				// Check 3-character operators first
 				if t.peek(3) == ">>=" {
@@ -288,8 +269,7 @@ outer:
 					// Finally, single character operator
 					tokenType = TokenOpGreaterThan
 				}
-				t.index++
-				break outer
+				done = true
 			case '&':
 				if t.peek(3) == "&&=" {
 					tokenType = TokenOpLogicalAndEqual
@@ -303,8 +283,7 @@ outer:
 				} else {
 					tokenType = TokenOpBitwiseAnd
 				}
-				t.index++
-				break outer
+				done = true
 			case '|':
 				if t.peek(3) == "||=" {
 					tokenType = TokenOpLogicalOrEqual
@@ -318,8 +297,7 @@ outer:
 				} else {
 					tokenType = TokenOpBitwiseOr
 				}
-				t.index++
-				break outer
+				done = true
 			case '=':
 				if t.peek(2) == "==" {
 					tokenType = TokenOpEqualEqual
@@ -330,12 +308,10 @@ outer:
 				} else {
 					tokenType = TokenOpEqual
 				}
-				t.index++
-				break outer
+				done = true
 			case '~':
 				tokenType = TokenOpBitwiseNot
-				t.index++
-				break outer
+				done = true
 			case '#':
 				tokenType = TokenComment
 				st = stateComment
@@ -378,8 +354,7 @@ outer:
 					// Finally, single character operator
 					tokenType = TokenOpLessThan
 				}
-				t.index++
-				break outer
+				done = true
 			default:
 				// Identifier start: letters or underscore.
 				if isIdentifierStart(c) {
@@ -391,8 +366,7 @@ outer:
 					tokenType = TokenDecimalLiteral
 				} else {
 					tokenType = TokenInvalid
-					t.index++
-					break outer
+					done = true
 				}
 			}
 		case stateColon:
@@ -423,8 +397,7 @@ outer:
 				invalid = true
 				break outer
 			case '"':
-				t.index++
-				break outer
+				done = true
 			case '\n':
 				invalid = true
 				break outer
@@ -612,8 +585,7 @@ outer:
 					t.index++ // Skip the second backtick
 				} else {
 					// Single backtick - end of string
-					t.index++
-					break outer
+					done = true
 				}
 			case c == '\n':
 				t.line++
@@ -640,8 +612,7 @@ outer:
 					st = stateEscapeSequence
 				}
 			case c == '"':
-				t.index++
-				break outer
+				done = true
 			default:
 				// Just continue consuming characters in the string
 			}
@@ -726,8 +697,7 @@ outer:
 			case c == 0:
 				break outer
 			case c == '\n':
-				t.index++
-				break outer
+				done = true
 			default:
 				// Continue consuming comment characters.
 			}
