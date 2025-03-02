@@ -23,3 +23,6 @@ clean:
 	rm -f $(HTML)
 
 .PHONY: all grammar clean
+
+test:
+	cd tup && go test ./...

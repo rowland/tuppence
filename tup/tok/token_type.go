@@ -1,4 +1,4 @@
-package main
+package tok
 
 // TokenType represents the various kinds of tokens.
 type TokenType int
@@ -229,21 +229,21 @@ var TokenTypes = map[TokenType]string{
 	TokenKeywordUnion:       "union",
 
 	// Literals
-	TokenBinaryLiteral:             "binary literal",
-	TokenBooleanLiteral:            "boolean literal",
-	TokenCharacterLiteral:          "character literal",
-	TokenDecimalLiteral:            "decimal literal",
-	TokenFloatLiteral:              "float literal",
-	TokenHexadecimalLiteral:        "hexadecimal literal",
-	TokenInterpolatedStringLiteral: "interpolated string literal",
-	TokenOctalLiteral:              "octal literal",
-	TokenRawStringLiteral:          "raw string literal",
-	TokenStringLiteral:             "string literal",
-	TokenMultiLineStringLiteral:    "multi-line string literal",
-	TokenSymbolLiteral:             "symbol literal",
+	TokenBinaryLiteral:             "binary_literal",
+	TokenBooleanLiteral:            "boolean_literal",
+	TokenCharacterLiteral:          "character_literal",
+	TokenDecimalLiteral:            "decimal_literal",
+	TokenFloatLiteral:              "float_literal",
+	TokenHexadecimalLiteral:        "hexadecimal_literal",
+	TokenInterpolatedStringLiteral: "interpolated_string_literal",
+	TokenOctalLiteral:              "octal_literal",
+	TokenRawStringLiteral:          "raw_string_literal",
+	TokenStringLiteral:             "string_literal",
+	TokenMultiLineStringLiteral:    "multi-line_string_literal",
+	TokenSymbolLiteral:             "symbol_literal",
 
 	// Comments
-	TokenComment: "#",
+	TokenComment: "comment",
 
 	// Special tokens
 	TokenEOL:     "EOL",

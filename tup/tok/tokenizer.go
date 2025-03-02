@@ -1,4 +1,4 @@
-package main
+package tok
 
 // We define a state machine for tokenizing.
 type state int

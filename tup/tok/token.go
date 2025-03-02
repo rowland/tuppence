@@ -1,4 +1,4 @@
-package main
+package tok
 
 // reservedWords maps identifier strings to reserved token types.
 var reservedWords = map[string]TokenType{

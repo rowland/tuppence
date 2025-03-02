@@ -1,21 +1,20 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/rowland/tuppence/tup/tok"
+	"github.com/spf13/pflag"
 )
 
 func main() {
 	var input string
 	var output string
-	// use standard flag package; short flags duplicate the same variable.
-	flag.StringVar(&input, "input", "", "Input file.")
-	flag.StringVar(&input, "i", "", "Input file (shorthand).")
-	flag.StringVar(&output, "output", "", "Output file.")
-	flag.StringVar(&output, "o", "", "Output file (shorthand).")
-	flag.Parse()
+	pflag.StringVarP(&input, "input", "i", "", "Input file")
+	pflag.StringVarP(&output, "output", "o", "", "Output file")
+	pflag.Parse()
 
 	if input != "" {
 		fmt.Printf("Input file: '%s'\n", input)
@@ -23,11 +22,13 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		tokens, err := Tokenize(source, input)
+		tokens, err := tok.Tokenize(source, input)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("tokens: %+v\n", tokens)
+		for _, token := range tokens {
+			fmt.Printf("%s %s\n", token.Type, token.Value)
+		}
 	}
 
 	if output != "" {
@@ -35,7 +36,7 @@ func main() {
 	}
 
 	// Print any extra (positional) arguments.
-	for i, arg := range flag.Args() {
+	for i, arg := range pflag.Args() {
 		fmt.Printf("%d: %s\n", i, arg)
 	}
 }

@@ -1,4 +1,4 @@
-package main
+package tok
 
 // isHexDigit returns true if c is a valid hexadecimal digit
 func isHexDigit(c byte) bool {
