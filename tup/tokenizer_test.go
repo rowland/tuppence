@@ -149,7 +149,7 @@ func testTokenizeMultiLine(t *testing.T, source string, expectedType TokenType) 
 		t.Errorf("Expected token type %v, got %v for source %q", expectedType, token.Type, source)
 	}
 	if token.Invalid {
-		t.Errorf("Expected valid token for %q", source)
+		t.Errorf("Expected valid token for %q, got %q", source, token.Value)
 	}
 	if token.Value != source {
 		t.Errorf("Expected token value %q, got %q", source, token.Value)
@@ -309,35 +309,56 @@ func TestKeywords(t *testing.T) {
 }
 
 func TestBinaryLiterals(t *testing.T) {
-	testTokenizeInvalid(t, "0b", TokenBinaryLiteral)
-	testTokenize(t, "0b0", TokenBinaryLiteral)
-	testTokenize(t, "0b1", TokenBinaryLiteral)
-	testTokenize(t, "0b10101100", TokenBinaryLiteral)
+	tests := []struct {
+		name     string
+		input    string
+		wantType TokenType
+		wantErr  bool
+	}{
+		// Basic valid cases
+		{"empty_after_prefix", "0b", TokenBinaryLiteral, true},
+		{"zero", "0b0", TokenBinaryLiteral, false},
+		{"one", "0b1", TokenBinaryLiteral, false},
+		{"complex_binary", "0b10101100", TokenBinaryLiteral, false},
 
-	testTokenizeInvalid(t, "0b2", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0b3", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0b4", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0b5", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0b6", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0b7", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0b8", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0b9", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0ba", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0bb", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0bc", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0bd", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0be", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0bf", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0bz", TokenBinaryLiteral)
+		// Invalid digits
+		{"invalid_2", "0b2", TokenBinaryLiteral, true},
+		{"invalid_3", "0b3", TokenBinaryLiteral, true},
+		{"invalid_4", "0b4", TokenBinaryLiteral, true},
+		{"invalid_5", "0b5", TokenBinaryLiteral, true},
+		{"invalid_6", "0b6", TokenBinaryLiteral, true},
+		{"invalid_7", "0b7", TokenBinaryLiteral, true},
+		{"invalid_8", "0b8", TokenBinaryLiteral, true},
+		{"invalid_9", "0b9", TokenBinaryLiteral, true},
+		{"invalid_a", "0ba", TokenBinaryLiteral, true},
+		{"invalid_b", "0bb", TokenBinaryLiteral, true},
+		{"invalid_c", "0bc", TokenBinaryLiteral, true},
+		{"invalid_d", "0bd", TokenBinaryLiteral, true},
+		{"invalid_e", "0be", TokenBinaryLiteral, true},
+		{"invalid_f", "0bf", TokenBinaryLiteral, true},
+		{"invalid_z", "0bz", TokenBinaryLiteral, true},
 
-	// These tests assume that uppercase "0B" is not a valid binary literal.
-	testTokenizeInvalid(t, "0B0", TokenDecimalLiteral)
-	testTokenizeInvalid(t, "0b_", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0b_0", TokenBinaryLiteral)
-	testTokenize(t, "0b1_", TokenBinaryLiteral)
-	testTokenize(t, "0b0__1", TokenBinaryLiteral)
-	testTokenize(t, "0b0_1_", TokenBinaryLiteral)
-	testTokenizeInvalid(t, "0b1e", TokenBinaryLiteral)
+		// Underscore cases
+		{"invalid_leading_underscore", "0b_", TokenBinaryLiteral, true},
+		{"invalid_underscore_after_prefix", "0b_0", TokenBinaryLiteral, true},
+		{"valid_trailing_underscore", "0b1_", TokenBinaryLiteral, false},
+		{"valid_double_underscore", "0b0__1", TokenBinaryLiteral, false},
+		{"valid_middle_underscore", "0b0_1_", TokenBinaryLiteral, false},
+
+		// Other cases
+		{"invalid_uppercase_prefix", "0B0", TokenDecimalLiteral, true},
+		{"invalid_e_suffix", "0b1e", TokenBinaryLiteral, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.wantErr {
+				testTokenizeInvalid(t, tt.input, tt.wantType)
+			} else {
+				testTokenize(t, tt.input, tt.wantType)
+			}
+		})
+	}
 }
 
 func TestBooleanLiterals(t *testing.T) {
@@ -346,206 +367,451 @@ func TestBooleanLiterals(t *testing.T) {
 }
 
 func TestDecimalLiterals(t *testing.T) {
-	testTokenize(t, "0", TokenDecimalLiteral)
-	testTokenize(t, "1", TokenDecimalLiteral)
-	testTokenize(t, "2", TokenDecimalLiteral)
-	testTokenize(t, "3", TokenDecimalLiteral)
-	testTokenize(t, "4", TokenDecimalLiteral)
-	testTokenize(t, "5", TokenDecimalLiteral)
-	testTokenize(t, "6", TokenDecimalLiteral)
-	testTokenize(t, "7", TokenDecimalLiteral)
-	testTokenize(t, "8", TokenDecimalLiteral)
-	testTokenize(t, "9", TokenDecimalLiteral)
+	tests := []struct {
+		name     string
+		input    string
+		wantType TokenType
+		wantErr  bool
+	}{
+		// Single digits
+		{"zero", "0", TokenDecimalLiteral, false},
+		{"one", "1", TokenDecimalLiteral, false},
+		{"two", "2", TokenDecimalLiteral, false},
+		{"three", "3", TokenDecimalLiteral, false},
+		{"four", "4", TokenDecimalLiteral, false},
+		{"five", "5", TokenDecimalLiteral, false},
+		{"six", "6", TokenDecimalLiteral, false},
+		{"seven", "7", TokenDecimalLiteral, false},
+		{"eight", "8", TokenDecimalLiteral, false},
+		{"nine", "9", TokenDecimalLiteral, false},
 
-	testTokenize(t, "0_0", TokenDecimalLiteral)
-	testTokenize(t, "0001", TokenDecimalLiteral)
-	testTokenize(t, "01234567890", TokenDecimalLiteral)
-	testTokenize(t, "012_345_6789_0", TokenDecimalLiteral)
-	testTokenize(t, "0_1_2_3_4_5_6_7_8_9_0", TokenDecimalLiteral)
+		// Leading zeros and underscores
+		{"underscore_after_zero", "0_0", TokenDecimalLiteral, false},
+		{"leading_zeros", "0001", TokenDecimalLiteral, false},
+
+		// Complex numbers
+		{"all_digits", "01234567890", TokenDecimalLiteral, false},
+		{"grouped_by_three", "012_345_6789_0", TokenDecimalLiteral, false},
+		{"max_underscores", "0_1_2_3_4_5_6_7_8_9_0", TokenDecimalLiteral, false},
+
+		// Invalid characters in numbers
+		{"lowercase_letter", "123a", TokenDecimalLiteral, true},
+		{"uppercase_letter", "123A", TokenDecimalLiteral, true},
+		{"letter_in_middle", "12a34", TokenDecimalLiteral, true},
+
+		// Identifiers that look like numbers
+		{"leading_underscore", "_123", TokenIdentifier, false},
+		{"multiple_leading_underscores", "__123", TokenIdentifier, false},
+		{"only_underscore", "_", TokenIdentifier, false},
+		{"multiple_underscores", "___", TokenIdentifier, false},
+		{"underscore_and_letter", "_a", TokenIdentifier, false},
+		{"letter_and_underscore", "a_", TokenIdentifier, false},
+
+		// Valid number followed by underscore
+		{"trailing_underscore", "123_", TokenDecimalLiteral, false},
+		{"trailing_multiple_underscores", "123__", TokenDecimalLiteral, false},
+
+		// Sequence cases
+		{"number_then_comma", "123,", TokenDecimalLiteral, false},      // Should parse as separate tokens
+		{"underscore_then_comma", "123_,", TokenDecimalLiteral, false}, // Should parse as separate tokens
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if strings.HasSuffix(tt.input, ",") {
+				// For sequence cases, use testTokenizeSeq
+				testTokenizeSeq(t, tt.input, []TokenType{tt.wantType, TokenComma})
+			} else if tt.wantErr {
+				testTokenizeInvalid(t, tt.input, tt.wantType)
+			} else {
+				testTokenize(t, tt.input, tt.wantType)
+			}
+		})
+	}
 }
 
 func TestOctalLiterals(t *testing.T) {
-	testTokenize(t, "0o0", TokenOctalLiteral)
-	testTokenize(t, "0o1", TokenOctalLiteral)
-	testTokenize(t, "0o2", TokenOctalLiteral)
-	testTokenize(t, "0o3", TokenOctalLiteral)
-	testTokenize(t, "0o4", TokenOctalLiteral)
-	testTokenize(t, "0o5", TokenOctalLiteral)
-	testTokenize(t, "0o6", TokenOctalLiteral)
-	testTokenize(t, "0o7", TokenOctalLiteral)
+	tests := []struct {
+		name     string
+		input    string
+		wantType TokenType
+		wantErr  bool
+	}{
+		// Single digits
+		{"zero", "0o0", TokenOctalLiteral, false},
+		{"one", "0o1", TokenOctalLiteral, false},
+		{"two", "0o2", TokenOctalLiteral, false},
+		{"three", "0o3", TokenOctalLiteral, false},
+		{"four", "0o4", TokenOctalLiteral, false},
+		{"five", "0o5", TokenOctalLiteral, false},
+		{"six", "0o6", TokenOctalLiteral, false},
+		{"seven", "0o7", TokenOctalLiteral, false},
 
-	testTokenize(t, "0o01234567", TokenOctalLiteral)
-	testTokenize(t, "0o0123_4567", TokenOctalLiteral)
-	testTokenize(t, "0o01_23_45_67", TokenOctalLiteral)
-	testTokenize(t, "0o0_1_2_3_4_5_6_7", TokenOctalLiteral)
+		// Invalid digits
+		{"invalid_8", "0o8", TokenOctalLiteral, true},
+		{"invalid_9", "0o9", TokenOctalLiteral, true},
+		{"invalid_a", "0oa", TokenOctalLiteral, true},
+		{"invalid_b", "0ob", TokenOctalLiteral, true},
+		{"invalid_c", "0oc", TokenOctalLiteral, true},
+		{"invalid_d", "0od", TokenOctalLiteral, true},
+		{"invalid_e", "0oe", TokenOctalLiteral, true},
+		{"invalid_f", "0of", TokenOctalLiteral, true},
+		{"invalid_z", "0oz", TokenOctalLiteral, true},
 
-	testTokenizeInvalid(t, "0O0", TokenDecimalLiteral)
-	testTokenizeInvalid(t, "0o_", TokenOctalLiteral)
-	testTokenizeInvalid(t, "0o_0", TokenOctalLiteral)
-	testTokenize(t, "0o1_", TokenOctalLiteral)
-	testTokenize(t, "0o0__1", TokenOctalLiteral)
-	testTokenize(t, "0o0_1_", TokenOctalLiteral)
-	testTokenizeInvalid(t, "0o1e", TokenOctalLiteral)
-	testTokenizeInvalid(t, "0o1e0", TokenOctalLiteral)
-	testTokenizeSeqInvalid(t, "0o_,", []TokenType{TokenOctalLiteral, TokenComma}, true)
+		// Complex numbers
+		{"all_octal_digits", "0o01234567", TokenOctalLiteral, false},
+		{"single_underscore", "0o0123_4567", TokenOctalLiteral, false},
+		{"multiple_underscores", "0o01_23_45_67", TokenOctalLiteral, false},
+		{"max_underscores", "0o0_1_2_3_4_5_6_7", TokenOctalLiteral, false},
+
+		// Invalid underscore positions
+		{"invalid_leading_underscore", "0o_", TokenOctalLiteral, true},
+		{"invalid_underscore_after_prefix", "0o_0", TokenOctalLiteral, true},
+		{"valid_trailing_underscore", "0o1_", TokenOctalLiteral, false},
+		{"valid_double_underscore", "0o0__1", TokenOctalLiteral, false},
+		{"valid_middle_underscore", "0o0_1_", TokenOctalLiteral, false},
+
+		// Invalid prefix cases
+		{"invalid_uppercase_prefix", "0O0", TokenDecimalLiteral, true},
+		{"empty_after_prefix", "0o", TokenOctalLiteral, true},
+
+		// Invalid suffix cases
+		{"invalid_e_suffix", "0o1e", TokenOctalLiteral, true},
+		{"invalid_e_suffix_with_number", "0o1e0", TokenOctalLiteral, true},
+
+		// Sequence cases
+		{"octal_then_comma", "0o1,", TokenOctalLiteral, false},       // Should parse as separate tokens
+		{"underscore_then_comma", "0o1_,", TokenOctalLiteral, false}, // Should parse as separate tokens
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if strings.HasSuffix(tt.input, ",") {
+				// For sequence cases, use testTokenizeSeq
+				testTokenizeSeq(t, tt.input, []TokenType{tt.wantType, TokenComma})
+			} else if tt.wantErr {
+				testTokenizeInvalid(t, tt.input, tt.wantType)
+			} else {
+				testTokenize(t, tt.input, tt.wantType)
+			}
+		})
+	}
 }
 
 func TestHexadecimalLiterals(t *testing.T) {
-	testTokenize(t, "0x0", TokenHexadecimalLiteral)
-	testTokenize(t, "0x1", TokenHexadecimalLiteral)
-	testTokenize(t, "0x2", TokenHexadecimalLiteral)
-	testTokenize(t, "0x3", TokenHexadecimalLiteral)
-	testTokenize(t, "0x4", TokenHexadecimalLiteral)
-	testTokenize(t, "0x5", TokenHexadecimalLiteral)
-	testTokenize(t, "0x6", TokenHexadecimalLiteral)
-	testTokenize(t, "0x7", TokenHexadecimalLiteral)
-	testTokenize(t, "0x8", TokenHexadecimalLiteral)
-	testTokenize(t, "0x9", TokenHexadecimalLiteral)
-	testTokenize(t, "0xa", TokenHexadecimalLiteral)
-	testTokenize(t, "0xb", TokenHexadecimalLiteral)
-	testTokenize(t, "0xc", TokenHexadecimalLiteral)
-	testTokenize(t, "0xd", TokenHexadecimalLiteral)
-	testTokenize(t, "0xe", TokenHexadecimalLiteral)
-	testTokenize(t, "0xf", TokenHexadecimalLiteral)
-	testTokenize(t, "0xA", TokenHexadecimalLiteral)
-	testTokenize(t, "0xB", TokenHexadecimalLiteral)
-	testTokenize(t, "0xC", TokenHexadecimalLiteral)
-	testTokenize(t, "0xD", TokenHexadecimalLiteral)
-	testTokenize(t, "0xE", TokenHexadecimalLiteral)
-	testTokenize(t, "0xF", TokenHexadecimalLiteral)
+	tests := []struct {
+		name     string
+		input    string
+		wantType TokenType
+		wantErr  bool
+	}{
+		// Single digits (0-9)
+		{"zero", "0x0", TokenHexadecimalLiteral, false},
+		{"one", "0x1", TokenHexadecimalLiteral, false},
+		{"two", "0x2", TokenHexadecimalLiteral, false},
+		{"three", "0x3", TokenHexadecimalLiteral, false},
+		{"four", "0x4", TokenHexadecimalLiteral, false},
+		{"five", "0x5", TokenHexadecimalLiteral, false},
+		{"six", "0x6", TokenHexadecimalLiteral, false},
+		{"seven", "0x7", TokenHexadecimalLiteral, false},
+		{"eight", "0x8", TokenHexadecimalLiteral, false},
+		{"nine", "0x9", TokenHexadecimalLiteral, false},
 
-	testTokenize(t, "0x0000", TokenHexadecimalLiteral)
-	testTokenize(t, "0xAA", TokenHexadecimalLiteral)
-	testTokenize(t, "0xFFFF", TokenHexadecimalLiteral)
+		// Lowercase hex letters
+		{"lowercase_a", "0xa", TokenHexadecimalLiteral, false},
+		{"lowercase_b", "0xb", TokenHexadecimalLiteral, false},
+		{"lowercase_c", "0xc", TokenHexadecimalLiteral, false},
+		{"lowercase_d", "0xd", TokenHexadecimalLiteral, false},
+		{"lowercase_e", "0xe", TokenHexadecimalLiteral, false},
+		{"lowercase_f", "0xf", TokenHexadecimalLiteral, false},
 
-	testTokenize(t, "0x0123456789ABCDEF", TokenHexadecimalLiteral)
-	testTokenize(t, "0x0123_4567_89AB_CDEF", TokenHexadecimalLiteral)
-	testTokenize(t, "0x01_23_45_67_89AB_CDE_F", TokenHexadecimalLiteral)
-	testTokenize(t, "0x0_1_2_3_4_5_6_7_8_9_A_B_C_D_E_F", TokenHexadecimalLiteral)
+		// Uppercase hex letters
+		{"uppercase_a", "0xA", TokenHexadecimalLiteral, false},
+		{"uppercase_b", "0xB", TokenHexadecimalLiteral, false},
+		{"uppercase_c", "0xC", TokenHexadecimalLiteral, false},
+		{"uppercase_d", "0xD", TokenHexadecimalLiteral, false},
+		{"uppercase_e", "0xE", TokenHexadecimalLiteral, false},
+		{"uppercase_f", "0xF", TokenHexadecimalLiteral, false},
 
-	testTokenizeInvalid(t, "0X0", TokenDecimalLiteral)
-	testTokenizeInvalid(t, "0x_", TokenHexadecimalLiteral)
-	testTokenizeInvalid(t, "0x_1", TokenHexadecimalLiteral)
-	testTokenize(t, "0x1_", TokenHexadecimalLiteral)
-	testTokenize(t, "0x0__1", TokenHexadecimalLiteral)
-	testTokenize(t, "0x0_1_", TokenHexadecimalLiteral)
-	testTokenizeSeqInvalid(t, "0x_,", []TokenType{TokenHexadecimalLiteral, TokenComma}, true)
+		// Invalid letters
+		{"invalid_g", "0xg", TokenHexadecimalLiteral, true},
+		{"invalid_G", "0xG", TokenHexadecimalLiteral, true},
+		{"invalid_z", "0xz", TokenHexadecimalLiteral, true},
+		{"invalid_Z", "0xZ", TokenHexadecimalLiteral, true},
+
+		// Complex numbers
+		{"leading_zeros", "0x0000", TokenHexadecimalLiteral, false},
+		{"repeated_letters", "0xAA", TokenHexadecimalLiteral, false},
+		{"all_fs", "0xFFFF", TokenHexadecimalLiteral, false},
+		{"all_hex_digits", "0x0123456789ABCDEF", TokenHexadecimalLiteral, false},
+
+		// Underscore cases
+		{"single_group_underscore", "0x0123_4567_89AB_CDEF", TokenHexadecimalLiteral, false},
+		{"multiple_group_underscore", "0x01_23_45_67_89AB_CDE_F", TokenHexadecimalLiteral, false},
+		{"max_underscores", "0x0_1_2_3_4_5_6_7_8_9_A_B_C_D_E_F", TokenHexadecimalLiteral, false},
+		{"invalid_leading_underscore", "0x_", TokenHexadecimalLiteral, true},
+		{"invalid_underscore_after_prefix", "0x_1", TokenHexadecimalLiteral, true},
+		{"valid_trailing_underscore", "0x1_", TokenHexadecimalLiteral, false},
+		{"valid_double_underscore", "0x0__1", TokenHexadecimalLiteral, false},
+		{"valid_middle_underscore", "0x0_1_", TokenHexadecimalLiteral, false},
+
+		// Invalid prefix cases
+		{"invalid_uppercase_prefix", "0X0", TokenDecimalLiteral, true},
+		{"empty_after_prefix", "0x", TokenHexadecimalLiteral, true},
+
+		// Sequence cases
+		{"hex_then_comma", "0x1,", TokenHexadecimalLiteral, false},         // Should parse as separate tokens
+		{"underscore_then_comma", "0x1_,", TokenHexadecimalLiteral, false}, // Should parse as separate tokens
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if strings.HasSuffix(tt.input, ",") {
+				// For sequence cases, use testTokenizeSeq
+				testTokenizeSeq(t, tt.input, []TokenType{tt.wantType, TokenComma})
+			} else if tt.wantErr {
+				testTokenizeInvalid(t, tt.input, tt.wantType)
+			} else {
+				testTokenize(t, tt.input, tt.wantType)
+			}
+		})
+	}
 }
 
 func TestRawStringLiterals(t *testing.T) {
-	const empty = "``"
-	testTokenizeMultiLine(t, empty, TokenRawStringLiteral)
-	const simple = "`abc`"
-	testTokenizeMultiLine(t, simple, TokenRawStringLiteral)
-	const embeddedBacktick = "`abc``def`"
-	testTokenizeMultiLine(t, embeddedBacktick, TokenRawStringLiteral)
-	const withNewlines = "`abc\ndef\nghi`"
-	testTokenizeMultiLine(t, withNewlines, TokenRawStringLiteral)
-	const unterminatedAfterBacktick = "`abc``"
-	testTokenizeMultiLineInvalid(t, unterminatedAfterBacktick, TokenRawStringLiteral)
-	const unterminated = "`abc"
-	testTokenizeMultiLineInvalid(t, unterminated, TokenRawStringLiteral)
+	tests := []struct {
+		name     string
+		input    string
+		wantType TokenType
+		wantErr  bool
+	}{
+		// Basic cases
+		{"empty", "``", TokenRawStringLiteral, false},
+		{"simple", "`abc`", TokenRawStringLiteral, false},
+		{"spaces", "`   `", TokenRawStringLiteral, false},
+		{"tabs", "`\t\t`", TokenRawStringLiteral, false},
 
-	// Additional test cases for newline handling
-	const multiLine = "`first\nsecond\nthird`"
-	testTokenizeMultiLine(t, multiLine, TokenRawStringLiteral)
-	const multiLineUnterminated = "`first\nsecond\nthird"
-	testTokenizeMultiLineInvalid(t, multiLineUnterminated, TokenRawStringLiteral)
+		// Escaped backtick cases
+		{"embedded_backtick", "`abc``def`", TokenRawStringLiteral, false},
+		{"multiple_escaped_backticks", "`a``b``c`", TokenRawStringLiteral, false},
+		{"double_backtick", "`a``b`", TokenRawStringLiteral, false},
+		{"escaped_backtick_with_space", "`a`` b`", TokenRawStringLiteral, false},
+		{"escaped_backtick_with_newline", "`a``\nb`", TokenRawStringLiteral, false},
+
+		// Newline cases
+		{"single_newline", "`abc\ndef`", TokenRawStringLiteral, false},
+		{"multiple_newlines", "`first\nsecond\nthird`", TokenRawStringLiteral, false},
+		{"only_newlines", "`\n\n\n`", TokenRawStringLiteral, false},
+		{"newline_after_backtick", "`abc``\ndef`", TokenRawStringLiteral, false},
+		{"newline_before_backtick", "`abc\n``def`", TokenRawStringLiteral, false},
+		{"starts_with_newline", "`\nabc`", TokenRawStringLiteral, false},
+		{"ends_with_newline", "`abc\n`", TokenRawStringLiteral, false},
+
+		// Special character cases
+		{"special_chars", "`!@#$%^&*()`", TokenRawStringLiteral, false},
+		{"unicode_chars", "`αβγδε`", TokenRawStringLiteral, false},
+		{"emoji", "`🙂🌟🎉`", TokenRawStringLiteral, false},
+		{"escape_sequences_raw", "`\\n\\t\\r`", TokenRawStringLiteral, false},
+		{"quotes_in_raw", "`\"single\" and 'double'`", TokenRawStringLiteral, false},
+		{"brackets_braces", "`[{(<>)}]`", TokenRawStringLiteral, false},
+
+		// Whitespace cases
+		{"mixed_whitespace", "`space\ttab\nline`", TokenRawStringLiteral, false},
+		{"carriage_return", "`line1\rline2`", TokenRawStringLiteral, false},
+		{"all_whitespace_types", "`\n\t\r \f\v`", TokenRawStringLiteral, false},
+
+		// Invalid cases
+		{"unterminated_after_backtick", "`abc``", TokenRawStringLiteral, true},
+		{"unterminated", "`abc", TokenRawStringLiteral, true},
+		{"unterminated_with_newlines", "`first\nsecond\nthird", TokenRawStringLiteral, true},
+		{"unterminated_after_escape", "`abc``def", TokenRawStringLiteral, true},
+		{"unterminated_unicode", "`αβγ", TokenRawStringLiteral, true},
+		{"unterminated_emoji", "`🙂🌟", TokenRawStringLiteral, true},
+		{"empty_unterminated", "`", TokenRawStringLiteral, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.wantErr {
+				testTokenizeMultiLineInvalid(t, tt.input, tt.wantType)
+			} else {
+				testTokenizeMultiLine(t, tt.input, tt.wantType)
+			}
+		})
+	}
 }
 
 func TestStringLiterals(t *testing.T) {
-	testTokenize(t, `"abc"`, TokenStringLiteral)
-	testTokenize(t, `"\n\t\"\'\\\r\b\f\v\0"`, TokenStringLiteral)
-	testTokenize(t, `"\u1234"`, TokenStringLiteral)
-	testTokenize(t, `"\U12345678"`, TokenStringLiteral)
-	testTokenize(t, `"\xEF\xBB\xBF"`, TokenStringLiteral)
+	tests := []struct {
+		name     string
+		input    string
+		wantType TokenType
+		wantErr  bool
+	}{
+		// Basic cases
+		{"empty", `""`, TokenStringLiteral, false},
+		{"simple", `"abc"`, TokenStringLiteral, false},
+		{"spaces", `"   "`, TokenStringLiteral, false},
+		{"tabs", `"\t\t"`, TokenStringLiteral, false},
 
-	testTokenizeInvalid(t, `"\u"`, TokenStringLiteral)
-	testTokenizeInvalid(t, `"\u123"`, TokenStringLiteral)
-	testTokenizeInvalid(t, `"\U1234"`, TokenStringLiteral)
-	testTokenizeInvalid(t, `"\uXYZ"`, TokenStringLiteral)
-	testTokenizeInvalid(t, `"\xXYZ"`, TokenStringLiteral)
+		// Simple escape sequences
+		{"newline", `"\n"`, TokenStringLiteral, false},
+		{"tab", `"\t"`, TokenStringLiteral, false},
+		{"double_quote", `"\""`, TokenStringLiteral, false},
+		{"single_quote", `"\'"`, TokenStringLiteral, false},
+		{"backslash", `"\\"`, TokenStringLiteral, false},
+		{"carriage_return", `"\r"`, TokenStringLiteral, false},
+		{"backspace", `"\b"`, TokenStringLiteral, false},
+		{"form_feed", `"\f"`, TokenStringLiteral, false},
+		{"vertical_tab", `"\v"`, TokenStringLiteral, false},
+		{"null", `"\0"`, TokenStringLiteral, false},
+		{"all_escapes", `"\n\t\"\'\\\r\b\f\v\0"`, TokenStringLiteral, false},
+
+		// Unicode escapes
+		{"unicode_4_digit", `"\u1234"`, TokenStringLiteral, false},
+		{"unicode_8_digit", `"\U12345678"`, TokenStringLiteral, false},
+		{"unicode_max", `"\uFFFF"`, TokenStringLiteral, false},
+		{"unicode_min", `"\u0000"`, TokenStringLiteral, false},
+		{"unicode_multiple", `"\u1234\u5678"`, TokenStringLiteral, false},
+		{"unicode_mixed_case", `"\uAbCd"`, TokenStringLiteral, false},
+
+		// Hex escapes
+		{"hex_byte", `"\xEF"`, TokenStringLiteral, false},
+		{"hex_multiple", `"\xEF\xBB\xBF"`, TokenStringLiteral, false},
+		{"hex_min", `"\x00"`, TokenStringLiteral, false},
+		{"hex_max", `"\xFF"`, TokenStringLiteral, false},
+		{"hex_mixed_case", `"\xaB"`, TokenStringLiteral, false},
+
+		// Mixed content
+		{"mixed_escapes", `"Hello\n\tWorld\r\n"`, TokenStringLiteral, false},
+		{"mixed_unicode_hex", `"\u1234\xFF"`, TokenStringLiteral, false},
+		{"mixed_all", `"Hello\n\t\u1234\xFF\0World"`, TokenStringLiteral, false},
+
+		// Invalid cases - Unicode
+		{"invalid_unicode_empty", `"\u"`, TokenStringLiteral, true},
+		{"invalid_unicode_short", `"\u123"`, TokenStringLiteral, true},
+		{"invalid_unicode_long", `"\U1234"`, TokenStringLiteral, true},
+		{"invalid_unicode_letters", `"\uXYZ"`, TokenStringLiteral, true},
+		{"invalid_unicode_partial", `"\u12G4"`, TokenStringLiteral, true},
+		{"invalid_unicode_space", `"\u 123"`, TokenStringLiteral, true},
+
+		// Invalid cases - Hex
+		{"invalid_hex_empty", `"\x"`, TokenStringLiteral, true},
+		{"invalid_hex_short", `"\xF"`, TokenStringLiteral, true},
+		{"invalid_hex_letters", `"\xXY"`, TokenStringLiteral, true},
+		{"invalid_hex_space", `"\x F"`, TokenStringLiteral, true},
+
+		// Invalid cases - General
+		{"unterminated", `"abc`, TokenStringLiteral, true},
+		{"unterminated_escape", `"abc\`, TokenStringLiteral, true},
+		{"invalid_escape", `"\k"`, TokenStringLiteral, true},
+		{"invalid_escape_exclamation", `"\!"`, TokenStringLiteral, true},
+		{"bare_backslash", `"\"`, TokenStringLiteral, true},
+		{"newline_in_string", "\"abc\ndef\"", TokenStringLiteral, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.wantErr {
+				testTokenizeInvalid(t, tt.input, tt.wantType)
+			} else {
+				testTokenize(t, tt.input, tt.wantType)
+			}
+		})
+	}
 }
 
 func TestInterpolatedStringLiterals(t *testing.T) {
-	// simple, single interpolations
-	testTokenize(t, `"Hello \(name)!"`, TokenInterpolatedStringLiteral)
-	testTokenize(t, `"Hello \(123)!"`, TokenInterpolatedStringLiteral)
-	testTokenize(t, `"Hello \("Alice")!"`, TokenInterpolatedStringLiteral)
-	testTokenize(t, `"Hello \('A')!"`, TokenInterpolatedStringLiteral)
+	tests := []struct {
+		name     string
+		input    string
+		wantType TokenType
+		wantErr  bool
+	}{
+		// Basic interpolation cases
+		{"empty", `"Hello \()!"`, TokenInterpolatedStringLiteral, false},
+		{"simple_identifier", `"Hello \(name)!"`, TokenInterpolatedStringLiteral, false},
+		{"simple_number", `"Count: \(123)!"`, TokenInterpolatedStringLiteral, false},
+		{"simple_string", `"Name: \("Alice")!"`, TokenInterpolatedStringLiteral, false},
+		{"simple_char", `"Initial: \('A')!"`, TokenInterpolatedStringLiteral, false},
 
-	// slightly more complex interpolations
-	testTokenize(t, `"Hello \(name + " " + "World")!"`, TokenInterpolatedStringLiteral)
-	testTokenize(t, `"Hello \(123 + 456)!"`, TokenInterpolatedStringLiteral)
-	testTokenize(t, `"Hello \(123 + 456 + 789)!"`, TokenInterpolatedStringLiteral)
+		// Multiple interpolations
+		{"two_interpolations", `"Hello \(first) \(last)!"`, TokenInterpolatedStringLiteral, false},
+		{"three_interpolations", `"Hello \(title) \(first) \(last)!"`, TokenInterpolatedStringLiteral, false},
+		{"adjacent_interpolations", `"\(a)\(b)\(c)"`, TokenInterpolatedStringLiteral, false},
 
-	// invalid interpolations
-	testTokenizeInvalid(t, `"Hello \(name + " " + "World"`, TokenInterpolatedStringLiteral)
+		// Complex expressions
+		{"expression_concat", `"Hello \(first + " " + last)!"`, TokenInterpolatedStringLiteral, false},
+		{"expression_math", `"Sum: \(a + b + c)!"`, TokenInterpolatedStringLiteral, false},
+		{"expression_nested_parens", `"Result: \((a + b) * (c + d))!"`, TokenInterpolatedStringLiteral, false},
+		{"expression_function_call", `"Length: \(string.len(name))!"`, TokenInterpolatedStringLiteral, false},
 
-	// multiple interpolations
-	testTokenize(t, `"Hello \(name), age \(age)!"`, TokenInterpolatedStringLiteral)
-	testTokenize(t, `"Hello \(name), age \(age), from \(city)!"`, TokenInterpolatedStringLiteral)
-	testTokenize(t, `"Hello \(name), age \(age), from \(city), in \(country)!"`, TokenInterpolatedStringLiteral)
+		// Escapes and special characters
+		{"escaped_quotes", `"Quote: \("\"nested\"")"`, TokenInterpolatedStringLiteral, false},
+		{"escaped_backslash", `"Path: \("C:\\Program Files")"`, TokenInterpolatedStringLiteral, false},
+		{"newline_escape", `"Lines: \("first\nsecond")"`, TokenInterpolatedStringLiteral, false},
+		{"mixed_escapes", `"Mixed: \("tab\t\"quote\"\nline")"`, TokenInterpolatedStringLiteral, false},
 
-	// non-symbolic parentheses
-	testTokenize(t, `"Welcome \(opponent1) )))---((( \(opponent2)"`, TokenInterpolatedStringLiteral)
+		// Non-interpolation parentheses
+		{"non_interpolation_parens", `"Welcome \(opponent1) )))---((( \(opponent2)"`, TokenInterpolatedStringLiteral, false},
 
-	const source1 = `greeting = "Hello, \(name)!"`
-	testTokenizeSeq(t, source1, []TokenType{
-		TokenIdentifier,                // greeting
-		TokenOpEqual,                   // =
-		TokenInterpolatedStringLiteral, // Hello, \(name)!
-		TokenEOF,
-	})
+		// Invalid cases
+		{"unterminated_string", `"Hello \(name`, TokenInterpolatedStringLiteral, true},
+		{"unterminated_interpolation", `"Hello \(name"`, TokenInterpolatedStringLiteral, true},
+		{"unmatched_parens", `"Hello \((name)!"`, TokenInterpolatedStringLiteral, true},
+		{"raw_newline", `"Hello \(name)`, TokenInterpolatedStringLiteral, true},
+		{"nested_string_newline", `"Hello \("name`, TokenInterpolatedStringLiteral, true},
+	}
 
-	// nested interpolations
-	testTokenize(t, `"Hello \(name + " [\(age)]")"`, TokenInterpolatedStringLiteral)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.wantErr {
+				testTokenizeInvalid(t, tt.input, tt.wantType)
+			} else {
+				testTokenize(t, tt.input, tt.wantType)
+			}
+		})
+	}
 }
 
 func TestMultiLineStringLiteral(t *testing.T) {
-	// Basic multi-line string
-	const source1 = "```\nSome text\n```"
-	testTokenizeMultiLine(t, source1, TokenMultiLineStringLiteral)
+	tests := []struct {
+		name     string
+		input    string
+		wantType TokenType
+		wantErr  bool
+	}{
+		// Basic cases
+		// {"empty_string", "```\n\n```", TokenMultiLineStringLiteral, false},
+		{"simple_text", "```\nSome text\n```", TokenMultiLineStringLiteral, false},
+		{"with_processor", "```processor\nSome text\n```", TokenMultiLineStringLiteral, false},
+		{"consistent_indentation", "```\n  First line\n  Second line\n  ```", TokenMultiLineStringLiteral, false},
 
-	// Multi-line string with function call context
-	const source2 = "```processor\nSome text\n```"
-	testTokenizeMultiLine(t, source2, TokenMultiLineStringLiteral)
+		// Escape sequences and special characters
+		{"escape_sequences", "```\nSpecial: \\n\\t\\\"\\'\n```", TokenMultiLineStringLiteral, false},
+		{"interpolation", "```\nHello \\(name)!\n```", TokenMultiLineStringLiteral, false},
+		{"byte_escapes", "```\nByte: \\x48\\x69\n```", TokenMultiLineStringLiteral, false},
+		{"unicode_escapes", "```\nUnicode: \\u2603 \\U0001F680\n```", TokenMultiLineStringLiteral, false},
+		{"mixed_escapes", "```\nMixed: \\n\\t\\x48\\u2603\n```", TokenMultiLineStringLiteral, false},
 
-	// Multi-line string with escape sequences and interpolation
-	const source3 = "```\nHello \\(name)!\nSpecial: \\n\\t\\\"\\'\n```"
-	testTokenizeMultiLine(t, source3, TokenMultiLineStringLiteral)
+		// Invalid cases
+		{"unclosed_string", "```\nUnclosed string", TokenMultiLineStringLiteral, true},
+		{"missing_newline_after_open", "```Some text\n```", TokenMultiLineStringLiteral, true},
+		{"missing_newline_before_close", "```\nSome text```", TokenMultiLineStringLiteral, true},
+		{"invalid_escape", "```\nInvalid escape: \\z\n```", TokenMultiLineStringLiteral, true},
+		{"incomplete_unicode", "```\nBad unicode: \\u26\n```", TokenMultiLineStringLiteral, true},
+		{"unterminated_interpolation", "```\nUnterminated: \\(expr\n```", TokenMultiLineStringLiteral, true},
+	}
 
-	// Multi-line string with consistent indentation
-	const source4 = "```\n  First line\n  Second line\n  ```"
-	testTokenizeMultiLine(t, source4, TokenMultiLineStringLiteral)
-
-	// Multi-line string with byte and unicode escapes
-	const source5 = "```\nByte: \\x48\\x69\nUnicode: \\u2603 \\U0001F680\n```"
-	testTokenizeMultiLine(t, source5, TokenMultiLineStringLiteral)
-
-	// Invalid: missing closing sequence
-	const invalid1 = "```\nUnclosed string"
-	testTokenizeMultiLineInvalid(t, invalid1, TokenMultiLineStringLiteral)
-
-	// Invalid: missing newline after opening
-	const invalid2 = "```Some text\n```"
-	testTokenizeMultiLineInvalid(t, invalid2, TokenMultiLineStringLiteral)
-
-	// Invalid: missing newline before closing
-	const invalid3 = "```\nSome text```"
-	testTokenizeMultiLineInvalid(t, invalid3, TokenMultiLineStringLiteral)
-
-	// Invalid: invalid escape sequence
-	const invalid4 = "```\nInvalid escape: \\z\n```"
-	testTokenizeMultiLineInvalid(t, invalid4, TokenMultiLineStringLiteral)
-
-	// Invalid: incomplete unicode escape
-	const invalid5 = "```\nBad unicode: \\u26\n```"
-	testTokenizeMultiLineInvalid(t, invalid5, TokenMultiLineStringLiteral)
-
-	// Invalid: unterminated interpolation
-	const invalid6 = "```\nUnterminated: \\(expr\n```"
-	testTokenizeMultiLineInvalid(t, invalid6, TokenMultiLineStringLiteral)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.wantErr {
+				testTokenizeMultiLineInvalid(t, tt.input, tt.wantType)
+			} else {
+				testTokenizeMultiLine(t, tt.input, tt.wantType)
+			}
+		})
+	}
 }
 
 func TestUnion(t *testing.T) {
@@ -700,45 +966,74 @@ func TestRestOp(t *testing.T) {
 }
 
 func TestSymbolLiterals(t *testing.T) {
-	testTokenize(t, ":A", TokenSymbolLiteral)
-	testTokenize(t, ":Z", TokenSymbolLiteral)
-	testTokenize(t, ":a", TokenSymbolLiteral)
-	testTokenize(t, ":z", TokenSymbolLiteral)
-	testTokenize(t, ":ABCDEFGHIJKLMNOPQRSTUVWXYZ", TokenSymbolLiteral)
-	testTokenize(t, ":abcdefghijklmnopqrstuvwxyz", TokenSymbolLiteral)
+	tests := []struct {
+		name     string
+		input    string
+		wantType TokenType
+		wantErr  bool
+		isSeq    bool
+		seqTypes []TokenType
+	}{
+		// Valid simple symbol literals
+		{"uppercase_A", ":A", TokenSymbolLiteral, false, false, nil},
+		{"uppercase_Z", ":Z", TokenSymbolLiteral, false, false, nil},
+		{"lowercase_a", ":a", TokenSymbolLiteral, false, false, nil},
+		{"lowercase_z", ":z", TokenSymbolLiteral, false, false, nil},
+		{"all_uppercase", ":ABCDEFGHIJKLMNOPQRSTUVWXYZ", TokenSymbolLiteral, false, false, nil},
+		{"all_lowercase", ":abcdefghijklmnopqrstuvwxyz", TokenSymbolLiteral, false, false, nil},
 
-	testTokenize(t, `:"anything but a newline"`, TokenSymbolLiteral)
+		// Valid quoted symbol literal
+		{"quoted_symbol", `:"anything but a newline"`, TokenSymbolLiteral, false, false, nil},
 
-	testTokenizeInvalid(t, ":0", TokenSymbolLiteral)
-	testTokenizeInvalid(t, ":1", TokenSymbolLiteral)
-	testTokenizeInvalid(t, ":9", TokenSymbolLiteral)
-	testTokenizeInvalid(t, `:"this symbol does not end`, TokenSymbolLiteral)
-	testTokenizeInvalid(t, ":\"no\nnewlines!", TokenSymbolLiteral)
+		// Invalid symbol literals
+		{"invalid_digit_0", ":0", TokenSymbolLiteral, true, false, nil},
+		{"invalid_digit_1", ":1", TokenSymbolLiteral, true, false, nil},
+		{"invalid_digit_9", ":9", TokenSymbolLiteral, true, false, nil},
+		{"unterminated_quoted", `:"this symbol does not end`, TokenSymbolLiteral, true, false, nil},
+		{"newline_in_quoted", ":\"no\nnewlines!", TokenSymbolLiteral, true, false, nil},
 
-	const source1 = "foo = :foo"
-	testTokenizeSeq(t, source1, []TokenType{
-		TokenIdentifier,    // foo
-		TokenOpEqual,       // :
-		TokenSymbolLiteral, // :foo
-		TokenEOF,
-	})
+		// Symbol in sequence
+		{"symbol_in_assignment", "foo = :foo", TokenSymbolLiteral, false, true, []TokenType{
+			TokenIdentifier,    // foo
+			TokenOpEqual,       // =
+			TokenSymbolLiteral, // :foo
+			TokenEOF,
+		}},
 
-	const source2 = `:foo == Symbol("foo")`
-	testTokenizeSeq(t, source2, []TokenType{
-		TokenSymbolLiteral,  // :foo
-		TokenOpEqualEqual,   // ==
-		TokenTypeIdentifier, // Symbol
-		TokenOpenParen,      // (
-		TokenStringLiteral,  // "foo"
-		TokenCloseParen,     // )
-		TokenEOF,
-	})
+		{"symbol_in_comparison", `:foo == Symbol("foo")`, TokenSymbolLiteral, false, true, []TokenType{
+			TokenSymbolLiteral,  // :foo
+			TokenOpEqualEqual,   // ==
+			TokenTypeIdentifier, // Symbol
+			TokenOpenParen,      // (
+			TokenStringLiteral,  // "foo"
+			TokenCloseParen,     // )
+			TokenEOF,
+		}},
 
-	const source3 = `foo = :"foo`
-	testTokenizeSeqInvalid(t, source3, []TokenType{
-		TokenIdentifier,    // foo
-		TokenOpEqual,       // :
-		TokenSymbolLiteral, // :"foo
-		TokenEOF,
-	}, true)
+		// Invalid symbol in sequence
+		{"invalid_symbol_in_seq", `foo = :"foo`, TokenSymbolLiteral, true, true, []TokenType{
+			TokenIdentifier,    // foo
+			TokenOpEqual,       // =
+			TokenSymbolLiteral, // :"foo
+			TokenEOF,
+		}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.isSeq {
+				if tt.wantErr {
+					testTokenizeSeqInvalid(t, tt.input, tt.seqTypes, true)
+				} else {
+					testTokenizeSeq(t, tt.input, tt.seqTypes)
+				}
+			} else {
+				if tt.wantErr {
+					testTokenizeInvalid(t, tt.input, tt.wantType)
+				} else {
+					testTokenize(t, tt.input, tt.wantType)
+				}
+			}
+		})
+	}
 }
