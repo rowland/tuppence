@@ -782,7 +782,7 @@ func TestMultiLineStringLiteral(t *testing.T) {
 		wantErr  bool
 	}{
 		// Basic cases
-		// {"empty_string", "```\n\n```", TokenMultiLineStringLiteral, false},
+		{"empty_string", "```\n\n```", TokenMultiLineStringLiteral, false},
 		{"simple_text", "```\nSome text\n```", TokenMultiLineStringLiteral, false},
 		{"with_processor", "```processor\nSome text\n```", TokenMultiLineStringLiteral, false},
 		{"consistent_indentation", "```\n  First line\n  Second line\n  ```", TokenMultiLineStringLiteral, false},
