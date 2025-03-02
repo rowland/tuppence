@@ -38,10 +38,17 @@ func GetReserved(word string) (TokenType, bool) {
 
 // Token represents a lexical token.
 type Token struct {
-	Type     TokenType
-	Invalid  bool
-	Line     int
-	Column   int
-	Value    string
-	Filename string
+	Type    TokenType
+	Invalid bool
+	Value   string
+	File    *Source
+	Offset  int
+}
+
+func (t *Token) Line() int {
+	return t.File.Line(t.Offset)
+}
+
+func (t *Token) Column() int {
+	return t.File.Column(t.Offset)
 }

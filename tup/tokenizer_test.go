@@ -27,12 +27,12 @@ func testTokenizeSeq(t *testing.T, source string, expected []TokenType) {
 	lastNewline := strings.LastIndexByte(source, '\n')
 	var expectedCol int
 	if lastNewline < 0 {
-		expectedCol = len(source) + 1
+		expectedCol = len(source)
 	} else {
-		expectedCol = len(source) - lastNewline
+		expectedCol = len(source) - (lastNewline + 1)
 	}
-	if lastToken.Column != expectedCol {
-		t.Errorf("Expected column %d, got %d", expectedCol, lastToken.Column)
+	if lastToken.Column() != expectedCol {
+		t.Errorf("Expected column %d, got %d", expectedCol, lastToken.Column())
 	}
 }
 
@@ -66,14 +66,14 @@ func testTokenizeInvalid(t *testing.T, source string, expectedType TokenType) {
 	// For invalid tokens, we need to find where the token became invalid
 	var expectedCol int
 	if lastNewline < 0 {
-		expectedCol = len(source) + 1
+		expectedCol = len(source)
 	} else {
 		// For invalid tokens that contain a newline, the column should be
 		// the length up to the newline
-		expectedCol = lastNewline + 1
+		expectedCol = lastNewline
 	}
-	if nextToken.Column != expectedCol {
-		t.Errorf("Expected column %d, got %d", expectedCol, nextToken.Column)
+	if nextToken.Column() != expectedCol {
+		t.Errorf("Expected column %d, got %d", expectedCol, nextToken.Column())
 	}
 }
 
@@ -100,12 +100,12 @@ func testTokenizeSeqInvalid(t *testing.T, source string, expected []TokenType, i
 	lastNewline := strings.LastIndexByte(source, '\n')
 	var expectedCol int
 	if lastNewline < 0 {
-		expectedCol = len(source) + 1
+		expectedCol = len(source)
 	} else {
 		expectedCol = len(source) - lastNewline
 	}
-	if lastToken.Column != expectedCol {
-		t.Errorf("Expected column %d, got %d", expectedCol, lastToken.Column)
+	if lastToken.Column() != expectedCol {
+		t.Errorf("Expected column %d, got %d", expectedCol, lastToken.Column())
 	}
 }
 
@@ -131,12 +131,12 @@ func testTokenize(t *testing.T, source string, expectedType TokenType) {
 	lastNewline := strings.LastIndexByte(source, '\n')
 	var expectedCol int
 	if lastNewline < 0 {
-		expectedCol = len(source) + 1
+		expectedCol = len(source)
 	} else {
 		expectedCol = len(source) - lastNewline
 	}
-	if lastToken.Column != expectedCol {
-		t.Errorf("Expected column %d, got %d", expectedCol, lastToken.Column)
+	if lastToken.Column() != expectedCol {
+		t.Errorf("Expected column %d, got %d", expectedCol, lastToken.Column())
 	}
 }
 
@@ -163,12 +163,12 @@ func testTokenizeMultiLine(t *testing.T, source string, expectedType TokenType) 
 	lastNewline := strings.LastIndexByte(source, '\n')
 	var expectedCol int
 	if lastNewline < 0 {
-		expectedCol = len(source) + 1
+		expectedCol = len(source)
 	} else {
-		expectedCol = len(source) - lastNewline
+		expectedCol = len(source) - (lastNewline + 1)
 	}
-	if lastToken.Column != expectedCol {
-		t.Errorf("Expected column %d, got %d", expectedCol, lastToken.Column)
+	if lastToken.Column() != expectedCol {
+		t.Errorf("Expected column %d, got %d", expectedCol, lastToken.Column())
 	}
 }
 
