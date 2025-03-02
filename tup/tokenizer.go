@@ -613,6 +613,9 @@ outer:
 				}
 			case c == '"':
 				done = true
+			case c == '\n':
+				invalid = true
+				break outer
 			default:
 				// Just continue consuming characters in the string
 			}
