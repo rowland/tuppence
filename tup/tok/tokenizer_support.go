@@ -33,6 +33,11 @@ func isIdentifierStart(c byte) bool {
 	return isLetter(c) || c == '_'
 }
 
+// isIdentifierChar returns true if c is a letter, digit, or underscore
+func isIdentifierChar(c byte) bool {
+	return isLetter(c) || isDecDigit(c) || c == '_'
+}
+
 // isInvNumLetter returns true if c is a letter that would make a number invalid
 // This excludes 'b', 'o', and 'x' which are handled separately as valid number prefixes
 func isInvNumLetter(c byte) bool {

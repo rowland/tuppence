@@ -977,6 +977,8 @@ func TestSymbolLiterals(t *testing.T) {
 		{"lowercase_z", ":z", TokSymLit, false, false, nil},
 		{"all_uppercase", ":ABCDEFGHIJKLMNOPQRSTUVWXYZ", TokSymLit, false, false, nil},
 		{"all_lowercase", ":abcdefghijklmnopqrstuvwxyz", TokSymLit, false, false, nil},
+		{"letters and digits", ":a100", TokSymLit, false, false, nil},
+		{"letters and digits and underscore", ":a100_", TokSymLit, false, false, nil},
 
 		// Valid quoted symbol literal
 		{"quoted_symbol", `:"anything but a newline"`, TokSymLit, false, false, nil},

@@ -381,7 +381,7 @@ outer:
 			}
 		case stateSym:
 			switch {
-			case isIdentifierStart(c):
+			case isIdentifierChar(c):
 				// continue symbol
 			default:
 				break outer
