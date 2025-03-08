@@ -5,124 +5,124 @@ type TokenType int
 
 const (
 	// Symbols
-	TokenAt           TokenType = iota // @
-	TokenCloseBrace                    // }
-	TokenCloseBracket                  // ]
-	TokenCloseParen                    // )
-	TokenColon                         // :
-	TokenComma                         // ,
-	TokenDot                           // .
-	TokenOpenBrace                     // {
-	TokenOpenBracket                   // [
-	TokenOpenParen                     // (
-	TokenQuestionMark                  // ?
-	TokenSemiColon                     // ;
+	TokAt           TokenType = iota // @
+	TokCloseBrace                    // }
+	TokCloseBracket                  // ]
+	TokCloseParen                    // )
+	TokColon                         // :
+	TokComma                         // ,
+	TokDot                           // .
+	TokOpenBrace                     // {
+	TokOpenBracket                   // [
+	TokOpenParen                     // (
+	TokQuestionMark                  // ?
+	TokSemiColon                     // ;
 
 	// Operators
-	TokenOpCheckedAdd // ?+
-	TokenOpCheckedDiv // ?/
-	TokenOpCheckedMod // ?%
-	TokenOpCheckedMul // ?*
-	TokenOpCheckedSub // ?-
+	TokOpCheckedAdd // ?+
+	TokOpCheckedDiv // ?/
+	TokOpCheckedMod // ?%
+	TokOpCheckedMul // ?*
+	TokOpCheckedSub // ?-
 
-	TokenOpDiv        // /
-	TokenOpMinus      // -
-	TokenOpMod        // %
-	TokenOpMul        // *
-	TokenOpNot        // !
-	TokenOpPlus       // +
-	TokenOpPow        // ^
-	TokenOpShiftLeft  // <<
-	TokenOpShiftRight // >>
+	TokOpDiv        // /
+	TokOpMinus      // -
+	TokOpMod        // %
+	TokOpMul        // *
+	TokOpNot        // !
+	TokOpPlus       // +
+	TokOpPow        // ^
+	TokOpShiftLeft  // <<
+	TokOpShiftRight // >>
 
 	// Bitwise Operators
-	TokenOpBitwiseAnd // &
-	TokenOpBitwiseOr  // |
-	TokenOpBitwiseNot // ~
+	TokOpBitwiseAnd // &
+	TokOpBitwiseOr  // |
+	TokOpBitwiseNot // ~
 
 	// Relational Operators
-	TokenOpEqualEqual   // ==
-	TokenOpGreaterEqual // >=
-	TokenOpGreaterThan  // >
-	TokenOpLessEqual    // <=
-	TokenOpLessThan     // <
-	TokenOpNotEqual     // !=
-	TokenOpMatches      // =~
-	TokenOpCompareTo    //<=>
+	TokOpEqual        // ==
+	TokOpGreaterEqual // >=
+	TokOpGreaterThan  // >
+	TokOpLessEqual    // <=
+	TokOpLessThan     // <
+	TokOpNotEqual     // !=
+	TokOpMatches      // =~
+	TokOpCompareTo    //<=>
 
 	// Logical Operators
-	TokenOpLogicalAnd // &&
-	TokenOpLogicalOr  // ||
+	TokOpLogicalAnd // &&
+	TokOpLogicalOr  // ||
 
 	// Range and Rest Operators
-	TokenOpRange
-	TokenOpRest
+	TokOpRange
+	TokOpRest
 
 	// Assignment
-	TokenOpBitwiseAndEqual // &=
-	TokenOpBitwiseOrEqual  // |=
-	TokenOpDivEqual        // /=
-	TokenOpEqual           // =
-	TokenOpLogicalAndEqual // &&=
-	TokenOpLogicalOrEqual  // ||=
-	TokenOpMinusEqual      // -=
-	TokenOpModEqual        // %=
-	TokenOpMulEqual        // *=
-	TokenOpPlusEqual       // +=
-	TokenOpPowEqual        // ^=
-	TokenOpShiftLeftEqual  // <<=
-	TokenOpShiftRightEqual // >>=
+	TokOpBitwiseAndEqual // &=
+	TokOpBitwiseOrEqual  // |=
+	TokOpDivEqual        // /=
+	TokOpAssign          // =
+	TokOpLogicalAndEqual // &&=
+	TokOpLogicalOrEqual  // ||=
+	TokOpMinusEqual      // -=
+	TokOpModEqual        // %=
+	TokOpMulEqual        // *=
+	TokOpPlusEqual       // +=
+	TokOpPowEqual        // ^=
+	TokOpShiftLeftEqual  // <<=
+	TokOpShiftRightEqual // >>=
 
 	// Identifiers
-	TokenIdentifier     // id
-	TokenTypeIdentifier // ID
+	TokIdentifier     // id
+	TokTypeIdentifier // ID
 
 	// Keywords
-	TokenKeywordArray       // array
-	TokenKeywordBreak       // break
-	TokenKeywordContinue    // continue
-	TokenKeywordContract    // contract
-	TokenKeywordElse        // else
-	TokenKeywordEnum        // enum
-	TokenKeywordError       // error
-	TokenKeywordFn          // fn
-	TokenKeywordFx          // fx
-	TokenKeywordFor         // for
-	TokenKeywordIf          // if
-	TokenKeywordIn          // in
-	TokenKeywordIt          // it
-	TokenKeywordImport      // import
-	TokenKeywordMut         // mut
-	TokenKeywordReturn      // return
-	TokenKeywordSwitch      // switch
-	TokenKeywordTry         // try
-	TokenKeywordTryBreak    // try_break
-	TokenKeywordTryContinue // try_continue
-	TokenKeywordType        // type
-	TokenKeywordTypeof      // typeof
-	TokenKeywordUnion       // union
+	TokKeywordArray       // array
+	TokKeywordBreak       // break
+	TokKeywordContinue    // continue
+	TokKeywordContract    // contract
+	TokKeywordElse        // else
+	TokKeywordEnum        // enum
+	TokKeywordError       // error
+	TokKeywordFn          // fn
+	TokKeywordFx          // fx
+	TokKeywordFor         // for
+	TokKeywordIf          // if
+	TokKeywordIn          // in
+	TokKeywordIt          // it
+	TokKeywordImport      // import
+	TokKeywordMut         // mut
+	TokKeywordReturn      // return
+	TokKeywordSwitch      // switch
+	TokKeywordTry         // try
+	TokKeywordTryBreak    // try_break
+	TokKeywordTryContinue // try_continue
+	TokKeywordType        // type
+	TokKeywordTypeof      // typeof
+	TokKeywordUnion       // union
 
 	// Literals
-	TokenBinaryLiteral             // 10101010
-	TokenBooleanLiteral            // false
-	TokenCharacterLiteral          // 'A'
-	TokenDecimalLiteral            // 1234567890
-	TokenFloatLiteral              // 123.456
-	TokenHexadecimalLiteral        // 0xDEADBEEF
-	TokenInterpolatedStringLiteral // "a\(b)c"
-	TokenOctalLiteral              // 0o777
-	TokenRawStringLiteral          // `\no\escapes`
-	TokenStringLiteral             // "Hello, World"
-	TokenMultiLineStringLiteral    // ```\nHello, World\n```
-	TokenSymbolLiteral             // :ok
+	TokBinaryLit          // 10101010
+	TokBoolLit            // false
+	TokRuneLit            // 'A'
+	TokDecimalLit         // 1234567890
+	TokFloatLit           // 123.456
+	TokHexLit             // 0xDEADBEEF
+	TokInterpStringLit    // "a\(b)c"
+	TokOctalLit           // 0o777
+	TokRawStringLit       // `\no\escapes`
+	TokStringLit          // "Hello, World"
+	TokMultiLineStringLit // ```\nHello, World\n```
+	TokSymbolLit          // :ok
 
 	// Comments
-	TokenComment // #
+	TokComment // #
 
 	// Special tokens
-	TokenEOL
-	TokenEOF
-	TokenInvalid
+	TokEOL
+	TokEOF
+	TokInvalid
 )
 
 func (t TokenType) String() string {
@@ -131,122 +131,122 @@ func (t TokenType) String() string {
 
 var TokenTypes = map[TokenType]string{
 	// Symbols
-	TokenAt:           "@",
-	TokenCloseBrace:   "}",
-	TokenCloseBracket: "]",
-	TokenCloseParen:   ")",
-	TokenColon:        ":",
-	TokenComma:        ",",
-	TokenDot:          ".",
-	TokenOpenBrace:    "{",
-	TokenOpenBracket:  "[",
-	TokenOpenParen:    "(",
-	TokenQuestionMark: "?",
-	TokenSemiColon:    ";",
+	TokAt:           "@",
+	TokCloseBrace:   "}",
+	TokCloseBracket: "]",
+	TokCloseParen:   ")",
+	TokColon:        ":",
+	TokComma:        ",",
+	TokDot:          ".",
+	TokOpenBrace:    "{",
+	TokOpenBracket:  "[",
+	TokOpenParen:    "(",
+	TokQuestionMark: "?",
+	TokSemiColon:    ";",
 
 	// Operators
-	TokenOpCheckedAdd: "?+",
-	TokenOpCheckedDiv: "?/",
-	TokenOpCheckedMod: "?%",
-	TokenOpCheckedMul: "?*",
-	TokenOpCheckedSub: "?-",
+	TokOpCheckedAdd: "?+",
+	TokOpCheckedDiv: "?/",
+	TokOpCheckedMod: "?%",
+	TokOpCheckedMul: "?*",
+	TokOpCheckedSub: "?-",
 
-	TokenOpDiv:        "/",
-	TokenOpMinus:      "-",
-	TokenOpMod:        "%",
-	TokenOpMul:        "*",
-	TokenOpNot:        "!",
-	TokenOpPlus:       "+",
-	TokenOpPow:        "^",
-	TokenOpShiftLeft:  "<",
-	TokenOpShiftRight: ">",
+	TokOpDiv:        "/",
+	TokOpMinus:      "-",
+	TokOpMod:        "%",
+	TokOpMul:        "*",
+	TokOpNot:        "!",
+	TokOpPlus:       "+",
+	TokOpPow:        "^",
+	TokOpShiftLeft:  "<",
+	TokOpShiftRight: ">",
 
 	// Bitwise Operators
-	TokenOpBitwiseAnd: "&",
-	TokenOpBitwiseOr:  "|",
-	TokenOpBitwiseNot: "~",
+	TokOpBitwiseAnd: "&",
+	TokOpBitwiseOr:  "|",
+	TokOpBitwiseNot: "~",
 
 	// Relational Operators
-	TokenOpEqualEqual:   "==",
-	TokenOpGreaterEqual: ">=",
-	TokenOpGreaterThan:  ">",
-	TokenOpLessEqual:    "<=",
-	TokenOpLessThan:     "<",
-	TokenOpNotEqual:     "!=",
-	TokenOpMatches:      "=~",
-	TokenOpCompareTo:    "<=>",
+	TokOpEqual:        "==",
+	TokOpGreaterEqual: ">=",
+	TokOpGreaterThan:  ">",
+	TokOpLessEqual:    "<=",
+	TokOpLessThan:     "<",
+	TokOpNotEqual:     "!=",
+	TokOpMatches:      "=~",
+	TokOpCompareTo:    "<=>",
 
 	// Logical Operators
-	TokenOpLogicalAnd: "&&",
-	TokenOpLogicalOr:  "||",
+	TokOpLogicalAnd: "&&",
+	TokOpLogicalOr:  "||",
 
 	// Range and Rest Operators
-	TokenOpRange: "..",
-	TokenOpRest:  "...",
+	TokOpRange: "..",
+	TokOpRest:  "...",
 
 	// Assignment
-	TokenOpBitwiseAndEqual: "&=",
-	TokenOpBitwiseOrEqual:  "|=",
-	TokenOpDivEqual:        "/=",
-	TokenOpEqual:           "=",
-	TokenOpLogicalAndEqual: "&&=",
-	TokenOpLogicalOrEqual:  "||=",
-	TokenOpMinusEqual:      "-=",
-	TokenOpModEqual:        "%=",
-	TokenOpMulEqual:        "*=",
-	TokenOpPlusEqual:       "+=",
-	TokenOpPowEqual:        "^=",
-	TokenOpShiftLeftEqual:  "<<=",
-	TokenOpShiftRightEqual: ">>=",
+	TokOpBitwiseAndEqual: "&=",
+	TokOpBitwiseOrEqual:  "|=",
+	TokOpDivEqual:        "/=",
+	TokOpAssign:          "=",
+	TokOpLogicalAndEqual: "&&=",
+	TokOpLogicalOrEqual:  "||=",
+	TokOpMinusEqual:      "-=",
+	TokOpModEqual:        "%=",
+	TokOpMulEqual:        "*=",
+	TokOpPlusEqual:       "+=",
+	TokOpPowEqual:        "^=",
+	TokOpShiftLeftEqual:  "<<=",
+	TokOpShiftRightEqual: ">>=",
 
 	// Identifiers
-	TokenIdentifier:     "identifier",
-	TokenTypeIdentifier: "TypeIdentifier",
+	TokIdentifier:     "identifier",
+	TokTypeIdentifier: "type_identifier",
 
 	// Keywords
-	TokenKeywordArray:       "array",
-	TokenKeywordBreak:       "break",
-	TokenKeywordContinue:    "continue",
-	TokenKeywordContract:    "contract",
-	TokenKeywordElse:        "else",
-	TokenKeywordEnum:        "enum",
-	TokenKeywordError:       "error",
-	TokenKeywordFn:          "fn",
-	TokenKeywordFx:          "fx",
-	TokenKeywordFor:         "for",
-	TokenKeywordIf:          "if",
-	TokenKeywordIn:          "in",
-	TokenKeywordIt:          "it",
-	TokenKeywordImport:      "import",
-	TokenKeywordMut:         "mut",
-	TokenKeywordReturn:      "return",
-	TokenKeywordSwitch:      "switch",
-	TokenKeywordTry:         "try",
-	TokenKeywordTryBreak:    "try_break",
-	TokenKeywordTryContinue: "try_continue",
-	TokenKeywordType:        "type",
-	TokenKeywordTypeof:      "typeof",
-	TokenKeywordUnion:       "union",
+	TokKeywordArray:       "array",
+	TokKeywordBreak:       "break",
+	TokKeywordContinue:    "continue",
+	TokKeywordContract:    "contract",
+	TokKeywordElse:        "else",
+	TokKeywordEnum:        "enum",
+	TokKeywordError:       "error",
+	TokKeywordFn:          "fn",
+	TokKeywordFx:          "fx",
+	TokKeywordFor:         "for",
+	TokKeywordIf:          "if",
+	TokKeywordIn:          "in",
+	TokKeywordIt:          "it",
+	TokKeywordImport:      "import",
+	TokKeywordMut:         "mut",
+	TokKeywordReturn:      "return",
+	TokKeywordSwitch:      "switch",
+	TokKeywordTry:         "try",
+	TokKeywordTryBreak:    "try_break",
+	TokKeywordTryContinue: "try_continue",
+	TokKeywordType:        "type",
+	TokKeywordTypeof:      "typeof",
+	TokKeywordUnion:       "union",
 
 	// Literals
-	TokenBinaryLiteral:             "binary_literal",
-	TokenBooleanLiteral:            "boolean_literal",
-	TokenCharacterLiteral:          "character_literal",
-	TokenDecimalLiteral:            "decimal_literal",
-	TokenFloatLiteral:              "float_literal",
-	TokenHexadecimalLiteral:        "hexadecimal_literal",
-	TokenInterpolatedStringLiteral: "interpolated_string_literal",
-	TokenOctalLiteral:              "octal_literal",
-	TokenRawStringLiteral:          "raw_string_literal",
-	TokenStringLiteral:             "string_literal",
-	TokenMultiLineStringLiteral:    "multi-line_string_literal",
-	TokenSymbolLiteral:             "symbol_literal",
+	TokBinaryLit:          "binary_literal",
+	TokBoolLit:            "bool_literal",
+	TokRuneLit:            "rune_literal",
+	TokDecimalLit:         "decimal_literal",
+	TokFloatLit:           "float_literal",
+	TokHexLit:             "hex_literal",
+	TokInterpStringLit:    "interp_string_literal",
+	TokOctalLit:           "octal_literal",
+	TokRawStringLit:       "raw_string_literal",
+	TokStringLit:          "string_literal",
+	TokMultiLineStringLit: "multi_line_string_literal",
+	TokSymbolLit:          "symbol_literal",
 
 	// Comments
-	TokenComment: "comment",
+	TokComment: "comment",
 
 	// Special tokens
-	TokenEOL:     "EOL",
-	TokenEOF:     "EOF",
-	TokenInvalid: "invalid",
+	TokEOL:     "EOL",
+	TokEOF:     "EOF",
+	TokInvalid: "invalid",
 }

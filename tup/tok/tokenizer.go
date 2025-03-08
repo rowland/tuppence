@@ -87,7 +87,7 @@ func Tokenize(source []byte, filename string) ([]Token, error) {
 	for {
 		token := tokenizer.Next()
 		tokens = append(tokens, token)
-		if token.Type == TokenEOF {
+		if token.Type == TokEOF {
 			break
 		}
 	}
@@ -98,7 +98,7 @@ func Tokenize(source []byte, filename string) ([]Token, error) {
 func (t *Tokenizer) Next() Token {
 	st := stateStart
 	start := t.index
-	tokenType := TokenEOF
+	tokenType := TokEOF
 	invalid := false
 	escapeDigits := 0
 	escapeDigitsExpected := 0
@@ -117,208 +117,208 @@ outer:
 			switch c {
 			case 0:
 				if t.index != len(t.source) {
-					tokenType = TokenInvalid
+					tokenType = TokInvalid
 				}
 				break outer
 			case ' ', '\t', '\r':
 				start = t.index + 1
 			case '\n':
-				tokenType = TokenEOL
+				tokenType = TokEOL
 				done = true
 			case '@':
-				tokenType = TokenAt
+				tokenType = TokAt
 				done = true
 			case '}':
-				tokenType = TokenCloseBrace
+				tokenType = TokCloseBrace
 				done = true
 			case ']':
-				tokenType = TokenCloseBracket
+				tokenType = TokCloseBracket
 				done = true
 			case ')':
-				tokenType = TokenCloseParen
+				tokenType = TokCloseParen
 				done = true
 			case ':':
-				tokenType = TokenColon
+				tokenType = TokColon
 				st = stateColon
 			case ',':
-				tokenType = TokenComma
+				tokenType = TokComma
 				done = true
 			case '.':
 				// Check 3-character operators first
 				if t.peek(3) == "..." {
-					tokenType = TokenOpRest
+					tokenType = TokOpRest
 					t.index += 2
 				} else if t.peek(2) == ".." {
 					// Then 2-character operators
-					tokenType = TokenOpRange
+					tokenType = TokOpRange
 					t.index++
 				} else {
 					// Finally, single character operator
-					tokenType = TokenDot
+					tokenType = TokDot
 				}
 				done = true
 			case '{':
-				tokenType = TokenOpenBrace
+				tokenType = TokOpenBrace
 				done = true
 			case '[':
-				tokenType = TokenOpenBracket
+				tokenType = TokOpenBracket
 				done = true
 			case '(':
-				tokenType = TokenOpenParen
+				tokenType = TokOpenParen
 				done = true
 			case '?':
 				if t.index+1 < len(t.source) {
 					switch t.source[t.index+1] {
 					case '+':
-						tokenType = TokenOpCheckedAdd
+						tokenType = TokOpCheckedAdd
 						t.index++
 					case '/':
-						tokenType = TokenOpCheckedDiv
+						tokenType = TokOpCheckedDiv
 						t.index++
 					case '%':
-						tokenType = TokenOpCheckedMod
+						tokenType = TokOpCheckedMod
 						t.index++
 					case '*':
-						tokenType = TokenOpCheckedMul
+						tokenType = TokOpCheckedMul
 						t.index++
 					case '-':
-						tokenType = TokenOpCheckedSub
+						tokenType = TokOpCheckedSub
 						t.index++
 					default:
-						tokenType = TokenQuestionMark
+						tokenType = TokQuestionMark
 					}
 				} else {
-					tokenType = TokenQuestionMark
+					tokenType = TokQuestionMark
 				}
 				done = true
 			case ';':
-				tokenType = TokenSemiColon
+				tokenType = TokSemiColon
 				done = true
 			case '/':
 				if t.peek(2) == "/=" {
-					tokenType = TokenOpDivEqual
+					tokenType = TokOpDivEqual
 					t.index++
 				} else {
-					tokenType = TokenOpDiv
+					tokenType = TokOpDiv
 				}
 				done = true
 			case '-':
 				if t.peek(2) == "-=" {
-					tokenType = TokenOpMinusEqual
+					tokenType = TokOpMinusEqual
 					t.index++
 				} else {
-					tokenType = TokenOpMinus
+					tokenType = TokOpMinus
 				}
 				done = true
 			case '%':
 				if t.peek(2) == "%=" {
-					tokenType = TokenOpModEqual
+					tokenType = TokOpModEqual
 					t.index++
 				} else {
-					tokenType = TokenOpMod
+					tokenType = TokOpMod
 				}
 				done = true
 			case '*':
 				if t.peek(2) == "*=" {
-					tokenType = TokenOpMulEqual
+					tokenType = TokOpMulEqual
 					t.index++
 				} else {
-					tokenType = TokenOpMul
+					tokenType = TokOpMul
 				}
 				done = true
 			case '!':
 				if t.peek(2) == "!=" {
-					tokenType = TokenOpNotEqual
+					tokenType = TokOpNotEqual
 					t.index++
 				} else {
-					tokenType = TokenOpNot
+					tokenType = TokOpNot
 				}
 				done = true
 			case '+':
 				if t.peek(2) == "+=" {
-					tokenType = TokenOpPlusEqual
+					tokenType = TokOpPlusEqual
 					t.index++
 				} else {
-					tokenType = TokenOpPlus
+					tokenType = TokOpPlus
 				}
 				done = true
 			case '^':
 				if t.peek(2) == "^=" {
-					tokenType = TokenOpPowEqual
+					tokenType = TokOpPowEqual
 					t.index++
 				} else {
-					tokenType = TokenOpPow
+					tokenType = TokOpPow
 				}
 				done = true
 			case '>':
 				// Check 3-character operators first
 				if t.peek(3) == ">>=" {
-					tokenType = TokenOpShiftRightEqual
+					tokenType = TokOpShiftRightEqual
 					t.index += 2
 				} else if t.peek(2) == ">>" {
 					// Then 2-character operators
-					tokenType = TokenOpShiftRight
+					tokenType = TokOpShiftRight
 					t.index++
 				} else if t.peek(2) == ">=" {
-					tokenType = TokenOpGreaterEqual
+					tokenType = TokOpGreaterEqual
 					t.index++
 				} else {
 					// Finally, single character operator
-					tokenType = TokenOpGreaterThan
+					tokenType = TokOpGreaterThan
 				}
 				done = true
 			case '&':
 				if t.peek(3) == "&&=" {
-					tokenType = TokenOpLogicalAndEqual
+					tokenType = TokOpLogicalAndEqual
 					t.index += 2
 				} else if t.peek(2) == "&&" {
-					tokenType = TokenOpLogicalAnd
+					tokenType = TokOpLogicalAnd
 					t.index++
 				} else if t.peek(2) == "&=" {
-					tokenType = TokenOpBitwiseAndEqual
+					tokenType = TokOpBitwiseAndEqual
 					t.index++
 				} else {
-					tokenType = TokenOpBitwiseAnd
+					tokenType = TokOpBitwiseAnd
 				}
 				done = true
 			case '|':
 				if t.peek(3) == "||=" {
-					tokenType = TokenOpLogicalOrEqual
+					tokenType = TokOpLogicalOrEqual
 					t.index += 2
 				} else if t.peek(2) == "||" {
-					tokenType = TokenOpLogicalOr
+					tokenType = TokOpLogicalOr
 					t.index++
 				} else if t.peek(2) == "|=" {
-					tokenType = TokenOpBitwiseOrEqual
+					tokenType = TokOpBitwiseOrEqual
 					t.index++
 				} else {
-					tokenType = TokenOpBitwiseOr
+					tokenType = TokOpBitwiseOr
 				}
 				done = true
 			case '=':
 				if t.peek(2) == "==" {
-					tokenType = TokenOpEqualEqual
+					tokenType = TokOpEqual
 					t.index++
 				} else if t.peek(2) == "=~" {
-					tokenType = TokenOpMatches
+					tokenType = TokOpMatches
 					t.index++
 				} else {
-					tokenType = TokenOpEqual
+					tokenType = TokOpAssign
 				}
 				done = true
 			case '~':
-				tokenType = TokenOpBitwiseNot
+				tokenType = TokOpBitwiseNot
 				done = true
 			case '#':
-				tokenType = TokenComment
+				tokenType = TokComment
 				st = stateComment
 			case '0':
-				tokenType = TokenDecimalLiteral
+				tokenType = TokDecimalLit
 				st = stateNumber
 			case '`':
 				if t.peek(3) == "```" {
 					t.index += 3
-					tokenType = TokenMultiLineStringLiteral
+					tokenType = TokMultiLineStringLit
 					invalid = t.skipMultiLineHeader()
 					if invalid {
 						break outer
@@ -326,57 +326,57 @@ outer:
 					st = stateMultiLineStringBody
 				} else {
 					// Regular raw string literal
-					tokenType = TokenRawStringLiteral
+					tokenType = TokRawStringLit
 					st = stateRawStringLiteral
 				}
 			case '"':
-				tokenType = TokenStringLiteral
+				tokenType = TokStringLit
 				st = stateStringLiteral
 			case '<':
 				// Check 3-character operators first
 				if t.peek(3) == "<=>" {
-					tokenType = TokenOpCompareTo
+					tokenType = TokOpCompareTo
 					t.index += 2
 				} else if t.peek(3) == "<<=" {
-					tokenType = TokenOpShiftLeftEqual
+					tokenType = TokOpShiftLeftEqual
 					t.index += 2
 				} else if t.peek(2) == "<<" {
 					// Then 2-character operators
-					tokenType = TokenOpShiftLeft
+					tokenType = TokOpShiftLeft
 					t.index++
 				} else if t.peek(2) == "<=" {
-					tokenType = TokenOpLessEqual
+					tokenType = TokOpLessEqual
 					t.index++
 				} else {
 					// Finally, single character operator
-					tokenType = TokenOpLessThan
+					tokenType = TokOpLessThan
 				}
 				done = true
 			default:
 				// Identifier start: letters or underscore.
 				if isIdentifierStart(c) {
-					tokenType = TokenIdentifier
+					tokenType = TokIdentifier
 					st = stateIdentifier
 				} else if isDecimalDigit(c) {
 					// Safe to use isDecimalDigit here since '0' is handled in its own case above
 					st = stateInt
-					tokenType = TokenDecimalLiteral
+					tokenType = TokDecimalLit
 				} else {
-					tokenType = TokenInvalid
+					tokenType = TokInvalid
 					done = true
 				}
 			}
 		case stateColon:
 			switch {
 			case isIdentifierStart(c):
-				tokenType = TokenSymbolLiteral
+				tokenType = TokSymbolLit
 				st = stateSymbol
 			case isDecimalDigit(c):
-				tokenType = TokenSymbolLiteral
+				tokenType = TokSymbolLit
 				st = stateSymbol
 				invalid = true
 			case c == '"':
-				tokenType = TokenSymbolLiteral
+				tokenType = TokSymbolLit
 				st = stateQuotedSymbol
 			default:
 				break outer
@@ -410,7 +410,7 @@ outer:
 				if reserved, ok := GetReserved(lexeme); ok {
 					tokenType = reserved
 				} else if len(lexeme) > 0 && lexeme[0] >= 'A' && lexeme[0] <= 'Z' {
-					tokenType = TokenTypeIdentifier
+					tokenType = TokTypeIdentifier
 				}
 				break outer
 			}
@@ -419,16 +419,16 @@ outer:
 			case isDecimalDigit(c) || c == '_':
 				st = stateInt
 			case c == '.':
-				tokenType = TokenFloatLiteral
+				tokenType = TokFloatLit
 				st = stateIntDot
 			case c == 'b':
-				tokenType = TokenBinaryLiteral
+				tokenType = TokBinaryLit
 				st = stateBinaryFirst
 			case c == 'o':
-				tokenType = TokenOctalLiteral
+				tokenType = TokOctalLit
 				st = stateOctalFirst
 			case c == 'x':
-				tokenType = TokenHexadecimalLiteral
+				tokenType = TokHexLit
 				st = stateHexadecimalFirst
 			case isInvalidNumberLetter(c):
 				invalid = true
@@ -440,10 +440,10 @@ outer:
 			case isDecimalDigit(c) || c == '_':
 				// Continue int.
 			case c == '.':
-				tokenType = TokenFloatLiteral
+				tokenType = TokFloatLit
 				st = stateIntDot
 			case c == 'e':
-				tokenType = TokenFloatLiteral
+				tokenType = TokFloatLit
 				st = stateExponent
 			case isInvalidIntegerLetter(c):
 				invalid = true
@@ -455,7 +455,7 @@ outer:
 			case isDecimalDigit(c):
 				st = stateFloat
 			default:
-				tokenType = TokenDecimalLiteral
+				tokenType = TokDecimalLit
 				t.index--
 				break outer
 			}
@@ -594,7 +594,7 @@ outer:
 				break outer
 			case c == '\\':
 				if t.peek(2) == "\\(" {
-					tokenType = TokenInterpolatedStringLiteral
+					tokenType = TokInterpStringLit
 					t.index += 2 // Skip the `\(`
 					invalid = t.skipInterpolation()
 					if invalid {
@@ -715,11 +715,11 @@ func (t *Tokenizer) skipInterpolation() (invalid bool) {
 	for {
 		token := t.Next()
 		switch {
-		case token.Type == TokenEOF:
+		case token.Type == TokEOF:
 			return true
-		case token.Type == TokenOpenParen:
+		case token.Type == TokOpenParen:
 			parens++
-		case token.Type == TokenCloseParen:
+		case token.Type == TokCloseParen:
 			parens--
 		}
 		if parens < 0 {
@@ -734,9 +734,9 @@ func (t *Tokenizer) skipMultiLineHeader() (invalid bool) {
 	for {
 		token := t.Next()
 		switch {
-		case token.Type == TokenEOF:
+		case token.Type == TokEOF:
 			return true
-		case token.Type == TokenEOL:
+		case token.Type == TokEOL:
 			return false
 		}
 	}
