@@ -1,5 +1,7 @@
 package tok
 
+import "bytes"
+
 // We define a state machine for tokenizing.
 type state int
 
@@ -38,13 +40,14 @@ type Tokenizer struct {
 	states []state
 }
 
+var bom = []byte{0xEF, 0xBB, 0xBF} // UTF-8 BOM
+
 // NewTokenizer initializes a new Tokenizer.
 func NewTokenizer(source []byte, filename string) *Tokenizer {
 	file := NewSource(source, filename)
 	idx := 0
 	// Skip the UTF-8 BOM if present.
-	bom := []byte{0xEF, 0xBB, 0xBF}
-	if len(source) >= 3 && string(source[:3]) == string(bom) {
+	if bytes.Equal(source[:3], bom) {
 		idx = 3
 	}
 	return &Tokenizer{
