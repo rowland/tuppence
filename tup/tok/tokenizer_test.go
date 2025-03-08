@@ -870,6 +870,9 @@ func TestFloatLiterals(t *testing.T) {
 	// testTokenizeInvalid(t, "1..2", TokenFloatLiteral)    // TODO: range
 	testTokenizeInvalid(t, "123e", TokFloatLit)    // no exponent digits
 	testTokenizeInvalid(t, "12.34e-", TokFloatLit) // minus with no digits
+	testTokenizeInvalid(t, "0. ", TokFloatLit)     // decimal not followed by a digit or another dot
+	testTokenizeInvalid(t, "1. ", TokFloatLit)     // decimal not followed by a digit or another dot
+	testTokenizeInvalid(t, "12. ", TokFloatLit)    // decimal not followed by a digit or another dot
 }
 
 func TestDecimalMemberAccess(t *testing.T) {

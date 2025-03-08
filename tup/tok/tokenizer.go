@@ -452,10 +452,13 @@ outer:
 			switch {
 			case isDecDigit(c):
 				st = stateFloat
-			default:
+			case isIdentifierStart(c) || c == '.':
 				tokenType = TokDecLit
 				t.index--
 				break outer
+			default:
+				invalid = true
+				done = true
 			}
 		case stateFloat:
 			switch {
