@@ -219,61 +219,61 @@ func TestOperators(t *testing.T) {
 		TokOpNot,
 		TokOpPlus,
 		TokOpPow,
-		TokOpShiftLeft,
-		TokOpShiftRight,
+		TokOpSHL,
+		TokOpSHR,
 	})
 }
 
 func TestBitwiseOperators(t *testing.T) {
 	testTokenizeSeq(t, "& | ~", []TokenType{
-		TokOpBitwiseAnd,
-		TokOpBitwiseOr,
-		TokOpBitwiseNot,
+		TokOpBitAnd,
+		TokOpBitOr,
+		TokOpBitNot,
 	})
 }
 
 func TestRelationalOperators(t *testing.T) {
 	testTokenizeSeq(t, "== >= > <= < != =~ <=>", []TokenType{
-		TokOpEqual,
-		TokOpGreaterEqual,
-		TokOpGreaterThan,
-		TokOpLessEqual,
-		TokOpLessThan,
-		TokOpNotEqual,
-		TokOpMatches,
-		TokOpCompareTo,
+		TokOpEQ,
+		TokOpGE,
+		TokOpGT,
+		TokOpLE,
+		TokOpLT,
+		TokOpNE,
+		TokOpMatch,
+		TokOpCompare,
 	})
 }
 
 func TestLogicalOperators(t *testing.T) {
 	testTokenizeSeq(t, "&& ||", []TokenType{
-		TokOpLogicalAnd,
-		TokOpLogicalOr,
+		TokOpLogAnd,
+		TokOpLogOr,
 	})
 }
 
 func TestAssignment(t *testing.T) {
 	testTokenizeSeq(t, "&= |= /= = &&= ||= -= %= *= += ^= <<= >>=", []TokenType{
-		TokOpBitwiseAndEqual,
-		TokOpBitwiseOrEqual,
-		TokOpDivEqual,
+		TokOpBitAndEQ,
+		TokOpBitOrEQ,
+		TokOpDivEQ,
 		TokOpAssign,
-		TokOpLogicalAndEqual,
-		TokOpLogicalOrEqual,
-		TokOpMinusEqual,
-		TokOpModEqual,
-		TokOpMulEqual,
-		TokOpPlusEqual,
-		TokOpPowEqual,
-		TokOpShiftLeftEqual,
-		TokOpShiftRightEqual,
+		TokOpLogAndEQ,
+		TokOpLogOrEQ,
+		TokOpMinusEQ,
+		TokOpModEQ,
+		TokOpMulEQ,
+		TokOpPlusEQ,
+		TokOpPowEQ,
+		TokOpSHL_EQ,
+		TokOpSHR_EQ,
 	})
 }
 
 func TestIdentifiers(t *testing.T) {
 	testTokenizeSeq(t, "abc Def", []TokenType{
-		TokIdentifier,
-		TokTypeIdentifier,
+		TokID,
+		TokTypeID,
 	})
 }
 
@@ -282,29 +282,29 @@ func TestKeywords(t *testing.T) {
 		"array break continue contract else enum error fn for fx if in it "+
 			"import mut return switch try try_break try_continue type typeof union",
 		[]TokenType{
-			TokKeywordArray,
-			TokKeywordBreak,
-			TokKeywordContinue,
-			TokKeywordContract,
-			TokKeywordElse,
-			TokKeywordEnum,
-			TokKeywordError,
-			TokKeywordFn,
-			TokKeywordFor,
-			TokKeywordFx,
-			TokKeywordIf,
-			TokKeywordIn,
-			TokKeywordIt,
-			TokKeywordImport,
-			TokKeywordMut,
-			TokKeywordReturn,
-			TokKeywordSwitch,
-			TokKeywordTry,
-			TokKeywordTryBreak,
-			TokKeywordTryContinue,
-			TokKeywordType,
-			TokKeywordTypeof,
-			TokKeywordUnion,
+			TokKwArray,
+			TokKwBreak,
+			TokKwContinue,
+			TokKwContract,
+			TokKwElse,
+			TokKwEnum,
+			TokKwError,
+			TokKwFn,
+			TokKwFor,
+			TokKwFx,
+			TokKwIf,
+			TokKwIn,
+			TokKwIt,
+			TokKwImport,
+			TokKwMut,
+			TokKwReturn,
+			TokKwSwitch,
+			TokKwTry,
+			TokKwTryBreak,
+			TokKwTryContinue,
+			TokKwType,
+			TokKwTypeof,
+			TokKwUnion,
 		})
 }
 
@@ -316,38 +316,38 @@ func TestBinaryLiterals(t *testing.T) {
 		wantErr  bool
 	}{
 		// Basic valid cases
-		{"empty_after_prefix", "0b", TokBinaryLit, true},
-		{"zero", "0b0", TokBinaryLit, false},
-		{"one", "0b1", TokBinaryLit, false},
-		{"complex_binary", "0b10101100", TokBinaryLit, false},
+		{"empty_after_prefix", "0b", TokBinLit, true},
+		{"zero", "0b0", TokBinLit, false},
+		{"one", "0b1", TokBinLit, false},
+		{"complex_binary", "0b10101100", TokBinLit, false},
 
 		// Invalid digits
-		{"invalid_2", "0b2", TokBinaryLit, true},
-		{"invalid_3", "0b3", TokBinaryLit, true},
-		{"invalid_4", "0b4", TokBinaryLit, true},
-		{"invalid_5", "0b5", TokBinaryLit, true},
-		{"invalid_6", "0b6", TokBinaryLit, true},
-		{"invalid_7", "0b7", TokBinaryLit, true},
-		{"invalid_8", "0b8", TokBinaryLit, true},
-		{"invalid_9", "0b9", TokBinaryLit, true},
-		{"invalid_a", "0ba", TokBinaryLit, true},
-		{"invalid_b", "0bb", TokBinaryLit, true},
-		{"invalid_c", "0bc", TokBinaryLit, true},
-		{"invalid_d", "0bd", TokBinaryLit, true},
-		{"invalid_e", "0be", TokBinaryLit, true},
-		{"invalid_f", "0bf", TokBinaryLit, true},
-		{"invalid_z", "0bz", TokBinaryLit, true},
+		{"invalid_2", "0b2", TokBinLit, true},
+		{"invalid_3", "0b3", TokBinLit, true},
+		{"invalid_4", "0b4", TokBinLit, true},
+		{"invalid_5", "0b5", TokBinLit, true},
+		{"invalid_6", "0b6", TokBinLit, true},
+		{"invalid_7", "0b7", TokBinLit, true},
+		{"invalid_8", "0b8", TokBinLit, true},
+		{"invalid_9", "0b9", TokBinLit, true},
+		{"invalid_a", "0ba", TokBinLit, true},
+		{"invalid_b", "0bb", TokBinLit, true},
+		{"invalid_c", "0bc", TokBinLit, true},
+		{"invalid_d", "0bd", TokBinLit, true},
+		{"invalid_e", "0be", TokBinLit, true},
+		{"invalid_f", "0bf", TokBinLit, true},
+		{"invalid_z", "0bz", TokBinLit, true},
 
 		// Underscore cases
-		{"invalid_leading_underscore", "0b_", TokBinaryLit, true},
-		{"invalid_underscore_after_prefix", "0b_0", TokBinaryLit, true},
-		{"valid_trailing_underscore", "0b1_", TokBinaryLit, false},
-		{"valid_double_underscore", "0b0__1", TokBinaryLit, false},
-		{"valid_middle_underscore", "0b0_1_", TokBinaryLit, false},
+		{"invalid_leading_underscore", "0b_", TokBinLit, true},
+		{"invalid_underscore_after_prefix", "0b_0", TokBinLit, true},
+		{"valid_trailing_underscore", "0b1_", TokBinLit, false},
+		{"valid_double_underscore", "0b0__1", TokBinLit, false},
+		{"valid_middle_underscore", "0b0_1_", TokBinLit, false},
 
 		// Other cases
-		{"invalid_uppercase_prefix", "0B0", TokDecimalLit, true},
-		{"invalid_e_suffix", "0b1e", TokBinaryLit, true},
+		{"invalid_uppercase_prefix", "0B0", TokDecLit, true},
+		{"invalid_e_suffix", "0b1e", TokBinLit, true},
 	}
 
 	for _, tt := range tests {
@@ -374,42 +374,42 @@ func TestDecimalLiterals(t *testing.T) {
 		wantErr  bool
 	}{
 		// Single digits
-		{"zero", "0", TokDecimalLit, false},
-		{"one", "1", TokDecimalLit, false},
-		{"two", "2", TokDecimalLit, false},
-		{"three", "3", TokDecimalLit, false},
-		{"four", "4", TokDecimalLit, false},
-		{"five", "5", TokDecimalLit, false},
-		{"six", "6", TokDecimalLit, false},
-		{"seven", "7", TokDecimalLit, false},
-		{"eight", "8", TokDecimalLit, false},
-		{"nine", "9", TokDecimalLit, false},
+		{"zero", "0", TokDecLit, false},
+		{"one", "1", TokDecLit, false},
+		{"two", "2", TokDecLit, false},
+		{"three", "3", TokDecLit, false},
+		{"four", "4", TokDecLit, false},
+		{"five", "5", TokDecLit, false},
+		{"six", "6", TokDecLit, false},
+		{"seven", "7", TokDecLit, false},
+		{"eight", "8", TokDecLit, false},
+		{"nine", "9", TokDecLit, false},
 
 		// Leading zeros and underscores
-		{"underscore_after_zero", "0_0", TokDecimalLit, false},
-		{"leading_zeros", "0001", TokDecimalLit, false},
+		{"underscore_after_zero", "0_0", TokDecLit, false},
+		{"leading_zeros", "0001", TokDecLit, false},
 
 		// Complex numbers
-		{"all_digits", "01234567890", TokDecimalLit, false},
-		{"grouped_by_three", "012_345_6789_0", TokDecimalLit, false},
-		{"max_underscores", "0_1_2_3_4_5_6_7_8_9_0", TokDecimalLit, false},
+		{"all_digits", "01234567890", TokDecLit, false},
+		{"grouped_by_three", "012_345_6789_0", TokDecLit, false},
+		{"max_underscores", "0_1_2_3_4_5_6_7_8_9_0", TokDecLit, false},
 
 		// Invalid characters in numbers
-		{"lowercase_letter", "123a", TokDecimalLit, true},
-		{"uppercase_letter", "123A", TokDecimalLit, true},
-		{"letter_in_middle", "12a34", TokDecimalLit, true},
+		{"lowercase_letter", "123a", TokDecLit, true},
+		{"uppercase_letter", "123A", TokDecLit, true},
+		{"letter_in_middle", "12a34", TokDecLit, true},
 
 		// Identifiers that look like numbers
-		{"leading_underscore", "_123", TokIdentifier, false},
-		{"multiple_leading_underscores", "__123", TokIdentifier, false},
+		{"leading_underscore", "_123", TokID, false},
+		{"multiple_leading_underscores", "__123", TokID, false},
 
 		// Valid number followed by underscore
-		{"trailing_underscore", "123_", TokDecimalLit, false},
-		{"trailing_multiple_underscores", "123__", TokDecimalLit, false},
+		{"trailing_underscore", "123_", TokDecLit, false},
+		{"trailing_multiple_underscores", "123__", TokDecLit, false},
 
 		// Sequence cases
-		{"number_then_comma", "123,", TokDecimalLit, false},      // Should parse as separate tokens
-		{"underscore_then_comma", "123_,", TokDecimalLit, false}, // Should parse as separate tokens
+		{"number_then_comma", "123,", TokDecLit, false},      // Should parse as separate tokens
+		{"underscore_then_comma", "123_,", TokDecLit, false}, // Should parse as separate tokens
 	}
 
 	for _, tt := range tests {
@@ -434,50 +434,50 @@ func TestOctalLiterals(t *testing.T) {
 		wantErr  bool
 	}{
 		// Single digits
-		{"zero", "0o0", TokOctalLit, false},
-		{"one", "0o1", TokOctalLit, false},
-		{"two", "0o2", TokOctalLit, false},
-		{"three", "0o3", TokOctalLit, false},
-		{"four", "0o4", TokOctalLit, false},
-		{"five", "0o5", TokOctalLit, false},
-		{"six", "0o6", TokOctalLit, false},
-		{"seven", "0o7", TokOctalLit, false},
+		{"zero", "0o0", TokOctLit, false},
+		{"one", "0o1", TokOctLit, false},
+		{"two", "0o2", TokOctLit, false},
+		{"three", "0o3", TokOctLit, false},
+		{"four", "0o4", TokOctLit, false},
+		{"five", "0o5", TokOctLit, false},
+		{"six", "0o6", TokOctLit, false},
+		{"seven", "0o7", TokOctLit, false},
 
 		// Invalid digits
-		{"invalid_8", "0o8", TokOctalLit, true},
-		{"invalid_9", "0o9", TokOctalLit, true},
-		{"invalid_a", "0oa", TokOctalLit, true},
-		{"invalid_b", "0ob", TokOctalLit, true},
-		{"invalid_c", "0oc", TokOctalLit, true},
-		{"invalid_d", "0od", TokOctalLit, true},
-		{"invalid_e", "0oe", TokOctalLit, true},
-		{"invalid_f", "0of", TokOctalLit, true},
-		{"invalid_z", "0oz", TokOctalLit, true},
+		{"invalid_8", "0o8", TokOctLit, true},
+		{"invalid_9", "0o9", TokOctLit, true},
+		{"invalid_a", "0oa", TokOctLit, true},
+		{"invalid_b", "0ob", TokOctLit, true},
+		{"invalid_c", "0oc", TokOctLit, true},
+		{"invalid_d", "0od", TokOctLit, true},
+		{"invalid_e", "0oe", TokOctLit, true},
+		{"invalid_f", "0of", TokOctLit, true},
+		{"invalid_z", "0oz", TokOctLit, true},
 
 		// Complex numbers
-		{"all_octal_digits", "0o01234567", TokOctalLit, false},
-		{"single_underscore", "0o0123_4567", TokOctalLit, false},
-		{"multiple_underscores", "0o01_23_45_67", TokOctalLit, false},
-		{"max_underscores", "0o0_1_2_3_4_5_6_7", TokOctalLit, false},
+		{"all_octal_digits", "0o01234567", TokOctLit, false},
+		{"single_underscore", "0o0123_4567", TokOctLit, false},
+		{"multiple_underscores", "0o01_23_45_67", TokOctLit, false},
+		{"max_underscores", "0o0_1_2_3_4_5_6_7", TokOctLit, false},
 
 		// Invalid underscore positions
-		{"invalid_leading_underscore", "0o_", TokOctalLit, true},
-		{"invalid_underscore_after_prefix", "0o_0", TokOctalLit, true},
-		{"valid_trailing_underscore", "0o1_", TokOctalLit, false},
-		{"valid_double_underscore", "0o0__1", TokOctalLit, false},
-		{"valid_middle_underscore", "0o0_1_", TokOctalLit, false},
+		{"invalid_leading_underscore", "0o_", TokOctLit, true},
+		{"invalid_underscore_after_prefix", "0o_0", TokOctLit, true},
+		{"valid_trailing_underscore", "0o1_", TokOctLit, false},
+		{"valid_double_underscore", "0o0__1", TokOctLit, false},
+		{"valid_middle_underscore", "0o0_1_", TokOctLit, false},
 
 		// Invalid prefix cases
-		{"invalid_uppercase_prefix", "0O0", TokDecimalLit, true},
-		{"empty_after_prefix", "0o", TokOctalLit, true},
+		{"invalid_uppercase_prefix", "0O0", TokDecLit, true},
+		{"empty_after_prefix", "0o", TokOctLit, true},
 
 		// Invalid suffix cases
-		{"invalid_e_suffix", "0o1e", TokOctalLit, true},
-		{"invalid_e_suffix_with_number", "0o1e0", TokOctalLit, true},
+		{"invalid_e_suffix", "0o1e", TokOctLit, true},
+		{"invalid_e_suffix_with_number", "0o1e0", TokOctLit, true},
 
 		// Sequence cases
-		{"octal_then_comma", "0o1,", TokOctalLit, false},       // Should parse as separate tokens
-		{"underscore_then_comma", "0o1_,", TokOctalLit, false}, // Should parse as separate tokens
+		{"octal_then_comma", "0o1,", TokOctLit, false},       // Should parse as separate tokens
+		{"underscore_then_comma", "0o1_,", TokOctLit, false}, // Should parse as separate tokens
 	}
 
 	for _, tt := range tests {
@@ -552,7 +552,7 @@ func TestHexadecimalLiterals(t *testing.T) {
 		{"valid_middle_underscore", "0x0_1_", TokHexLit, false},
 
 		// Invalid prefix cases
-		{"invalid_uppercase_prefix", "0X0", TokDecimalLit, true},
+		{"invalid_uppercase_prefix", "0X0", TokDecLit, true},
 		{"empty_after_prefix", "0x", TokHexLit, true},
 
 		// Sequence cases
@@ -582,48 +582,48 @@ func TestRawStringLiterals(t *testing.T) {
 		wantErr  bool
 	}{
 		// Basic cases
-		{"empty", "``", TokRawStringLit, false},
-		{"simple", "`abc`", TokRawStringLit, false},
-		{"spaces", "`   `", TokRawStringLit, false},
-		{"tabs", "`\t\t`", TokRawStringLit, false},
+		{"empty", "``", TokRawStrLit, false},
+		{"simple", "`abc`", TokRawStrLit, false},
+		{"spaces", "`   `", TokRawStrLit, false},
+		{"tabs", "`\t\t`", TokRawStrLit, false},
 
 		// Escaped backtick cases
-		{"embedded_backtick", "`abc``def`", TokRawStringLit, false},
-		{"multiple_escaped_backticks", "`a``b``c`", TokRawStringLit, false},
-		{"double_backtick", "`a``b`", TokRawStringLit, false},
-		{"escaped_backtick_with_space", "`a`` b`", TokRawStringLit, false},
-		{"escaped_backtick_with_newline", "`a``\nb`", TokRawStringLit, false},
+		{"embedded_backtick", "`abc``def`", TokRawStrLit, false},
+		{"multiple_escaped_backticks", "`a``b``c`", TokRawStrLit, false},
+		{"double_backtick", "`a``b`", TokRawStrLit, false},
+		{"escaped_backtick_with_space", "`a`` b`", TokRawStrLit, false},
+		{"escaped_backtick_with_newline", "`a``\nb`", TokRawStrLit, false},
 
 		// Newline cases
-		{"single_newline", "`abc\ndef`", TokRawStringLit, false},
-		{"multiple_newlines", "`first\nsecond\nthird`", TokRawStringLit, false},
-		{"only_newlines", "`\n\n\n`", TokRawStringLit, false},
-		{"newline_after_backtick", "`abc``\ndef`", TokRawStringLit, false},
-		{"newline_before_backtick", "`abc\n``def`", TokRawStringLit, false},
-		{"starts_with_newline", "`\nabc`", TokRawStringLit, false},
-		{"ends_with_newline", "`abc\n`", TokRawStringLit, false},
+		{"single_newline", "`abc\ndef`", TokRawStrLit, false},
+		{"multiple_newlines", "`first\nsecond\nthird`", TokRawStrLit, false},
+		{"only_newlines", "`\n\n\n`", TokRawStrLit, false},
+		{"newline_after_backtick", "`abc``\ndef`", TokRawStrLit, false},
+		{"newline_before_backtick", "`abc\n``def`", TokRawStrLit, false},
+		{"starts_with_newline", "`\nabc`", TokRawStrLit, false},
+		{"ends_with_newline", "`abc\n`", TokRawStrLit, false},
 
 		// Special character cases
-		{"special_chars", "`!@#$%^&*()`", TokRawStringLit, false},
-		{"unicode_chars", "`αβγδε`", TokRawStringLit, false},
-		{"emoji", "`🙂🌟🎉`", TokRawStringLit, false},
-		{"escape_sequences_raw", "`\\n\\t\\r`", TokRawStringLit, false},
-		{"quotes_in_raw", "`\"single\" and 'double'`", TokRawStringLit, false},
-		{"brackets_braces", "`[{(<>)}]`", TokRawStringLit, false},
+		{"special_chars", "`!@#$%^&*()`", TokRawStrLit, false},
+		{"unicode_chars", "`αβγδε`", TokRawStrLit, false},
+		{"emoji", "`🙂🌟🎉`", TokRawStrLit, false},
+		{"escape_sequences_raw", "`\\n\\t\\r`", TokRawStrLit, false},
+		{"quotes_in_raw", "`\"single\" and 'double'`", TokRawStrLit, false},
+		{"brackets_braces", "`[{(<>)}]`", TokRawStrLit, false},
 
 		// Whitespace cases
-		{"mixed_whitespace", "`space\ttab\nline`", TokRawStringLit, false},
-		{"carriage_return", "`line1\rline2`", TokRawStringLit, false},
-		{"all_whitespace_types", "`\n\t\r \f\v`", TokRawStringLit, false},
+		{"mixed_whitespace", "`space\ttab\nline`", TokRawStrLit, false},
+		{"carriage_return", "`line1\rline2`", TokRawStrLit, false},
+		{"all_whitespace_types", "`\n\t\r \f\v`", TokRawStrLit, false},
 
 		// Invalid cases
-		{"unterminated_after_backtick", "`abc``", TokRawStringLit, true},
-		{"unterminated", "`abc", TokRawStringLit, true},
-		{"unterminated_with_newlines", "`first\nsecond\nthird", TokRawStringLit, true},
-		{"unterminated_after_escape", "`abc``def", TokRawStringLit, true},
-		{"unterminated_unicode", "`αβγ", TokRawStringLit, true},
-		{"unterminated_emoji", "`🙂🌟", TokRawStringLit, true},
-		{"empty_unterminated", "`", TokRawStringLit, true},
+		{"unterminated_after_backtick", "`abc``", TokRawStrLit, true},
+		{"unterminated", "`abc", TokRawStrLit, true},
+		{"unterminated_with_newlines", "`first\nsecond\nthird", TokRawStrLit, true},
+		{"unterminated_after_escape", "`abc``def", TokRawStrLit, true},
+		{"unterminated_unicode", "`αβγ", TokRawStrLit, true},
+		{"unterminated_emoji", "`🙂🌟", TokRawStrLit, true},
+		{"empty_unterminated", "`", TokRawStrLit, true},
 	}
 
 	for _, tt := range tests {
@@ -645,65 +645,65 @@ func TestStringLiterals(t *testing.T) {
 		wantErr  bool
 	}{
 		// Basic cases
-		{"empty", `""`, TokStringLit, false},
-		{"simple", `"abc"`, TokStringLit, false},
-		{"spaces", `"   "`, TokStringLit, false},
-		{"tabs", `"\t\t"`, TokStringLit, false},
+		{"empty", `""`, TokStrLit, false},
+		{"simple", `"abc"`, TokStrLit, false},
+		{"spaces", `"   "`, TokStrLit, false},
+		{"tabs", `"\t\t"`, TokStrLit, false},
 
 		// Simple escape sequences
-		{"newline", `"\n"`, TokStringLit, false},
-		{"tab", `"\t"`, TokStringLit, false},
-		{"double_quote", `"\""`, TokStringLit, false},
-		{"single_quote", `"\'"`, TokStringLit, false},
-		{"backslash", `"\\"`, TokStringLit, false},
-		{"carriage_return", `"\r"`, TokStringLit, false},
-		{"backspace", `"\b"`, TokStringLit, false},
-		{"form_feed", `"\f"`, TokStringLit, false},
-		{"vertical_tab", `"\v"`, TokStringLit, false},
-		{"null", `"\0"`, TokStringLit, false},
-		{"all_escapes", `"\n\t\"\'\\\r\b\f\v\0"`, TokStringLit, false},
+		{"newline", `"\n"`, TokStrLit, false},
+		{"tab", `"\t"`, TokStrLit, false},
+		{"double_quote", `"\""`, TokStrLit, false},
+		{"single_quote", `"\'"`, TokStrLit, false},
+		{"backslash", `"\\"`, TokStrLit, false},
+		{"carriage_return", `"\r"`, TokStrLit, false},
+		{"backspace", `"\b"`, TokStrLit, false},
+		{"form_feed", `"\f"`, TokStrLit, false},
+		{"vertical_tab", `"\v"`, TokStrLit, false},
+		{"null", `"\0"`, TokStrLit, false},
+		{"all_escapes", `"\n\t\"\'\\\r\b\f\v\0"`, TokStrLit, false},
 
 		// Unicode escapes
-		{"unicode_4_digit", `"\u1234"`, TokStringLit, false},
-		{"unicode_8_digit", `"\U12345678"`, TokStringLit, false},
-		{"unicode_max", `"\uFFFF"`, TokStringLit, false},
-		{"unicode_min", `"\u0000"`, TokStringLit, false},
-		{"unicode_multiple", `"\u1234\u5678"`, TokStringLit, false},
-		{"unicode_mixed_case", `"\uAbCd"`, TokStringLit, false},
+		{"unicode_4_digit", `"\u1234"`, TokStrLit, false},
+		{"unicode_8_digit", `"\U12345678"`, TokStrLit, false},
+		{"unicode_max", `"\uFFFF"`, TokStrLit, false},
+		{"unicode_min", `"\u0000"`, TokStrLit, false},
+		{"unicode_multiple", `"\u1234\u5678"`, TokStrLit, false},
+		{"unicode_mixed_case", `"\uAbCd"`, TokStrLit, false},
 
 		// Hex escapes
-		{"hex_byte", `"\xEF"`, TokStringLit, false},
-		{"hex_multiple", `"\xEF\xBB\xBF"`, TokStringLit, false},
-		{"hex_min", `"\x00"`, TokStringLit, false},
-		{"hex_max", `"\xFF"`, TokStringLit, false},
-		{"hex_mixed_case", `"\xaB"`, TokStringLit, false},
+		{"hex_byte", `"\xEF"`, TokStrLit, false},
+		{"hex_multiple", `"\xEF\xBB\xBF"`, TokStrLit, false},
+		{"hex_min", `"\x00"`, TokStrLit, false},
+		{"hex_max", `"\xFF"`, TokStrLit, false},
+		{"hex_mixed_case", `"\xaB"`, TokStrLit, false},
 
 		// Mixed content
-		{"mixed_escapes", `"Hello\n\tWorld\r\n"`, TokStringLit, false},
-		{"mixed_unicode_hex", `"\u1234\xFF"`, TokStringLit, false},
-		{"mixed_all", `"Hello\n\t\u1234\xFF\0World"`, TokStringLit, false},
+		{"mixed_escapes", `"Hello\n\tWorld\r\n"`, TokStrLit, false},
+		{"mixed_unicode_hex", `"\u1234\xFF"`, TokStrLit, false},
+		{"mixed_all", `"Hello\n\t\u1234\xFF\0World"`, TokStrLit, false},
 
 		// Invalid cases - Unicode
-		{"invalid_unicode_empty", `"\u"`, TokStringLit, true},
-		{"invalid_unicode_short", `"\u123"`, TokStringLit, true},
-		{"invalid_unicode_long", `"\U1234"`, TokStringLit, true},
-		{"invalid_unicode_letters", `"\uXYZ"`, TokStringLit, true},
-		{"invalid_unicode_partial", `"\u12G4"`, TokStringLit, true},
-		{"invalid_unicode_space", `"\u 123"`, TokStringLit, true},
+		{"invalid_unicode_empty", `"\u"`, TokStrLit, true},
+		{"invalid_unicode_short", `"\u123"`, TokStrLit, true},
+		{"invalid_unicode_long", `"\U1234"`, TokStrLit, true},
+		{"invalid_unicode_letters", `"\uXYZ"`, TokStrLit, true},
+		{"invalid_unicode_partial", `"\u12G4"`, TokStrLit, true},
+		{"invalid_unicode_space", `"\u 123"`, TokStrLit, true},
 
 		// Invalid cases - Hex
-		{"invalid_hex_empty", `"\x"`, TokStringLit, true},
-		{"invalid_hex_short", `"\xF"`, TokStringLit, true},
-		{"invalid_hex_letters", `"\xXY"`, TokStringLit, true},
-		{"invalid_hex_space", `"\x F"`, TokStringLit, true},
+		{"invalid_hex_empty", `"\x"`, TokStrLit, true},
+		{"invalid_hex_short", `"\xF"`, TokStrLit, true},
+		{"invalid_hex_letters", `"\xXY"`, TokStrLit, true},
+		{"invalid_hex_space", `"\x F"`, TokStrLit, true},
 
 		// Invalid cases - General
-		{"unterminated", `"abc`, TokStringLit, true},
-		{"unterminated_escape", `"abc\`, TokStringLit, true},
-		{"invalid_escape", `"\k"`, TokStringLit, true},
-		{"invalid_escape_exclamation", `"\!"`, TokStringLit, true},
-		{"bare_backslash", `"\"`, TokStringLit, true},
-		{"newline_in_string", "\"abc\ndef\"", TokStringLit, true},
+		{"unterminated", `"abc`, TokStrLit, true},
+		{"unterminated_escape", `"abc\`, TokStrLit, true},
+		{"invalid_escape", `"\k"`, TokStrLit, true},
+		{"invalid_escape_exclamation", `"\!"`, TokStrLit, true},
+		{"bare_backslash", `"\"`, TokStrLit, true},
+		{"newline_in_string", "\"abc\ndef\"", TokStrLit, true},
 	}
 
 	for _, tt := range tests {
@@ -725,38 +725,38 @@ func TestInterpolatedStringLiterals(t *testing.T) {
 		wantErr  bool
 	}{
 		// Basic interpolation cases
-		{"empty", `"Hello \()!"`, TokInterpStringLit, false},
-		{"simple_identifier", `"Hello \(name)!"`, TokInterpStringLit, false},
-		{"simple_number", `"Count: \(123)!"`, TokInterpStringLit, false},
-		{"simple_string", `"Name: \("Alice")!"`, TokInterpStringLit, false},
-		{"simple_char", `"Initial: \('A')!"`, TokInterpStringLit, false},
+		{"empty", `"Hello \()!"`, TokInterpStrLit, false},
+		{"simple_identifier", `"Hello \(name)!"`, TokInterpStrLit, false},
+		{"simple_number", `"Count: \(123)!"`, TokInterpStrLit, false},
+		{"simple_string", `"Name: \("Alice")!"`, TokInterpStrLit, false},
+		{"simple_char", `"Initial: \('A')!"`, TokInterpStrLit, false},
 
 		// Multiple interpolations
-		{"two_interpolations", `"Hello \(first) \(last)!"`, TokInterpStringLit, false},
-		{"three_interpolations", `"Hello \(title) \(first) \(last)!"`, TokInterpStringLit, false},
-		{"adjacent_interpolations", `"\(a)\(b)\(c)"`, TokInterpStringLit, false},
+		{"two_interpolations", `"Hello \(first) \(last)!"`, TokInterpStrLit, false},
+		{"three_interpolations", `"Hello \(title) \(first) \(last)!"`, TokInterpStrLit, false},
+		{"adjacent_interpolations", `"\(a)\(b)\(c)"`, TokInterpStrLit, false},
 
 		// Complex expressions
-		{"expression_concat", `"Hello \(first + " " + last)!"`, TokInterpStringLit, false},
-		{"expression_math", `"Sum: \(a + b + c)!"`, TokInterpStringLit, false},
-		{"expression_nested_parens", `"Result: \((a + b) * (c + d))!"`, TokInterpStringLit, false},
-		{"expression_function_call", `"Length: \(string.len(name))!"`, TokInterpStringLit, false},
+		{"expression_concat", `"Hello \(first + " " + last)!"`, TokInterpStrLit, false},
+		{"expression_math", `"Sum: \(a + b + c)!"`, TokInterpStrLit, false},
+		{"expression_nested_parens", `"Result: \((a + b) * (c + d))!"`, TokInterpStrLit, false},
+		{"expression_function_call", `"Length: \(string.len(name))!"`, TokInterpStrLit, false},
 
 		// Escapes and special characters
-		{"escaped_quotes", `"Quote: \("\"nested\"")"`, TokInterpStringLit, false},
-		{"escaped_backslash", `"Path: \("C:\\Program Files")"`, TokInterpStringLit, false},
-		{"newline_escape", `"Lines: \("first\nsecond")"`, TokInterpStringLit, false},
-		{"mixed_escapes", `"Mixed: \("tab\t\"quote\"\nline")"`, TokInterpStringLit, false},
+		{"escaped_quotes", `"Quote: \("\"nested\"")"`, TokInterpStrLit, false},
+		{"escaped_backslash", `"Path: \("C:\\Program Files")"`, TokInterpStrLit, false},
+		{"newline_escape", `"Lines: \("first\nsecond")"`, TokInterpStrLit, false},
+		{"mixed_escapes", `"Mixed: \("tab\t\"quote\"\nline")"`, TokInterpStrLit, false},
 
 		// Non-interpolation parentheses
-		{"non_interpolation_parens", `"Welcome \(opponent1) )))---((( \(opponent2)"`, TokInterpStringLit, false},
+		{"non_interpolation_parens", `"Welcome \(opponent1) )))---((( \(opponent2)"`, TokInterpStrLit, false},
 
 		// Invalid cases
-		{"unterminated_string", `"Hello \(name`, TokInterpStringLit, true},
-		{"unterminated_interpolation", `"Hello \(name"`, TokInterpStringLit, true},
-		{"unmatched_parens", `"Hello \((name)!"`, TokInterpStringLit, true},
-		{"raw_newline", `"Hello \(name)`, TokInterpStringLit, true},
-		{"nested_string_newline", `"Hello \("name`, TokInterpStringLit, true},
+		{"unterminated_string", `"Hello \(name`, TokInterpStrLit, true},
+		{"unterminated_interpolation", `"Hello \(name"`, TokInterpStrLit, true},
+		{"unmatched_parens", `"Hello \((name)!"`, TokInterpStrLit, true},
+		{"raw_newline", `"Hello \(name)`, TokInterpStrLit, true},
+		{"nested_string_newline", `"Hello \("name`, TokInterpStrLit, true},
 	}
 
 	for _, tt := range tests {
@@ -778,25 +778,25 @@ func TestMultiLineStringLiteral(t *testing.T) {
 		wantErr  bool
 	}{
 		// Basic cases
-		{"empty_string", "```\n\n```", TokMultiLineStringLit, false},
-		{"simple_text", "```\nSome text\n```", TokMultiLineStringLit, false},
-		{"with_processor", "```processor\nSome text\n```", TokMultiLineStringLit, false},
-		{"consistent_indentation", "```\n  First line\n  Second line\n  ```", TokMultiLineStringLit, false},
+		{"empty_string", "```\n\n```", TokMultiStrLit, false},
+		{"simple_text", "```\nSome text\n```", TokMultiStrLit, false},
+		{"with_processor", "```processor\nSome text\n```", TokMultiStrLit, false},
+		{"consistent_indentation", "```\n  First line\n  Second line\n  ```", TokMultiStrLit, false},
 
 		// Escape sequences and special characters
-		{"escape_sequences", "```\nSpecial: \\n\\t\\\"\\'\n```", TokMultiLineStringLit, false},
-		{"interpolation", "```\nHello \\(name)!\n```", TokMultiLineStringLit, false},
-		{"byte_escapes", "```\nByte: \\x48\\x69\n```", TokMultiLineStringLit, false},
-		{"unicode_escapes", "```\nUnicode: \\u2603 \\U0001F680\n```", TokMultiLineStringLit, false},
-		{"mixed_escapes", "```\nMixed: \\n\\t\\x48\\u2603\n```", TokMultiLineStringLit, false},
+		{"escape_sequences", "```\nSpecial: \\n\\t\\\"\\'\n```", TokMultiStrLit, false},
+		{"interpolation", "```\nHello \\(name)!\n```", TokMultiStrLit, false},
+		{"byte_escapes", "```\nByte: \\x48\\x69\n```", TokMultiStrLit, false},
+		{"unicode_escapes", "```\nUnicode: \\u2603 \\U0001F680\n```", TokMultiStrLit, false},
+		{"mixed_escapes", "```\nMixed: \\n\\t\\x48\\u2603\n```", TokMultiStrLit, false},
 
 		// Invalid cases
-		{"unclosed_string", "```\nUnclosed string", TokMultiLineStringLit, true},
-		{"missing_newline_after_open", "```Some text\n```", TokMultiLineStringLit, true},
-		{"missing_newline_before_close", "```\nSome text```", TokMultiLineStringLit, true},
-		{"invalid_escape", "```\nInvalid escape: \\z\n```", TokMultiLineStringLit, true},
-		{"incomplete_unicode", "```\nBad unicode: \\u26\n```", TokMultiLineStringLit, true},
-		{"unterminated_interpolation", "```\nUnterminated: \\(expr\n```", TokMultiLineStringLit, true},
+		{"unclosed_string", "```\nUnclosed string", TokMultiStrLit, true},
+		{"missing_newline_after_open", "```Some text\n```", TokMultiStrLit, true},
+		{"missing_newline_before_close", "```\nSome text```", TokMultiStrLit, true},
+		{"invalid_escape", "```\nInvalid escape: \\z\n```", TokMultiStrLit, true},
+		{"incomplete_unicode", "```\nBad unicode: \\u26\n```", TokMultiStrLit, true},
+		{"unterminated_interpolation", "```\nUnterminated: \\(expr\n```", TokMultiStrLit, true},
 	}
 
 	for _, tt := range tests {
@@ -813,23 +813,23 @@ func TestMultiLineStringLiteral(t *testing.T) {
 func TestUnion(t *testing.T) {
 	const source = "List[a] = union(\n  Nil\n  Cons[a]\n)\n"
 	testTokenizeSeq(t, source, []TokenType{
-		TokTypeIdentifier, // List
-		TokOpenBracket,    // [
-		TokIdentifier,     // a
-		TokCloseBracket,   // ]
-		TokOpAssign,       // =
-		TokKeywordUnion,   // union
-		TokOpenParen,      // (
-		TokEOL,            // \n
-		TokTypeIdentifier, // Nil
-		TokEOL,            // \n
-		TokTypeIdentifier, // Cons
-		TokOpenBracket,    // [
-		TokIdentifier,     // a
-		TokCloseBracket,   // ]
-		TokEOL,            // \n
-		TokCloseParen,     // )
-		TokEOL,            // \n
+		TokTypeID,       // List
+		TokOpenBracket,  // [
+		TokID,           // a
+		TokCloseBracket, // ]
+		TokOpAssign,     // =
+		TokKwUnion,      // union
+		TokOpenParen,    // (
+		TokEOL,          // \n
+		TokTypeID,       // Nil
+		TokEOL,          // \n
+		TokTypeID,       // Cons
+		TokOpenBracket,  // [
+		TokID,           // a
+		TokCloseBracket, // ]
+		TokEOL,          // \n
+		TokCloseParen,   // )
+		TokEOL,          // \n
 		TokEOF,
 	})
 }
@@ -837,14 +837,14 @@ func TestUnion(t *testing.T) {
 func TestComment(t *testing.T) {
 	const source = "a = 5 # assign 5 to a\nb = 10\n"
 	testTokenizeSeq(t, source, []TokenType{
-		TokIdentifier, // a
-		TokOpAssign,   // =
-		TokDecimalLit, // 5
-		TokComment,    // #
-		TokIdentifier, // b
-		TokOpAssign,   // =
-		TokDecimalLit, // 10
-		TokEOL,        // \n
+		TokID,       // a
+		TokOpAssign, // =
+		TokDecLit,   // 5
+		TokComment,  // #
+		TokID,       // b
+		TokOpAssign, // =
+		TokDecLit,   // 10
+		TokEOL,      // \n
 		TokEOF,
 	})
 }
@@ -875,9 +875,9 @@ func TestFloatLiterals(t *testing.T) {
 func TestDecimalMemberAccess(t *testing.T) {
 	const source = "123.string()"
 	testTokenizeSeq(t, source, []TokenType{
-		TokDecimalLit, // 123
+		TokDecLit,     // 123
 		TokDot,        // .
-		TokIdentifier, // string
+		TokID,         // string
 		TokOpenParen,  // (
 		TokCloseParen, // )
 		TokEOF,
@@ -887,9 +887,9 @@ func TestDecimalMemberAccess(t *testing.T) {
 func TestBinaryMemberAccess(t *testing.T) {
 	const source = "0b1010.string()"
 	testTokenizeSeq(t, source, []TokenType{
-		TokBinaryLit,  // 0b1010
+		TokBinLit,     // 0b1010
 		TokDot,        // .
-		TokIdentifier, // string
+		TokID,         // string
 		TokOpenParen,  // (
 		TokCloseParen, // )
 		TokEOF,
@@ -899,9 +899,9 @@ func TestBinaryMemberAccess(t *testing.T) {
 func TestOctalMemberAccess(t *testing.T) {
 	const source = "0o123.string()"
 	testTokenizeSeq(t, source, []TokenType{
-		TokOctalLit,   // 0o123
+		TokOctLit,     // 0o123
 		TokDot,        // .
-		TokIdentifier, // string
+		TokID,         // string
 		TokOpenParen,  // (
 		TokCloseParen, // )
 		TokEOF,
@@ -913,7 +913,7 @@ func TestHexadecimalMemberAccess(t *testing.T) {
 	testTokenizeSeq(t, source, []TokenType{
 		TokHexLit,     // 0xDEADBEEF
 		TokDot,        // .
-		TokIdentifier, // string
+		TokID,         // string
 		TokOpenParen,  // (
 		TokCloseParen, // )
 		TokEOF,
@@ -925,7 +925,7 @@ func TestFloatMemberAccess(t *testing.T) {
 	testTokenizeSeq(t, source1, []TokenType{
 		TokFloatLit,   // 123e456
 		TokDot,        // .
-		TokIdentifier, // string
+		TokID,         // string
 		TokOpenParen,  // (
 		TokCloseParen, // )
 		TokEOF,
@@ -935,7 +935,7 @@ func TestFloatMemberAccess(t *testing.T) {
 	testTokenizeSeq(t, source2, []TokenType{
 		TokFloatLit,   // 123.456
 		TokDot,        // .
-		TokIdentifier, // string
+		TokID,         // string
 		TokOpenParen,  // (
 		TokCloseParen, // )
 		TokEOF,
@@ -945,9 +945,9 @@ func TestFloatMemberAccess(t *testing.T) {
 func TestRangeOp(t *testing.T) {
 	const source = "1..2"
 	testTokenizeSeq(t, source, []TokenType{
-		TokDecimalLit, // 1
-		TokOpRange,    // ..
-		TokDecimalLit, // 2
+		TokDecLit,  // 1
+		TokOpRange, // ..
+		TokDecLit,  // 2
 		TokEOF,
 	})
 }
@@ -955,8 +955,8 @@ func TestRangeOp(t *testing.T) {
 func TestRestOp(t *testing.T) {
 	const source = "...rest"
 	testTokenizeSeq(t, source, []TokenType{
-		TokOpRest,     // ...
-		TokIdentifier, // rest
+		TokOpRest, // ...
+		TokID,     // rest
 		TokEOF,
 	})
 }
@@ -971,46 +971,46 @@ func TestSymbolLiterals(t *testing.T) {
 		seqTypes []TokenType
 	}{
 		// Valid simple symbol literals
-		{"uppercase_A", ":A", TokSymbolLit, false, false, nil},
-		{"uppercase_Z", ":Z", TokSymbolLit, false, false, nil},
-		{"lowercase_a", ":a", TokSymbolLit, false, false, nil},
-		{"lowercase_z", ":z", TokSymbolLit, false, false, nil},
-		{"all_uppercase", ":ABCDEFGHIJKLMNOPQRSTUVWXYZ", TokSymbolLit, false, false, nil},
-		{"all_lowercase", ":abcdefghijklmnopqrstuvwxyz", TokSymbolLit, false, false, nil},
+		{"uppercase_A", ":A", TokSymLit, false, false, nil},
+		{"uppercase_Z", ":Z", TokSymLit, false, false, nil},
+		{"lowercase_a", ":a", TokSymLit, false, false, nil},
+		{"lowercase_z", ":z", TokSymLit, false, false, nil},
+		{"all_uppercase", ":ABCDEFGHIJKLMNOPQRSTUVWXYZ", TokSymLit, false, false, nil},
+		{"all_lowercase", ":abcdefghijklmnopqrstuvwxyz", TokSymLit, false, false, nil},
 
 		// Valid quoted symbol literal
-		{"quoted_symbol", `:"anything but a newline"`, TokSymbolLit, false, false, nil},
+		{"quoted_symbol", `:"anything but a newline"`, TokSymLit, false, false, nil},
 
 		// Invalid symbol literals
-		{"invalid_digit_0", ":0", TokSymbolLit, true, false, nil},
-		{"invalid_digit_1", ":1", TokSymbolLit, true, false, nil},
-		{"invalid_digit_9", ":9", TokSymbolLit, true, false, nil},
-		{"unterminated_quoted", `:"this symbol does not end`, TokSymbolLit, true, false, nil},
-		{"newline_in_quoted", ":\"no\nnewlines!", TokSymbolLit, true, false, nil},
+		{"invalid_digit_0", ":0", TokSymLit, true, false, nil},
+		{"invalid_digit_1", ":1", TokSymLit, true, false, nil},
+		{"invalid_digit_9", ":9", TokSymLit, true, false, nil},
+		{"unterminated_quoted", `:"this symbol does not end`, TokSymLit, true, false, nil},
+		{"newline_in_quoted", ":\"no\nnewlines!", TokSymLit, true, false, nil},
 
 		// Symbol in sequence
-		{"symbol_in_assignment", "foo = :foo", TokSymbolLit, false, true, []TokenType{
-			TokIdentifier, // foo
-			TokOpAssign,   // =
-			TokSymbolLit,  // :foo
+		{"symbol_in_assignment", "foo = :foo", TokSymLit, false, true, []TokenType{
+			TokID,       // foo
+			TokOpAssign, // =
+			TokSymLit,   // :foo
 			TokEOF,
 		}},
 
-		{"symbol_in_comparison", `:foo == Symbol("foo")`, TokSymbolLit, false, true, []TokenType{
-			TokSymbolLit,      // :foo
-			TokOpEqual,        // ==
-			TokTypeIdentifier, // Symbol
-			TokOpenParen,      // (
-			TokStringLit,      // "foo"
-			TokCloseParen,     // )
+		{"symbol_in_comparison", `:foo == Symbol("foo")`, TokSymLit, false, true, []TokenType{
+			TokSymLit,     // :foo
+			TokOpEQ,       // ==
+			TokTypeID,     // Symbol
+			TokOpenParen,  // (
+			TokStrLit,     // "foo"
+			TokCloseParen, // )
 			TokEOF,
 		}},
 
 		// Invalid symbol in sequence
-		{"invalid_symbol_in_seq", `foo = :"foo`, TokSymbolLit, true, true, []TokenType{
-			TokIdentifier, // foo
-			TokOpAssign,   // =
-			TokSymbolLit,  // :"foo
+		{"invalid_symbol_in_seq", `foo = :"foo`, TokSymLit, true, true, []TokenType{
+			TokID,       // foo
+			TokOpAssign, // =
+			TokSymLit,   // :"foo
 			TokEOF,
 		}},
 	}

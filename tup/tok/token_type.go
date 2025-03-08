@@ -25,96 +25,96 @@ const (
 	TokOpCheckedMul // ?*
 	TokOpCheckedSub // ?-
 
-	TokOpDiv        // /
-	TokOpMinus      // -
-	TokOpMod        // %
-	TokOpMul        // *
-	TokOpNot        // !
-	TokOpPlus       // +
-	TokOpPow        // ^
-	TokOpShiftLeft  // <<
-	TokOpShiftRight // >>
+	TokOpDiv   // /
+	TokOpMinus // -
+	TokOpMod   // %
+	TokOpMul   // *
+	TokOpNot   // !
+	TokOpPlus  // +
+	TokOpPow   // ^
+	TokOpSHL   // <<
+	TokOpSHR   // >>
 
 	// Bitwise Operators
-	TokOpBitwiseAnd // &
-	TokOpBitwiseOr  // |
-	TokOpBitwiseNot // ~
+	TokOpBitAnd // &
+	TokOpBitOr  // |
+	TokOpBitNot // ~
 
 	// Relational Operators
-	TokOpEqual        // ==
-	TokOpGreaterEqual // >=
-	TokOpGreaterThan  // >
-	TokOpLessEqual    // <=
-	TokOpLessThan     // <
-	TokOpNotEqual     // !=
-	TokOpMatches      // =~
-	TokOpCompareTo    //<=>
+	TokOpEQ      // ==
+	TokOpGE      // >=
+	TokOpGT      // >
+	TokOpLE      // <=
+	TokOpLT      // <
+	TokOpNE      // !=
+	TokOpMatch   // =~
+	TokOpCompare //<=>
 
 	// Logical Operators
-	TokOpLogicalAnd // &&
-	TokOpLogicalOr  // ||
+	TokOpLogAnd // &&
+	TokOpLogOr  // ||
 
 	// Range and Rest Operators
 	TokOpRange
 	TokOpRest
 
 	// Assignment
-	TokOpBitwiseAndEqual // &=
-	TokOpBitwiseOrEqual  // |=
-	TokOpDivEqual        // /=
-	TokOpAssign          // =
-	TokOpLogicalAndEqual // &&=
-	TokOpLogicalOrEqual  // ||=
-	TokOpMinusEqual      // -=
-	TokOpModEqual        // %=
-	TokOpMulEqual        // *=
-	TokOpPlusEqual       // +=
-	TokOpPowEqual        // ^=
-	TokOpShiftLeftEqual  // <<=
-	TokOpShiftRightEqual // >>=
+	TokOpBitAndEQ // &=
+	TokOpBitOrEQ  // |=
+	TokOpDivEQ    // /=
+	TokOpAssign   // =
+	TokOpLogAndEQ // &&=
+	TokOpLogOrEQ  // ||=
+	TokOpMinusEQ  // -=
+	TokOpModEQ    // %=
+	TokOpMulEQ    // *=
+	TokOpPlusEQ   // +=
+	TokOpPowEQ    // ^=
+	TokOpSHL_EQ   // <<=
+	TokOpSHR_EQ   // >>=
 
 	// Identifiers
-	TokIdentifier     // id
-	TokTypeIdentifier // ID
+	TokID     // id
+	TokTypeID // ID
 
 	// Keywords
-	TokKeywordArray       // array
-	TokKeywordBreak       // break
-	TokKeywordContinue    // continue
-	TokKeywordContract    // contract
-	TokKeywordElse        // else
-	TokKeywordEnum        // enum
-	TokKeywordError       // error
-	TokKeywordFn          // fn
-	TokKeywordFx          // fx
-	TokKeywordFor         // for
-	TokKeywordIf          // if
-	TokKeywordIn          // in
-	TokKeywordIt          // it
-	TokKeywordImport      // import
-	TokKeywordMut         // mut
-	TokKeywordReturn      // return
-	TokKeywordSwitch      // switch
-	TokKeywordTry         // try
-	TokKeywordTryBreak    // try_break
-	TokKeywordTryContinue // try_continue
-	TokKeywordType        // type
-	TokKeywordTypeof      // typeof
-	TokKeywordUnion       // union
+	TokKwArray       // array
+	TokKwBreak       // break
+	TokKwContinue    // continue
+	TokKwContract    // contract
+	TokKwElse        // else
+	TokKwEnum        // enum
+	TokKwError       // error
+	TokKwFn          // fn
+	TokKwFx          // fx
+	TokKwFor         // for
+	TokKwIf          // if
+	TokKwIn          // in
+	TokKwIt          // it
+	TokKwImport      // import
+	TokKwMut         // mut
+	TokKwReturn      // return
+	TokKwSwitch      // switch
+	TokKwTry         // try
+	TokKwTryBreak    // try_break
+	TokKwTryContinue // try_continue
+	TokKwType        // type
+	TokKwTypeof      // typeof
+	TokKwUnion       // union
 
 	// Literals
-	TokBinaryLit          // 10101010
-	TokBoolLit            // false
-	TokRuneLit            // 'A'
-	TokDecimalLit         // 1234567890
-	TokFloatLit           // 123.456
-	TokHexLit             // 0xDEADBEEF
-	TokInterpStringLit    // "a\(b)c"
-	TokOctalLit           // 0o777
-	TokRawStringLit       // `\no\escapes`
-	TokStringLit          // "Hello, World"
-	TokMultiLineStringLit // ```\nHello, World\n```
-	TokSymbolLit          // :ok
+	TokBinLit       // 10101010
+	TokBoolLit      // false
+	TokRuneLit      // 'A'
+	TokDecLit       // 1234567890
+	TokFloatLit     // 123.456
+	TokHexLit       // 0xDEADBEEF
+	TokInterpStrLit // "a\(b)c"
+	TokOctLit       // 0o777
+	TokRawStrLit    // `\no\escapes`
+	TokStrLit       // "Hello, World"
+	TokMultiStrLit  // ```\nHello, World\n```
+	TokSymLit       // :ok
 
 	// Comments
 	TokComment // #
@@ -122,7 +122,7 @@ const (
 	// Special tokens
 	TokEOL
 	TokEOF
-	TokInvalid
+	TokINV
 )
 
 func (t TokenType) String() string {
@@ -151,102 +151,102 @@ var TokenTypes = map[TokenType]string{
 	TokOpCheckedMul: "?*",
 	TokOpCheckedSub: "?-",
 
-	TokOpDiv:        "/",
-	TokOpMinus:      "-",
-	TokOpMod:        "%",
-	TokOpMul:        "*",
-	TokOpNot:        "!",
-	TokOpPlus:       "+",
-	TokOpPow:        "^",
-	TokOpShiftLeft:  "<",
-	TokOpShiftRight: ">",
+	TokOpDiv:   "/",
+	TokOpMinus: "-",
+	TokOpMod:   "%",
+	TokOpMul:   "*",
+	TokOpNot:   "!",
+	TokOpPlus:  "+",
+	TokOpPow:   "^",
+	TokOpSHL:   "<",
+	TokOpSHR:   ">",
 
 	// Bitwise Operators
-	TokOpBitwiseAnd: "&",
-	TokOpBitwiseOr:  "|",
-	TokOpBitwiseNot: "~",
+	TokOpBitAnd: "&",
+	TokOpBitOr:  "|",
+	TokOpBitNot: "~",
 
 	// Relational Operators
-	TokOpEqual:        "==",
-	TokOpGreaterEqual: ">=",
-	TokOpGreaterThan:  ">",
-	TokOpLessEqual:    "<=",
-	TokOpLessThan:     "<",
-	TokOpNotEqual:     "!=",
-	TokOpMatches:      "=~",
-	TokOpCompareTo:    "<=>",
+	TokOpEQ:      "==",
+	TokOpGE:      ">=",
+	TokOpGT:      ">",
+	TokOpLE:      "<=",
+	TokOpLT:      "<",
+	TokOpNE:      "!=",
+	TokOpMatch:   "=~",
+	TokOpCompare: "<=>",
 
 	// Logical Operators
-	TokOpLogicalAnd: "&&",
-	TokOpLogicalOr:  "||",
+	TokOpLogAnd: "&&",
+	TokOpLogOr:  "||",
 
 	// Range and Rest Operators
 	TokOpRange: "..",
 	TokOpRest:  "...",
 
 	// Assignment
-	TokOpBitwiseAndEqual: "&=",
-	TokOpBitwiseOrEqual:  "|=",
-	TokOpDivEqual:        "/=",
-	TokOpAssign:          "=",
-	TokOpLogicalAndEqual: "&&=",
-	TokOpLogicalOrEqual:  "||=",
-	TokOpMinusEqual:      "-=",
-	TokOpModEqual:        "%=",
-	TokOpMulEqual:        "*=",
-	TokOpPlusEqual:       "+=",
-	TokOpPowEqual:        "^=",
-	TokOpShiftLeftEqual:  "<<=",
-	TokOpShiftRightEqual: ">>=",
+	TokOpBitAndEQ: "&=",
+	TokOpBitOrEQ:  "|=",
+	TokOpDivEQ:    "/=",
+	TokOpAssign:   "=",
+	TokOpLogAndEQ: "&&=",
+	TokOpLogOrEQ:  "||=",
+	TokOpMinusEQ:  "-=",
+	TokOpModEQ:    "%=",
+	TokOpMulEQ:    "*=",
+	TokOpPlusEQ:   "+=",
+	TokOpPowEQ:    "^=",
+	TokOpSHL_EQ:   "<<=",
+	TokOpSHR_EQ:   ">>=",
 
 	// Identifiers
-	TokIdentifier:     "identifier",
-	TokTypeIdentifier: "type_identifier",
+	TokID:     "identifier",
+	TokTypeID: "type_identifier",
 
 	// Keywords
-	TokKeywordArray:       "array",
-	TokKeywordBreak:       "break",
-	TokKeywordContinue:    "continue",
-	TokKeywordContract:    "contract",
-	TokKeywordElse:        "else",
-	TokKeywordEnum:        "enum",
-	TokKeywordError:       "error",
-	TokKeywordFn:          "fn",
-	TokKeywordFx:          "fx",
-	TokKeywordFor:         "for",
-	TokKeywordIf:          "if",
-	TokKeywordIn:          "in",
-	TokKeywordIt:          "it",
-	TokKeywordImport:      "import",
-	TokKeywordMut:         "mut",
-	TokKeywordReturn:      "return",
-	TokKeywordSwitch:      "switch",
-	TokKeywordTry:         "try",
-	TokKeywordTryBreak:    "try_break",
-	TokKeywordTryContinue: "try_continue",
-	TokKeywordType:        "type",
-	TokKeywordTypeof:      "typeof",
-	TokKeywordUnion:       "union",
+	TokKwArray:       "array",
+	TokKwBreak:       "break",
+	TokKwContinue:    "continue",
+	TokKwContract:    "contract",
+	TokKwElse:        "else",
+	TokKwEnum:        "enum",
+	TokKwError:       "error",
+	TokKwFn:          "fn",
+	TokKwFx:          "fx",
+	TokKwFor:         "for",
+	TokKwIf:          "if",
+	TokKwIn:          "in",
+	TokKwIt:          "it",
+	TokKwImport:      "import",
+	TokKwMut:         "mut",
+	TokKwReturn:      "return",
+	TokKwSwitch:      "switch",
+	TokKwTry:         "try",
+	TokKwTryBreak:    "try_break",
+	TokKwTryContinue: "try_continue",
+	TokKwType:        "type",
+	TokKwTypeof:      "typeof",
+	TokKwUnion:       "union",
 
 	// Literals
-	TokBinaryLit:          "binary_literal",
-	TokBoolLit:            "bool_literal",
-	TokRuneLit:            "rune_literal",
-	TokDecimalLit:         "decimal_literal",
-	TokFloatLit:           "float_literal",
-	TokHexLit:             "hex_literal",
-	TokInterpStringLit:    "interp_string_literal",
-	TokOctalLit:           "octal_literal",
-	TokRawStringLit:       "raw_string_literal",
-	TokStringLit:          "string_literal",
-	TokMultiLineStringLit: "multi_line_string_literal",
-	TokSymbolLit:          "symbol_literal",
+	TokBinLit:       "binary_literal",
+	TokBoolLit:      "bool_literal",
+	TokRuneLit:      "rune_literal",
+	TokDecLit:       "decimal_literal",
+	TokFloatLit:     "float_literal",
+	TokHexLit:       "hex_literal",
+	TokInterpStrLit: "interp_string_literal",
+	TokOctLit:       "octal_literal",
+	TokRawStrLit:    "raw_string_literal",
+	TokStrLit:       "string_literal",
+	TokMultiStrLit:  "multi_line_string_literal",
+	TokSymLit:       "symbol_literal",
 
 	// Comments
 	TokComment: "comment",
 
 	// Special tokens
-	TokEOL:     "EOL",
-	TokEOF:     "EOF",
-	TokInvalid: "invalid",
+	TokEOL: "EOL",
+	TokEOF: "EOF",
+	TokINV: "invalid",
 }

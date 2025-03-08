@@ -5,30 +5,29 @@ type state int
 
 const (
 	stateStart state = iota
-	stateIdentifier
-	stateNumber
+	stateID
+	stateNum
 	stateInt
 	stateIntDot
 	stateFloat
-	stateExponent
-	stateExponentSign
-	stateExponentInt
-	stateBinaryFirst
-	stateBinary
-	stateHexadecimalFirst
-	stateHexadecimal
-	stateOctalFirst
-	stateOctal
-	stateRawStringLiteral
-	stateRawStringLiteralEnd
-	stateStringLiteral
-	stateEscapeSequence
-	stateHexEscape
+	stateExp
+	stateExpSign
+	stateExpInt
+	stateBinFirst
+	stateBin
+	stateHexFirst
+	stateHex
+	stateOctFirst
+	stateOct
+	stateRawStrLit
+	stateStrLit
+	stateEscSeq
+	stateHexEsc
 	stateComment
 	stateColon
-	stateSymbol
-	stateQuotedSymbol
-	stateMultiLineStringBody
+	stateSym
+	stateQuotedSym
+	stateMultiStrBody
 )
 
 // Tokenizer holds the state of the lexer.
@@ -36,8 +35,6 @@ type Tokenizer struct {
 	file   *Source
 	source []byte
 	index  int
-	// line   int
-	bol    int // beginning-of-line index
 	states []state
 }
 
@@ -54,8 +51,6 @@ func NewTokenizer(source []byte, filename string) *Tokenizer {
 		file:   file,
 		source: source,
 		index:  idx,
-		// line:   0,
-		bol: idx,
 	}
 }
 
@@ -100,8 +95,8 @@ func (t *Tokenizer) Next() Token {
 	start := t.index
 	tokenType := TokEOF
 	invalid := false
-	escapeDigits := 0
-	escapeDigitsExpected := 0
+	escDigits := 0
+	escDigitsExpected := 0
 
 	// Use a labeled loop so we can "break out" when a token is complete.
 outer:
@@ -117,7 +112,7 @@ outer:
 			switch c {
 			case 0:
 				if t.index != len(t.source) {
-					tokenType = TokInvalid
+					tokenType = TokINV
 				}
 				break outer
 			case ' ', '\t', '\r':
@@ -196,7 +191,7 @@ outer:
 				done = true
 			case '/':
 				if t.peek(2) == "/=" {
-					tokenType = TokOpDivEqual
+					tokenType = TokOpDivEQ
 					t.index++
 				} else {
 					tokenType = TokOpDiv
@@ -204,7 +199,7 @@ outer:
 				done = true
 			case '-':
 				if t.peek(2) == "-=" {
-					tokenType = TokOpMinusEqual
+					tokenType = TokOpMinusEQ
 					t.index++
 				} else {
 					tokenType = TokOpMinus
@@ -212,7 +207,7 @@ outer:
 				done = true
 			case '%':
 				if t.peek(2) == "%=" {
-					tokenType = TokOpModEqual
+					tokenType = TokOpModEQ
 					t.index++
 				} else {
 					tokenType = TokOpMod
@@ -220,7 +215,7 @@ outer:
 				done = true
 			case '*':
 				if t.peek(2) == "*=" {
-					tokenType = TokOpMulEqual
+					tokenType = TokOpMulEQ
 					t.index++
 				} else {
 					tokenType = TokOpMul
@@ -228,7 +223,7 @@ outer:
 				done = true
 			case '!':
 				if t.peek(2) == "!=" {
-					tokenType = TokOpNotEqual
+					tokenType = TokOpNE
 					t.index++
 				} else {
 					tokenType = TokOpNot
@@ -236,7 +231,7 @@ outer:
 				done = true
 			case '+':
 				if t.peek(2) == "+=" {
-					tokenType = TokOpPlusEqual
+					tokenType = TokOpPlusEQ
 					t.index++
 				} else {
 					tokenType = TokOpPlus
@@ -244,7 +239,7 @@ outer:
 				done = true
 			case '^':
 				if t.peek(2) == "^=" {
-					tokenType = TokOpPowEqual
+					tokenType = TokOpPowEQ
 					t.index++
 				} else {
 					tokenType = TokOpPow
@@ -253,142 +248,142 @@ outer:
 			case '>':
 				// Check 3-character operators first
 				if t.peek(3) == ">>=" {
-					tokenType = TokOpShiftRightEqual
+					tokenType = TokOpSHR_EQ
 					t.index += 2
 				} else if t.peek(2) == ">>" {
 					// Then 2-character operators
-					tokenType = TokOpShiftRight
+					tokenType = TokOpSHR
 					t.index++
 				} else if t.peek(2) == ">=" {
-					tokenType = TokOpGreaterEqual
+					tokenType = TokOpGE
 					t.index++
 				} else {
 					// Finally, single character operator
-					tokenType = TokOpGreaterThan
+					tokenType = TokOpGT
 				}
 				done = true
 			case '&':
 				if t.peek(3) == "&&=" {
-					tokenType = TokOpLogicalAndEqual
+					tokenType = TokOpLogAndEQ
 					t.index += 2
 				} else if t.peek(2) == "&&" {
-					tokenType = TokOpLogicalAnd
+					tokenType = TokOpLogAnd
 					t.index++
 				} else if t.peek(2) == "&=" {
-					tokenType = TokOpBitwiseAndEqual
+					tokenType = TokOpBitAndEQ
 					t.index++
 				} else {
-					tokenType = TokOpBitwiseAnd
+					tokenType = TokOpBitAnd
 				}
 				done = true
 			case '|':
 				if t.peek(3) == "||=" {
-					tokenType = TokOpLogicalOrEqual
+					tokenType = TokOpLogOrEQ
 					t.index += 2
 				} else if t.peek(2) == "||" {
-					tokenType = TokOpLogicalOr
+					tokenType = TokOpLogOr
 					t.index++
 				} else if t.peek(2) == "|=" {
-					tokenType = TokOpBitwiseOrEqual
+					tokenType = TokOpBitOrEQ
 					t.index++
 				} else {
-					tokenType = TokOpBitwiseOr
+					tokenType = TokOpBitOr
 				}
 				done = true
 			case '=':
 				if t.peek(2) == "==" {
-					tokenType = TokOpEqual
+					tokenType = TokOpEQ
 					t.index++
 				} else if t.peek(2) == "=~" {
-					tokenType = TokOpMatches
+					tokenType = TokOpMatch
 					t.index++
 				} else {
 					tokenType = TokOpAssign
 				}
 				done = true
 			case '~':
-				tokenType = TokOpBitwiseNot
+				tokenType = TokOpBitNot
 				done = true
 			case '#':
 				tokenType = TokComment
 				st = stateComment
 			case '0':
-				tokenType = TokDecimalLit
-				st = stateNumber
+				tokenType = TokDecLit
+				st = stateNum
 			case '`':
 				if t.peek(3) == "```" {
 					t.index += 3
-					tokenType = TokMultiLineStringLit
+					tokenType = TokMultiStrLit
 					invalid = t.skipMultiLineHeader()
 					if invalid {
 						break outer
 					}
-					st = stateMultiLineStringBody
+					st = stateMultiStrBody
 				} else {
 					// Regular raw string literal
-					tokenType = TokRawStringLit
-					st = stateRawStringLiteral
+					tokenType = TokRawStrLit
+					st = stateRawStrLit
 				}
 			case '"':
-				tokenType = TokStringLit
-				st = stateStringLiteral
+				tokenType = TokStrLit
+				st = stateStrLit
 			case '<':
 				// Check 3-character operators first
 				if t.peek(3) == "<=>" {
-					tokenType = TokOpCompareTo
+					tokenType = TokOpCompare
 					t.index += 2
 				} else if t.peek(3) == "<<=" {
-					tokenType = TokOpShiftLeftEqual
+					tokenType = TokOpSHL_EQ
 					t.index += 2
 				} else if t.peek(2) == "<<" {
 					// Then 2-character operators
-					tokenType = TokOpShiftLeft
+					tokenType = TokOpSHL
 					t.index++
 				} else if t.peek(2) == "<=" {
-					tokenType = TokOpLessEqual
+					tokenType = TokOpLE
 					t.index++
 				} else {
 					// Finally, single character operator
-					tokenType = TokOpLessThan
+					tokenType = TokOpLT
 				}
 				done = true
 			default:
 				// Identifier start: letters or underscore.
 				if isIdentifierStart(c) {
-					tokenType = TokIdentifier
-					st = stateIdentifier
-				} else if isDecimalDigit(c) {
+					tokenType = TokID
+					st = stateID
+				} else if isDecDigit(c) {
 					// Safe to use isDecimalDigit here since '0' is handled in its own case above
 					st = stateInt
-					tokenType = TokDecimalLit
+					tokenType = TokDecLit
 				} else {
-					tokenType = TokInvalid
+					tokenType = TokINV
 					done = true
 				}
 			}
 		case stateColon:
 			switch {
 			case isIdentifierStart(c):
-				tokenType = TokSymbolLit
-				st = stateSymbol
-			case isDecimalDigit(c):
-				tokenType = TokSymbolLit
-				st = stateSymbol
+				tokenType = TokSymLit
+				st = stateSym
+			case isDecDigit(c):
+				tokenType = TokSymLit
+				st = stateSym
 				invalid = true
 			case c == '"':
-				tokenType = TokSymbolLit
-				st = stateQuotedSymbol
+				tokenType = TokSymLit
+				st = stateQuotedSym
 			default:
 				break outer
 			}
-		case stateSymbol:
+		case stateSym:
 			switch {
 			case isIdentifierStart(c):
 				// continue symbol
 			default:
 				break outer
 			}
-		case stateQuotedSymbol:
+		case stateQuotedSym:
 			switch c {
 			case 0:
 				invalid = true
@@ -401,177 +396,177 @@ outer:
 			default:
 				// Just continue consuming characters in the string
 			}
-		case stateIdentifier:
+		case stateID:
 			switch {
-			case isIdentifierStart(c) || isDecimalDigit(c):
+			case isIdentifierStart(c) || isDecDigit(c):
 				// Continue identifier.
 			default:
 				lexeme := string(t.source[start:t.index])
 				if reserved, ok := GetReserved(lexeme); ok {
 					tokenType = reserved
 				} else if len(lexeme) > 0 && lexeme[0] >= 'A' && lexeme[0] <= 'Z' {
-					tokenType = TokTypeIdentifier
+					tokenType = TokTypeID
 				}
 				break outer
 			}
-		case stateNumber:
+		case stateNum:
 			switch {
-			case isDecimalDigit(c) || c == '_':
+			case isDecDigit(c) || c == '_':
 				st = stateInt
 			case c == '.':
 				tokenType = TokFloatLit
 				st = stateIntDot
 			case c == 'b':
-				tokenType = TokBinaryLit
-				st = stateBinaryFirst
+				tokenType = TokBinLit
+				st = stateBinFirst
 			case c == 'o':
-				tokenType = TokOctalLit
-				st = stateOctalFirst
+				tokenType = TokOctLit
+				st = stateOctFirst
 			case c == 'x':
 				tokenType = TokHexLit
-				st = stateHexadecimalFirst
-			case isInvalidNumberLetter(c):
+				st = stateHexFirst
+			case isInvNumLetter(c):
 				invalid = true
 			default:
 				break outer
 			}
 		case stateInt:
 			switch {
-			case isDecimalDigit(c) || c == '_':
+			case isDecDigit(c) || c == '_':
 				// Continue int.
 			case c == '.':
 				tokenType = TokFloatLit
 				st = stateIntDot
 			case c == 'e':
 				tokenType = TokFloatLit
-				st = stateExponent
-			case isInvalidIntegerLetter(c):
+				st = stateExp
+			case isInvIntLetter(c):
 				invalid = true
 			default:
 				break outer
 			}
 		case stateIntDot:
 			switch {
-			case isDecimalDigit(c):
+			case isDecDigit(c):
 				st = stateFloat
 			default:
-				tokenType = TokDecimalLit
+				tokenType = TokDecLit
 				t.index--
 				break outer
 			}
 		case stateFloat:
 			switch {
-			case isDecimalDigit(c) || c == '_':
+			case isDecDigit(c) || c == '_':
 				// Continue float.
 			case c == 'e':
-				st = stateExponent
+				st = stateExp
 			case c == '.':
 				break outer
-			case isInvalidIntegerLetter(c):
+			case isInvIntLetter(c):
 				invalid = true
 			default:
 				break outer
 			}
-		case stateExponent:
+		case stateExp:
 			switch {
 			case c == '+' || c == '-':
-				st = stateExponentSign
-			case isDecimalDigit(c):
-				st = stateExponentInt
-			case isInvalidExponentIntChar(c):
+				st = stateExpSign
+			case isDecDigit(c):
+				st = stateExpInt
+			case isInvExpIntChar(c):
 				invalid = true
 			default:
 				invalid = true
 				break outer
 			}
-		case stateExponentSign:
+		case stateExpSign:
 			switch {
-			case isDecimalDigit(c):
-				st = stateExponentInt
-			case isInvalidExponentSignChar(c):
+			case isDecDigit(c):
+				st = stateExpInt
+			case isInvExpSignChar(c):
 				invalid = true
 			default:
 				invalid = true
 				break outer
 			}
-		case stateExponentInt:
+		case stateExpInt:
 			switch {
-			case isDecimalDigit(c):
+			case isDecDigit(c):
 				// Continue exponent integer.
 			case c == '.':
 				break outer
-			case isInvalidExponentIntChar(c):
+			case isInvExpIntChar(c):
 				invalid = true
 			default:
 				break outer
 			}
-		case stateBinaryFirst:
+		case stateBinFirst:
 			switch {
 			case c >= '0' && c <= '1':
-				st = stateBinary
-			case isInvalidBinaryFirstChar(c):
-				st = stateBinary
+				st = stateBin
+			case isInvBinFirstChar(c):
+				st = stateBin
 				invalid = true
 			default:
 				invalid = true
 				break outer
 			}
-		case stateBinary:
+		case stateBin:
 			switch {
 			case c == '0' || c == '1' || c == '_':
 				// Continue binary.
 			case c == '.':
 				break outer
-			case isInvalidBinaryChar(c):
+			case isInvBinChar(c):
 				invalid = true
 			default:
 				break outer
 			}
-		case stateHexadecimalFirst:
+		case stateHexFirst:
 			switch {
 			case isHexDigit(c):
-				st = stateHexadecimal
+				st = stateHex
 			case c == 0:
 				invalid = true
 				break outer
 			default:
-				st = stateHexadecimal
+				st = stateHex
 				invalid = true
 			}
-		case stateHexadecimal:
+		case stateHex:
 			switch {
 			case isHexDigit(c) || c == '_':
 				// Continue hexadecimal.
 			case c == '.':
 				break outer
-			case isInvalidHexadecimalChar(c):
+			case isInvHexChar(c):
 				invalid = true
 			default:
 				break outer
 			}
-		case stateOctalFirst:
+		case stateOctFirst:
 			switch {
-			case isOctalDigit(c):
-				st = stateOctal
-			case isInvalidOctalFirstChar(c):
-				st = stateOctal
+			case isOctDigit(c):
+				st = stateOct
+			case isInvOctFirstChar(c):
+				st = stateOct
 				invalid = true
 			default:
 				invalid = true
 				break outer
 			}
-		case stateOctal:
+		case stateOct:
 			switch {
-			case isOctalDigit(c) || c == '_':
+			case isOctDigit(c) || c == '_':
 				// Continue octal.
 			case c == '.':
 				break outer
-			case isInvalidOctalChar(c):
+			case isInvOctChar(c):
 				invalid = true
 			default:
 				break outer
 			}
-		case stateRawStringLiteral:
+		case stateRawStrLit:
 			switch {
 			case c == 0:
 				invalid = true
@@ -587,14 +582,14 @@ outer:
 			default:
 				// Continue reading characters
 			}
-		case stateStringLiteral:
+		case stateStrLit:
 			switch {
 			case c == 0:
 				invalid = true
 				break outer
 			case c == '\\':
 				if t.peek(2) == "\\(" {
-					tokenType = TokInterpStringLit
+					tokenType = TokInterpStrLit
 					t.index += 2 // Skip the `\(`
 					invalid = t.skipInterpolation()
 					if invalid {
@@ -603,7 +598,7 @@ outer:
 					t.index--
 				} else {
 					t.pushState(st)
-					st = stateEscapeSequence
+					st = stateEscSeq
 				}
 			case c == '"':
 				done = true
@@ -613,7 +608,7 @@ outer:
 			default:
 				// Just continue consuming characters in the string
 			}
-		case stateMultiLineStringBody:
+		case stateMultiStrBody:
 			switch {
 			case c == 0:
 				invalid = true
@@ -628,7 +623,7 @@ outer:
 					t.index--
 				} else {
 					t.pushState(st)
-					st = stateEscapeSequence
+					st = stateEscSeq
 				}
 			case c == '`':
 				if t.peek(3) == "```" {
@@ -647,24 +642,24 @@ outer:
 			default:
 				// Just continue consuming characters in the string
 			}
-		case stateEscapeSequence:
+		case stateEscSeq:
 			switch {
 			case c == 0:
 				invalid = true
 				break outer
 			case c == 'x':
-				st = stateHexEscape
-				escapeDigits = 0
-				escapeDigitsExpected = 2
+				st = stateHexEsc
+				escDigits = 0
+				escDigitsExpected = 2
 			case c == 'u':
-				st = stateHexEscape
-				escapeDigits = 0
-				escapeDigitsExpected = 4
+				st = stateHexEsc
+				escDigits = 0
+				escDigitsExpected = 4
 			case c == 'U':
-				st = stateHexEscape
-				escapeDigits = 0
-				escapeDigitsExpected = 8
-			case isSimpleEscape(c):
+				st = stateHexEsc
+				escDigits = 0
+				escDigitsExpected = 8
+			case isSimpleEsc(c):
 				// Valid single-char escape; return to string literal
 				st = t.popState()
 			default:
@@ -672,14 +667,14 @@ outer:
 				st = t.popState()
 				invalid = true
 			}
-		case stateHexEscape:
+		case stateHexEsc:
 			switch {
 			case c == 0:
 				invalid = true
 				break outer
 			case isHexDigit(c):
-				escapeDigits++
-				if escapeDigits == escapeDigitsExpected {
+				escDigits++
+				if escDigits == escDigitsExpected {
 					st = t.popState()
 				}
 			default:

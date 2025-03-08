@@ -7,19 +7,19 @@ func isHexDigit(c byte) bool {
 		(c >= 'A' && c <= 'F')
 }
 
-// isSimpleEscape returns true if c is a valid single-character escape sequence
-func isSimpleEscape(c byte) bool {
+// isSimpleEsc returns true if c is a valid single-character escape sequence
+func isSimpleEsc(c byte) bool {
 	return c == 'n' || c == 't' || c == '"' || c == '\'' || c == '\\' ||
 		c == 'r' || c == 'b' || c == 'f' || c == 'v' || c == '0'
 }
 
-// isOctalDigit returns true if c is a valid octal digit
-func isOctalDigit(c byte) bool {
+// isOctDigit returns true if c is a valid octal digit
+func isOctDigit(c byte) bool {
 	return c >= '0' && c <= '7'
 }
 
-// isDecimalDigit returns true if c is a valid decimal digit
-func isDecimalDigit(c byte) bool {
+// isDecDigit returns true if c is a valid decimal digit
+func isDecDigit(c byte) bool {
 	return c >= '0' && c <= '9'
 }
 
@@ -33,56 +33,56 @@ func isIdentifierStart(c byte) bool {
 	return isLetter(c) || c == '_'
 }
 
-// isInvalidNumberLetter returns true if c is a letter that would make a number invalid
+// isInvNumLetter returns true if c is a letter that would make a number invalid
 // This excludes 'b', 'o', and 'x' which are handled separately as valid number prefixes
-func isInvalidNumberLetter(c byte) bool {
+func isInvNumLetter(c byte) bool {
 	return isLetter(c) && c != 'b' && c != 'o' && c != 'x'
 }
 
-// isInvalidIntegerLetter returns true if c is a letter that would make an integer invalid
+// isInvIntLetter returns true if c is a letter that would make an integer invalid
 // This excludes 'e' which is handled separately as an exponent marker
-func isInvalidIntegerLetter(c byte) bool {
+func isInvIntLetter(c byte) bool {
 	return isLetter(c) && c != 'e'
 }
 
-// isInvalidExponentSignChar returns true if c is an invalid character after an exponent sign
+// isInvExpSignChar returns true if c is an invalid character after an exponent sign
 // This includes letters, underscore, and signs (+ or -) since we've already handled the sign
-func isInvalidExponentSignChar(c byte) bool {
+func isInvExpSignChar(c byte) bool {
 	return isLetter(c) || c == '_' || c == '+' || c == '-'
 }
 
-// isInvalidExponentIntChar returns true if c is an invalid character in an exponent's integer part
+// isInvExpIntChar returns true if c is an invalid character in an exponent's integer part
 // This includes letters and underscore since only digits are allowed
-func isInvalidExponentIntChar(c byte) bool {
+func isInvExpIntChar(c byte) bool {
 	return isLetter(c) || c == '_'
 }
 
-// isInvalidBinaryFirstChar returns true if c is an invalid character for the first position of a binary number
+// isInvBinFirstChar returns true if c is an invalid character for the first position of a binary number
 // This includes any character that is not 0 or 1
-func isInvalidBinaryFirstChar(c byte) bool {
+func isInvBinFirstChar(c byte) bool {
 	return (c >= '2' && c <= '9') || isLetter(c) || c == '_' || c == '.'
 }
 
-// isInvalidBinaryChar returns true if c is an invalid character for a binary number
+// isInvBinChar returns true if c is an invalid character for a binary number
 // This includes any character that is not 0, 1, or underscore
-func isInvalidBinaryChar(c byte) bool {
+func isInvBinChar(c byte) bool {
 	return (c >= '2' && c <= '9') || isLetter(c)
 }
 
-// isInvalidOctalChar returns true if c is an invalid character for an octal number
+// isInvOctChar returns true if c is an invalid character for an octal number
 // This includes any character that is not an octal digit (0-7) or underscore
-func isInvalidOctalChar(c byte) bool {
+func isInvOctChar(c byte) bool {
 	return (c >= '8' && c <= '9') || isLetter(c)
 }
 
-// isInvalidOctalFirstChar returns true if c is an invalid character for the first position of an octal number
+// isInvOctFirstChar returns true if c is an invalid character for the first position of an octal number
 // This includes any character that is not an octal digit (0-7)
-func isInvalidOctalFirstChar(c byte) bool {
+func isInvOctFirstChar(c byte) bool {
 	return (c >= '8' && c <= '9') || isLetter(c) || c == '_' || c == '.'
 }
 
-// isInvalidHexadecimalChar returns true if c is a letter that would make a hexadecimal number invalid
+// isInvHexChar returns true if c is a letter that would make a hexadecimal number invalid
 // This includes letters G-Z and g-z, since A-F and a-f are valid hex digits
-func isInvalidHexadecimalChar(c byte) bool {
+func isInvHexChar(c byte) bool {
 	return (c >= 'G' && c <= 'Z') || (c >= 'g' && c <= 'z')
 }
