@@ -47,6 +47,10 @@ func testTokenizeInvalid(t *testing.T, source string, expectedType TokenType) {
 	if !token.Invalid {
 		t.Errorf("Expected invalid token for %q", source)
 	}
+	// Check that error offset is set
+	if token.ErrorOffset == 0 {
+		t.Errorf("Expected error offset to be set for invalid token %q", source)
+	}
 	// For invalid tokens that contain a newline, we only expect the value up to the newline
 	lastNewline := strings.IndexByte(source, '\n')
 	expectedValue := source
@@ -1035,6 +1039,72 @@ func TestSymbolLiterals(t *testing.T) {
 					testTokenize(t, tt.input, tt.wantType)
 				}
 			}
+		})
+	}
+}
+
+// TestErrorOffset specifically tests that the error offset is correctly set
+func TestErrorOffset(t *testing.T) {
+	tests := []struct {
+		name              string
+		input             string
+		wantType          TokenType
+		expectedErrorChar byte // The character where the error is expected
+	}{
+		{"invalid_hex", "0xG", TokHexLit, 'G'},
+		{"invalid_bin", "0b2", TokBinLit, '2'},
+		{"invalid_oct", "0o8", TokOctLit, '8'},
+		{"invalid_dec_with_letter", "123a", TokDecLit, 'a'},
+		{"invalid_exp", "1e+a", TokFloatLit, 'a'},
+		{"unterminated_string", "\"abc", TokStrLit, 0}, // 0 represents EOF
+		{"invalid_escape", "\"\\k\"", TokStrLit, 'k'},
+		{"invalid_hex_escape", "\"\\x1g\"", TokStrLit, 'g'},
+		{"invalid_unicode_escape", "\"\\u12zg\"", TokStrLit, 'z'},
+		{"symbol_starting_with_digit", ":123", TokSymLit, '1'},
+		// These are treated as decimal literals followed by invalid characters
+		{"uppercase_hex_prefix", "0X1", TokDecLit, 'X'},
+		{"uppercase_bin_prefix", "0B1", TokDecLit, 'B'},
+		{"uppercase_oct_prefix", "0O7", TokDecLit, 'O'},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tokenizer := NewTokenizer([]byte(tt.input), "test.go")
+			token := tokenizer.Next()
+
+			// Basic checks
+			if token.Type != tt.wantType {
+				t.Errorf("Expected token type %v, got %v", TokenTypes[tt.wantType], TokenTypes[token.Type])
+			}
+			if !token.Invalid {
+				t.Errorf("Expected invalid token for %q", tt.input)
+			}
+
+			// Error offset checks
+			if token.ErrorOffset == 0 {
+				t.Errorf("Expected error offset to be set for invalid token %q", tt.input)
+			}
+
+			// Check that the error offset points to the correct character
+			if tt.expectedErrorChar != 0 {
+				// For specific character errors
+				index := token.ErrorOffset
+				if index >= int32(len(tt.input)) {
+					t.Errorf("Error offset %d is out of bounds for input %q", index, tt.input)
+				} else if tt.input[index] != tt.expectedErrorChar {
+					t.Errorf("Expected error at character %q, but error offset %d points to %q",
+						tt.expectedErrorChar, index, tt.input[index])
+				}
+			} else {
+				// For EOF errors, error offset should point to the end
+				if token.ErrorOffset != int32(len(tt.input)) {
+					t.Errorf("Expected error at EOF, but error offset is %d", token.ErrorOffset)
+				}
+			}
+
+			// Check the error position methods
+			errorLine, errorCol := token.ErrorPosition()
+			t.Logf("Error position for %q: line %d, col %d", tt.input, errorLine, errorCol)
 		})
 	}
 }

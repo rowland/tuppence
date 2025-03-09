@@ -1,7 +1,7 @@
 package tok
 
 // TokenType represents the various kinds of tokens.
-type TokenType int
+type TokenType byte
 
 const (
 	// Symbols

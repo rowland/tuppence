@@ -23,6 +23,10 @@ func isDecDigit(c byte) bool {
 	return c >= '0' && c <= '9'
 }
 
+func isBinaryDigit(c byte) bool {
+	return c == '0' || c == '1'
+}
+
 // isLetter returns true if c is a letter (A-Z or a-z)
 func isLetter(c byte) bool {
 	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')

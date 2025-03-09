@@ -38,21 +38,49 @@ func GetReserved(word string) (TokenType, bool) {
 
 // Token represents a lexical token.
 type Token struct {
-	Type    TokenType
-	Invalid bool
-	Value   string
-	File    *Source
-	Offset  int
+	Value       string
+	File        *Source
+	Offset      int32
+	ErrorOffset int32 // Position where error was detected within the token, 0 if no error
+	Type        TokenType
+	Invalid     bool
 }
 
 func (t *Token) Line() int {
-	return t.File.Line(t.Offset)
+	return t.File.Line(int(t.Offset))
 }
 
 func (t *Token) Column() int {
-	return t.File.Column(t.Offset)
+	return t.File.Column(int(t.Offset))
 }
 
 func (t *Token) Position() (int, int) {
-	return t.File.Position(t.Offset)
+	return t.File.Position(int(t.Offset))
+}
+
+// ErrorPosition returns the line and column where the error occurred within the token.
+// If the token is not invalid, it returns the same as Position().
+func (t *Token) ErrorPosition() (int, int) {
+	if !t.Invalid {
+		return t.Position()
+	}
+	return t.File.Position(int(t.ErrorOffset))
+}
+
+// ErrorLine returns the line where the error occurred within the token.
+// If the token is not invalid, it returns the same as Line().
+func (t *Token) ErrorLine() int {
+	if !t.Invalid {
+		return t.Line()
+	}
+	return t.File.Line(int(t.ErrorOffset))
+}
+
+// ErrorColumn returns the column where the error occurred within the token.
+// If the token is not invalid, it returns the same as Column().
+func (t *Token) ErrorColumn() int {
+	if !t.Invalid {
+		return t.Column()
+	}
+	return t.File.Column(int(t.ErrorOffset))
 }

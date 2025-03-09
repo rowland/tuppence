@@ -98,8 +98,17 @@ func (t *Tokenizer) Next() Token {
 	start := t.index
 	tokenType := TokEOF
 	invalid := false
+	errorIndex := 0 // Track the position where error is first encountered
 	escDigits := 0
 	escDigitsExpected := 0
+
+	// Helper function to mark a token as invalid and set the error index if not already set
+	markInvalid := func() {
+		invalid = true
+		if errorIndex == 0 {
+			errorIndex = t.index
+		}
+	}
 
 	// Use a labeled loop so we can "break out" when a token is complete.
 outer:
@@ -116,6 +125,7 @@ outer:
 			case 0:
 				if t.index != len(t.source) {
 					tokenType = TokINV
+					markInvalid()
 				}
 				break outer
 			case ' ', '\t', '\r':
@@ -361,6 +371,7 @@ outer:
 					tokenType = TokDecLit
 				} else {
 					tokenType = TokINV
+					markInvalid()
 					done = true
 				}
 			}
@@ -372,7 +383,7 @@ outer:
 			case isDecDigit(c):
 				tokenType = TokSymLit
 				st = stateSym
-				invalid = true
+				markInvalid()
 			case c == '"':
 				tokenType = TokSymLit
 				st = stateQuotedSym
@@ -389,12 +400,12 @@ outer:
 		case stateQuotedSym:
 			switch c {
 			case 0:
-				invalid = true
+				markInvalid()
 				break outer
 			case '"':
 				done = true
 			case '\n':
-				invalid = true
+				markInvalid()
 				break outer
 			default:
 				// Just continue consuming characters in the string
@@ -429,7 +440,7 @@ outer:
 				tokenType = TokHexLit
 				st = stateHexFirst
 			case isInvNumLetter(c):
-				invalid = true
+				markInvalid()
 			default:
 				break outer
 			}
@@ -444,7 +455,7 @@ outer:
 				tokenType = TokFloatLit
 				st = stateExp
 			case isInvIntLetter(c):
-				invalid = true
+				markInvalid()
 			default:
 				break outer
 			}
@@ -453,11 +464,12 @@ outer:
 			case isDecDigit(c):
 				st = stateFloat
 			case isIdentifierStart(c) || c == '.':
+				// This is not an error - it's likely UFCS (uniform function call syntax) or a range operator
 				tokenType = TokDecLit
-				t.index--
+				t.index-- // Back up to process the next character in next token
 				break outer
 			default:
-				invalid = true
+				markInvalid()
 				done = true
 			}
 		case stateFloat:
@@ -469,7 +481,7 @@ outer:
 			case c == '.':
 				break outer
 			case isInvIntLetter(c):
-				invalid = true
+				markInvalid()
 			default:
 				break outer
 			}
@@ -480,9 +492,9 @@ outer:
 			case isDecDigit(c):
 				st = stateExpInt
 			case isInvExpIntChar(c):
-				invalid = true
+				markInvalid()
 			default:
-				invalid = true
+				markInvalid()
 				break outer
 			}
 		case stateExpSign:
@@ -490,9 +502,9 @@ outer:
 			case isDecDigit(c):
 				st = stateExpInt
 			case isInvExpSignChar(c):
-				invalid = true
+				markInvalid()
 			default:
-				invalid = true
+				markInvalid()
 				break outer
 			}
 		case stateExpInt:
@@ -502,7 +514,7 @@ outer:
 			case c == '.':
 				break outer
 			case isInvExpIntChar(c):
-				invalid = true
+				markInvalid()
 			default:
 				break outer
 			}
@@ -512,19 +524,19 @@ outer:
 				st = stateBin
 			case isInvBinFirstChar(c):
 				st = stateBin
-				invalid = true
+				markInvalid()
 			default:
-				invalid = true
+				markInvalid()
 				break outer
 			}
 		case stateBin:
 			switch {
-			case c == '0' || c == '1' || c == '_':
+			case isBinaryDigit(c) || c == '_':
 				// Continue binary.
 			case c == '.':
 				break outer
 			case isInvBinChar(c):
-				invalid = true
+				markInvalid()
 			default:
 				break outer
 			}
@@ -533,11 +545,11 @@ outer:
 			case isHexDigit(c):
 				st = stateHex
 			case c == 0:
-				invalid = true
+				markInvalid()
 				break outer
 			default:
 				st = stateHex
-				invalid = true
+				markInvalid()
 			}
 		case stateHex:
 			switch {
@@ -546,7 +558,7 @@ outer:
 			case c == '.':
 				break outer
 			case isInvHexChar(c):
-				invalid = true
+				markInvalid()
 			default:
 				break outer
 			}
@@ -556,9 +568,9 @@ outer:
 				st = stateOct
 			case isInvOctFirstChar(c):
 				st = stateOct
-				invalid = true
+				markInvalid()
 			default:
-				invalid = true
+				markInvalid()
 				break outer
 			}
 		case stateOct:
@@ -568,14 +580,14 @@ outer:
 			case c == '.':
 				break outer
 			case isInvOctChar(c):
-				invalid = true
+				markInvalid()
 			default:
 				break outer
 			}
 		case stateRawStrLit:
 			switch {
 			case c == 0:
-				invalid = true
+				markInvalid()
 				break outer
 			case c == '`':
 				// Check if it's a double backtick (escaped backtick)
@@ -591,7 +603,7 @@ outer:
 		case stateStrLit:
 			switch {
 			case c == 0:
-				invalid = true
+				markInvalid()
 				break outer
 			case c == '\\':
 				if t.peek(2) == "\\(" {
@@ -599,6 +611,9 @@ outer:
 					t.index += 2 // Skip the `\(`
 					invalid = t.skipInterpolation()
 					if invalid {
+						if errorIndex == 0 {
+							errorIndex = t.index
+						}
 						break outer
 					}
 					t.index--
@@ -609,7 +624,7 @@ outer:
 			case c == '"':
 				done = true
 			case c == '\n':
-				invalid = true
+				markInvalid()
 				break outer
 			default:
 				// Just continue consuming characters in the string
@@ -617,13 +632,16 @@ outer:
 		case stateMultiStrBody:
 			switch {
 			case c == 0:
-				invalid = true
+				markInvalid()
 				break outer
 			case c == '\\':
 				if t.peek(2) == "\\(" {
 					t.index += 2 // Skip the `\(`
 					invalid = t.skipInterpolation()
 					if invalid {
+						if errorIndex == 0 {
+							errorIndex = t.index
+						}
 						break outer
 					}
 					t.index--
@@ -640,18 +658,18 @@ outer:
 						i--
 					}
 					if i >= 0 && t.source[i] != '\n' {
-						invalid = true
+						markInvalid()
 					}
 					t.index += 3
 					break outer
 				}
 			default:
-				// Just continue consuming characters in the string
+				// Just continue consuming characters in the string.
 			}
 		case stateEscSeq:
 			switch {
 			case c == 0:
-				invalid = true
+				markInvalid()
 				break outer
 			case c == 'x':
 				st = stateHexEsc
@@ -671,12 +689,12 @@ outer:
 			default:
 				// Any other char => mark invalid but return to string literal
 				st = t.popState()
-				invalid = true
+				markInvalid()
 			}
 		case stateHexEsc:
 			switch {
 			case c == 0:
-				invalid = true
+				markInvalid()
 				break outer
 			case isHexDigit(c):
 				escDigits++
@@ -685,7 +703,7 @@ outer:
 				}
 			default:
 				st = t.popState()
-				invalid = true
+				markInvalid()
 			}
 		case stateComment:
 			switch {
@@ -701,11 +719,12 @@ outer:
 	value := string(t.source[start:t.index])
 	// log.Printf("token: <%v> = %s, invalid: %v", tokenType, value, invalid)
 	return Token{
-		Type:    tokenType,
-		Invalid: invalid,
-		Value:   value,
-		File:    t.file,
-		Offset:  start,
+		Type:        tokenType,
+		Invalid:     invalid,
+		Value:       value,
+		File:        t.file,
+		Offset:      int32(start),
+		ErrorOffset: int32(errorIndex),
 	}
 }
 
