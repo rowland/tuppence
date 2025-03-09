@@ -38,12 +38,19 @@ func GetReserved(word string) (TokenType, bool) {
 
 // Token represents a lexical token.
 type Token struct {
-	Value       string
 	File        *Source
 	Offset      int32
-	ErrorOffset int32 // Position where error was detected within the token, 0 if no error
+	Length      int32 // Length of the token in bytes
+	ErrorOffset int32 // Position where error was detected, 0 if no error
 	Type        TokenType
 	Invalid     bool
+}
+
+// Value returns the string value of the token by slicing the source file.
+func (t *Token) Value() string {
+	start := int(t.Offset)
+	end := start + int(t.Length)
+	return string(t.File.contents[start:end])
 }
 
 func (t *Token) Line() int {

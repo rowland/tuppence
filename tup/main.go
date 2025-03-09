@@ -27,7 +27,7 @@ func main() {
 			log.Fatal(err)
 		}
 		for _, token := range tokens {
-			fmt.Printf("%s %s\n", token.Type, token.Value)
+			fmt.Printf("%s %s\n", token.Type, token.Value())
 		}
 	}
 

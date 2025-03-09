@@ -15,7 +15,7 @@ func testTokenizeSeq(t *testing.T, source string, expected []TokenType) {
 			t.Errorf("At index %d: expected token type %v, got %v", i, TokenTypes[exp], TokenTypes[token.Type])
 		}
 		if token.Invalid {
-			t.Errorf("At index %d: expected valid token, got invalid for %q", i, token.Value)
+			t.Errorf("At index %d: expected valid token, got invalid for %q", i, token.Value())
 		}
 	}
 	lastToken := tokenizer.Next()
@@ -57,8 +57,8 @@ func testTokenizeInvalid(t *testing.T, source string, expectedType TokenType) {
 	if lastNewline >= 0 {
 		expectedValue = source[:lastNewline]
 	}
-	if token.Value != expectedValue {
-		t.Errorf("Expected token value %q, got %q", expectedValue, token.Value)
+	if token.Value() != expectedValue {
+		t.Errorf("Expected token value %q, got %q", expectedValue, token.Value())
 	}
 
 	// Get the next token - it could be EOL, EOF, or something else
@@ -123,8 +123,8 @@ func testTokenize(t *testing.T, source string, expectedType TokenType) {
 	if token.Invalid {
 		t.Errorf("Expected valid token for %q", source)
 	}
-	if token.Value != source {
-		t.Errorf("Expected token value %q, got %q", source, token.Value)
+	if token.Value() != source {
+		t.Errorf("Expected token value %q, got %q", source, token.Value())
 	}
 	lastToken := tokenizer.Next()
 	if lastToken.Type != TokEOF {
@@ -153,10 +153,10 @@ func testTokenizeMultiLine(t *testing.T, source string, expectedType TokenType) 
 		t.Errorf("Expected token type %v, got %v for source %q", expectedType, token.Type, source)
 	}
 	if token.Invalid {
-		t.Errorf("Expected valid token for %q, got %q", source, token.Value)
+		t.Errorf("Expected valid token for %q, got %q", source, token.Value())
 	}
-	if token.Value != source {
-		t.Errorf("Expected token value %q, got %q", source, token.Value)
+	if token.Value() != source {
+		t.Errorf("Expected token value %q, got %q", source, token.Value())
 	}
 	lastToken := tokenizer.Next()
 	if lastToken.Type != TokEOF {
@@ -187,8 +187,8 @@ func testTokenizeMultiLineInvalid(t *testing.T, source string, expectedType Toke
 	if !token.Invalid {
 		t.Errorf("Expected invalid token for %q", source)
 	}
-	if token.Value != source {
-		t.Errorf("Expected token value %q, got %q", source, token.Value)
+	if token.Value() != source {
+		t.Errorf("Expected token value %q, got %q", source, token.Value())
 	}
 }
 

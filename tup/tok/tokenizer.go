@@ -609,11 +609,8 @@ outer:
 				if t.peek(2) == "\\(" {
 					tokenType = TokInterpStrLit
 					t.index += 2 // Skip the `\(`
-					invalid = t.skipInterpolation()
-					if invalid {
-						if errorIndex == 0 {
-							errorIndex = t.index
-						}
+					if t.skipInterpolation() {
+						markInvalid()
 						break outer
 					}
 					t.index--
@@ -637,11 +634,8 @@ outer:
 			case c == '\\':
 				if t.peek(2) == "\\(" {
 					t.index += 2 // Skip the `\(`
-					invalid = t.skipInterpolation()
-					if invalid {
-						if errorIndex == 0 {
-							errorIndex = t.index
-						}
+					if t.skipInterpolation() {
+						markInvalid()
 						break outer
 					}
 					t.index--
@@ -716,14 +710,13 @@ outer:
 			}
 		}
 	}
-	value := string(t.source[start:t.index])
 	// log.Printf("token: <%v> = %s, invalid: %v", tokenType, value, invalid)
 	return Token{
 		Type:        tokenType,
 		Invalid:     invalid,
-		Value:       value,
 		File:        t.file,
 		Offset:      int32(start),
+		Length:      int32(t.index - start),
 		ErrorOffset: int32(errorIndex),
 	}
 }
@@ -741,6 +734,8 @@ func (t *Tokenizer) skipInterpolation() (invalid bool) {
 			parens++
 		case token.Type == TokCloseParen:
 			parens--
+		case token.Invalid:
+			return true
 		}
 		if parens < 0 {
 			return false
@@ -758,6 +753,8 @@ func (t *Tokenizer) skipMultiLineHeader() (invalid bool) {
 			return true
 		case token.Type == TokEOL:
 			return false
+		case token.Invalid:
+			return true
 		}
 	}
 }

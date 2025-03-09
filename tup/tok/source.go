@@ -3,15 +3,15 @@ package tok
 import "sort"
 
 type Source struct {
-	source   []byte
+	contents []byte
 	filename string
 	bol      []int
 }
 
 // NewSource instantiates a new Source and calculates the beginning-of-line indices.
-func NewSource(source []byte, filename string) *Source {
+func NewSource(contents []byte, filename string) *Source {
 	newlines := 0
-	for _, c := range source {
+	for _, c := range contents {
 		if c == '\n' {
 			newlines++
 		}
@@ -19,13 +19,13 @@ func NewSource(source []byte, filename string) *Source {
 	bol := make([]int, newlines+1)
 	bol[0] = 0
 	line := 1
-	for i, c := range source {
+	for i, c := range contents {
 		if c == '\n' {
 			bol[line] = i + 1
 			line++
 		}
 	}
-	return &Source{source: source, filename: filename, bol: bol}
+	return &Source{contents: contents, filename: filename, bol: bol}
 }
 
 // Line returns the 0-basedline number for the given index.
