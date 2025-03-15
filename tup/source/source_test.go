@@ -1,4 +1,4 @@
-package tok
+package source
 
 import (
 	"testing"
@@ -9,8 +9,8 @@ func TestNewSource(t *testing.T) {
 	filename := "test.txt"
 	s := NewSource(source, filename)
 
-	if s.filename != filename {
-		t.Errorf("Expected filename %s, got %s", filename, s.filename)
+	if s.Filename != filename {
+		t.Errorf("Expected filename %s, got %s", filename, s.Filename)
 	}
 	if len(s.bol) != 6 { // 5 lines + 1 for the start
 		t.Errorf("Expected 6 BOL indices, got %d", len(s.bol))

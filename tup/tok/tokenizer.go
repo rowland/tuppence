@@ -1,6 +1,10 @@
 package tok
 
-import "bytes"
+import (
+	"bytes"
+
+	"github.com/rowland/tuppence/tup/source"
+)
 
 // We define a state machine for tokenizing.
 type state int
@@ -34,7 +38,7 @@ const (
 
 // Tokenizer holds the state of the lexer.
 type Tokenizer struct {
-	file   *Source
+	file   *source.Source
 	source []byte
 	index  int
 	states []state
@@ -43,16 +47,16 @@ type Tokenizer struct {
 var bom = []byte{0xEF, 0xBB, 0xBF} // UTF-8 BOM
 
 // NewTokenizer initializes a new Tokenizer.
-func NewTokenizer(source []byte, filename string) *Tokenizer {
-	file := NewSource(source, filename)
+func NewTokenizer(src []byte, filename string) *Tokenizer {
+	file := source.NewSource(src, filename)
 	idx := 0
 	// Skip the UTF-8 BOM if present.
-	if bytes.Equal(source[:3], bom) {
+	if bytes.Equal(src[:3], bom) {
 		idx = 3
 	}
 	return &Tokenizer{
 		file:   file,
-		source: source,
+		source: src,
 		index:  idx,
 	}
 }

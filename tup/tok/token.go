@@ -1,5 +1,9 @@
 package tok
 
+import (
+	"github.com/rowland/tuppence/tup/source"
+)
+
 // reservedWords maps identifier strings to reserved token types.
 var reservedWords = map[string]TokenType{
 	"array":        TokKwArray,
@@ -38,7 +42,7 @@ func GetReserved(word string) (TokenType, bool) {
 
 // Token represents a lexical token.
 type Token struct {
-	File        *Source
+	File        *source.Source
 	Offset      int32
 	Length      int32 // Length of the token in bytes
 	ErrorOffset int32 // Position where error was detected, 0 if no error
@@ -50,7 +54,7 @@ type Token struct {
 func (t *Token) Value() string {
 	start := int(t.Offset)
 	end := start + int(t.Length)
-	return string(t.File.contents[start:end])
+	return string(t.File.Contents[start:end])
 }
 
 func (t *Token) Line() int {

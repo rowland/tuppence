@@ -1,10 +1,10 @@
-package tok
+package source
 
 import "sort"
 
 type Source struct {
-	contents []byte
-	filename string
+	Contents []byte
+	Filename string
 	bol      []int
 }
 
@@ -25,7 +25,7 @@ func NewSource(contents []byte, filename string) *Source {
 			line++
 		}
 	}
-	return &Source{contents: contents, filename: filename, bol: bol}
+	return &Source{Contents: contents, Filename: filename, bol: bol}
 }
 
 // Line returns the 0-basedline number for the given index.
