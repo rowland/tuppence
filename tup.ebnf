@@ -38,7 +38,7 @@ block_parameters = "|" assignment_lhs "|" .
 
 boolean_literal = "true" | "false" .
 
-break_expression = "break" expression .
+break_expression = "break" [ expression ] .
 
 byte_escape_sequence = "\\" "x" hex_digit hex_digit .
 
@@ -62,6 +62,8 @@ content_line = { byte_escape_sequence
                | interpolation 
                | character - eol - "```" 
                } eol .
+
+continue_expression = "continue" [ expression ] .
 
 contract_declaration = "contract" "(" eol contract_members ")" .
 
@@ -336,6 +338,7 @@ primary_expression = "(" expression ")"
                    | type_constructor_call
                    | return_expression
                    | break_expression
+                   | continue_expression
                    | member_access
                    | tuple_update_expression
                    | safe_indexed_access
