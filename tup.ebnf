@@ -50,6 +50,10 @@ character = (* valid UTF-8 codepoint *) .
 
 comment = "#" { not_eol } eol .
 
+compound_assignment = identifier compound_assignment_op expression .
+
+compound_assignment_op = "+=" | "-=" | "*=" | "/=" | "<<=" | ">>=" .
+
 condition = expression .
 
 constant = literal
@@ -391,6 +395,7 @@ statement = ( type_qualified_function_declaration
             | type_qualified_declaration
             | type_declaration
             | function_declaration
+            | compound_assignment
             | assignment
             | expression
             ) .
