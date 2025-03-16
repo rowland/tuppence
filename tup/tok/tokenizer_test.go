@@ -1058,13 +1058,18 @@ func TestErrorOffset(t *testing.T) {
 		{"invalid_exp", "1e+a", TokFloatLit, 'a'},
 		{"unterminated_string", "\"abc", TokStrLit, 0}, // 0 represents EOF
 		{"invalid_escape", "\"\\k\"", TokStrLit, 'k'},
-		{"invalid_hex_escape", "\"\\x1g\"", TokStrLit, 'g'},
-		{"invalid_unicode_escape", "\"\\u12zg\"", TokStrLit, 'z'},
+		{"invalid_hex_escape_short", "\"\\x1g\"", TokStrLit, 'g'},
+		{"invalid_unicode_escape_short", "\"\\u12zg\"", TokStrLit, 'z'},
 		{"symbol_starting_with_digit", ":123", TokSymLit, '1'},
 		// These are treated as decimal literals followed by invalid characters
 		{"uppercase_hex_prefix", "0X1", TokDecLit, 'X'},
 		{"uppercase_bin_prefix", "0B1", TokDecLit, 'B'},
 		{"uppercase_oct_prefix", "0O7", TokDecLit, 'O'},
+		// Rune literal errors
+		{"empty_rune_literal", "''", TokRuneLit, '\''},
+		{"unterminated_rune", "'a", TokRuneLit, 0}, // EOF
+		{"invalid_rune_escape", "'\\q'", TokRuneLit, 'q'},
+		{"newline_in_rune", "'\\n\n'", TokRuneLit, '\n'},
 	}
 
 	for _, tt := range tests {
@@ -1105,6 +1110,140 @@ func TestErrorOffset(t *testing.T) {
 			// Check the error position methods
 			errorLine, errorCol := token.ErrorPosition()
 			t.Logf("Error position for %q: line %d, col %d", tt.input, errorLine, errorCol)
+		})
+	}
+}
+
+func TestRuneLiterals(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		wantType TokenType
+		wantErr  bool
+	}{
+		// Basic valid cases
+		{"ascii_letter", "'A'", TokRuneLit, false},
+		{"ascii_digit", "'0'", TokRuneLit, false},
+		{"ascii_symbol", "'!'", TokRuneLit, false},
+		{"space", "' '", TokRuneLit, false},
+		{"tab", "'\t'", TokRuneLit, false},
+
+		// Unicode characters (multi-byte UTF-8 sequences)
+		{"basic_unicode", "'é'", TokRuneLit, false},     // 2 bytes in UTF-8
+		{"greek_letter", "'Ω'", TokRuneLit, false},      // 2 bytes in UTF-8
+		{"emoji", "'😀'", TokRuneLit, false},             // 4 bytes in UTF-8
+		{"chinese_character", "'汉'", TokRuneLit, false}, // 3 bytes in UTF-8
+		{"arabic", "'ش'", TokRuneLit, false},            // 2 bytes in UTF-8
+		{"thai", "'ก'", TokRuneLit, false},              // 3 bytes in UTF-8
+		{"musical_symbol", "'𝄞'", TokRuneLit, false},    // 4 bytes in UTF-8 (G clef)
+
+		// Simple escape sequences
+		{"escape_newline", `'\n'`, TokRuneLit, false},
+		{"escape_tab", `'\t'`, TokRuneLit, false},
+		{"escape_backslash", `'\\'`, TokRuneLit, false},
+		{"escape_single_quote", `'\''`, TokRuneLit, false},
+		{"escape_double_quote", `'\"'`, TokRuneLit, false},
+		{"escape_carriage_return", `'\r'`, TokRuneLit, false},
+		{"escape_backspace", `'\b'`, TokRuneLit, false},
+		{"escape_form_feed", `'\f'`, TokRuneLit, false},
+		{"escape_vertical_tab", `'\v'`, TokRuneLit, false},
+		{"escape_null", `'\0'`, TokRuneLit, false},
+
+		// Hex escapes
+		{"hex_escape_lowercase", `'\x61'`, TokRuneLit, false}, // 'a'
+		{"hex_escape_uppercase", `'\x41'`, TokRuneLit, false}, // 'A'
+		{"hex_escape_max", `'\xFF'`, TokRuneLit, false},       // Latin small letter y with diaeresis
+
+		// Unicode escapes
+		{"unicode_4digit", `'\u03A9'`, TokRuneLit, false},     // Omega
+		{"unicode_8digit", `'\U0001F600'`, TokRuneLit, false}, // Grinning face emoji
+		{"unicode_mixed_case", `'\u03a9'`, TokRuneLit, false}, // Omega (lowercase hex)
+
+		// Invalid cases
+		{"unterminated", `'A`, TokRuneLit, true},
+		{"empty", `''`, TokRuneLit, true},
+
+		// These should be marked as invalid by the parser, not by the tokenizer
+		// The tokenizer just produces tokens, it doesn't validate rune semantics
+		{"multi_code_point", `'AB'`, TokRuneLit, false}, // Not invalid for tokenizer
+
+		// These escape sequence errors are still caught by the tokenizer
+		{"invalid_escape", `'\z'`, TokRuneLit, true},
+		{"invalid_hex_escape_short", `'\x1'`, TokRuneLit, true},
+		{"invalid_hex_escape_letter", `'\xGG'`, TokRuneLit, true},
+		{"invalid_unicode_escape_short", `'\u123'`, TokRuneLit, true},
+		{"invalid_unicode_escape_letter", `'\uXYZW'`, TokRuneLit, true},
+		{"invalid_unicode_long_escape_short", `'\U1234567'`, TokRuneLit, true},
+		{"newline_in_rune", "'\n'", TokRuneLit, true},
+		{"line_feed_in_rune", "'\\n\n'", TokRuneLit, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.wantErr {
+				testTokenizeInvalid(t, tt.input, tt.wantType)
+			} else {
+				testTokenize(t, tt.input, tt.wantType)
+			}
+		})
+	}
+}
+
+func TestRuneLiteralsInContext(t *testing.T) {
+	tests := []struct {
+		name       string
+		input      string
+		tokenTypes []TokenType
+	}{
+		{
+			"assignment",
+			"c = 'A'",
+			[]TokenType{TokID, TokOpAssign, TokRuneLit},
+		},
+		{
+			"arithmetic",
+			"c = 'A' + 1",
+			[]TokenType{TokID, TokOpAssign, TokRuneLit, TokOpPlus, TokDecLit},
+		},
+		{
+			"comparison",
+			"if c == 'A' { return true }",
+			[]TokenType{
+				TokKwIf, TokID, TokOpEQ, TokRuneLit,
+				TokOpenBrace, TokKwReturn, TokBoolLit, TokCloseBrace,
+			},
+		},
+		{
+			"function_call",
+			"char_to_int('A')",
+			[]TokenType{TokID, TokOpenParen, TokRuneLit, TokCloseParen},
+		},
+		{
+			"array_element",
+			"chars[0] = 'X'",
+			[]TokenType{
+				TokID, TokOpenBracket, TokDecLit, TokCloseBracket,
+				TokOpAssign, TokRuneLit,
+			},
+		},
+		{
+			"multiple_chars",
+			"text = 'H' + 'e' + 'l' + 'l' + 'o'",
+			[]TokenType{
+				TokID, TokOpAssign, TokRuneLit, TokOpPlus, TokRuneLit,
+				TokOpPlus, TokRuneLit, TokOpPlus, TokRuneLit, TokOpPlus, TokRuneLit,
+			},
+		},
+		{
+			"unicode_operation",
+			"delta = 'Δ' - 'Γ'",
+			[]TokenType{TokID, TokOpAssign, TokRuneLit, TokOpMinus, TokRuneLit},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			testTokenizeSeq(t, tt.input, tt.tokenTypes)
 		})
 	}
 }

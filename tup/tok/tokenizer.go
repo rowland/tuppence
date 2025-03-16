@@ -27,6 +27,7 @@ const (
 	stateOct
 	stateRawStrLit
 	stateStrLit
+	stateRuneLit
 	stateEscSeq
 	stateHexEsc
 	stateComment
@@ -364,6 +365,9 @@ outer:
 					tokenType = TokOpLT
 				}
 				done = true
+			case '\'':
+				tokenType = TokRuneLit
+				st = stateRuneLit
 			default:
 				// Identifier start: letters or underscore.
 				if isIdentifierStart(c) {
@@ -711,6 +715,29 @@ outer:
 				done = true
 			default:
 				// Continue consuming comment characters.
+			}
+		case stateRuneLit:
+			switch {
+			case c == 0:
+				markInvalid()
+				break outer
+			case c == '\\':
+				t.pushState(st)
+				st = stateEscSeq
+			case c == '\'':
+				// Check if this is an empty rune literal '' (no character between quotes)
+				if t.index-start == 1 {
+					markInvalid()
+				}
+				done = true
+			case c == '\n':
+				markInvalid()
+				break outer
+			default:
+				// Don't try to validate UTF-8 sequence length here
+				// We'll just accept any sequence between the quotes
+				// and let the parser validate that it's a single code point
+				// Just continue consuming characters in the rune literal
 			}
 		}
 	}
