@@ -1,20 +1,5 @@
 package ast
 
-// Export related node types
-const (
-	NodeExportAssignment                       NodeType = "ExportAssignment"
-	NodeExportDeclaration                      NodeType = "ExportDeclaration"
-	NodeExportFunctionDeclaration              NodeType = "ExportFunctionDeclaration"
-	NodeExportTypeDeclaration                  NodeType = "ExportTypeDeclaration"
-	NodeExportTypeQualifiedDeclaration         NodeType = "ExportTypeQualifiedDeclaration"
-	NodeExportTypeQualifiedFunctionDeclaration NodeType = "ExportTypeQualifiedFunctionDeclaration"
-	NodeFunctionDeclarationType                NodeType = "FunctionDeclarationType"
-	NodeFunctionParameterTypes                 NodeType = "FunctionParameterTypes"
-	NodeFunctionTypeDeclaration                NodeType = "FunctionTypeDeclaration"
-	NodeTypeQualifiedDeclaration               NodeType = "TypeQualifiedDeclaration"
-	NodeTypeQualifiedFunctionDeclaration       NodeType = "TypeQualifiedFunctionDeclaration"
-)
-
 // ExportAssignment represents an assignment that is exported
 type ExportAssignment struct {
 	BaseNode

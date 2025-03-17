@@ -1,12 +1,5 @@
 package ast
 
-// Identifier node types
-const (
-	NodeIdentifier         NodeType = "Identifier"
-	NodeTypeIdentifier     NodeType = "TypeIdentifier"
-	NodeFunctionIdentifier NodeType = "FunctionIdentifier"
-)
-
 // Identifier represents a regular identifier in the code (variable name, parameter name, etc.)
 type Identifier struct {
 	BaseNode
@@ -109,7 +102,7 @@ type RenameIdentifier struct {
 // NewRenameIdentifier creates a new RenameIdentifier node
 func NewRenameIdentifier(original *Identifier, renamed *Identifier) *RenameIdentifier {
 	return &RenameIdentifier{
-		BaseNode: BaseNode{NodeType: "RenameIdentifier"},
+		BaseNode: BaseNode{NodeType: NodeRenameIdentifier},
 		Original: original,
 		Renamed:  renamed,
 	}
@@ -141,7 +134,7 @@ type RenameType struct {
 // NewRenameType creates a new RenameType node
 func NewRenameType(original *TypeIdentifier, renamed *TypeIdentifier) *RenameType {
 	return &RenameType{
-		BaseNode: BaseNode{NodeType: "RenameType"},
+		BaseNode: BaseNode{NodeType: NodeRenameType},
 		Original: original,
 		Renamed:  renamed,
 	}

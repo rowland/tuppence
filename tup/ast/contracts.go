@@ -4,20 +4,6 @@ import (
 	"strings"
 )
 
-// Contract and union node types
-const (
-	NodeContractDeclaration          NodeType = "ContractDeclaration"
-	NodeContractField                NodeType = "ContractField"
-	NodeContractFunction             NodeType = "ContractFunction"
-	NodeContractMember               NodeType = "ContractMember"
-	NodeContractMembers              NodeType = "ContractMembers"
-	NodeContractImplementsAnnotation NodeType = "ContractImplementsAnnotation"
-	NodeUnionDeclaration             NodeType = "UnionDeclaration"
-	NodeUnionMemberDeclaration       NodeType = "UnionMemberDeclaration"
-	NodeUnionMembers                 NodeType = "UnionMembers"
-	NodeEnumMembers                  NodeType = "EnumMembers"
-)
-
 // ContractMember represents a member of a contract
 type ContractMember struct {
 	BaseNode

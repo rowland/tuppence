@@ -1,11 +1,5 @@
 package ast
 
-// Annotation-related node types
-const (
-	NodeAnnotationValue NodeType = "AnnotationValue"
-	NodeAnnotations     NodeType = "Annotations"
-)
-
 // AnnotationValue represents a value in an annotation
 type AnnotationValue struct {
 	BaseNode

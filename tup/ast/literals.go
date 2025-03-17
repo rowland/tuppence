@@ -5,22 +5,6 @@ import (
 	"strings"
 )
 
-// Literal node types
-const (
-	NodeIntegerLiteral            NodeType = "IntegerLiteral"
-	NodeFloatLiteral              NodeType = "FloatLiteral"
-	NodeBooleanLiteral            NodeType = "BooleanLiteral"
-	NodeStringLiteral             NodeType = "StringLiteral"
-	NodeRawStringLiteral          NodeType = "RawStringLiteral"
-	NodeInterpolatedStringLiteral NodeType = "InterpolatedStringLiteral"
-	NodeMultiLineStringLiteral    NodeType = "MultiLineStringLiteral"
-	NodeRuneLiteral               NodeType = "RuneLiteral"
-	NodeSymbolLiteral             NodeType = "SymbolLiteral"
-	NodeTupleLiteral              NodeType = "TupleLiteral"
-	NodeArrayLiteral              NodeType = "ArrayLiteral"
-	NodeFixedSizeArrayLiteral     NodeType = "FixedSizeArrayLiteral"
-)
-
 // Base type for all literals
 type Literal interface {
 	Node
@@ -200,7 +184,7 @@ type Interpolation struct {
 // NewInterpolation creates a new Interpolation node
 func NewInterpolation(expr Node) *Interpolation {
 	return &Interpolation{
-		BaseNode:   BaseNode{NodeType: "Interpolation"},
+		BaseNode:   BaseNode{NodeType: NodeInterpolation},
 		Expression: expr,
 	}
 }

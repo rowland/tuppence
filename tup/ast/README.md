@@ -14,19 +14,15 @@ All AST nodes implement the `Node` interface defined in `node.go`, which provide
 
 ```go
 type Node interface {
-	// GetNodeType returns the type of the node
-	GetNodeType() NodeType
-	
-	// GetPos returns the position information for the node
-	GetPos() Position
-	
-	// SetPos sets the position information for the node
-	SetPos(pos Position)
-	
-	// String returns a string representation of the node
+	// Pos returns the position of the first character belonging to the node
+	Pos() Position
+	// End returns the position of the first character immediately after the node
+	End() Position
+	// Type returns the type of the node
+	Type() NodeType
+	// String returns a textual representation of the node for debugging
 	String() string
-	
-	// Children returns the immediate child nodes
+	// Children returns all the child nodes
 	Children() []Node
 }
 ```

@@ -1,22 +1,5 @@
 package ast
 
-// Declaration node types
-const (
-	NodeNamespaceDeclaration NodeType = "NamespaceDeclaration"
-	NodeTypeDeclaration      NodeType = "TypeDeclaration"
-	NodeFunctionDeclaration  NodeType = "FunctionDeclaration"
-	NodeVariableDeclaration  NodeType = "VariableDeclaration"
-	NodeConstDeclaration     NodeType = "ConstDeclaration"
-	NodeEnumDeclaration      NodeType = "EnumDeclaration"
-	NodeEnumMember           NodeType = "EnumMember"
-	NodeGlobalDeclaration    NodeType = "GlobalDeclaration"
-	NodeImportDeclaration    NodeType = "ImportDeclaration"
-	NodeErrorDeclaration     NodeType = "ErrorDeclaration"
-	NodeTypeAlias            NodeType = "TypeAlias"
-	NodeAnnotation           NodeType = "Annotation"
-	NodeGenericTypeParam     NodeType = "GenericTypeParam"
-)
-
 // NamespaceDeclaration represents a namespace declaration
 type NamespaceDeclaration struct {
 	BaseNode

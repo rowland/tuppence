@@ -1,21 +1,5 @@
 package ast
 
-// PrimaryExpression node types
-const (
-	NodePrimaryExpression   NodeType = "PrimaryExpression"
-	NodeFunctionBlock       NodeType = "FunctionBlock"
-	NodeFunctionCallContext NodeType = "FunctionCallContext"
-	NodeFunctionArguments   NodeType = "FunctionArguments"
-	NodeLabeledArgument     NodeType = "LabeledArgument"
-	NodeSpreadArgument      NodeType = "SpreadArgument"
-	NodePartialApplication  NodeType = "PartialApplication"
-	NodeInitializer         NodeType = "Initializer"
-	NodeStepExpression      NodeType = "StepExpression"
-	NodeStatement           NodeType = "Statement"
-	NodeTopLevelItem        NodeType = "TopLevelItem"
-	NodeIterable            NodeType = "Iterable"
-)
-
 // PrimaryExpression represents the most basic form of expression
 // This includes literals, identifiers, and parenthesized expressions
 type PrimaryExpression struct {

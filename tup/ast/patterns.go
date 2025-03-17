@@ -1,20 +1,5 @@
 package ast
 
-// Pattern and matching node types
-const (
-	NodePatternIdentifier       NodeType = "PatternIdentifier"
-	NodeTuplePattern            NodeType = "TuplePattern"
-	NodeArrayPattern            NodeType = "ArrayPattern"
-	NodeTypePattern             NodeType = "TypePattern"
-	NodeLiteralPattern          NodeType = "LiteralPattern"
-	NodeWildcardPattern         NodeType = "WildcardPattern"
-	NodeMatchExpression         NodeType = "MatchExpression"
-	NodeMatchCase               NodeType = "MatchCase"
-	NodeDestructuringPattern    NodeType = "DestructuringPattern"
-	NodeAssignment              NodeType = "Assignment"
-	NodeDestructuringAssignment NodeType = "DestructuringAssignment"
-)
-
 // PatternIdentifier represents an identifier in a pattern
 type PatternIdentifier struct {
 	BaseNode

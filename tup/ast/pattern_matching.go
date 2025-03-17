@@ -1,16 +1,5 @@
 package ast
 
-// Additional pattern matching node types
-const (
-	NodeLabeledPattern       NodeType = "LabeledPattern"
-	NodeListMatch            NodeType = "ListMatch"
-	NodeMatchCondition       NodeType = "MatchCondition"
-	NodePatternMatch         NodeType = "PatternMatch"
-	NodeStructuredMatch      NodeType = "StructuredMatch"
-	NodeAssignmentLhs        NodeType = "AssignmentLhs"
-	NodeLabeledAssignmentLhs NodeType = "LabeledAssignmentLhs"
-)
-
 // LabeledPattern represents a labeled pattern in pattern matching
 type LabeledPattern struct {
 	BaseNode

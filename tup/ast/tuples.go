@@ -1,11 +1,5 @@
 package ast
 
-// Tuple-related node types
-const (
-	NodeLabeledTuple        NodeType = "LabeledTuple"
-	NodeLabeledTupleMembers NodeType = "LabeledTupleMembers"
-)
-
 // LabeledTupleMembers represents the members of a labeled tuple
 type LabeledTupleMembers struct {
 	BaseNode

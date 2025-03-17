@@ -4,19 +4,6 @@ import (
 	"strings"
 )
 
-// Control flow node types
-const (
-	NodeBlock               NodeType = "Block"
-	NodeBlockBody           NodeType = "BlockBody"
-	NodeBlockParameters     NodeType = "BlockParameters"
-	NodeForExpression       NodeType = "ForExpression"
-	NodeIfExpression        NodeType = "IfExpression"
-	NodeInlineForExpression NodeType = "InlineForExpression"
-	NodeSwitchStatement     NodeType = "SwitchStatement"
-	NodeCaseBlock           NodeType = "CaseBlock"
-	NodeElseBlock           NodeType = "ElseBlock"
-)
-
 // Block represents a code block enclosed in braces
 type Block struct {
 	BaseNode

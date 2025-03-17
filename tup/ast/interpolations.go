@@ -1,10 +1,5 @@
 package ast
 
-// String interpolation related node types
-const (
-	NodeStringInterpolationEscape NodeType = "StringInterpolationEscape"
-)
-
 // StringInterpolationEscape represents an escape sequence in a string interpolation
 type StringInterpolationEscape struct {
 	BaseNode

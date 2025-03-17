@@ -4,30 +4,6 @@ import (
 	"strings"
 )
 
-// Expression node types
-const (
-	NodeFunctionCall          NodeType = "FunctionCall"
-	NodeUFCSFunctionCall      NodeType = "UFCSFunctionCall"
-	NodeTypeConstructorCall   NodeType = "TypeConstructorCall"
-	NodeBuiltinFunctionCall   NodeType = "BuiltinFunctionCall"
-	NodeArrayFunctionCall     NodeType = "ArrayFunctionCall"
-	NodeMemberAccess          NodeType = "MemberAccess"
-	NodeIndexedAccess         NodeType = "IndexedAccess"
-	NodeSafeIndexedAccess     NodeType = "SafeIndexedAccess"
-	NodeTypeofExpression      NodeType = "TypeofExpression"
-	NodeBinaryExpression      NodeType = "BinaryExpression"
-	NodeUnaryExpression       NodeType = "UnaryExpression"
-	NodeChainedExpression     NodeType = "ChainedExpression"
-	NodeReturnExpression      NodeType = "ReturnExpression"
-	NodeBreakExpression       NodeType = "BreakExpression"
-	NodeContinueExpression    NodeType = "ContinueExpression"
-	NodeTryExpression         NodeType = "TryExpression"
-	NodeTypeComparison        NodeType = "TypeComparison"
-	NodeRelationalComparison  NodeType = "RelationalComparison"
-	NodeMetaExpression        NodeType = "MetaExpression"
-	NodeTupleUpdateExpression NodeType = "TupleUpdateExpression"
-)
-
 // Base type for all expressions
 type Expression interface {
 	Node
@@ -686,7 +662,7 @@ type Constant struct {
 // NewConstant creates a new Constant node
 func NewConstant(identifier Node) *Constant {
 	return &Constant{
-		BaseNode:   BaseNode{NodeType: "Constant"},
+		BaseNode:   BaseNode{NodeType: NodeConstant},
 		Identifier: identifier,
 	}
 }

@@ -1,17 +1,5 @@
 package ast
 
-// Operator node types
-const (
-	NodeAddSubOp             NodeType = "AddSubOp"
-	NodeMulDivOp             NodeType = "MulDivOp"
-	NodeRelOp                NodeType = "RelOp"
-	NodeIsOp                 NodeType = "IsOp"
-	NodeLogicalOp            NodeType = "LogicalOp"
-	NodeShortCircuitOp       NodeType = "ShortCircuitOp"
-	NodeCheckedArithmeticOp  NodeType = "CheckedArithmeticOp"
-	NodeCompoundAssignmentOp NodeType = "CompoundAssignmentOp"
-)
-
 // Operator kinds for classification
 type OperatorKind uint8
 
@@ -204,7 +192,7 @@ type CompoundAssignment struct {
 // NewCompoundAssignment creates a new CompoundAssignment node
 func NewCompoundAssignment(left Node, operator *CompoundAssignmentOp, right Node) *CompoundAssignment {
 	return &CompoundAssignment{
-		BaseNode: BaseNode{NodeType: "CompoundAssignment"},
+		BaseNode: BaseNode{NodeType: NodeCompoundAssignmentOp},
 		Left:     left,
 		Operator: operator,
 		Right:    right,

@@ -1,12 +1,5 @@
 package ast
 
-// Range-related node types
-const (
-	NodeRange        NodeType = "Range"
-	NodeRangeBound   NodeType = "RangeBound"
-	NodeRestOperator NodeType = "RestOperator"
-)
-
 // RangeBound represents a bound in a range (start or end)
 type RangeBound struct {
 	BaseNode

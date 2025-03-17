@@ -4,20 +4,6 @@ import (
 	"fmt"
 )
 
-// Miscellaneous node types
-const (
-	NodeModule         NodeType = "Module"
-	NodeComment        NodeType = "Comment"
-	NodeDocComment     NodeType = "DocComment"
-	NodeLineComment    NodeType = "LineComment"
-	NodeBlockComment   NodeType = "BlockComment"
-	NodeErrorNode      NodeType = "ErrorNode"
-	NodeMetadata       NodeType = "Metadata"
-	NodeDirective      NodeType = "Directive"
-	NodeSyntaxTree     NodeType = "SyntaxTree"
-	NodeEmptyStatement NodeType = "EmptyStatement"
-)
-
 // Module represents a complete module (file) in the AST
 type Module struct {
 	BaseNode

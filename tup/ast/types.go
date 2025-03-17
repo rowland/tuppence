@@ -4,22 +4,6 @@ import (
 	"strings"
 )
 
-// Type node types
-const (
-	NodeArrayType     NodeType = "ArrayType"
-	NodeFunctionType  NodeType = "FunctionType"
-	NodeTupleType     NodeType = "TupleType"
-	NodeGenericType   NodeType = "GenericType"
-	NodeNilableType   NodeType = "NilableType"
-	NodeTypeReference NodeType = "TypeReference"
-	NodeInlineUnion   NodeType = "InlineUnion"
-	NodeUnionType     NodeType = "UnionType"
-	NodeErrorTuple    NodeType = "ErrorTuple"
-	NodeNamedTuple    NodeType = "NamedTuple"
-	NodeReturnType    NodeType = "ReturnType"
-	NodeRestParameter NodeType = "RestParameter"
-)
-
 // TypeReference represents a reference to a defined type
 type TypeReference struct {
 	BaseNode

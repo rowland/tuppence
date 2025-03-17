@@ -4,9 +4,6 @@ import (
 	"github.com/rowland/tuppence/tup/source"
 )
 
-// NodeType represents the type of AST node
-type NodeType string
-
 // Node is the interface implemented by all AST nodes
 type Node interface {
 	// Pos returns the position of the first character belonging to the node
@@ -26,9 +23,9 @@ type BaseNode struct {
 	// Source is the reference to the source file
 	Source *source.Source
 	// StartOffset is the byte offset of the first character belonging to the node
-	StartOffset int
+	StartOffset int32
 	// Length is the length of the node in bytes
-	Length int
+	Length int32
 	// NodeType identifies the specific node type
 	NodeType NodeType
 }
@@ -39,14 +36,14 @@ func (n *BaseNode) Pos() Position {
 		return Position{}
 	}
 
-	line := n.Source.Line(n.StartOffset)
-	column := n.Source.Column(n.StartOffset)
+	line := n.Source.Line(int(n.StartOffset))
+	column := n.Source.Column(int(n.StartOffset))
 
 	// TODO: Convert column from byte offset to grapheme count for proper
 	// display to users. Currently, this will be incorrect for non-ASCII text.
 	return Position{
 		Filename: n.Source.Filename,
-		Offset:   n.StartOffset,
+		Offset:   int(n.StartOffset),
 		Line:     line + 1,   // Convert from 0-based to 1-based
 		Column:   column + 1, // Convert from 0-based to 1-based (currently in bytes)
 	}
@@ -59,14 +56,14 @@ func (n *BaseNode) End() Position {
 	}
 
 	endOffset := n.StartOffset + n.Length
-	line := n.Source.Line(endOffset)
-	column := n.Source.Column(endOffset)
+	line := n.Source.Line(int(endOffset))
+	column := n.Source.Column(int(endOffset))
 
 	// TODO: Convert column from byte offset to grapheme count for proper
 	// display to users. Currently, this will be incorrect for non-ASCII text.
 	return Position{
 		Filename: n.Source.Filename,
-		Offset:   endOffset,
+		Offset:   int(endOffset),
 		Line:     line + 1,   // Convert from 0-based to 1-based
 		Column:   column + 1, // Convert from 0-based to 1-based (currently in bytes)
 	}
@@ -79,7 +76,7 @@ func (n *BaseNode) Type() NodeType {
 
 // String returns a textual representation of the node for debugging
 func (n *BaseNode) String() string {
-	return string(n.NodeType)
+	return n.NodeType.String()
 }
 
 // Children returns all the child nodes (empty for BaseNode)
@@ -88,7 +85,7 @@ func (n *BaseNode) Children() []Node {
 }
 
 // SetPos sets the source, start offset, and length for the node
-func (n *BaseNode) SetPos(source *source.Source, startOffset int, length int) {
+func (n *BaseNode) SetPos(source *source.Source, startOffset int32, length int32) {
 	n.Source = source
 	n.StartOffset = startOffset
 	n.Length = length
