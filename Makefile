@@ -9,8 +9,8 @@ FMT_JS = tools/fmt_ebnf.js
 
 # Language server variables
 LS_DIR = tools/tupls
-LS_BIN = tupls
-INSTALL_DIR = /usr/local/bin
+LS_BIN = $(LS_DIR)/tupls
+INSTALL_DIR = $(HOME)/bin
 
 # VS Code extension variables
 VSCODE_DIR = $(LS_DIR)/vscode
@@ -30,12 +30,13 @@ grammar: $(HTML)
 # Build the language server
 ls-build:
 	@echo "Building language server..."
-	cd $(LS_DIR) && go build -o $(LS_BIN) ./cmd/tupls
+	cd $(LS_DIR) && go build -o tupls ./cmd/tupls
 
 # Install the language server
 ls-install: ls-build
 	@echo "Installing language server to $(INSTALL_DIR)/$(LS_BIN)..."
-	sudo cp $(LS_DIR)/$(LS_BIN) $(INSTALL_DIR)/
+	mkdir -p $(INSTALL_DIR)
+	cp $(LS_BIN) $(INSTALL_DIR)/
 
 # Build the VS Code extension
 vscode-build:
@@ -47,7 +48,11 @@ vscode-install: vscode-build
 	@echo "Installing VS Code extension..."
 	rm -rf $(VSCODE_EXT_DIR)
 	mkdir -p $(VSCODE_EXT_DIR)
-	cp -r $(VSCODE_DIR)/* $(VSCODE_EXT_DIR)/
+	cp -r $(VSCODE_DIR)/out/* $(VSCODE_EXT_DIR)/
+	cp -r $(VSCODE_DIR)/syntaxes $(VSCODE_EXT_DIR)/
+	cp -r $(VSCODE_DIR)/language-configuration.json $(VSCODE_EXT_DIR)/
+	cp -r $(VSCODE_DIR)/package.json $(VSCODE_EXT_DIR)/
+	cp -r $(VSCODE_DIR)/icons $(VSCODE_EXT_DIR)/
 
 # Build and install everything
 dev-setup: ls-install vscode-install
@@ -60,14 +65,12 @@ clean: clean-ls clean-vscode
 
 # Clean language server build artifacts
 clean-ls:
-	rm -f $(LS_DIR)/$(LS_BIN)
-	rm -f $(LS_DIR)/main
+	rm -f $(LS_BIN)
 
 # Clean VS Code extension build artifacts
 clean-vscode:
-	rm -rf $(VSCODE_DIR)/node_modules
 	rm -rf $(VSCODE_DIR)/out
-	rm -f $(VSCODE_DIR)/*.vsix
+	rm -rf $(VSCODE_DIR)/node_modules
 
 test:
 	cd tup && go test ./...
