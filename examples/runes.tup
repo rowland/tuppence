@@ -7,8 +7,7 @@ tab       = '\t' # Tab (U+0009)
 quote     = '\'' # Single quote (U+0027)
 backslash = '\\' # Backslash (U+005C)
 
-letter_b = '\x42' (hex representation of ASCII ‘B’).
+letter_b = '\x42' # (hex representation of ASCII ‘B’).
 
 rune1 = '\u03A9'   # Greek capital letter Omega (Ω, U+03A9)
 rune2 = '\U0001F60A' # Smiling face emoji (😊, U+1F60A)
-

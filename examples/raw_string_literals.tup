@@ -21,7 +21,7 @@ raw string.` # Line breaks are preserved
 
 # edge cases
 empty = ``   # Empty raw string (just backticks)
-two = `````` # Two escaped backticks (result: ``)
+
 mixed = `Hello, this is a raw string
 that contains symbols like @#$%^&*()
 and includes "quotes" and 'apostrophes'.`
