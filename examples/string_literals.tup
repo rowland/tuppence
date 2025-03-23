@@ -1,10 +1,10 @@
 # Unicode Characters
-emoji = "\U1F600" # 😀
+emoji = "\U0001F600" # 😀
 accented = "café" # Raw UTF-8
 
-emoji_face = "\U1F642"  # 🙂 (slightly smiling face)
-heart = "\U2764"        # ❤️ (heart)
-music_note = "\U1F3B5"  # 🎵 (musical note)
+emoji_face = "\U0001F642"  # 🙂 (slightly smiling face)
+heart = "\U00002764"        # ❤️ (heart)
+music_note = "\U0001F3B5"  # 🎵 (musical note)
 
 # Raw UTF-8 Strings
 greeting = "こんにちは"    # Hello (Japanese)
