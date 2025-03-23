@@ -7,6 +7,15 @@ FMT = tools/fmt_ebnf.go
 FMT_HTML = tools/fmt_ebnf.html
 FMT_JS = tools/fmt_ebnf.js
 
+# Language server variables
+LS_DIR = tools/tupls
+LS_BIN = tupls
+INSTALL_DIR = /usr/local/bin
+
+# VS Code extension variables
+VSCODE_DIR = $(LS_DIR)/vscode
+VSCODE_EXT_DIR = $(HOME)/.vscode/extensions/rowland.tuppence-language-server-0.0.1
+
 # Default target.
 all: $(HTML)
 
@@ -18,11 +27,49 @@ $(HTML): $(TUP) $(FMT) $(FMT_HTML) $(FMT_JS)
 # Optional target to update the grammar explicitly.
 grammar: $(HTML)
 
-# Clean up the generated file.
-clean:
+# Build the language server
+ls-build:
+	@echo "Building language server..."
+	cd $(LS_DIR) && go build -o $(LS_BIN) ./cmd/tupls
+
+# Install the language server
+ls-install: ls-build
+	@echo "Installing language server to $(INSTALL_DIR)/$(LS_BIN)..."
+	sudo cp $(LS_DIR)/$(LS_BIN) $(INSTALL_DIR)/
+
+# Build the VS Code extension
+vscode-build:
+	@echo "Building VS Code extension..."
+	cd $(VSCODE_DIR) && npm install && npm run compile
+
+# Install the VS Code extension
+vscode-install: vscode-build
+	@echo "Installing VS Code extension..."
+	rm -rf $(VSCODE_EXT_DIR)
+	mkdir -p $(VSCODE_EXT_DIR)
+	cp -r $(VSCODE_DIR)/* $(VSCODE_EXT_DIR)/
+
+# Build and install everything
+dev-setup: ls-install vscode-install
+	@echo "Development environment setup complete."
+	@echo "Please restart VS Code to activate the extension."
+
+# Clean up the generated files
+clean: clean-ls clean-vscode
 	rm -f $(HTML)
 
-.PHONY: all grammar clean
+# Clean language server build artifacts
+clean-ls:
+	rm -f $(LS_DIR)/$(LS_BIN)
+	rm -f $(LS_DIR)/main
+
+# Clean VS Code extension build artifacts
+clean-vscode:
+	rm -rf $(VSCODE_DIR)/node_modules
+	rm -rf $(VSCODE_DIR)/out
+	rm -f $(VSCODE_DIR)/*.vsix
 
 test:
 	cd tup && go test ./...
+
+.PHONY: all grammar clean clean-ls clean-vscode ls-build ls-install vscode-build vscode-install dev-setup test

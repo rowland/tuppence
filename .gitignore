@@ -1,2 +1,19 @@
 tup/tup
 .vscode
+
+# VS Code extension build artifacts
+tools/tupls/vscode/node_modules/
+tools/tupls/vscode/out/
+tools/tupls/vscode/*.vsix
+
+# Go build artifacts
+tools/tupls/tupls
+tools/tupls/main
+
+# npm logs
+tools/tupls/vscode/npm-debug.log*
+tools/tupls/vscode/yarn-debug.log*
+tools/tupls/vscode/yarn-error.log*
+
+# macOS system files
+.DS_Store
