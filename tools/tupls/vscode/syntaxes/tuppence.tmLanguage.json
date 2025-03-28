@@ -125,12 +125,20 @@
                     "match": "\\b(if|else|for|in|return|break|continue|try|try_continue|try_break|switch|union|enum|contract|type|mut|is|typeof|import|inline)\\b"
                 },
                 {
-                    "name": "storage.modifier.tuppence",
+                    "name": "keyword.function.tuppence",
                     "match": "\\b(fn|fx)\\b"
                 },
                 {
-                    "name": "constant.language.tuppence",
-                    "match": "\\b(true|false|error|any)\\b"
+                    "name": "keyword.type.tuppence",
+                    "match": "\\b(error|any)\\b"
+                },
+                {
+                    "name": "constant.language.boolean.tuppence",
+                    "match": "\\b(true|false)\\b"
+                },
+                {
+                    "name": "constant.language.nil.tuppence",
+                    "match": "\\b(nil)\\b"
                 }
             ]
         },
@@ -189,7 +197,19 @@
         "types": {
             "patterns": [
                 {
-                    "name": "entity.name.type.tuppence",
+                    "name": "storage.type.numeric.tuppence",
+                    "match": "\\b(Bool|Byte|Int|UInt|Int8|Int16|Int32|Int64|UInt8|UInt16|UInt32|UInt64|Float|Float16|Float32|Float64)\\b"
+                },
+                {
+                    "name": "storage.type.string.tuppence",
+                    "match": "\\b(String|Rune)\\b"
+                },
+                {
+                    "name": "storage.type.nil.tuppence",
+                    "match": "\\b(Nil)\\b"
+                },
+                {
+                    "name": "entity.name.type",
                     "match": "\\b[A-Z][a-zA-Z0-9_]*\\b"
                 }
             ]
