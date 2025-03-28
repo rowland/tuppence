@@ -104,9 +104,9 @@ partition[a]: fn(list: List[a], predicate: fn(a) Bool) (List[a], List[a]) {
   (reverse(result.0), reverse(result.1))
 }
 
-filter_map[a, b]: fn(list: List[a], fn: fn(a) ?b) List[b] {
+filter_map[a, b]: fn(list: List[a], transform: fn(a) ?b) List[b] {
   result = for acc, current = (empty[b](), list); current != nil {
-    transformed = fn(current.head)
+    transformed = transform(current.head)
     if transformed != nil {
       (Cons(head: transformed, tail: acc), current.tail)
     } else {
