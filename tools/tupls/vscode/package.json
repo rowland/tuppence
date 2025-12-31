@@ -10,10 +10,6 @@
 	"categories": [
 		"Programming Languages"
 	],
-	"activationEvents": [
-		"onLanguage:tuppence",
-		"workspaceContains:**/*.tup"
-	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"languages": [

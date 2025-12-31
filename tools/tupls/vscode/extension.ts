@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { workspace, ExtensionContext } from 'vscode';
 import {
     LanguageClient,
@@ -9,7 +8,7 @@ import {
 
 let client: LanguageClient;
 
-export function activate(context: ExtensionContext) {
+export function activate(_context: ExtensionContext) {
     // The server is implemented in Go
     const serverCommand = 'tupls';
 
