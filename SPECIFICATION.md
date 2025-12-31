@@ -879,9 +879,10 @@ A `for` loop may be a little unusual in a functional language, but consider this
 Tuppece `for` loops also preserve functional semantics while providing familiar syntax
 and, at least in some cases, improved readability.
 
-Tuppence supports two primary forms of `for` loops:
+Tuppence supports several forms of `for` loops:
   1. Traditional `for` loops with an `initializer`, `condition`, and optional `step expression`.
-  2. `for`...`in` loops for iterating over iterable collections, including arrays, ranges, and user-defined iterables.
+  2. Infinite `for` loops without a condition that use `break` statements to exit.
+  3. `for`...`in` loops for iterating over iterable collections, including arrays, ranges, and user-defined iterables.
 
 ### Traditional for Loops
 
@@ -889,6 +890,8 @@ A conventional `for` loop consists of:
   - An initializer (optional)
   - A condition (mandatory)
   - A step expression (optional, placed either in the loop header or at the end of the block)
+
+The loop returns a value with the same shape as the initializer. The loop exits when the condition becomes false, returning the final value of the block (or the initializer value if the condition is false on the first iteration).
 
 Example:
 
@@ -904,6 +907,28 @@ If the step expression is omitted from the header, it must appear as the last ex
     }
 
 The step expression, whether located in the header or at the end of the block, must be compatible with the initializer.
+
+### Infinite Loops (No Condition)
+
+When no condition is provided, the loop runs indefinitely until a `break` statement is encountered. The return type and value of the loop are determined by the `break` statements, not the initializer shape. This allows breaking with a different type than the initializer.
+
+Example with single initializer:
+
+    result = for i = 0 {
+        if i >= 10 { break i }
+        i + 1
+    }
+    # result is Int(10), determined by break i
+
+Example with tuple initializer breaking with single value:
+
+    sum = for acc, i = (0, 1) {
+        if i > 10 { break acc }
+        (acc + i, i + 1)
+    }
+    # sum is Int(55), determined by break acc, not a tuple
+
+If `break` is used without an expression, the loop returns `nil`.
 
 ### for ... in loops
 

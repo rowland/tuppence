@@ -40,14 +40,14 @@ for i = 0; i < 10 {
 #   (in this case 10)
 for i = 0; i < 10; i + 1 {}
 
-# infinite loop with tuple initializer, effectively
-#   for (acc, i) = (0, 1); true; <block value>
+# infinite loop with tuple initializer (no condition)
 # (acc, i) takes the value of the block for successive iterations
 # it is an error for the block to have no final expression
 # or for the final expression to not match the shape of the initializer
-# the type and value of the for loop is determined by any break statements
+# the return type and value of the for loop are determined by break statements,
+# not the initializer shape - break acc returns Int, not a tuple
 # in this case the sum of the integers 1..10
-sum, _ = for acc, i = (0, 1) {
+sum = for acc, i = (0, 1) {
     if i > 10 { break acc }
     (acc + i, i + 1)
 }
