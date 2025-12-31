@@ -1,0 +1,5 @@
+fib_sequence = fn(n: Int) []Int {
+    for (a, b, acc) = (0, 1, Int[]); len(acc) < n {
+        (b, a + b, acc << a)
+    }.2
+}
