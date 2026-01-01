@@ -398,7 +398,7 @@ will apply at higher precisions.
 As with integer literals, byte array representations make it possible to implement
 arbitrary-precision libraries.
 
-Floats in the source code are represented in by a sequence of one or more decimal digits,
+Floats in the source code are represented by a sequence of one or more decimal digits,
 followed by a decimal point and at least one more decimal digit, followed by an optional exponent.
 Alternatively, the decimal portion may be omitted if an exponent is present.
 Underscores may be included anywhere after the first digit to aid in readability.
@@ -821,7 +821,7 @@ If a type is *declared at the module level*, its *type-qualified members* must a
         "Foo(\(self.x), \(self.y))"
     }
 
-If a type is *declared inside a function, type-qualified members must also be declared inside the function*.
+If a type is declared inside a function, type-qualified members must also be declared inside the function.
 
     bar = fn() {
         Baz = type(a: String)
@@ -840,10 +840,10 @@ Declaring type-qualified values outside of the scope where the type is defined i
 ## Type Constructors
 
 When a type is declared in Tuppence, a default constructor is automatically provided.
-Constructors are now declared within the type's namespace, ensuring clarity and preventing name conflicts.
+Constructors are declared within the type's namespace, ensuring clarity and preventing name conflicts.
 
-When defining a *new type*, a *default constructor* is automatically created with 
-*parameters matching the fields of the type*, including *default values*:
+When defining a new type, a default constructor is automatically created with 
+parameters matching the fields of the type, including default values:
 
     Complex = type(a: Float, b: Float(0))
     Complex.new = fn(a: Float, b: Float(0)) Complex { it } # compiler supplied default
@@ -858,7 +858,7 @@ because it is declared within its type's namespace:
 
 You can define additional constructors for a type within its namespace by declaring them as type-qualified functions.
 
-    ErrorInComplexFormat = error
+    ErrorInComplexFormat = error ()
     # parse real and imaginary parts from string with format "a+b"
     Complex.from_string = fn(s: String) !Complex {
         a, b, ... = s.split("+").map { it.float() }
@@ -895,15 +895,12 @@ The loop returns a value with the same shape as the initializer. The loop exits 
 
 Example:
 
-    sum = for i = 0; i < 10; i + 1 {
-        sum + i
-    }
+    sum = for acc, i = (0, 0); i < 10; (acc + i, i + 1) {}
 
 If the step expression is omitted from the header, it must appear as the last expression inside the block:
 
-    sum = for i = 0; i < 10 {
-        sum + i
-        i + 1 # step expression
+    sum = for acc, i = (0, 0); i < 10 {
+        (acc + i, i + 1) # step expression
     }
 
 The step expression, whether located in the header or at the end of the block, must be compatible with the initializer.
@@ -912,7 +909,7 @@ The step expression, whether located in the header or at the end of the block, m
 
 When no condition is provided, the loop runs indefinitely until a `break` statement is encountered. The return type and value of the loop are determined by the `break` statements, not the initializer shape. This allows breaking with a different type than the initializer.
 
-Example with single initializer:
+Example with a single initializer:
 
     result = for i = 0 {
         if i >= 10 { break i }
@@ -920,7 +917,7 @@ Example with single initializer:
     }
     # result is Int(10), determined by break i
 
-Example with tuple initializer breaking with single value:
+Example with tuple initializer breaking with a single value:
 
     sum = for acc, i = (0, 1) {
         if i > 10 { break acc }
@@ -966,16 +963,16 @@ If no initializer is present, the loop evaluates to `nil`.
 
 ## Operator Details
 
-Operators in Tuppence are *syntactic sugar* for function calls, allowing *overloading and customization*.
-Most operators *delegate* to functions that can be redefined, except for certain core operators that must
+Operators in Tuppence are syntactic sugar for function calls, allowing overloading and customization.
+Most operators delegate to functions that can be redefined, except for certain core operators that must
 be handled by the compiler (e.g., `=`, `.` for dereferencing, and logical short-circuiting operators `&&` and `||`).
 
 ### Assignment (=)
 
-Assignment binds a value to an identifier. Unlike other operators, `=` *is not overloadable*.
+Assignment binds a value to an identifier. Unlike other operators, `=` is not overloadable.
 
     x = 10
-    y = x + 5  # y is now 15
+    y = x + 5  # y is 15
 
 ### Equality (==)
 
@@ -1031,12 +1028,6 @@ Examples:
     y = 5 ^ 0   # y = 1
     z = 9 ^ 0.5 # z = 3.0 (square root of 9)
 
-Notes:
-
-  - The exponent can be an integer or a floating-point number.
-  - Negative exponents return fractional results (2 ^ -1 is 0.5).
-  - For integer bases with negative exponents, the result is a floating-point number.
-
 ### Bitwise Operators (&, |, ^)
 
 These operators perform bitwise logic:
@@ -1074,14 +1065,14 @@ Equivalent to:
 
 ### Logical Operators (&&, ||)
 
-Logical AND (`&&`) and OR (`||`) *short-circuit*, meaning evaluation stops early.
+Logical AND (`&&`) and OR (`||`) short-circuit, meaning evaluation stops early.
 
     false && expensive_function()  # `expensive_function` is never called
     true || expensive_function()   # `expensive_function` is never called
 
 ### Dereferencing (.)
 
-The dot (`.`) operator accesses *tuple fields, module members, and function calls*.
+The dot (`.`) operator accesses tuple fields, module members, and function calls.
 
     point = (x: 3, y: 5)
     print(point.x)  # 3
@@ -1103,7 +1094,7 @@ Using the operator:
 
 For user-defined types, the `!` operator invokes the `not` function if the type is annotated with `@bool`:
 
-    UserDefined = type(x: Int)
+    UserDefined = type (x: Int)
 
     not[Bool, UserDefined] = fn(u: UserDefined) Bool {
         u.x == 0
@@ -1139,7 +1130,7 @@ Using the operator:
 
 For user-defined types, the ~ operator invokes the not function:
 
-    Flags = type(bits: Int8)
+    Flags = type (bits: Int8)
 
     not[Flags] = fn(f: Flags) Flags {
         Flags(~f.bits)
@@ -1268,11 +1259,11 @@ Tuppence provides both signed and unsigned integer types of various bit widths. 
 - All types in Tuppence are immutable.
 - Integer types are fixed-width, except for Int and UInt, which adjust to the architecture's natural word size.
 
-- **Type aliases** (such as `Byte` and `Rune`) provide better readability but do not introduce new underlying types.
+- Type aliases (such as `Byte` and `Rune`) provide better readability but do not introduce new underlying types.
 
 ### Operations
-- **Signed integers support arithmetic and bitwise operations** (`+`, `-`, `*`, `/`, `&`, `|`, `^`, `<<`, `>>`).
-- **Unsigned integers support the same operations** but **disallow negation (`-x`)**, ensuring safe unsigned arithmetic.
+- Signed integers support arithmetic and bitwise operations (`+`, `-`, `*`, `/`, `&`, `|`, `^`, `<<`, `>>`).
+- Unsigned integers support the same operations but disallow negation (`-x`), ensuring safe unsigned arithmetic.
 - `UIntN` to `IntN` conversions must be explicit, and truncation rules apply when converting to a smaller bit width.
 
 ### Example Usage
@@ -1315,7 +1306,7 @@ UInt24 = type(lo: UInt8, mid: UInt8, hi: UInt8)
 
 This means:
 - `UInt24` must implement all functions required by `core.UnsignedInt`.
-- If it fails to do so, the compiler will produce an error.
+- If it fails to do so, the compiler will repport an error.
 
 ### Example: Declaring a Numeric Type
 
@@ -1333,9 +1324,9 @@ If it does not provide these functions, compilation will fail.
 
 When encountering `@type:implements`, the compiler will:
 
-1. **Resolve the referenced contract** (`core.UnsignedInt`, `math.Numeric`, etc.).
-2. **Verify that all required functions** are implemented for `TypeName`.
-3. **Raise an error** if:
+1. Resolve the referenced contract (`core.UnsignedInt`, `math.Numeric`, etc.).
+2. Verify that all required functions are implemented for `TypeName`.
+3. Report an error if:
    - The referenced contract does not exist.
    - `TypeName` does not provide all required functions.
 
@@ -1409,7 +1400,7 @@ def == (d: 2, e: "Hello World", f: 10.0)
 
 ## Tuppence Meta Functions and Use Cases
 
-Tuppence introduces `$()` as a **compile-time meta-function mechanism**, allowing key-value pairs in **labeled tuple syntax**. The compiler resolves these expressions at compile-time, embedding values or executing safe operations. The parsing phase treats `$()` as a labeled tuple, while the semantic phase determines validity and execution.
+Tuppence introduces `$()` as a compile-time meta-function mechanism, allowing key-value pairs in labeled tuple syntax. The compiler resolves these expressions at compile-time, embedding values or executing safe operations. The parsing phase treats `$()` as a labeled tuple, while the semantic phase determines validity and execution.
 
 ### General Syntax
 
@@ -1417,9 +1408,9 @@ Tuppence introduces `$()` as a **compile-time meta-function mechanism**, allowin
 $(key: value, key2: value2)
 ```
 
-- **`key`**: Identifies the meta-function (e.g., `file`, `hash`, `env`).
-- **`value`**: Can be a string, expression, or compile-time evaluable function.
-- **Order of keys does not matter**, as names provide disambiguation.
+- `key`: Identifies the meta-function (e.g., `file`, `hash`, `env`).
+- `value`: Can be a string, expression, or compile-time evaluable function.
+- Order of keys does not matter, as names provide disambiguation.
 
 ### Use Cases
 
@@ -1493,13 +1484,13 @@ $(include: "config.tup")
 
 ## sizeof build-in function
 
-Tuppence does **not** treat `sizeof` as a reserved keyword. Instead, it is a built-in function that follows normal scope resolution:
+Tuppence does not treat `sizeof` as a reserved keyword. Instead, it is a built-in function that follows normal scope resolution:
 
-- **Shadowing Allowed**: Users can define a local function named `sizeof`.
-- **Scope Resolution**:
+- Shadowing Allowed: Users can define a local function named `sizeof`.
+- Scope Resolution:
   - If `sizeof` exists in a local scope, it takes precedence.
   - If used as `x.sizeof()`, it resolves based on `x`'s module.
-- **No Special Grammar Rule**: `sizeof` behaves like `cap` and `len`, remaining a standard function.
+- No Special Grammar Rule: `sizeof` behaves like `cap` and `len`, remaining a standard function.
 
 Example:
 
@@ -1507,7 +1498,7 @@ Example:
 x = (a: 1, b: 2)
 size = sizeof(x)  # Resolves to built-in sizeof function
 
-sizeof = fn(x) 0  # Shadowing allowed
+sizeof[a] = fn(x: a) 0  # Shadowing allowed
 size2 = sizeof(x)  # Calls the locally defined sizeof
 ```
 
@@ -1565,7 +1556,7 @@ Indexing an array or collection with `[]!` guarantees a valid result by calling 
 
 If `safe_index` is not defined, an error is reported.
 
-Safe Indexing Rules
+#### Safe Indexing Rules
 
 Safe indexing is allowed when the compiler can prove the index is within bounds, such as:
 
@@ -1590,7 +1581,7 @@ for i in 0..4 {
 
 ```tuppence
 for i = 0; i < 100; i + 1 {
-    if i < len(values) && i >= -len(values) {
+    if i < len(values) && i >= 0 {
         print(values[i]!)
     }
 }
