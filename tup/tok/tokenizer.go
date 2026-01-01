@@ -52,7 +52,7 @@ func NewTokenizer(src []byte, filename string) *Tokenizer {
 	file := source.NewSource(src, filename)
 	idx := 0
 	// Skip the UTF-8 BOM if present.
-	if bytes.Equal(src[:3], bom) {
+	if len(src) >= 3 && bytes.Equal(src[:3], bom) {
 		idx = 3
 	}
 	return &Tokenizer{
