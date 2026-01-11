@@ -1,77 +1,148 @@
 package ast
 
-// Assignment represents a variable assignment
+import (
+	"strings"
+
+	"github.com/rowland/tuppence/tup/source"
+)
+
+// assignment = assignment_lhs "=" [ "mut" ] expression .
+
 type Assignment struct {
 	BaseNode
-	Left  Node // Target of the assignment (typically an identifier)
-	Right Node // Value being assigned
+	Left  AssignmentLHS // Target of the assignment (typically an identifier)
+	Mut   bool          // True if the assignment is mutable
+	Right Expression    // Value being assigned
 }
 
 // NewAssignment creates a new Assignment node
-func NewAssignment(left, right Node) *Assignment {
+func NewAssignment(left AssignmentLHS, mut bool, right Expression) *Assignment {
 	return &Assignment{
-		BaseNode: BaseNode{NodeType: NodeAssignment},
+		BaseNode: BaseNode{Type: NodeAssignment},
 		Left:     left,
+		Mut:      mut,
 		Right:    right,
 	}
 }
 
 // String returns a textual representation of the assignment
 func (a *Assignment) String() string {
-	return a.Left.String() + " = " + a.Right.String()
+	var builder strings.Builder
+	builder.WriteString(a.Left.String())
+	builder.WriteString(" = ")
+	if a.Mut {
+		builder.WriteString("mut ")
+	}
+	builder.WriteString(a.Right.String())
+	return builder.String()
 }
 
-// Children returns the child nodes
-func (a *Assignment) Children() []Node {
-	return []Node{a.Left, a.Right}
+// assignment_lhs = ordinal_assignment_lhs
+//                | "(" labeled_assignment_lhs ")" .
+
+type AssignmentLHS interface {
+	Node
+	assignmentLHSNode()
 }
 
-// DestructuringPattern represents a destructuring pattern for assignments
-type DestructuringPattern struct {
+// ordinal_assignment_lhs = identifier { "," identifier } [ "," rest_operator ] .
+
+type OrdinalAssignmentLHS struct {
 	BaseNode
-	Pattern Node // The pattern used for destructuring
+	Identifiers  []*Identifier
+	RestOperator *RestOperator
 }
 
-// NewDestructuringPattern creates a new DestructuringPattern node
-func NewDestructuringPattern(pattern Node) *DestructuringPattern {
-	return &DestructuringPattern{
-		BaseNode: BaseNode{NodeType: NodeDestructuringPattern},
-		Pattern:  pattern,
+func NewOrdinalAssignmentLHS(identifiers []*Identifier, restOperator *RestOperator) *OrdinalAssignmentLHS {
+	source := identifiers[0].Source
+	startOffset := identifiers[0].StartOffset
+	length := int32(0)
+	if restOperator != nil {
+		length = restOperator.StartOffset + restOperator.Length - startOffset
+	} else {
+		length = identifiers[len(identifiers)-1].StartOffset + identifiers[len(identifiers)-1].Length - startOffset
+	}
+	return &OrdinalAssignmentLHS{
+		BaseNode: BaseNode{
+			Type:        NodeOrdinalAssignmentLHS,
+			Source:      source,
+			StartOffset: startOffset,
+			Length:      length,
+		},
+		Identifiers:  identifiers,
+		RestOperator: restOperator,
 	}
 }
 
-// String returns a textual representation of the destructuring pattern
-func (d *DestructuringPattern) String() string {
-	return d.Pattern.String()
+func (o *OrdinalAssignmentLHS) String() string {
+	var builder strings.Builder
+	for i, identifier := range o.Identifiers {
+		if i > 0 {
+			builder.WriteString(", ")
+		}
+		builder.WriteString(identifier.String())
+	}
+	return builder.String()
 }
 
-// Children returns the child nodes
-func (d *DestructuringPattern) Children() []Node {
-	return []Node{d.Pattern}
-}
+func (o *OrdinalAssignmentLHS) assignmentLHSNode() {}
 
-// DestructuringAssignment represents a destructuring assignment
-type DestructuringAssignment struct {
+// labeled_assignment_lhs = ( rename_identifier | rename_type ) { "," ( rename_identifier | rename_type ) } .
+
+type LabeledAssignmentLHS struct {
 	BaseNode
-	Pattern Node // The destructuring pattern
-	Value   Node // The value being destructured
+	Renames []Rename
 }
 
-// NewDestructuringAssignment creates a new DestructuringAssignment node
-func NewDestructuringAssignment(pattern, value Node) *DestructuringAssignment {
-	return &DestructuringAssignment{
-		BaseNode: BaseNode{NodeType: NodeDestructuringAssignment},
-		Pattern:  pattern,
-		Value:    value,
+func NewLabeledAssignmentLHS(renames []Rename) *LabeledAssignmentLHS {
+	var source *source.Source
+	var startOffset int32
+	var length int32
+
+	switch rename := renames[0].(type) {
+	case *RenameIdentifier:
+		source = rename.Identifier.Source
+		startOffset = rename.Identifier.StartOffset
+	case *RenameType:
+		source = rename.Identifier.Source
+		startOffset = rename.Identifier.StartOffset
+	}
+
+	switch rename := renames[len(renames)-1].(type) {
+	case *RenameIdentifier:
+		if rename.Original != nil {
+			length = rename.Original.StartOffset + rename.Original.Length - rename.Original.StartOffset
+		} else {
+			length = rename.Identifier.StartOffset + rename.Identifier.Length - rename.Identifier.StartOffset
+		}
+	case *RenameType:
+		if rename.Original != nil {
+			length = rename.Original.StartOffset + rename.Original.Length - rename.Original.StartOffset
+		} else {
+			length = rename.Identifier.StartOffset + rename.Identifier.Length - rename.Identifier.StartOffset
+		}
+	}
+
+	return &LabeledAssignmentLHS{
+		BaseNode: BaseNode{
+			Type:        NodeLabeledAssignmentLHS,
+			Source:      source,
+			StartOffset: startOffset,
+			Length:      length,
+		},
+		Renames: renames,
 	}
 }
 
-// String returns a textual representation of the destructuring assignment
-func (d *DestructuringAssignment) String() string {
-	return d.Pattern.String() + " = " + d.Value.String()
+func (l *LabeledAssignmentLHS) String() string {
+	var builder strings.Builder
+	for i, rename := range l.Renames {
+		if i > 0 {
+			builder.WriteString(", ")
+		}
+		builder.WriteString(rename.Name())
+	}
+	return builder.String()
 }
 
-// Children returns the child nodes
-func (d *DestructuringAssignment) Children() []Node {
-	return []Node{d.Pattern, d.Value}
-}
+func (l *LabeledAssignmentLHS) assignmentLHSNode() {}

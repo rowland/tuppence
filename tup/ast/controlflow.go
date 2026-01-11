@@ -14,7 +14,7 @@ type Block struct {
 // NewBlock creates a new Block node
 func NewBlock(body *BlockBody, parameters *BlockParameters) *Block {
 	return &Block{
-		BaseNode:   BaseNode{NodeType: NodeBlock},
+		BaseNode:   BaseNode{Type: NodeBlock},
 		Body:       body,
 		Parameters: parameters,
 	}
@@ -45,18 +45,6 @@ func (b *Block) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (b *Block) Children() []Node {
-	var children []Node
-	if b.Parameters != nil {
-		children = append(children, b.Parameters)
-	}
-	if b.Body != nil {
-		children = append(children, b.Body)
-	}
-	return children
-}
-
 // BlockParameters represents the parameters of a block (e.g., |x, y|)
 type BlockParameters struct {
 	BaseNode
@@ -66,7 +54,7 @@ type BlockParameters struct {
 // NewBlockParameters creates a new BlockParameters node
 func NewBlockParameters(parameters []Node) *BlockParameters {
 	return &BlockParameters{
-		BaseNode:   BaseNode{NodeType: NodeBlockParameters},
+		BaseNode:   BaseNode{Type: NodeBlockParameters},
 		Parameters: parameters,
 	}
 }
@@ -87,11 +75,6 @@ func (b *BlockParameters) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (b *BlockParameters) Children() []Node {
-	return b.Parameters
-}
-
 // BlockBody represents the body of a block
 type BlockBody struct {
 	BaseNode
@@ -102,7 +85,7 @@ type BlockBody struct {
 // NewBlockBody creates a new BlockBody node
 func NewBlockBody(statements []Node, expression Node) *BlockBody {
 	return &BlockBody{
-		BaseNode:   BaseNode{NodeType: NodeBlockBody},
+		BaseNode:   BaseNode{Type: NodeBlockBody},
 		Statements: statements,
 		Expression: expression,
 	}
@@ -122,16 +105,6 @@ func (b *BlockBody) String() string {
 	}
 
 	return builder.String()
-}
-
-// Children returns the child nodes
-func (b *BlockBody) Children() []Node {
-	children := make([]Node, 0, len(b.Statements)+1)
-	children = append(children, b.Statements...)
-	if b.Expression != nil {
-		children = append(children, b.Expression)
-	}
-	return children
 }
 
 // ForHeader represents the header of a for loop (initializer; condition; step)
@@ -159,21 +132,6 @@ func (f *ForHeader) String() string {
 	}
 
 	return builder.String()
-}
-
-// Children returns the child nodes
-func (f *ForHeader) Children() []Node {
-	var children []Node
-
-	children = append(children, f.Initializer)
-	if f.Condition != nil {
-		children = append(children, f.Condition)
-	}
-	if f.StepExpr != nil {
-		children = append(children, f.StepExpr)
-	}
-
-	return children
 }
 
 // ForInHeader represents the header of a for-in loop
@@ -206,23 +164,6 @@ func (f *ForInHeader) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (f *ForInHeader) Children() []Node {
-	var children []Node
-
-	if f.Initializer != nil {
-		children = append(children, f.Initializer)
-	}
-
-	children = append(children, f.LoopVar, f.Iterable)
-
-	if f.StepExpr != nil {
-		children = append(children, f.StepExpr)
-	}
-
-	return children
-}
-
 // IterableHeader represents the iterable part of a for-in loop
 type IterableHeader struct {
 	BaseNode
@@ -235,11 +176,6 @@ func (i *IterableHeader) String() string {
 	return i.LoopVar.String() + " in " + i.Iterable.String()
 }
 
-// Children returns the child nodes
-func (i *IterableHeader) Children() []Node {
-	return []Node{i.LoopVar, i.Iterable}
-}
-
 // ForExpression represents a for loop expression
 type ForExpression struct {
 	BaseNode
@@ -250,7 +186,7 @@ type ForExpression struct {
 // NewForExpression creates a new ForExpression node
 func NewForExpression(header Node, block *Block) *ForExpression {
 	return &ForExpression{
-		BaseNode: BaseNode{NodeType: NodeForExpression},
+		BaseNode: BaseNode{Type: NodeForExpression},
 		Header:   header,
 		Block:    block,
 	}
@@ -270,18 +206,6 @@ func (f *ForExpression) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (f *ForExpression) Children() []Node {
-	var children []Node
-
-	if f.Header != nil {
-		children = append(children, f.Header)
-	}
-
-	children = append(children, f.Block)
-	return children
-}
-
 // InlineForExpression represents an inline for loop expression
 type InlineForExpression struct {
 	BaseNode
@@ -292,7 +216,7 @@ type InlineForExpression struct {
 // NewInlineForExpression creates a new InlineForExpression node
 func NewInlineForExpression(header *ForInHeader, block *Block) *InlineForExpression {
 	return &InlineForExpression{
-		BaseNode: BaseNode{NodeType: NodeInlineForExpression},
+		BaseNode: BaseNode{Type: NodeInlineForExpression},
 		Header:   header,
 		Block:    block,
 	}
@@ -301,11 +225,6 @@ func NewInlineForExpression(header *ForInHeader, block *Block) *InlineForExpress
 // String returns a textual representation of the inline for expression
 func (i *InlineForExpression) String() string {
 	return "inline for " + i.Header.String() + " " + i.Block.String()
-}
-
-// Children returns the child nodes
-func (i *InlineForExpression) Children() []Node {
-	return []Node{i.Header, i.Block}
 }
 
 // IfExpression represents an if expression
@@ -319,7 +238,7 @@ type IfExpression struct {
 // NewIfExpression creates a new IfExpression node
 func NewIfExpression(conditions []Node, blocks []*Block, hasElse bool) *IfExpression {
 	return &IfExpression{
-		BaseNode:   BaseNode{NodeType: NodeIfExpression},
+		BaseNode:   BaseNode{Type: NodeIfExpression},
 		Conditions: conditions,
 		Blocks:     blocks,
 		HasElse:    hasElse,
@@ -353,18 +272,6 @@ func (i *IfExpression) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (i *IfExpression) Children() []Node {
-	children := make([]Node, 0, len(i.Conditions)+len(i.Blocks))
-	children = append(children, i.Conditions...)
-
-	for _, block := range i.Blocks {
-		children = append(children, block)
-	}
-
-	return children
-}
-
 // CaseBlock represents a case block in a switch statement
 type CaseBlock struct {
 	BaseNode
@@ -375,7 +282,7 @@ type CaseBlock struct {
 // NewCaseBlock creates a new CaseBlock node
 func NewCaseBlock(condition Node, block *Block) *CaseBlock {
 	return &CaseBlock{
-		BaseNode:  BaseNode{NodeType: NodeCaseBlock},
+		BaseNode:  BaseNode{Type: NodeCaseBlock},
 		Condition: condition,
 		Block:     block,
 	}
@@ -384,11 +291,6 @@ func NewCaseBlock(condition Node, block *Block) *CaseBlock {
 // String returns a textual representation of the case block
 func (c *CaseBlock) String() string {
 	return c.Condition.String() + " " + c.Block.String()
-}
-
-// Children returns the child nodes
-func (c *CaseBlock) Children() []Node {
-	return []Node{c.Condition, c.Block}
 }
 
 // ElseBlock represents an else block in a switch statement
@@ -400,7 +302,7 @@ type ElseBlock struct {
 // NewElseBlock creates a new ElseBlock node
 func NewElseBlock(block *Block) *ElseBlock {
 	return &ElseBlock{
-		BaseNode: BaseNode{NodeType: NodeElseBlock},
+		BaseNode: BaseNode{Type: NodeElseBlock},
 		Block:    block,
 	}
 }
@@ -408,11 +310,6 @@ func NewElseBlock(block *Block) *ElseBlock {
 // String returns a textual representation of the else block
 func (e *ElseBlock) String() string {
 	return "else " + e.Block.String()
-}
-
-// Children returns the child nodes
-func (e *ElseBlock) Children() []Node {
-	return []Node{e.Block}
 }
 
 // SwitchStatement represents a switch statement
@@ -426,7 +323,7 @@ type SwitchStatement struct {
 // NewSwitchStatement creates a new SwitchStatement node
 func NewSwitchStatement(expression Node, cases []*CaseBlock, elseBlock *ElseBlock) *SwitchStatement {
 	return &SwitchStatement{
-		BaseNode:   BaseNode{NodeType: NodeSwitchStatement},
+		BaseNode:   BaseNode{Type: NodeSwitchStatement},
 		Expression: expression,
 		Cases:      cases,
 		ElseBlock:  elseBlock,
@@ -452,20 +349,4 @@ func (s *SwitchStatement) String() string {
 
 	builder.WriteString("\n}")
 	return builder.String()
-}
-
-// Children returns the child nodes
-func (s *SwitchStatement) Children() []Node {
-	children := make([]Node, 0, len(s.Cases)+2)
-	children = append(children, s.Expression)
-
-	for _, caseBlock := range s.Cases {
-		children = append(children, caseBlock)
-	}
-
-	if s.ElseBlock != nil {
-		children = append(children, s.ElseBlock)
-	}
-
-	return children
 }

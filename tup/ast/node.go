@@ -11,11 +11,9 @@ type Node interface {
 	// End returns the position of the first character immediately after the node
 	End() Position
 	// Type returns the type of the node
-	Type() NodeType
+	NodeType() NodeType
 	// String returns a textual representation of the node for debugging
 	String() string
-	// Children returns all the child nodes
-	Children() []Node
 }
 
 // BaseNode provides the common implementation for AST nodes
@@ -26,8 +24,8 @@ type BaseNode struct {
 	StartOffset int32
 	// Length is the length of the node in bytes
 	Length int32
-	// NodeType identifies the specific node type
-	NodeType NodeType
+	// Type identifies the specific node type
+	Type NodeType
 }
 
 // Pos returns the position of the first character belonging to the node
@@ -70,18 +68,13 @@ func (n *BaseNode) End() Position {
 }
 
 // Type returns the type of the node
-func (n *BaseNode) Type() NodeType {
-	return n.NodeType
+func (n *BaseNode) NodeType() NodeType {
+	return n.Type
 }
 
 // String returns a textual representation of the node for debugging
 func (n *BaseNode) String() string {
-	return n.NodeType.String()
-}
-
-// Children returns all the child nodes (empty for BaseNode)
-func (n *BaseNode) Children() []Node {
-	return nil
+	return n.Type.String()
 }
 
 // SetPos sets the source, start offset, and length for the node

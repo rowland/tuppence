@@ -15,7 +15,6 @@ const (
 	NodeContractImplementsAnnotation
 	NodeContractMember
 	NodeContractMembers
-	NodeEnumMembers
 	NodeUnionDeclaration
 	NodeUnionMemberDeclaration
 	NodeUnionMembers
@@ -33,18 +32,13 @@ const (
 
 	// Declaration node types
 	NodeAnnotation
-	NodeConstDeclaration
 	NodeEnumDeclaration
 	NodeEnumMember
+	NodeEnumMembers
 	NodeErrorDeclaration
 	NodeFunctionDeclaration
 	NodeGenericTypeParam
-	NodeGlobalDeclaration
-	NodeImportDeclaration
-	NodeNamespaceDeclaration
-	NodeTypeAlias
 	NodeTypeDeclaration
-	NodeVariableDeclaration
 
 	// Export related node types
 	NodeExportAssignment
@@ -105,19 +99,10 @@ const (
 	NodeTupleLiteral
 
 	// Miscellaneous node types
-	NodeBlockComment
 	NodeComment
-	NodeDirective
-	NodeDocComment
-	NodeEmptyStatement
 	NodeErrorNode
-	NodeLineComment
-	NodeMetadata
 	NodeModule
 	NodeSyntaxTree
-
-	// String interpolation related node types
-	NodeStringInterpolationEscape
 
 	// Operator node types
 	NodeAddSubOp
@@ -130,8 +115,8 @@ const (
 	NodeShortCircuitOp
 
 	// Additional pattern matching node types
-	NodeAssignmentLhs
-	NodeLabeledAssignmentLhs
+	NodeOrdinalAssignmentLHS
+	NodeLabeledAssignmentLHS
 	NodeLabeledPattern
 	NodeListMatch
 	NodeMatchCondition
@@ -141,8 +126,6 @@ const (
 	// Pattern and matching node types
 	NodeArrayPattern
 	NodeAssignment
-	NodeDestructuringAssignment
-	NodeDestructuringPattern
 	NodeLiteralPattern
 	NodeMatchCase
 	NodeMatchExpression
@@ -176,7 +159,6 @@ const (
 
 	// Type node types
 	NodeArrayType
-	NodeErrorTuple
 	NodeFunctionType
 	NodeGenericType
 	NodeInlineUnion
@@ -223,19 +205,13 @@ var NodeTypes = map[NodeType]string{
 	NodeSwitchStatement:     "SwitchStatement",
 
 	// Declaration node types
-	NodeAnnotation:           "Annotation",
-	NodeConstDeclaration:     "ConstDeclaration",
-	NodeEnumDeclaration:      "EnumDeclaration",
-	NodeEnumMember:           "EnumMember",
-	NodeErrorDeclaration:     "ErrorDeclaration",
-	NodeFunctionDeclaration:  "FunctionDeclaration",
-	NodeGenericTypeParam:     "GenericTypeParam",
-	NodeGlobalDeclaration:    "GlobalDeclaration",
-	NodeImportDeclaration:    "ImportDeclaration",
-	NodeNamespaceDeclaration: "NamespaceDeclaration",
-	NodeTypeAlias:            "TypeAlias",
-	NodeTypeDeclaration:      "TypeDeclaration",
-	NodeVariableDeclaration:  "VariableDeclaration",
+	NodeAnnotation:          "Annotation",
+	NodeEnumDeclaration:     "EnumDeclaration",
+	NodeEnumMember:          "EnumMember",
+	NodeErrorDeclaration:    "ErrorDeclaration",
+	NodeFunctionDeclaration: "FunctionDeclaration",
+	NodeGenericTypeParam:    "GenericTypeParam",
+	NodeTypeDeclaration:     "TypeDeclaration",
 
 	// Export related node types
 	NodeExportAssignment:                       "ExportAssignment",
@@ -296,19 +272,9 @@ var NodeTypes = map[NodeType]string{
 	NodeTupleLiteral:              "TupleLiteral",
 
 	// Miscellaneous node types
-	NodeBlockComment:   "BlockComment",
-	NodeComment:        "Comment",
-	NodeDirective:      "Directive",
-	NodeDocComment:     "DocComment",
-	NodeEmptyStatement: "EmptyStatement",
-	NodeErrorNode:      "ErrorNode",
-	NodeLineComment:    "LineComment",
-	NodeMetadata:       "Metadata",
-	NodeModule:         "Module",
-	NodeSyntaxTree:     "SyntaxTree",
-
-	// String interpolation related node types
-	NodeStringInterpolationEscape: "StringInterpolationEscape",
+	NodeComment:    "Comment",
+	NodeModule:     "Module",
+	NodeSyntaxTree: "SyntaxTree",
 
 	// Operator node types
 	NodeAddSubOp:             "AddSubOp",
@@ -321,8 +287,8 @@ var NodeTypes = map[NodeType]string{
 	NodeShortCircuitOp:       "ShortCircuitOp",
 
 	// Additional pattern matching node types
-	NodeAssignmentLhs:        "AssignmentLhs",
-	NodeLabeledAssignmentLhs: "LabeledAssignmentLhs",
+	NodeOrdinalAssignmentLHS: "OrdinalAssignmentLHS",
+	NodeLabeledAssignmentLHS: "LabeledAssignmentLhs",
 	NodeLabeledPattern:       "LabeledPattern",
 	NodeListMatch:            "ListMatch",
 	NodeMatchCondition:       "MatchCondition",
@@ -330,17 +296,15 @@ var NodeTypes = map[NodeType]string{
 	NodeStructuredMatch:      "StructuredMatch",
 
 	// Pattern and matching node types
-	NodeArrayPattern:            "ArrayPattern",
-	NodeAssignment:              "Assignment",
-	NodeDestructuringAssignment: "DestructuringAssignment",
-	NodeDestructuringPattern:    "DestructuringPattern",
-	NodeLiteralPattern:          "LiteralPattern",
-	NodeMatchCase:               "MatchCase",
-	NodeMatchExpression:         "MatchExpression",
-	NodePatternIdentifier:       "PatternIdentifier",
-	NodeTuplePattern:            "TuplePattern",
-	NodeTypePattern:             "TypePattern",
-	NodeWildcardPattern:         "WildcardPattern",
+	NodeArrayPattern:      "ArrayPattern",
+	NodeAssignment:        "Assignment",
+	NodeLiteralPattern:    "LiteralPattern",
+	NodeMatchCase:         "MatchCase",
+	NodeMatchExpression:   "MatchExpression",
+	NodePatternIdentifier: "PatternIdentifier",
+	NodeTuplePattern:      "TuplePattern",
+	NodeTypePattern:       "TypePattern",
+	NodeWildcardPattern:   "WildcardPattern",
 
 	// PrimaryExpression node types
 	NodeFunctionArguments:   "FunctionArguments",
@@ -367,7 +331,6 @@ var NodeTypes = map[NodeType]string{
 
 	// Type node types
 	NodeArrayType:     "ArrayType",
-	NodeErrorTuple:    "ErrorTuple",
 	NodeFunctionType:  "FunctionType",
 	NodeGenericType:   "GenericType",
 	NodeInlineUnion:   "InlineUnion",

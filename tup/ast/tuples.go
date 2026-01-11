@@ -9,7 +9,7 @@ type LabeledTupleMembers struct {
 // NewLabeledTupleMembers creates a new LabeledTupleMembers node
 func NewLabeledTupleMembers(members []Node) *LabeledTupleMembers {
 	return &LabeledTupleMembers{
-		BaseNode: BaseNode{NodeType: NodeLabeledTupleMembers},
+		BaseNode: BaseNode{Type: NodeLabeledTupleMembers},
 		Members:  members,
 	}
 }
@@ -26,11 +26,6 @@ func (l *LabeledTupleMembers) String() string {
 	return result
 }
 
-// Children returns the child nodes
-func (l *LabeledTupleMembers) Children() []Node {
-	return l.Members
-}
-
 // LabeledTuple represents a labeled tuple
 type LabeledTuple struct {
 	BaseNode
@@ -40,7 +35,7 @@ type LabeledTuple struct {
 // NewLabeledTuple creates a new LabeledTuple node
 func NewLabeledTuple(members *LabeledTupleMembers) *LabeledTuple {
 	return &LabeledTuple{
-		BaseNode: BaseNode{NodeType: NodeLabeledTuple},
+		BaseNode: BaseNode{Type: NodeLabeledTuple},
 		Members:  members,
 	}
 }
@@ -48,9 +43,4 @@ func NewLabeledTuple(members *LabeledTupleMembers) *LabeledTuple {
 // String returns a textual representation of the labeled tuple
 func (l *LabeledTuple) String() string {
 	return "(" + l.Members.String() + ")"
-}
-
-// Children returns the child nodes
-func (l *LabeledTuple) Children() []Node {
-	return []Node{l.Members}
 }

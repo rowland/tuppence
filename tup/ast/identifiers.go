@@ -1,5 +1,9 @@
 package ast
 
+import "github.com/rowland/tuppence/tup/source"
+
+// identifier = ( lowercase_letter | "_" ) { letter | decimal_digit | "_" } .
+
 // Identifier represents a regular identifier in the code (variable name, parameter name, etc.)
 type Identifier struct {
 	BaseNode
@@ -7,9 +11,9 @@ type Identifier struct {
 }
 
 // NewIdentifier creates a new Identifier node
-func NewIdentifier(name string) *Identifier {
+func NewIdentifier(name string, source *source.Source, startOffset int32, length int32) *Identifier {
 	return &Identifier{
-		BaseNode: BaseNode{NodeType: NodeIdentifier},
+		BaseNode: BaseNode{Type: NodeIdentifier, Source: source, StartOffset: startOffset, Length: length},
 		Name:     name,
 	}
 }
@@ -19,139 +23,114 @@ func (i *Identifier) String() string {
 	return i.Name
 }
 
+// type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
+
 // TypeIdentifier represents a type identifier (starts with uppercase)
 type TypeIdentifier struct {
 	BaseNode
-	Name      string // The type name
-	Namespace string // Optional namespace (e.g., module name)
+	Name string // The type name
 }
 
 // NewTypeIdentifier creates a new TypeIdentifier node
-func NewTypeIdentifier(name string, namespace string) *TypeIdentifier {
+func NewTypeIdentifier(name string, source *source.Source, startOffset int32, length int32) *TypeIdentifier {
 	return &TypeIdentifier{
-		BaseNode:  BaseNode{NodeType: NodeTypeIdentifier},
-		Name:      name,
-		Namespace: namespace,
+		BaseNode: BaseNode{Type: NodeTypeIdentifier, Source: source, StartOffset: startOffset, Length: length},
+		Name:     name,
 	}
 }
 
 // String returns a textual representation of the type identifier
 func (t *TypeIdentifier) String() string {
-	if t.Namespace != "" {
-		return t.Namespace + "." + t.Name
-	}
 	return t.Name
 }
 
-// QualifiedName returns the fully qualified name including namespace
-func (t *TypeIdentifier) QualifiedName() string {
-	if t.Namespace != "" {
-		return t.Namespace + "." + t.Name
-	}
-	return t.Name
-}
+// function_identifier = lowercase_letter { letter | decimal_digit | "_" } [ "?" | "!" ] .
 
 // FunctionIdentifier represents a function identifier (starts with lowercase, may end with ? or !)
 type FunctionIdentifier struct {
 	BaseNode
-	Name               string // The function name
-	Namespace          string // Optional namespace (e.g., module name or type name)
-	IsPredicateOrPanic bool   // True if the function name ends with ? or !
+	Name string // The function name
 }
 
 // NewFunctionIdentifier creates a new FunctionIdentifier node
-func NewFunctionIdentifier(name string, namespace string) *FunctionIdentifier {
-	isPredOrPanic := false
-	// Check if the function name ends with ? or !
-	if len(name) > 0 {
-		lastChar := name[len(name)-1]
-		isPredOrPanic = lastChar == '?' || lastChar == '!'
-	}
-
+func NewFunctionIdentifier(name string, source *source.Source, startOffset int32, length int32) *FunctionIdentifier {
 	return &FunctionIdentifier{
-		BaseNode:           BaseNode{NodeType: NodeFunctionIdentifier},
-		Name:               name,
-		Namespace:          namespace,
-		IsPredicateOrPanic: isPredOrPanic,
+		BaseNode: BaseNode{Type: NodeFunctionIdentifier, Source: source, StartOffset: startOffset, Length: length},
+		Name:     name,
 	}
 }
 
 // String returns a textual representation of the function identifier
 func (f *FunctionIdentifier) String() string {
-	if f.Namespace != "" {
-		return f.Namespace + "." + f.Name
-	}
 	return f.Name
 }
 
-// QualifiedName returns the fully qualified name including namespace
-func (f *FunctionIdentifier) QualifiedName() string {
-	if f.Namespace != "" {
-		return f.Namespace + "." + f.Name
-	}
-	return f.Name
+type Rename interface {
+	// Node
+	renameNode()
+	Name() string
 }
+
+// rename_identifier = identifier [ ":" identifier ] .
 
 // RenameIdentifier represents an identifier with an optional new name for import renaming
 type RenameIdentifier struct {
 	BaseNode
-	Original *Identifier // Original identifier
-	Renamed  *Identifier // New identifier (may be nil if not renamed)
+	Identifier *Identifier
+	Original   *Identifier // may be nil if not renamed
 }
 
 // NewRenameIdentifier creates a new RenameIdentifier node
-func NewRenameIdentifier(original *Identifier, renamed *Identifier) *RenameIdentifier {
+func NewRenameIdentifier(identifier *Identifier, original *Identifier) *RenameIdentifier {
 	return &RenameIdentifier{
-		BaseNode: BaseNode{NodeType: NodeRenameIdentifier},
-		Original: original,
-		Renamed:  renamed,
+		BaseNode:   BaseNode{Type: NodeRenameIdentifier},
+		Identifier: identifier,
+		Original:   original,
 	}
+}
+
+func (r *RenameIdentifier) renameNode() {}
+
+func (r *RenameIdentifier) Name() string {
+	return r.Identifier.Name
 }
 
 // String returns a textual representation of the rename identifier
 func (r *RenameIdentifier) String() string {
-	if r.Renamed != nil {
-		return r.Original.String() + ": " + r.Renamed.String()
+	if r.Original != nil {
+		return r.Identifier.String() + ": " + r.Original.String()
 	}
-	return r.Original.String()
+	return r.Identifier.String()
 }
 
-// Children returns the child nodes
-func (r *RenameIdentifier) Children() []Node {
-	if r.Renamed != nil {
-		return []Node{r.Original, r.Renamed}
-	}
-	return []Node{r.Original}
-}
+// rename_type = type_identifier [ ":" type_identifier ] .
 
 // RenameType represents a type identifier with an optional new name for import renaming
 type RenameType struct {
 	BaseNode
-	Original *TypeIdentifier // Original type identifier
-	Renamed  *TypeIdentifier // New type identifier (may be nil if not renamed)
+	Identifier *TypeIdentifier
+	Original   *TypeIdentifier // may be nil if not renamed
 }
 
 // NewRenameType creates a new RenameType node
-func NewRenameType(original *TypeIdentifier, renamed *TypeIdentifier) *RenameType {
+func NewRenameType(identifier *TypeIdentifier, original *TypeIdentifier) *RenameType {
 	return &RenameType{
-		BaseNode: BaseNode{NodeType: NodeRenameType},
-		Original: original,
-		Renamed:  renamed,
+		BaseNode:   BaseNode{Type: NodeRenameType},
+		Identifier: identifier,
+		Original:   original,
 	}
+}
+
+func (r *RenameType) renameNode() {}
+
+func (r *RenameType) Name() string {
+	return r.Identifier.Name
 }
 
 // String returns a textual representation of the rename type
 func (r *RenameType) String() string {
-	if r.Renamed != nil {
-		return r.Original.String() + ": " + r.Renamed.String()
+	if r.Original != nil {
+		return r.Identifier.String() + ": " + r.Original.String()
 	}
-	return r.Original.String()
-}
-
-// Children returns the child nodes
-func (r *RenameType) Children() []Node {
-	if r.Renamed != nil {
-		return []Node{r.Original, r.Renamed}
-	}
-	return []Node{r.Original}
+	return r.Identifier.String()
 }

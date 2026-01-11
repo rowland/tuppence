@@ -1,29 +1,53 @@
 package ast
 
-// PrimaryExpression represents the most basic form of expression
-// This includes literals, identifiers, and parenthesized expressions
-type PrimaryExpression struct {
-	BaseNode
-	Expression Node // The actual expression (literal, identifier, etc.)
+// primary_expression = "(" expression ")"
+//	                  | block
+//	                  | if_expression
+//	                  | for_expression
+//	                  | inline_for_expression
+//	                  | array_function_call
+//	                  | import_expression
+//	                  | typeof_expression
+//	                  | function_call
+//	                  | type_constructor_call
+//	                  | return_expression
+//	                  | break_expression
+//	                  | continue_expression
+//	                  | member_access
+//	                  | tuple_update_expression
+//	                  | safe_indexed_access
+//	                  | indexed_access
+//	                  | range
+//	                  | identifier
+//	                  | literal .
+
+type PrimaryExpression interface {
+	primaryExpressionNode()
 }
 
-// NewPrimaryExpression creates a new PrimaryExpression node
-func NewPrimaryExpression(expression Node) *PrimaryExpression {
-	return &PrimaryExpression{
-		BaseNode:   BaseNode{NodeType: NodePrimaryExpression},
-		Expression: expression,
-	}
-}
+func (n *Block) primaryExpressionNode()               {}
+func (n *IfExpression) primaryExpressionNode()        {}
+func (n *ForExpression) primaryExpressionNode()       {}
+func (n *InlineForExpression) primaryExpressionNode() {}
+func (n *ArrayFunctionCall) primaryExpressionNode()   {}
 
-// String returns a textual representation of the primary expression
-func (p *PrimaryExpression) String() string {
-	return p.Expression.String()
-}
+// func (n *ImportExpression) primaryExpressionNode()      {}
+func (n *TypeofExpression) primaryExpressionNode()      {}
+func (n *FunctionCall) primaryExpressionNode()          {}
+func (n *TypeConstructorCall) primaryExpressionNode()   {}
+func (n *ReturnExpression) primaryExpressionNode()      {}
+func (n *BreakExpression) primaryExpressionNode()       {}
+func (n *ContinueExpression) primaryExpressionNode()    {}
+func (n *MemberAccess) primaryExpressionNode()          {}
+func (n *TupleUpdateExpression) primaryExpressionNode() {}
+func (n *SafeIndexedAccess) primaryExpressionNode()     {}
+func (n *IndexedAccess) primaryExpressionNode()         {}
+func (n *Range) primaryExpressionNode()                 {}
+func (n *Identifier) primaryExpressionNode()            {}
 
-// Children returns the child nodes
-func (p *PrimaryExpression) Children() []Node {
-	return []Node{p.Expression}
-}
+// func (n *Literal) primaryExpressionNode() {}
+
+// function_block = "{" [ block_parameters ] block_body "}" .
 
 // FunctionBlock represents a block used as a function body
 type FunctionBlock struct {
@@ -35,7 +59,7 @@ type FunctionBlock struct {
 // NewFunctionBlock creates a new FunctionBlock node
 func NewFunctionBlock(parameters *BlockParameters, body *BlockBody) *FunctionBlock {
 	return &FunctionBlock{
-		BaseNode:   BaseNode{NodeType: NodeFunctionBlock},
+		BaseNode:   BaseNode{Type: NodeFunctionBlock},
 		Parameters: parameters,
 		Body:       body,
 	}
@@ -56,17 +80,7 @@ func (f *FunctionBlock) String() string {
 	return result
 }
 
-// Children returns the child nodes
-func (f *FunctionBlock) Children() []Node {
-	var children []Node
-	if f.Parameters != nil {
-		children = append(children, f.Parameters)
-	}
-	if f.Body != nil {
-		children = append(children, f.Body)
-	}
-	return children
-}
+// function_call_context = function_identifier [ "(" ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ")" ] .
 
 // FunctionCallContext represents a context in which a function is called
 type FunctionCallContext struct {
@@ -78,7 +92,7 @@ type FunctionCallContext struct {
 // NewFunctionCallContext creates a new FunctionCallContext node
 func NewFunctionCallContext(function Node, arguments *FunctionArguments) *FunctionCallContext {
 	return &FunctionCallContext{
-		BaseNode:  BaseNode{NodeType: NodeFunctionCallContext},
+		BaseNode:  BaseNode{Type: NodeFunctionCallContext},
 		Function:  function,
 		Arguments: arguments,
 	}
@@ -89,10 +103,9 @@ func (f *FunctionCallContext) String() string {
 	return f.Function.String() + f.Arguments.String()
 }
 
-// Children returns the child nodes
-func (f *FunctionCallContext) Children() []Node {
-	return []Node{f.Function, f.Arguments}
-}
+// function_arguments = ( labeled_arguments
+// 	| arguments [ "," labeled_arguments ]
+// 	) [ partial_application ] .
 
 // FunctionArguments represents the arguments passed to a function
 type FunctionArguments struct {
@@ -103,7 +116,7 @@ type FunctionArguments struct {
 // NewFunctionArguments creates a new FunctionArguments node
 func NewFunctionArguments(arguments []Node) *FunctionArguments {
 	return &FunctionArguments{
-		BaseNode:  BaseNode{NodeType: NodeFunctionArguments},
+		BaseNode:  BaseNode{Type: NodeFunctionArguments},
 		Arguments: arguments,
 	}
 }
@@ -121,10 +134,7 @@ func (f *FunctionArguments) String() string {
 	return result
 }
 
-// Children returns the child nodes
-func (f *FunctionArguments) Children() []Node {
-	return f.Arguments
-}
+// labeled_argument = ( identifier ":" expression | spread_argument ) .
 
 // LabeledArgument represents a labeled argument in a function call
 type LabeledArgument struct {
@@ -136,7 +146,7 @@ type LabeledArgument struct {
 // NewLabeledArgument creates a new LabeledArgument node
 func NewLabeledArgument(label *Identifier, value Node) *LabeledArgument {
 	return &LabeledArgument{
-		BaseNode: BaseNode{NodeType: NodeLabeledArgument},
+		BaseNode: BaseNode{Type: NodeLabeledArgument},
 		Label:    label,
 		Value:    value,
 	}
@@ -147,10 +157,7 @@ func (l *LabeledArgument) String() string {
 	return l.Label.String() + ": " + l.Value.String()
 }
 
-// Children returns the child nodes
-func (l *LabeledArgument) Children() []Node {
-	return []Node{l.Label, l.Value}
-}
+// spread_argument = "..." expression .
 
 // SpreadArgument represents a spread argument in a function call
 type SpreadArgument struct {
@@ -161,7 +168,7 @@ type SpreadArgument struct {
 // NewSpreadArgument creates a new SpreadArgument node
 func NewSpreadArgument(expression Node) *SpreadArgument {
 	return &SpreadArgument{
-		BaseNode:   BaseNode{NodeType: NodeSpreadArgument},
+		BaseNode:   BaseNode{Type: NodeSpreadArgument},
 		Expression: expression,
 	}
 }
@@ -171,10 +178,7 @@ func (s *SpreadArgument) String() string {
 	return "..." + s.Expression.String()
 }
 
-// Children returns the child nodes
-func (s *SpreadArgument) Children() []Node {
-	return []Node{s.Expression}
-}
+// partial_application = [ "," ] "*" .
 
 // PartialApplication represents a partial function application using the _ placeholder
 type PartialApplication struct {
@@ -186,7 +190,7 @@ type PartialApplication struct {
 // NewPartialApplication creates a new PartialApplication node
 func NewPartialApplication(function Node, arguments *FunctionArguments) *PartialApplication {
 	return &PartialApplication{
-		BaseNode:  BaseNode{NodeType: NodePartialApplication},
+		BaseNode:  BaseNode{Type: NodePartialApplication},
 		Function:  function,
 		Arguments: arguments,
 	}
@@ -197,10 +201,7 @@ func (p *PartialApplication) String() string {
 	return p.Function.String() + p.Arguments.String()
 }
 
-// Children returns the child nodes
-func (p *PartialApplication) Children() []Node {
-	return []Node{p.Function, p.Arguments}
-}
+// initializer = assignment .
 
 // Initializer represents an initializer expression
 type Initializer struct {
@@ -211,7 +212,7 @@ type Initializer struct {
 // NewInitializer creates a new Initializer node
 func NewInitializer(expression Node) *Initializer {
 	return &Initializer{
-		BaseNode:   BaseNode{NodeType: NodeInitializer},
+		BaseNode:   BaseNode{Type: NodeInitializer},
 		Expression: expression,
 	}
 }
@@ -221,10 +222,7 @@ func (i *Initializer) String() string {
 	return i.Expression.String()
 }
 
-// Children returns the child nodes
-func (i *Initializer) Children() []Node {
-	return []Node{i.Expression}
-}
+// step_expression = expression .
 
 // StepExpression represents a step expression in a for loop
 type StepExpression struct {
@@ -235,7 +233,7 @@ type StepExpression struct {
 // NewStepExpression creates a new StepExpression node
 func NewStepExpression(expression Node) *StepExpression {
 	return &StepExpression{
-		BaseNode:   BaseNode{NodeType: NodeStepExpression},
+		BaseNode:   BaseNode{Type: NodeStepExpression},
 		Expression: expression,
 	}
 }
@@ -245,10 +243,14 @@ func (s *StepExpression) String() string {
 	return s.Expression.String()
 }
 
-// Children returns the child nodes
-func (s *StepExpression) Children() []Node {
-	return []Node{s.Expression}
-}
+// statement = ( type_qualified_function_declaration
+// 	| type_qualified_declaration
+// 	| type_declaration
+// 	| function_declaration
+// 	| compound_assignment
+// 	| assignment
+// 	| expression
+// 	) .
 
 // Statement represents a statement in a block
 type Statement struct {
@@ -259,7 +261,7 @@ type Statement struct {
 // NewStatement creates a new Statement node
 func NewStatement(expression Node) *Statement {
 	return &Statement{
-		BaseNode:   BaseNode{NodeType: NodeStatement},
+		BaseNode:   BaseNode{Type: NodeStatement},
 		Expression: expression,
 	}
 }
@@ -269,34 +271,7 @@ func (s *Statement) String() string {
 	return s.Expression.String() + ";"
 }
 
-// Children returns the child nodes
-func (s *Statement) Children() []Node {
-	return []Node{s.Expression}
-}
-
-// TopLevelItem represents a top-level item in a module
-type TopLevelItem struct {
-	BaseNode
-	Item Node // The top-level item
-}
-
-// NewTopLevelItem creates a new TopLevelItem node
-func NewTopLevelItem(item Node) *TopLevelItem {
-	return &TopLevelItem{
-		BaseNode: BaseNode{NodeType: NodeTopLevelItem},
-		Item:     item,
-	}
-}
-
-// String returns a textual representation of the top-level item
-func (t *TopLevelItem) String() string {
-	return t.Item.String()
-}
-
-// Children returns the child nodes
-func (t *TopLevelItem) Children() []Node {
-	return []Node{t.Item}
-}
+// iterable = expression .
 
 // Iterable represents an iterable expression used in for-in loops
 type Iterable struct {
@@ -307,7 +282,7 @@ type Iterable struct {
 // NewIterable creates a new Iterable node
 func NewIterable(expression Node) *Iterable {
 	return &Iterable{
-		BaseNode:   BaseNode{NodeType: NodeIterable},
+		BaseNode:   BaseNode{Type: NodeIterable},
 		Expression: expression,
 	}
 }
@@ -315,9 +290,4 @@ func NewIterable(expression Node) *Iterable {
 // String returns a textual representation of the iterable
 func (i *Iterable) String() string {
 	return i.Expression.String()
-}
-
-// Children returns the child nodes
-func (i *Iterable) Children() []Node {
-	return []Node{i.Expression}
 }

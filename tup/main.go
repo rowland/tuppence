@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/rowland/tuppence/tup/ast"
+	"github.com/rowland/tuppence/tup/source"
 	"github.com/rowland/tuppence/tup/tok"
 	"github.com/spf13/pflag"
 )
@@ -18,17 +20,20 @@ func main() {
 
 	if input != "" {
 		fmt.Printf("Input file: '%s'\n", input)
-		source, err := os.ReadFile(input)
+		contents, err := os.ReadFile(input)
 		if err != nil {
 			log.Fatal(err)
 		}
-		tokens, err := tok.Tokenize(source, input)
+		tokens, err := tok.Tokenize(contents, input)
 		if err != nil {
 			log.Fatal(err)
 		}
 		for _, token := range tokens {
 			fmt.Printf("%s %s\n", token.Type, token.Value())
 		}
+		source := source.NewSource(contents, input)
+		module := ast.NewModule(input)
+		module.AddSource(source)
 	}
 
 	if output != "" {
@@ -39,4 +44,5 @@ func main() {
 	for i, arg := range pflag.Args() {
 		fmt.Printf("%d: %s\n", i, arg)
 	}
+
 }

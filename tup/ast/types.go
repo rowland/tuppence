@@ -14,7 +14,7 @@ type TypeReference struct {
 // NewTypeReference creates a new TypeReference node
 func NewTypeReference(typeIdentifier *TypeIdentifier, isLocal bool) *TypeReference {
 	return &TypeReference{
-		BaseNode:       BaseNode{NodeType: NodeTypeReference},
+		BaseNode:       BaseNode{Type: NodeTypeReference},
 		TypeIdentifier: typeIdentifier,
 		IsLocal:        isLocal,
 	}
@@ -23,11 +23,6 @@ func NewTypeReference(typeIdentifier *TypeIdentifier, isLocal bool) *TypeReferen
 // String returns a textual representation of the type reference
 func (t *TypeReference) String() string {
 	return t.TypeIdentifier.String()
-}
-
-// Children returns the child nodes
-func (t *TypeReference) Children() []Node {
-	return []Node{t.TypeIdentifier}
 }
 
 // NilableType represents a nilable type (prefixed with ?)
@@ -39,7 +34,7 @@ type NilableType struct {
 // NewNilableType creates a new NilableType node
 func NewNilableType(innerType Node) *NilableType {
 	return &NilableType{
-		BaseNode:  BaseNode{NodeType: NodeNilableType},
+		BaseNode:  BaseNode{Type: NodeNilableType},
 		InnerType: innerType,
 	}
 }
@@ -47,11 +42,6 @@ func NewNilableType(innerType Node) *NilableType {
 // String returns a textual representation of the nilable type
 func (n *NilableType) String() string {
 	return "?" + n.InnerType.String()
-}
-
-// Children returns the child nodes
-func (n *NilableType) Children() []Node {
-	return []Node{n.InnerType}
 }
 
 // ArrayType is the base type for array types
@@ -65,11 +55,6 @@ func (a *ArrayType) String() string {
 	return "[" + "]" + a.ElementType.String()
 }
 
-// Children returns the child nodes
-func (a *ArrayType) Children() []Node {
-	return []Node{a.ElementType}
-}
-
 // DynamicArrayType represents a dynamic-size array type
 type DynamicArrayType struct {
 	ArrayType
@@ -79,7 +64,7 @@ type DynamicArrayType struct {
 func NewDynamicArrayType(elementType Node) *DynamicArrayType {
 	return &DynamicArrayType{
 		ArrayType: ArrayType{
-			BaseNode:    BaseNode{NodeType: NodeArrayType},
+			BaseNode:    BaseNode{Type: NodeArrayType},
 			ElementType: elementType,
 		},
 	}
@@ -100,7 +85,7 @@ type FixedSizeArrayType struct {
 func NewFixedSizeArrayType(elementType Node, size Node) *FixedSizeArrayType {
 	return &FixedSizeArrayType{
 		ArrayType: ArrayType{
-			BaseNode:    BaseNode{NodeType: NodeArrayType},
+			BaseNode:    BaseNode{Type: NodeArrayType},
 			ElementType: elementType,
 		},
 		Size: size,
@@ -110,11 +95,6 @@ func NewFixedSizeArrayType(elementType Node, size Node) *FixedSizeArrayType {
 // String returns a textual representation of the fixed-size array type
 func (f *FixedSizeArrayType) String() string {
 	return "[" + f.Size.String() + "]" + f.ElementType.String()
-}
-
-// Children returns the child nodes
-func (f *FixedSizeArrayType) Children() []Node {
-	return []Node{f.Size, f.ElementType}
 }
 
 // Parameter represents a function parameter
@@ -135,14 +115,6 @@ func (p *Parameter) String() string {
 
 	builder.WriteString(p.Type.String())
 	return builder.String()
-}
-
-// Children returns the child nodes
-func (p *Parameter) Children() []Node {
-	children := make([]Node, 0, len(p.Annotations)+1)
-	children = append(children, p.Annotations...)
-	children = append(children, p.Type)
-	return children
 }
 
 // LabeledParameter represents a labeled function parameter
@@ -168,14 +140,6 @@ func (l *LabeledParameter) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (l *LabeledParameter) Children() []Node {
-	children := make([]Node, 0, len(l.Annotations)+2)
-	children = append(children, l.Annotations...)
-	children = append(children, l.Identifier, l.Type)
-	return children
-}
-
 // RestParameter represents a rest parameter (e.g., ...T)
 type RestParameter struct {
 	BaseNode
@@ -185,7 +149,7 @@ type RestParameter struct {
 // NewRestParameter creates a new RestParameter node
 func NewRestParameter(paramType Node) *RestParameter {
 	return &RestParameter{
-		BaseNode: BaseNode{NodeType: NodeRestParameter},
+		BaseNode: BaseNode{Type: NodeRestParameter},
 		Type:     paramType,
 	}
 }
@@ -193,11 +157,6 @@ func NewRestParameter(paramType Node) *RestParameter {
 // String returns a textual representation of the rest parameter
 func (r *RestParameter) String() string {
 	return "..." + r.Type.String()
-}
-
-// Children returns the child nodes
-func (r *RestParameter) Children() []Node {
-	return []Node{r.Type}
 }
 
 // LabeledRestParameter represents a labeled rest parameter (e.g., rest: ...T)
@@ -226,16 +185,6 @@ func (l *LabeledRestParameter) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (l *LabeledRestParameter) Children() []Node {
-	var children []Node
-
-	children = append(children, l.Annotations...)
-	children = append(children, l.Identifier)
-	children = append(children, l.RestType)
-	return children
-}
-
 // ReturnType represents a return type
 type ReturnType struct {
 	BaseNode
@@ -245,7 +194,7 @@ type ReturnType struct {
 // NewReturnType creates a new ReturnType node
 func NewReturnType(returnType Node) *ReturnType {
 	return &ReturnType{
-		BaseNode: BaseNode{NodeType: NodeReturnType},
+		BaseNode: BaseNode{Type: NodeReturnType},
 		Type:     returnType,
 	}
 }
@@ -253,11 +202,6 @@ func NewReturnType(returnType Node) *ReturnType {
 // String returns a textual representation of the return type
 func (r *ReturnType) String() string {
 	return r.Type.String()
-}
-
-// Children returns the child nodes
-func (r *ReturnType) Children() []Node {
-	return []Node{r.Type}
 }
 
 // FunctionType represents a function type (fn(params) -> return_type or fx(params))
@@ -271,7 +215,7 @@ type FunctionType struct {
 // NewFunctionType creates a new FunctionType node
 func NewFunctionType(hasSideEffects bool, parameters []Node, returnType Node) *FunctionType {
 	return &FunctionType{
-		BaseNode:       BaseNode{NodeType: NodeFunctionType},
+		BaseNode:       BaseNode{Type: NodeFunctionType},
 		HasSideEffects: hasSideEffects,
 		Parameters:     parameters,
 		ReturnType:     returnType,
@@ -307,18 +251,6 @@ func (f *FunctionType) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (f *FunctionType) Children() []Node {
-	children := make([]Node, 0, len(f.Parameters)+1)
-
-	children = append(children, f.Parameters...)
-
-	if f.ReturnType != nil {
-		children = append(children, f.ReturnType)
-	}
-	return children
-}
-
 // TupleTypeMember represents a member of a tuple type
 type TupleTypeMember struct {
 	BaseNode
@@ -337,14 +269,6 @@ func (t *TupleTypeMember) String() string {
 
 	builder.WriteString(t.Type.String())
 	return builder.String()
-}
-
-// Children returns the child nodes
-func (t *TupleTypeMember) Children() []Node {
-	children := make([]Node, 0, len(t.Annotations)+1)
-	children = append(children, t.Annotations...)
-	children = append(children, t.Type)
-	return children
 }
 
 // LabeledTupleTypeMember represents a labeled member of a tuple type
@@ -370,14 +294,6 @@ func (l *LabeledTupleTypeMember) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (l *LabeledTupleTypeMember) Children() []Node {
-	children := make([]Node, 0, len(l.Annotations)+2)
-	children = append(children, l.Annotations...)
-	children = append(children, l.Identifier, l.Type)
-	return children
-}
-
 // TupleType represents a tuple type
 type TupleType struct {
 	BaseNode
@@ -387,7 +303,7 @@ type TupleType struct {
 // NewTupleType creates a new TupleType node
 func NewTupleType(members []Node) *TupleType {
 	return &TupleType{
-		BaseNode: BaseNode{NodeType: NodeTupleType},
+		BaseNode: BaseNode{Type: NodeTupleType},
 		Members:  members,
 	}
 }
@@ -406,35 +322,6 @@ func (t *TupleType) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (t *TupleType) Children() []Node {
-	return t.Members
-}
-
-// ErrorTuple represents an error tuple type
-type ErrorTuple struct {
-	BaseNode
-	TupleType *TupleType // The tuple type
-}
-
-// NewErrorTuple creates a new ErrorTuple node
-func NewErrorTuple(tupleType *TupleType) *ErrorTuple {
-	return &ErrorTuple{
-		BaseNode:  BaseNode{NodeType: NodeErrorTuple},
-		TupleType: tupleType,
-	}
-}
-
-// String returns a textual representation of the error tuple
-func (e *ErrorTuple) String() string {
-	return "error " + e.TupleType.String()
-}
-
-// Children returns the child nodes
-func (e *ErrorTuple) Children() []Node {
-	return []Node{e.TupleType}
-}
-
 // TypeArgument represents a type argument in a generic type
 type TypeArgument struct {
 	BaseNode
@@ -444,11 +331,6 @@ type TypeArgument struct {
 // String returns a textual representation of the type argument
 func (t *TypeArgument) String() string {
 	return t.Type.String()
-}
-
-// Children returns the child nodes
-func (t *TypeArgument) Children() []Node {
-	return []Node{t.Type}
 }
 
 // TypeArgumentList represents a list of type arguments for a generic type
@@ -471,11 +353,6 @@ func (t *TypeArgumentList) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (t *TypeArgumentList) Children() []Node {
-	return t.Arguments
-}
-
 // GenericType represents a generic type with type arguments
 type GenericType struct {
 	BaseNode
@@ -486,7 +363,7 @@ type GenericType struct {
 // NewGenericType creates a new GenericType node
 func NewGenericType(baseType *TypeReference, typeArgs *TypeArgumentList) *GenericType {
 	return &GenericType{
-		BaseNode: BaseNode{NodeType: NodeGenericType},
+		BaseNode: BaseNode{Type: NodeGenericType},
 		BaseType: baseType,
 		TypeArgs: typeArgs,
 	}
@@ -495,11 +372,6 @@ func NewGenericType(baseType *TypeReference, typeArgs *TypeArgumentList) *Generi
 // String returns a textual representation of the generic type
 func (g *GenericType) String() string {
 	return g.BaseType.String() + g.TypeArgs.String()
-}
-
-// Children returns the child nodes
-func (g *GenericType) Children() []Node {
-	return []Node{g.BaseType, g.TypeArgs}
 }
 
 // TypeParameter represents a type parameter in a generic type definition
@@ -511,11 +383,6 @@ type TypeParameter struct {
 // String returns a textual representation of the type parameter
 func (t *TypeParameter) String() string {
 	return t.Identifier.String()
-}
-
-// Children returns the child nodes
-func (t *TypeParameter) Children() []Node {
-	return []Node{t.Identifier}
 }
 
 // TypeParameters represents a list of type parameters for a generic type definition
@@ -538,11 +405,6 @@ func (t *TypeParameters) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (t *TypeParameters) Children() []Node {
-	return t.Parameters
-}
-
 // NamedTuple represents a named tuple type
 type NamedTuple struct {
 	BaseNode
@@ -553,7 +415,7 @@ type NamedTuple struct {
 // NewNamedTuple creates a new NamedTuple node
 func NewNamedTuple(typeIdentifier *TypeIdentifier, tupleType *TupleType) *NamedTuple {
 	return &NamedTuple{
-		BaseNode:       BaseNode{NodeType: NodeNamedTuple},
+		BaseNode:       BaseNode{Type: NodeNamedTuple},
 		TypeIdentifier: typeIdentifier,
 		TupleType:      tupleType,
 	}
@@ -562,9 +424,4 @@ func NewNamedTuple(typeIdentifier *TypeIdentifier, tupleType *TupleType) *NamedT
 // String returns a textual representation of the named tuple
 func (n *NamedTuple) String() string {
 	return n.TypeIdentifier.String() + " " + n.TupleType.String()
-}
-
-// Children returns the child nodes
-func (n *NamedTuple) Children() []Node {
-	return []Node{n.TypeIdentifier, n.TupleType}
 }

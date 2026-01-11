@@ -3,7 +3,7 @@ Key = Int | String
 
 # unions can include arrays and errors
 Data = []Byte
-HttpError = error (code: Int, message: String)
+HttpError = error(code: Int, message: String)
 Result = Data | HttpError
 
 # a union can introduce a new type

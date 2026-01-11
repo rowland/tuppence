@@ -1,8 +1,8 @@
 # basic type
-Person = type (name: String, age: Int)
+Person = type(name: String, age: Int)
 
 # error type
-HttpError = error (code: Int, message: String)
+HttpError = error(code: Int, message: String)
 
 # basic array
 IntArray = []Int
@@ -19,18 +19,18 @@ AB = type(a: Int, b: String)
 LabeledTupleArray2 = []AB
 
 # nested tuple with anonymous component
-NestedTuple = type (id: Int, data: (name: String, value: Float))
+NestedTuple = type(id: Int, data: (name: String, value: Float))
 
 @info:foo "metadata"
-AnnotatedTuple1 = type (key: String, value: Int)
+AnnotatedTuple1 = type(key: String, value: Int)
 
-AnnotatedTuple2 = type (
+AnnotatedTuple2 = type(
     @info: "metadata_key" key: String,
     @info: "metadata_value" value: Int
 )
 
-GenericType[a] = type (key: String, value: a)
+GenericType[a] = type(key: String, value: a)
 
-SingleGeneric[a] = type (value: a)
+SingleGeneric[a] = type(value: a)
 
-Pair[k, v] = type (key: k, value: v)
+Pair[k, v] = type(key: k, value: v)

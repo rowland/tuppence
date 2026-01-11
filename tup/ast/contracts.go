@@ -13,7 +13,7 @@ type ContractMember struct {
 // NewContractMember creates a new ContractMember node
 func NewContractMember(member Node) *ContractMember {
 	return &ContractMember{
-		BaseNode: BaseNode{NodeType: NodeContractMember},
+		BaseNode: BaseNode{Type: NodeContractMember},
 		Member:   member,
 	}
 }
@@ -21,11 +21,6 @@ func NewContractMember(member Node) *ContractMember {
 // String returns a textual representation of the contract member
 func (c *ContractMember) String() string {
 	return c.Member.String()
-}
-
-// Children returns the child nodes
-func (c *ContractMember) Children() []Node {
-	return []Node{c.Member}
 }
 
 // ContractMembers represents a collection of contract members
@@ -37,7 +32,7 @@ type ContractMembers struct {
 // NewContractMembers creates a new ContractMembers node
 func NewContractMembers(members []*ContractMember) *ContractMembers {
 	return &ContractMembers{
-		BaseNode: BaseNode{NodeType: NodeContractMembers},
+		BaseNode: BaseNode{Type: NodeContractMembers},
 		Members:  members,
 	}
 }
@@ -54,28 +49,19 @@ func (c *ContractMembers) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (c *ContractMembers) Children() []Node {
-	children := make([]Node, len(c.Members))
-	for i, member := range c.Members {
-		children[i] = member
-	}
-	return children
-}
-
 // ContractField represents a field in a contract
 type ContractField struct {
 	BaseNode
-	Name        *Identifier   // The field name
-	Type        Node          // The field type
-	Annotations []*Annotation // Field annotations
-	Docs        string        // Documentation comments
+	Name        *Identifier  // The field name
+	Type        Node         // The field type
+	Annotations []Annotation // Field annotations
+	Docs        string       // Documentation comments
 }
 
 // NewContractField creates a new ContractField node
-func NewContractField(name *Identifier, fieldType Node, annotations []*Annotation, docs string) *ContractField {
+func NewContractField(name *Identifier, fieldType Node, annotations []Annotation, docs string) *ContractField {
 	return &ContractField{
-		BaseNode:    BaseNode{NodeType: NodeContractField},
+		BaseNode:    BaseNode{Type: NodeContractField},
 		Name:        name,
 		Type:        fieldType,
 		Annotations: annotations,
@@ -97,35 +83,23 @@ func (c *ContractField) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (c *ContractField) Children() []Node {
-	children := make([]Node, 0, len(c.Annotations)+2)
-	for _, annotation := range c.Annotations {
-		children = append(children, annotation)
-	}
-	children = append(children, c.Name, c.Type)
-	return children
-}
-
 // ContractFunction represents a function in a contract
 type ContractFunction struct {
 	BaseNode
 	Name        *FunctionIdentifier // The function name
 	Parameters  []Node              // Function parameters
 	ReturnType  Node                // The return type
-	Annotations []*Annotation       // Function annotations
-	Docs        string              // Documentation comments
+	Annotations []Annotation        // Function annotations
 }
 
 // NewContractFunction creates a new ContractFunction node
-func NewContractFunction(name *FunctionIdentifier, parameters []Node, returnType Node, annotations []*Annotation, docs string) *ContractFunction {
+func NewContractFunction(name *FunctionIdentifier, parameters []Node, returnType Node, annotations []Annotation) *ContractFunction {
 	return &ContractFunction{
-		BaseNode:    BaseNode{NodeType: NodeContractFunction},
+		BaseNode:    BaseNode{Type: NodeContractFunction},
 		Name:        name,
 		Parameters:  parameters,
 		ReturnType:  returnType,
 		Annotations: annotations,
-		Docs:        docs,
 	}
 }
 
@@ -154,20 +128,6 @@ func (c *ContractFunction) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (c *ContractFunction) Children() []Node {
-	children := make([]Node, 0, len(c.Annotations)+len(c.Parameters)+2)
-	for _, annotation := range c.Annotations {
-		children = append(children, annotation)
-	}
-	children = append(children, c.Name)
-	children = append(children, c.Parameters...)
-	if c.ReturnType != nil {
-		children = append(children, c.ReturnType)
-	}
-	return children
-}
-
 // ContractImplementsAnnotation represents an @implements annotation for a contract
 type ContractImplementsAnnotation struct {
 	BaseNode
@@ -177,7 +137,7 @@ type ContractImplementsAnnotation struct {
 // NewContractImplementsAnnotation creates a new ContractImplementsAnnotation node
 func NewContractImplementsAnnotation(contract *TypeIdentifier) *ContractImplementsAnnotation {
 	return &ContractImplementsAnnotation{
-		BaseNode: BaseNode{NodeType: NodeContractImplementsAnnotation},
+		BaseNode: BaseNode{Type: NodeContractImplementsAnnotation},
 		Contract: contract,
 	}
 }
@@ -187,11 +147,6 @@ func (c *ContractImplementsAnnotation) String() string {
 	return "@implements(" + c.Contract.String() + ")"
 }
 
-// Children returns the child nodes
-func (c *ContractImplementsAnnotation) Children() []Node {
-	return []Node{c.Contract}
-}
-
 // ContractDeclaration represents a contract declaration
 type ContractDeclaration struct {
 	BaseNode
@@ -199,20 +154,18 @@ type ContractDeclaration struct {
 	TypeParams  []*GenericTypeParam             // Type parameters if generic
 	Members     *ContractMembers                // The contract members
 	Implements  []*ContractImplementsAnnotation // Implemented contracts
-	Annotations []*Annotation                   // Contract annotations
-	Docs        string                          // Documentation comments
+	Annotations []Annotation                    // Contract annotations
 }
 
 // NewContractDeclaration creates a new ContractDeclaration node
-func NewContractDeclaration(name *TypeIdentifier, typeParams []*GenericTypeParam, members *ContractMembers, implements []*ContractImplementsAnnotation, annotations []*Annotation, docs string) *ContractDeclaration {
+func NewContractDeclaration(name *TypeIdentifier, typeParams []*GenericTypeParam, members *ContractMembers, implements []*ContractImplementsAnnotation, annotations []Annotation) *ContractDeclaration {
 	return &ContractDeclaration{
-		BaseNode:    BaseNode{NodeType: NodeContractDeclaration},
+		BaseNode:    BaseNode{Type: NodeContractDeclaration},
 		Name:        name,
 		TypeParams:  typeParams,
 		Members:     members,
 		Implements:  implements,
 		Annotations: annotations,
-		Docs:        docs,
 	}
 }
 
@@ -250,28 +203,4 @@ func (c *ContractDeclaration) String() string {
 	builder.WriteString("\n}")
 
 	return builder.String()
-}
-
-// Children returns the child nodes
-func (c *ContractDeclaration) Children() []Node {
-	children := make([]Node, 0, len(c.Annotations)+len(c.TypeParams)+len(c.Implements)+2)
-	for _, annotation := range c.Annotations {
-		children = append(children, annotation)
-	}
-
-	children = append(children, c.Name)
-
-	for _, param := range c.TypeParams {
-		children = append(children, param)
-	}
-
-	for _, impl := range c.Implements {
-		children = append(children, impl)
-	}
-
-	if c.Members != nil {
-		children = append(children, c.Members)
-	}
-
-	return children
 }

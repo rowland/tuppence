@@ -5,11 +5,18 @@ import (
 	"strings"
 )
 
+// identifier = ( lowercase_letter | "_" ) { letter | decimal_digit | "_" } .
+
 // Base type for all literals
 type Literal interface {
 	Node
 	LiteralValue() interface{}
 }
+
+// integer_literal = binary_literal
+//                 | hexadecimal_literal
+//                 | octal_literal
+//                 | decimal_literal .
 
 // IntegerLiteral represents an integer literal in the code
 type IntegerLiteral struct {
@@ -22,7 +29,7 @@ type IntegerLiteral struct {
 // NewIntegerLiteral creates a new IntegerLiteral node
 func NewIntegerLiteral(value string, base int, isNegative bool) *IntegerLiteral {
 	return &IntegerLiteral{
-		BaseNode:   BaseNode{NodeType: NodeIntegerLiteral},
+		BaseNode:   BaseNode{Type: NodeIntegerLiteral},
 		Value:      value,
 		Base:       base,
 		IsNegative: isNegative,
@@ -61,6 +68,9 @@ func (i *IntegerLiteral) LiteralValue() interface{} {
 	return n
 }
 
+// float_literal = decimal_digit { decimal_digit | "_" } "." decimal_digit { decimal_digit | "_" } [ exponent ]
+//               | decimal_digit { decimal_digit | "_" } exponent .
+
 // FloatLiteral represents a floating point literal in the code
 type FloatLiteral struct {
 	BaseNode
@@ -72,7 +82,7 @@ type FloatLiteral struct {
 // NewFloatLiteral creates a new FloatLiteral node
 func NewFloatLiteral(value string, hasExponent bool, isNegative bool) *FloatLiteral {
 	return &FloatLiteral{
-		BaseNode:    BaseNode{NodeType: NodeFloatLiteral},
+		BaseNode:    BaseNode{Type: NodeFloatLiteral},
 		Value:       value,
 		HasExponent: hasExponent,
 		IsNegative:  isNegative,
@@ -98,6 +108,8 @@ func (f *FloatLiteral) LiteralValue() interface{} {
 	return n
 }
 
+// boolean_literal = "true" | "false" .
+
 // BooleanLiteral represents a boolean literal (true or false)
 type BooleanLiteral struct {
 	BaseNode
@@ -107,7 +119,7 @@ type BooleanLiteral struct {
 // NewBooleanLiteral creates a new BooleanLiteral node
 func NewBooleanLiteral(value bool) *BooleanLiteral {
 	return &BooleanLiteral{
-		BaseNode: BaseNode{NodeType: NodeBooleanLiteral},
+		BaseNode: BaseNode{Type: NodeBooleanLiteral},
 		Value:    value,
 	}
 }
@@ -125,6 +137,8 @@ func (b *BooleanLiteral) LiteralValue() interface{} {
 	return b.Value
 }
 
+// string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' - eol } '"' .
+
 // StringLiteral represents a string literal in the code
 type StringLiteral struct {
 	BaseNode
@@ -135,7 +149,7 @@ type StringLiteral struct {
 // NewStringLiteral creates a new StringLiteral node
 func NewStringLiteral(value string, raw string) *StringLiteral {
 	return &StringLiteral{
-		BaseNode: BaseNode{NodeType: NodeStringLiteral},
+		BaseNode: BaseNode{Type: NodeStringLiteral},
 		Value:    value,
 		Raw:      raw,
 	}
@@ -151,6 +165,8 @@ func (s *StringLiteral) LiteralValue() interface{} {
 	return s.Value
 }
 
+// raw_string_literal = "`" { "``" | character - "`" } "`" .
+
 // RawStringLiteral represents a raw string literal enclosed in backticks
 type RawStringLiteral struct {
 	BaseNode
@@ -160,7 +176,7 @@ type RawStringLiteral struct {
 // NewRawStringLiteral creates a new RawStringLiteral node
 func NewRawStringLiteral(value string) *RawStringLiteral {
 	return &RawStringLiteral{
-		BaseNode: BaseNode{NodeType: NodeRawStringLiteral},
+		BaseNode: BaseNode{Type: NodeRawStringLiteral},
 		Value:    value,
 	}
 }
@@ -175,6 +191,8 @@ func (r *RawStringLiteral) LiteralValue() interface{} {
 	return r.Value
 }
 
+// interpolation = "\\(" expression ")" .
+
 // Interpolation represents an interpolated expression within a string
 type Interpolation struct {
 	BaseNode
@@ -184,7 +202,7 @@ type Interpolation struct {
 // NewInterpolation creates a new Interpolation node
 func NewInterpolation(expr Node) *Interpolation {
 	return &Interpolation{
-		BaseNode:   BaseNode{NodeType: NodeInterpolation},
+		BaseNode:   BaseNode{Type: NodeInterpolation},
 		Expression: expr,
 	}
 }
@@ -194,10 +212,7 @@ func (i *Interpolation) String() string {
 	return "\\(" + i.Expression.String() + ")"
 }
 
-// Children returns the child nodes
-func (i *Interpolation) Children() []Node {
-	return []Node{i.Expression}
-}
+// interpolated_string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - '"' - eol } '"' .
 
 // InterpolatedStringLiteral represents a string literal with interpolated expressions
 type InterpolatedStringLiteral struct {
@@ -208,7 +223,7 @@ type InterpolatedStringLiteral struct {
 // NewInterpolatedStringLiteral creates a new InterpolatedStringLiteral node
 func NewInterpolatedStringLiteral(parts []Node) *InterpolatedStringLiteral {
 	return &InterpolatedStringLiteral{
-		BaseNode: BaseNode{NodeType: NodeInterpolatedStringLiteral},
+		BaseNode: BaseNode{Type: NodeInterpolatedStringLiteral},
 		Parts:    parts,
 	}
 }
@@ -231,10 +246,7 @@ func (i *InterpolatedStringLiteral) LiteralValue() interface{} {
 	return i.String()
 }
 
-// Children returns the child nodes
-func (i *InterpolatedStringLiteral) Children() []Node {
-	return i.Parts
-}
+// multi_line_string_literal = "```" [ function_call_context ] eol { indented_line } indented_closing .
 
 // MultiLineStringLiteral represents a multi-line string literal with optional processor
 type MultiLineStringLiteral struct {
@@ -246,7 +258,7 @@ type MultiLineStringLiteral struct {
 // NewMultiLineStringLiteral creates a new MultiLineStringLiteral node
 func NewMultiLineStringLiteral(lines []string, processor *FunctionCall) *MultiLineStringLiteral {
 	return &MultiLineStringLiteral{
-		BaseNode:  BaseNode{NodeType: NodeMultiLineStringLiteral},
+		BaseNode:  BaseNode{Type: NodeMultiLineStringLiteral},
 		Lines:     lines,
 		Processor: processor,
 	}
@@ -273,13 +285,7 @@ func (m *MultiLineStringLiteral) LiteralValue() interface{} {
 	return strings.Join(m.Lines, "\n")
 }
 
-// Children returns the child nodes
-func (m *MultiLineStringLiteral) Children() []Node {
-	if m.Processor != nil {
-		return []Node{m.Processor}
-	}
-	return nil
-}
+// rune_literal = "'" ( byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - eol ) "'" .
 
 // RuneLiteral represents a rune literal in the code
 type RuneLiteral struct {
@@ -291,7 +297,7 @@ type RuneLiteral struct {
 // NewRuneLiteral creates a new RuneLiteral node
 func NewRuneLiteral(value rune, raw string) *RuneLiteral {
 	return &RuneLiteral{
-		BaseNode: BaseNode{NodeType: NodeRuneLiteral},
+		BaseNode: BaseNode{Type: NodeRuneLiteral},
 		Value:    value,
 		Raw:      raw,
 	}
@@ -307,6 +313,8 @@ func (r *RuneLiteral) LiteralValue() interface{} {
 	return r.Value
 }
 
+// symbol_literal = ":" identifier .
+
 // SymbolLiteral represents a symbol literal in the code (e.g., :name)
 type SymbolLiteral struct {
 	BaseNode
@@ -316,7 +324,7 @@ type SymbolLiteral struct {
 // NewSymbolLiteral creates a new SymbolLiteral node
 func NewSymbolLiteral(value string) *SymbolLiteral {
 	return &SymbolLiteral{
-		BaseNode: BaseNode{NodeType: NodeSymbolLiteral},
+		BaseNode: BaseNode{Type: NodeSymbolLiteral},
 		Value:    value,
 	}
 }
@@ -331,11 +339,15 @@ func (s *SymbolLiteral) LiteralValue() interface{} {
 	return s.Value
 }
 
+// tuple_member = expression .
+
 // TupleMember represents a member of a tuple
 type TupleMember struct {
 	BaseNode
 	Value Node // The value expression
 }
+
+// labeled_tuple_member = identifier ":" tuple_member .
 
 // LabeledTupleMember represents a labeled member of a tuple
 type LabeledTupleMember struct {
@@ -349,10 +361,7 @@ func (l *LabeledTupleMember) String() string {
 	return l.Label.String() + ": " + l.Value.String()
 }
 
-// Children returns the child nodes
-func (l *LabeledTupleMember) Children() []Node {
-	return []Node{l.Label, l.Value}
-}
+// tuple_literal = "(" [ labeled_tuple_members | tuple_members ] ")" .
 
 // TupleLiteral represents a tuple literal in the code
 type TupleLiteral struct {
@@ -363,7 +372,7 @@ type TupleLiteral struct {
 // NewTupleLiteral creates a new TupleLiteral node
 func NewTupleLiteral(members []Node) *TupleLiteral {
 	return &TupleLiteral{
-		BaseNode: BaseNode{NodeType: NodeTupleLiteral},
+		BaseNode: BaseNode{Type: NodeTupleLiteral},
 		Members:  members,
 	}
 }
@@ -388,10 +397,8 @@ func (t *TupleLiteral) LiteralValue() interface{} {
 	return t.String()
 }
 
-// Children returns the child nodes
-func (t *TupleLiteral) Children() []Node {
-	return t.Members
-}
+// array_literal = "[" [ array_members | array_literal ] "]"
+//               | type_identifier "[" [ array_members | array_literal ] "]" .
 
 // ArrayLiteral represents an array literal in the code
 type ArrayLiteral struct {
@@ -403,7 +410,7 @@ type ArrayLiteral struct {
 // NewArrayLiteral creates a new ArrayLiteral node
 func NewArrayLiteral(elements []Node, typeSpecifier *TypeIdentifier) *ArrayLiteral {
 	return &ArrayLiteral{
-		BaseNode:      BaseNode{NodeType: NodeArrayLiteral},
+		BaseNode:      BaseNode{Type: NodeArrayLiteral},
 		Elements:      elements,
 		TypeSpecifier: typeSpecifier,
 	}
@@ -432,15 +439,7 @@ func (a *ArrayLiteral) LiteralValue() interface{} {
 	return a.String()
 }
 
-// Children returns the child nodes
-func (a *ArrayLiteral) Children() []Node {
-	var children []Node
-	if a.TypeSpecifier != nil {
-		children = append(children, a.TypeSpecifier)
-	}
-	children = append(children, a.Elements...)
-	return children
-}
+// fixed_size_array_literal = fixed_size_array "[" array_members "]" .
 
 // FixedSizeArrayLiteral represents a fixed-size array literal in the code
 type FixedSizeArrayLiteral struct {
@@ -452,7 +451,7 @@ type FixedSizeArrayLiteral struct {
 // NewFixedSizeArrayLiteral creates a new FixedSizeArrayLiteral node
 func NewFixedSizeArrayLiteral(arrayType *ArrayType, elements []Node) *FixedSizeArrayLiteral {
 	return &FixedSizeArrayLiteral{
-		BaseNode:  BaseNode{NodeType: NodeFixedSizeArrayLiteral},
+		BaseNode:  BaseNode{Type: NodeFixedSizeArrayLiteral},
 		ArrayType: arrayType,
 		Elements:  elements,
 	}
@@ -477,11 +476,4 @@ func (f *FixedSizeArrayLiteral) String() string {
 func (f *FixedSizeArrayLiteral) LiteralValue() interface{} {
 	// This is a complex value that would be represented differently at runtime
 	return f.String()
-}
-
-// Children returns the child nodes
-func (f *FixedSizeArrayLiteral) Children() []Node {
-	children := []Node{f.ArrayType}
-	children = append(children, f.Elements...)
-	return children
 }

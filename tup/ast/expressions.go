@@ -4,10 +4,15 @@ import (
 	"strings"
 )
 
-// Base type for all expressions
+// expression = try_expression
+//            | binary_expression
+//            | unary_expression .
+
 type Expression interface {
 	Node
 }
+
+// function_call = function_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
 
 // FunctionCall represents a function call expression
 type FunctionCall struct {
@@ -20,7 +25,7 @@ type FunctionCall struct {
 // NewFunctionCall creates a new FunctionCall node
 func NewFunctionCall(function Node, arguments []Node, functionBlock Node) *FunctionCall {
 	return &FunctionCall{
-		BaseNode:      BaseNode{NodeType: NodeFunctionCall},
+		BaseNode:      BaseNode{Type: NodeFunctionCall},
 		Function:      function,
 		Arguments:     arguments,
 		FunctionBlock: functionBlock,
@@ -50,17 +55,6 @@ func (f *FunctionCall) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (f *FunctionCall) Children() []Node {
-	children := make([]Node, 0, len(f.Arguments)+2)
-	children = append(children, f.Function)
-	children = append(children, f.Arguments...)
-	if f.FunctionBlock != nil {
-		children = append(children, f.FunctionBlock)
-	}
-	return children
-}
-
 // UFCSFunctionCall represents a Uniform Function Call Syntax function call
 type UFCSFunctionCall struct {
 	BaseNode
@@ -72,7 +66,7 @@ type UFCSFunctionCall struct {
 // NewUFCSFunctionCall creates a new UFCSFunctionCall node
 func NewUFCSFunctionCall(receiver Node, function Node, arguments []Node) *UFCSFunctionCall {
 	return &UFCSFunctionCall{
-		BaseNode:  BaseNode{NodeType: NodeUFCSFunctionCall},
+		BaseNode:  BaseNode{Type: NodeUFCSFunctionCall},
 		Receiver:  receiver,
 		Function:  function,
 		Arguments: arguments,
@@ -98,13 +92,7 @@ func (u *UFCSFunctionCall) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (u *UFCSFunctionCall) Children() []Node {
-	children := make([]Node, 0, len(u.Arguments)+2)
-	children = append(children, u.Receiver, u.Function)
-	children = append(children, u.Arguments...)
-	return children
-}
+// type_constructor_call = type_reference [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
 
 // TypeConstructorCall represents a type constructor call
 type TypeConstructorCall struct {
@@ -117,7 +105,7 @@ type TypeConstructorCall struct {
 // NewTypeConstructorCall creates a new TypeConstructorCall node
 func NewTypeConstructorCall(typeRef Node, arguments []Node, functionBlock Node) *TypeConstructorCall {
 	return &TypeConstructorCall{
-		BaseNode:      BaseNode{NodeType: NodeTypeConstructorCall},
+		BaseNode:      BaseNode{Type: NodeTypeConstructorCall},
 		TypeReference: typeRef,
 		Arguments:     arguments,
 		FunctionBlock: functionBlock,
@@ -147,17 +135,6 @@ func (t *TypeConstructorCall) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (t *TypeConstructorCall) Children() []Node {
-	children := make([]Node, 0, len(t.Arguments)+2)
-	children = append(children, t.TypeReference)
-	children = append(children, t.Arguments...)
-	if t.FunctionBlock != nil {
-		children = append(children, t.FunctionBlock)
-	}
-	return children
-}
-
 // BuiltinFunctionCall represents a call to a built-in function
 type BuiltinFunctionCall struct {
 	BaseNode
@@ -168,7 +145,7 @@ type BuiltinFunctionCall struct {
 // NewBuiltinFunctionCall creates a new BuiltinFunctionCall node
 func NewBuiltinFunctionCall(name string, arguments []Node) *BuiltinFunctionCall {
 	return &BuiltinFunctionCall{
-		BaseNode:  BaseNode{NodeType: NodeBuiltinFunctionCall},
+		BaseNode:  BaseNode{Type: NodeBuiltinFunctionCall},
 		Name:      name,
 		Arguments: arguments,
 	}
@@ -191,10 +168,7 @@ func (b *BuiltinFunctionCall) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (b *BuiltinFunctionCall) Children() []Node {
-	return b.Arguments
-}
+// array_function_call = "array" "(" type_identifier "," expression ")" .
 
 // ArrayFunctionCall represents a call to the array() function
 type ArrayFunctionCall struct {
@@ -206,7 +180,7 @@ type ArrayFunctionCall struct {
 // NewArrayFunctionCall creates a new ArrayFunctionCall node
 func NewArrayFunctionCall(typeArg Node, sizeArg Node) *ArrayFunctionCall {
 	return &ArrayFunctionCall{
-		BaseNode: BaseNode{NodeType: NodeArrayFunctionCall},
+		BaseNode: BaseNode{Type: NodeArrayFunctionCall},
 		TypeArg:  typeArg,
 		SizeArg:  sizeArg,
 	}
@@ -227,13 +201,9 @@ func (a *ArrayFunctionCall) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (a *ArrayFunctionCall) Children() []Node {
-	if a.SizeArg != nil {
-		return []Node{a.TypeArg, a.SizeArg}
-	}
-	return []Node{a.TypeArg}
-}
+// member_access = ( expression | type_identifier ) "." ( decimal_literal
+// 	                                                 | identifier
+// 	                                                 | function_call ) .
 
 // MemberAccess represents a member access expression (e.g., obj.field)
 type MemberAccess struct {
@@ -245,7 +215,7 @@ type MemberAccess struct {
 // NewMemberAccess creates a new MemberAccess node
 func NewMemberAccess(object Node, member Node) *MemberAccess {
 	return &MemberAccess{
-		BaseNode: BaseNode{NodeType: NodeMemberAccess},
+		BaseNode: BaseNode{Type: NodeMemberAccess},
 		Object:   object,
 		Member:   member,
 	}
@@ -256,10 +226,7 @@ func (m *MemberAccess) String() string {
 	return m.Object.String() + "." + m.Member.String()
 }
 
-// Children returns the child nodes
-func (m *MemberAccess) Children() []Node {
-	return []Node{m.Object, m.Member}
-}
+// indexed_access = expression "[" index "]" .
 
 // IndexedAccess represents an indexed access expression (e.g., arr[idx])
 type IndexedAccess struct {
@@ -271,7 +238,7 @@ type IndexedAccess struct {
 // NewIndexedAccess creates a new IndexedAccess node
 func NewIndexedAccess(object Node, index Node) *IndexedAccess {
 	return &IndexedAccess{
-		BaseNode: BaseNode{NodeType: NodeIndexedAccess},
+		BaseNode: BaseNode{Type: NodeIndexedAccess},
 		Object:   object,
 		Index:    index,
 	}
@@ -282,10 +249,7 @@ func (i *IndexedAccess) String() string {
 	return i.Object.String() + "[" + i.Index.String() + "]"
 }
 
-// Children returns the child nodes
-func (i *IndexedAccess) Children() []Node {
-	return []Node{i.Object, i.Index}
-}
+// safe_indexed_access = expression "[" index "]" "!" .
 
 // SafeIndexedAccess represents a safe indexed access expression (e.g., arr[idx]!)
 type SafeIndexedAccess struct {
@@ -297,7 +261,7 @@ type SafeIndexedAccess struct {
 // NewSafeIndexedAccess creates a new SafeIndexedAccess node
 func NewSafeIndexedAccess(object Node, index Node) *SafeIndexedAccess {
 	return &SafeIndexedAccess{
-		BaseNode: BaseNode{NodeType: NodeSafeIndexedAccess},
+		BaseNode: BaseNode{Type: NodeSafeIndexedAccess},
 		Object:   object,
 		Index:    index,
 	}
@@ -308,10 +272,7 @@ func (s *SafeIndexedAccess) String() string {
 	return s.Object.String() + "[" + s.Index.String() + "]!"
 }
 
-// Children returns the child nodes
-func (s *SafeIndexedAccess) Children() []Node {
-	return []Node{s.Object, s.Index}
-}
+// typeof_expression = "typeof" "(" expression ")" .
 
 // TypeofExpression represents a typeof expression
 type TypeofExpression struct {
@@ -322,7 +283,7 @@ type TypeofExpression struct {
 // NewTypeofExpression creates a new TypeofExpression node
 func NewTypeofExpression(expression Node) *TypeofExpression {
 	return &TypeofExpression{
-		BaseNode:   BaseNode{NodeType: NodeTypeofExpression},
+		BaseNode:   BaseNode{Type: NodeTypeofExpression},
 		Expression: expression,
 	}
 }
@@ -332,13 +293,10 @@ func (t *TypeofExpression) String() string {
 	return "typeof(" + t.Expression.String() + ")"
 }
 
-// Children returns the child nodes
-func (t *TypeofExpression) Children() []Node {
-	return []Node{t.Expression}
-}
-
 // Operator represents an operator in an expression
 type Operator string
+
+// binary_expression = chained_expression .
 
 // BinaryExpression represents a binary expression (e.g., a + b)
 type BinaryExpression struct {
@@ -351,7 +309,7 @@ type BinaryExpression struct {
 // NewBinaryExpression creates a new BinaryExpression node
 func NewBinaryExpression(left Node, operator Operator, right Node) *BinaryExpression {
 	return &BinaryExpression{
-		BaseNode: BaseNode{NodeType: NodeBinaryExpression},
+		BaseNode: BaseNode{Type: NodeBinaryExpression},
 		Left:     left,
 		Operator: operator,
 		Right:    right,
@@ -363,10 +321,8 @@ func (b *BinaryExpression) String() string {
 	return b.Left.String() + " " + string(b.Operator) + " " + b.Right.String()
 }
 
-// Children returns the child nodes
-func (b *BinaryExpression) Children() []Node {
-	return []Node{b.Left, b.Right}
-}
+// unary_expression = ( "-" | "!" | "~" ) valid_negatable_expression
+//                  | primary_expression .
 
 // UnaryExpression represents a unary expression (e.g., -x, !y)
 type UnaryExpression struct {
@@ -378,7 +334,7 @@ type UnaryExpression struct {
 // NewUnaryExpression creates a new UnaryExpression node
 func NewUnaryExpression(operator Operator, expression Node) *UnaryExpression {
 	return &UnaryExpression{
-		BaseNode:   BaseNode{NodeType: NodeUnaryExpression},
+		BaseNode:   BaseNode{Type: NodeUnaryExpression},
 		Operator:   operator,
 		Expression: expression,
 	}
@@ -389,10 +345,7 @@ func (u *UnaryExpression) String() string {
 	return string(u.Operator) + u.Expression.String()
 }
 
-// Children returns the child nodes
-func (u *UnaryExpression) Children() []Node {
-	return []Node{u.Expression}
-}
+// chained_expression = prec1_expression { "|>" function_call } .
 
 // ChainedExpression represents a chained pipe expression (e.g., a |> b |> c)
 type ChainedExpression struct {
@@ -404,7 +357,7 @@ type ChainedExpression struct {
 // NewChainedExpression creates a new ChainedExpression node
 func NewChainedExpression(initial Node, expressions []Node) *ChainedExpression {
 	return &ChainedExpression{
-		BaseNode:    BaseNode{NodeType: NodeChainedExpression},
+		BaseNode:    BaseNode{Type: NodeChainedExpression},
 		Initial:     initial,
 		Expressions: expressions,
 	}
@@ -423,13 +376,7 @@ func (c *ChainedExpression) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (c *ChainedExpression) Children() []Node {
-	children := make([]Node, 0, len(c.Expressions)+1)
-	children = append(children, c.Initial)
-	children = append(children, c.Expressions...)
-	return children
-}
+// return_expression = "return" expression .
 
 // ReturnExpression represents a return expression
 type ReturnExpression struct {
@@ -440,7 +387,7 @@ type ReturnExpression struct {
 // NewReturnExpression creates a new ReturnExpression node
 func NewReturnExpression(expression Node) *ReturnExpression {
 	return &ReturnExpression{
-		BaseNode:   BaseNode{NodeType: NodeReturnExpression},
+		BaseNode:   BaseNode{Type: NodeReturnExpression},
 		Expression: expression,
 	}
 }
@@ -450,10 +397,7 @@ func (r *ReturnExpression) String() string {
 	return "return " + r.Expression.String()
 }
 
-// Children returns the child nodes
-func (r *ReturnExpression) Children() []Node {
-	return []Node{r.Expression}
-}
+// break_expression = "break" [ expression ] .
 
 // BreakExpression represents a break expression
 type BreakExpression struct {
@@ -464,7 +408,7 @@ type BreakExpression struct {
 // NewBreakExpression creates a new BreakExpression node
 func NewBreakExpression(expression Node) *BreakExpression {
 	return &BreakExpression{
-		BaseNode:   BaseNode{NodeType: NodeBreakExpression},
+		BaseNode:   BaseNode{Type: NodeBreakExpression},
 		Expression: expression,
 	}
 }
@@ -477,13 +421,7 @@ func (b *BreakExpression) String() string {
 	return "break"
 }
 
-// Children returns the child nodes
-func (b *BreakExpression) Children() []Node {
-	if b.Expression != nil {
-		return []Node{b.Expression}
-	}
-	return nil
-}
+// continue_expression = "continue" [ expression ] .
 
 // ContinueExpression represents a continue expression
 type ContinueExpression struct {
@@ -494,7 +432,7 @@ type ContinueExpression struct {
 // NewContinueExpression creates a new ContinueExpression node
 func NewContinueExpression(expression Node) *ContinueExpression {
 	return &ContinueExpression{
-		BaseNode:   BaseNode{NodeType: NodeContinueExpression},
+		BaseNode:   BaseNode{Type: NodeContinueExpression},
 		Expression: expression,
 	}
 }
@@ -507,14 +445,6 @@ func (c *ContinueExpression) String() string {
 	return "continue"
 }
 
-// Children returns the child nodes
-func (c *ContinueExpression) Children() []Node {
-	if c.Expression != nil {
-		return []Node{c.Expression}
-	}
-	return nil
-}
-
 // TryVariant represents the different variants of try expressions
 type TryVariant string
 
@@ -523,6 +453,10 @@ const (
 	TryContinue TryVariant = "try_continue"
 	TryBreak    TryVariant = "try_break"
 )
+
+// try_expression = "try" expression
+//                | "try_continue" [ expression ]
+//                | "try_break" [ expression ] .
 
 // TryExpression represents a try expression
 type TryExpression struct {
@@ -534,7 +468,7 @@ type TryExpression struct {
 // NewTryExpression creates a new TryExpression node
 func NewTryExpression(variant TryVariant, expression Node) *TryExpression {
 	return &TryExpression{
-		BaseNode:   BaseNode{NodeType: NodeTryExpression},
+		BaseNode:   BaseNode{Type: NodeTryExpression},
 		Variant:    variant,
 		Expression: expression,
 	}
@@ -548,13 +482,7 @@ func (t *TryExpression) String() string {
 	return string(t.Variant)
 }
 
-// Children returns the child nodes
-func (t *TryExpression) Children() []Node {
-	if t.Expression != nil {
-		return []Node{t.Expression}
-	}
-	return nil
-}
+// type_comparison = prec4_expression is_op (type_reference | inline_union) .
 
 // TypeComparison represents a type comparison expression (e.g., x is Type)
 type TypeComparison struct {
@@ -566,7 +494,7 @@ type TypeComparison struct {
 // NewTypeComparison creates a new TypeComparison node
 func NewTypeComparison(expression Node, typeNode Node) *TypeComparison {
 	return &TypeComparison{
-		BaseNode:   BaseNode{NodeType: NodeTypeComparison},
+		BaseNode:   BaseNode{Type: NodeTypeComparison},
 		Expression: expression,
 		Type:       typeNode,
 	}
@@ -577,10 +505,7 @@ func (t *TypeComparison) String() string {
 	return t.Expression.String() + " is " + t.Type.String()
 }
 
-// Children returns the child nodes
-func (t *TypeComparison) Children() []Node {
-	return []Node{t.Expression, t.Type}
-}
+// relational_comparison = prec4_expression { rel_op prec4_expression } .
 
 // RelationalComparison represents a relational comparison expression (e.g., a < b)
 type RelationalComparison struct {
@@ -593,7 +518,7 @@ type RelationalComparison struct {
 // NewRelationalComparison creates a new RelationalComparison node
 func NewRelationalComparison(left Node, operator Operator, right Node) *RelationalComparison {
 	return &RelationalComparison{
-		BaseNode: BaseNode{NodeType: NodeRelationalComparison},
+		BaseNode: BaseNode{Type: NodeRelationalComparison},
 		Left:     left,
 		Operator: operator,
 		Right:    right,
@@ -605,10 +530,7 @@ func (r *RelationalComparison) String() string {
 	return r.Left.String() + " " + string(r.Operator) + " " + r.Right.String()
 }
 
-// Children returns the child nodes
-func (r *RelationalComparison) Children() []Node {
-	return []Node{r.Left, r.Right}
-}
+// meta_expression = "$" labeled_tuple .
 
 // MetaExpression represents a compile-time meta expression (e.g., $(key: value))
 type MetaExpression struct {
@@ -619,7 +541,7 @@ type MetaExpression struct {
 // NewMetaExpression creates a new MetaExpression node
 func NewMetaExpression(keyValues map[string]Node) *MetaExpression {
 	return &MetaExpression{
-		BaseNode:  BaseNode{NodeType: NodeMetaExpression},
+		BaseNode:  BaseNode{Type: NodeMetaExpression},
 		KeyValues: keyValues,
 	}
 }
@@ -644,14 +566,9 @@ func (m *MetaExpression) String() string {
 	return builder.String()
 }
 
-// Children returns the child nodes
-func (m *MetaExpression) Children() []Node {
-	children := make([]Node, 0, len(m.KeyValues))
-	for _, value := range m.KeyValues {
-		children = append(children, value)
-	}
-	return children
-}
+// constant = literal
+//          | scoped_identifier
+//          | identifier .
 
 // Constant represents a constant value reference (e.g., module-level constants)
 type Constant struct {
@@ -662,7 +579,7 @@ type Constant struct {
 // NewConstant creates a new Constant node
 func NewConstant(identifier Node) *Constant {
 	return &Constant{
-		BaseNode:   BaseNode{NodeType: NodeConstant},
+		BaseNode:   BaseNode{Type: NodeConstant},
 		Identifier: identifier,
 	}
 }
@@ -672,10 +589,7 @@ func (c *Constant) String() string {
 	return c.Identifier.String()
 }
 
-// Children returns the child nodes
-func (c *Constant) Children() []Node {
-	return []Node{c.Identifier}
-}
+// tuple_update_expression = expression "." tuple_literal .
 
 // TupleUpdateExpression represents a tuple update expression (e.g., obj.(field: value))
 type TupleUpdateExpression struct {
@@ -687,7 +601,7 @@ type TupleUpdateExpression struct {
 // NewTupleUpdateExpression creates a new TupleUpdateExpression node
 func NewTupleUpdateExpression(object Node, update Node) *TupleUpdateExpression {
 	return &TupleUpdateExpression{
-		BaseNode: BaseNode{NodeType: NodeTupleUpdateExpression},
+		BaseNode: BaseNode{Type: NodeTupleUpdateExpression},
 		Object:   object,
 		Update:   update,
 	}
@@ -696,9 +610,4 @@ func NewTupleUpdateExpression(object Node, update Node) *TupleUpdateExpression {
 // String returns a textual representation of the tuple update expression
 func (t *TupleUpdateExpression) String() string {
 	return t.Object.String() + "." + t.Update.String()
-}
-
-// Children returns the child nodes
-func (t *TupleUpdateExpression) Children() []Node {
-	return []Node{t.Object, t.Update}
 }

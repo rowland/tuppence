@@ -23,7 +23,7 @@ array_type = fixed_size_array | dynamic_array .
 
 assignment = assignment_lhs "=" [ "mut" ] expression .
 
-assignment_lhs = identifier { "," identifier } [ "," rest_operator ] 
+assignment_lhs = ordinal_assignment_lhs 
                | "(" labeled_assignment_lhs ")" .
 
 binary_expression = chained_expression .
@@ -299,6 +299,8 @@ number = float_literal | integer_literal .
 octal_digit = "0"-"7" .
 
 octal_literal = "0o" octal_digit { octal_digit } .
+
+ordinal_assignment_lhs = identifier { "," identifier } [ "," rest_operator ] .
 
 parameter = annotations ( nilable_type
                         | type

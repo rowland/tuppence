@@ -9,7 +9,7 @@ type PatternIdentifier struct {
 // NewPatternIdentifier creates a new PatternIdentifier node
 func NewPatternIdentifier(name string) *PatternIdentifier {
 	return &PatternIdentifier{
-		BaseNode: BaseNode{NodeType: NodePatternIdentifier},
+		BaseNode: BaseNode{Type: NodePatternIdentifier},
 		Name:     name,
 	}
 }
@@ -28,7 +28,7 @@ type TuplePattern struct {
 // NewTuplePattern creates a new TuplePattern node
 func NewTuplePattern(elements []Node) *TuplePattern {
 	return &TuplePattern{
-		BaseNode: BaseNode{NodeType: NodeTuplePattern},
+		BaseNode: BaseNode{Type: NodeTuplePattern},
 		Elements: elements,
 	}
 }
@@ -46,11 +46,6 @@ func (p *TuplePattern) String() string {
 	return result
 }
 
-// Children returns the child nodes
-func (p *TuplePattern) Children() []Node {
-	return p.Elements
-}
-
 // ArrayPattern represents an array pattern in pattern matching
 type ArrayPattern struct {
 	BaseNode
@@ -61,7 +56,7 @@ type ArrayPattern struct {
 // NewArrayPattern creates a new ArrayPattern node
 func NewArrayPattern(elements []Node, rest Node) *ArrayPattern {
 	return &ArrayPattern{
-		BaseNode: BaseNode{NodeType: NodeArrayPattern},
+		BaseNode: BaseNode{Type: NodeArrayPattern},
 		Elements: elements,
 		Rest:     rest,
 	}
@@ -86,16 +81,6 @@ func (p *ArrayPattern) String() string {
 	return result
 }
 
-// Children returns the child nodes
-func (p *ArrayPattern) Children() []Node {
-	children := make([]Node, len(p.Elements))
-	copy(children, p.Elements)
-	if p.Rest != nil {
-		children = append(children, p.Rest)
-	}
-	return children
-}
-
 // TypePattern represents a type pattern in pattern matching (e.g., x is Type)
 type TypePattern struct {
 	BaseNode
@@ -106,7 +91,7 @@ type TypePattern struct {
 // NewTypePattern creates a new TypePattern node
 func NewTypePattern(identifier, typeRef Node) *TypePattern {
 	return &TypePattern{
-		BaseNode:   BaseNode{NodeType: NodeTypePattern},
+		BaseNode:   BaseNode{Type: NodeTypePattern},
 		Identifier: identifier,
 		TypeRef:    typeRef,
 	}
@@ -115,11 +100,6 @@ func NewTypePattern(identifier, typeRef Node) *TypePattern {
 // String returns a textual representation of the type pattern
 func (p *TypePattern) String() string {
 	return p.Identifier.String() + " is " + p.TypeRef.String()
-}
-
-// Children returns the child nodes
-func (p *TypePattern) Children() []Node {
-	return []Node{p.Identifier, p.TypeRef}
 }
 
 // LiteralPattern represents a literal value in pattern matching
@@ -131,7 +111,7 @@ type LiteralPattern struct {
 // NewLiteralPattern creates a new LiteralPattern node
 func NewLiteralPattern(value Node) *LiteralPattern {
 	return &LiteralPattern{
-		BaseNode: BaseNode{NodeType: NodeLiteralPattern},
+		BaseNode: BaseNode{Type: NodeLiteralPattern},
 		Value:    value,
 	}
 }
@@ -139,11 +119,6 @@ func NewLiteralPattern(value Node) *LiteralPattern {
 // String returns a textual representation of the literal pattern
 func (p *LiteralPattern) String() string {
 	return p.Value.String()
-}
-
-// Children returns the child nodes
-func (p *LiteralPattern) Children() []Node {
-	return []Node{p.Value}
 }
 
 // WildcardPattern represents a wildcard (_) in pattern matching
@@ -154,7 +129,7 @@ type WildcardPattern struct {
 // NewWildcardPattern creates a new WildcardPattern node
 func NewWildcardPattern() *WildcardPattern {
 	return &WildcardPattern{
-		BaseNode: BaseNode{NodeType: NodeWildcardPattern},
+		BaseNode: BaseNode{Type: NodeWildcardPattern},
 	}
 }
 
@@ -174,7 +149,7 @@ type MatchCase struct {
 // NewMatchCase creates a new MatchCase node
 func NewMatchCase(pattern, body Node, guard Node) *MatchCase {
 	return &MatchCase{
-		BaseNode: BaseNode{NodeType: NodeMatchCase},
+		BaseNode: BaseNode{Type: NodeMatchCase},
 		Pattern:  pattern,
 		Body:     body,
 		Guard:    guard,
@@ -191,14 +166,6 @@ func (c *MatchCase) String() string {
 	return result
 }
 
-// Children returns the child nodes
-func (c *MatchCase) Children() []Node {
-	if c.Guard != nil {
-		return []Node{c.Pattern, c.Guard, c.Body}
-	}
-	return []Node{c.Pattern, c.Body}
-}
-
 // MatchExpression represents a match expression
 type MatchExpression struct {
 	BaseNode
@@ -209,7 +176,7 @@ type MatchExpression struct {
 // NewMatchExpression creates a new MatchExpression node
 func NewMatchExpression(subject Node, cases []*MatchCase) *MatchExpression {
 	return &MatchExpression{
-		BaseNode: BaseNode{NodeType: NodeMatchExpression},
+		BaseNode: BaseNode{Type: NodeMatchExpression},
 		Subject:  subject,
 		Cases:    cases,
 	}
@@ -223,13 +190,4 @@ func (m *MatchExpression) String() string {
 	}
 	result += "}"
 	return result
-}
-
-// Children returns the child nodes
-func (m *MatchExpression) Children() []Node {
-	children := []Node{m.Subject}
-	for _, c := range m.Cases {
-		children = append(children, c)
-	}
-	return children
 }

@@ -23,7 +23,7 @@ type AddSubOp struct {
 // NewAddSubOp creates a new AddSubOp node
 func NewAddSubOp(symbol string) *AddSubOp {
 	return &AddSubOp{
-		BaseNode: BaseNode{NodeType: NodeAddSubOp},
+		BaseNode: BaseNode{Type: NodeAddSubOp},
 		Symbol:   symbol,
 		Kind:     OpKindAdditive,
 	}
@@ -44,7 +44,7 @@ type MulDivOp struct {
 // NewMulDivOp creates a new MulDivOp node
 func NewMulDivOp(symbol string) *MulDivOp {
 	return &MulDivOp{
-		BaseNode: BaseNode{NodeType: NodeMulDivOp},
+		BaseNode: BaseNode{Type: NodeMulDivOp},
 		Symbol:   symbol,
 		Kind:     OpKindMultiplicative,
 	}
@@ -65,7 +65,7 @@ type RelOp struct {
 // NewRelOp creates a new RelOp node
 func NewRelOp(symbol string) *RelOp {
 	return &RelOp{
-		BaseNode: BaseNode{NodeType: NodeRelOp},
+		BaseNode: BaseNode{Type: NodeRelOp},
 		Symbol:   symbol,
 		Kind:     OpKindRelational,
 	}
@@ -85,7 +85,7 @@ type IsOp struct {
 // NewIsOp creates a new IsOp node
 func NewIsOp() *IsOp {
 	return &IsOp{
-		BaseNode: BaseNode{NodeType: NodeIsOp},
+		BaseNode: BaseNode{Type: NodeIsOp},
 		Kind:     OpKindType,
 	}
 }
@@ -106,7 +106,7 @@ type LogicalOp struct {
 // NewLogicalOp creates a new LogicalOp node
 func NewLogicalOp(symbol string, shortCircuit bool) *LogicalOp {
 	return &LogicalOp{
-		BaseNode:     BaseNode{NodeType: NodeLogicalOp},
+		BaseNode:     BaseNode{Type: NodeLogicalOp},
 		Symbol:       symbol,
 		Kind:         OpKindLogical,
 		ShortCircuit: shortCircuit,
@@ -128,7 +128,7 @@ type ShortCircuitOp struct {
 // NewShortCircuitOp creates a new ShortCircuitOp node
 func NewShortCircuitOp(symbol string) *ShortCircuitOp {
 	return &ShortCircuitOp{
-		BaseNode: BaseNode{NodeType: NodeShortCircuitOp},
+		BaseNode: BaseNode{Type: NodeShortCircuitOp},
 		Symbol:   symbol,
 		Kind:     OpKindLogical,
 	}
@@ -149,7 +149,7 @@ type CheckedArithmeticOp struct {
 // NewCheckedArithmeticOp creates a new CheckedArithmeticOp node
 func NewCheckedArithmeticOp(symbol string) *CheckedArithmeticOp {
 	return &CheckedArithmeticOp{
-		BaseNode: BaseNode{NodeType: NodeCheckedArithmeticOp},
+		BaseNode: BaseNode{Type: NodeCheckedArithmeticOp},
 		Symbol:   symbol,
 		Kind:     OpKindChecked,
 	}
@@ -170,7 +170,7 @@ type CompoundAssignmentOp struct {
 // NewCompoundAssignmentOp creates a new CompoundAssignmentOp node
 func NewCompoundAssignmentOp(symbol string) *CompoundAssignmentOp {
 	return &CompoundAssignmentOp{
-		BaseNode: BaseNode{NodeType: NodeCompoundAssignmentOp},
+		BaseNode: BaseNode{Type: NodeCompoundAssignmentOp},
 		Symbol:   symbol,
 		Kind:     OpKindCompound,
 	}
@@ -192,7 +192,7 @@ type CompoundAssignment struct {
 // NewCompoundAssignment creates a new CompoundAssignment node
 func NewCompoundAssignment(left Node, operator *CompoundAssignmentOp, right Node) *CompoundAssignment {
 	return &CompoundAssignment{
-		BaseNode: BaseNode{NodeType: NodeCompoundAssignmentOp},
+		BaseNode: BaseNode{Type: NodeCompoundAssignmentOp},
 		Left:     left,
 		Operator: operator,
 		Right:    right,
@@ -202,11 +202,6 @@ func NewCompoundAssignment(left Node, operator *CompoundAssignmentOp, right Node
 // String returns a textual representation of the compound assignment
 func (c *CompoundAssignment) String() string {
 	return c.Left.String() + " " + c.Operator.String() + " " + c.Right.String()
-}
-
-// Children returns the child nodes
-func (c *CompoundAssignment) Children() []Node {
-	return []Node{c.Left, c.Operator, c.Right}
 }
 
 // Standard operators as constants for easy reference
