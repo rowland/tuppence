@@ -1,0 +1,219 @@
+# TODO
+
+## Tokenizer
+
+## AST
+
+- [ ] MetaExpression details
+- [x] ContinueExpression
+- [ ] CheckedOperators
+- [ ] @type:implements
+- [ ] Short circuiting
+- [x] CompoundAssignment
+- [ ] BuiltinFunctionCall
+- [ ] UFCSFunctionCall (or in CST?)
+
+## AST / parse / test
+
+- [ ] literal
+    - [ ] number
+        - [ ] float_literal
+        - [ ] integer_literal
+            - [ ] binary_literal
+            - [ ] hexadecimal_literal
+            - [ ] octal_literal
+            - [ ] decimal_literal
+    - [ ] boolean_literal
+    - [ ] string_literal
+    - [ ] interpolated_string_literal
+    - [ ] raw_string_literal
+    - [ ] multi_line_string_literal
+    - [ ] tuple_literal
+    - [ ] array_literal
+    - [ ] symbol_literal
+    - [ ] rune_literal
+    - [ ] fixed_size_array_literal
+
+- [ ] add_sub_op
+- [ ] annotation
+- [ ] annotations
+- [ ] annotation_value
+- [ ] argument
+- [ ] arguments
+- [ ] array_function_call
+- [ ] array_members
+- [ ] array_pattern
+- [ ] array_type
+- [ ] assignment
+- [ ] assignment_lhs
+- [ ] binary_expression
+- [ ] block
+- [ ] block_body
+- [ ] block_parameters
+- [ ] break_expression
+- [ ] byte_escape_sequence
+- [ ] case_block
+- [ ] chained_expression
+- [ ] character
+- [ ] comment
+- [ ] compound_assignment
+- [ ] compound_assignment_op
+- [ ] condition
+- [ ] constant
+- [ ] content_line
+- [ ] continue_expression
+- [ ] contract_declaration
+- [ ] contract_members
+- [ ] contract_member
+- [ ] contract_function
+- [ ] contract_field
+- [ ] decimal_digit
+- [ ] structured_match
+- [ ] dynamic_array
+- [ ] else_block
+- [ ] enum_declaration
+- [ ] enum_members
+- [ ] enum_member_declaration
+- [ ] eol
+- [ ] error_tuple
+- [ ] escape_sequence
+- [ ] exponent
+- [ ] export_assignment
+- [ ] export_declaration
+- [ ] export_function_declaration
+- [ ] export_function_type_declaration
+- [ ] export_type_declaration
+- [ ] export_type_qualified_declaration
+- [ ] export_type_qualified_function_declaration
+- [ ] expression
+- [ ] fixed_size_array
+- [ ] for_block
+- [ ] for_expression
+- [ ] for_header
+- [ ] for_in_header
+- [ ] iterable
+- [ ] function_arguments
+- [ ] function_block
+- [ ] function_call
+- [ ] function_call_context
+- [ ] function_declaration
+- [ ] function_declaration_type
+- [ ] function_declaration_lhs
+- [ ] function_identifier
+- [ ] function_parameter_types
+- [ ] function_type
+- [ ] function_type_declaration
+- [ ] function_type_declaration_lhs
+- [ ] function_type_identifier
+- [ ] generic_type
+- [ ] hex_digit
+- [ ] identifier
+- [ ] if_expression
+- [ ] import_expression
+- [ ] indented_closing
+- [ ] indented_line
+- [ ] index
+- [ ] indexed_access
+- [ ] initializer
+- [ ] inline_for_expression
+- [ ] inline_union
+- [ ] interpolation
+- [ ] is_op
+- [ ] iterable
+- [ ] iterable_header
+- [ ] labeled_argument
+- [ ] labeled_arguments
+- [ ] labeled_assignment_lhs
+- [ ] labeled_parameter
+- [ ] labeled_parameters
+- [ ] labeled_pattern
+- [ ] labeled_rest_parameter
+- [ ] labeled_tuple
+- [ ] labeled_tuple_member
+- [ ] labeled_tuple_members
+- [ ] labeled_tuple_type_member
+- [ ] labeled_tuple_type_members
+- [ ] leading_whitespace
+- [ ] letter
+- [ ] list_match
+- [ ] local_type_reference
+- [ ] lowercase_letter
+- [ ] match_condition
+- [ ] match_element
+- [ ] member_access
+- [ ] meta_expression
+- [ ] module
+- [ ] mul_div_op
+- [ ] named_tuple
+- [ ] namespace
+- [ ] namespaced_annotation
+- [ ] nilable_type
+- [ ] nonzero_digit
+- [ ] not_eol
+- [ ] octal_digit
+- [ ] ordinal_assignment_lhs
+- [ ] parameter
+- [ ] parameters
+- [ ] partial_application
+- [ ] pattern
+- [ ] pattern_match
+- [ ] prec1_expression
+- [ ] prec2_expression
+- [ ] prec3_expression
+- [ ] prec4_expression
+- [ ] prec5_expression
+- [ ] prec6_expression
+- [ ] primary_expression
+- [ ] range
+- [ ] range_bound
+- [ ] relational_comparison
+- [ ] rel_op
+- [ ] rename_identifier
+- [ ] rename_type
+- [ ] rest_operator
+- [ ] rest_parameter
+- [ ] return_expression
+- [ ] return_type
+- [ ] safe_indexed_access
+- [ ] simple_annotation
+- [ ] size
+- [ ] spread_argument
+- [ ] statement
+- [ ] step_expression
+- [ ] switch_statement
+- [ ] top_level_item
+- [ ] try_expression
+- [ ] tuple_member
+- [ ] tuple_members
+- [ ] tuple_pattern
+- [ ] tuple_type
+- [ ] tuple_type_member
+- [ ] tuple_type_members
+- [ ] tuple_update_expression
+- [ ] type
+- [ ] typeof_expression
+- [ ] type_argument
+- [ ] type_argument_list
+- [ ] type_comparison
+- [ ] type_constructor_call
+- [ ] type_declaration
+- [ ] type_declaration_lhs
+- [ ] type_declaration_rhs
+- [ ] type_identifier
+- [ ] type_parameter
+- [ ] type_parameters
+- [ ] type_qualified_declaration
+- [ ] type_qualified_function_declaration
+- [ ] type_reference
+- [ ] unary_expression
+- [ ] unicode_escape_sequence
+- [ ] union_declaration
+- [ ] union_declaration_with_error
+- [ ] union_member
+- [ ] union_members
+- [ ] union_member_declaration
+- [ ] union_type
+- [ ] union_member_no_annotations
+- [ ] union_with_error
+- [ ] uppercase_letter
+- [ ] valid_negatable_expression

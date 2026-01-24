@@ -3,6 +3,8 @@ package ast
 import (
 	"strconv"
 	"strings"
+
+	"github.com/rowland/tuppence/tup/source"
 )
 
 // identifier = ( lowercase_letter | "_" ) { letter | decimal_digit | "_" } .
@@ -10,63 +12,20 @@ import (
 // Base type for all literals
 type Literal interface {
 	Node
-	LiteralValue() interface{}
+	literalNode()
 }
 
-// integer_literal = binary_literal
-//                 | hexadecimal_literal
-//                 | octal_literal
-//                 | decimal_literal .
-
-// IntegerLiteral represents an integer literal in the code
-type IntegerLiteral struct {
-	BaseNode
-	Value      string // Original text representation
-	Base       int    // 2, 8, 10, or 16
-	IsNegative bool
-}
-
-// NewIntegerLiteral creates a new IntegerLiteral node
-func NewIntegerLiteral(value string, base int, isNegative bool) *IntegerLiteral {
-	return &IntegerLiteral{
-		BaseNode:   BaseNode{Type: NodeIntegerLiteral},
-		Value:      value,
-		Base:       base,
-		IsNegative: isNegative,
-	}
-}
-
-// String returns a textual representation of the integer literal
-func (i *IntegerLiteral) String() string {
-	prefix := ""
-	if i.IsNegative {
-		prefix = "-"
-	}
-
-	switch i.Base {
-	case 2:
-		return prefix + "0b" + i.Value
-	case 8:
-		return prefix + "0o" + i.Value
-	case 16:
-		return prefix + "0x" + i.Value
-	default:
-		return prefix + i.Value
-	}
-}
-
-// LiteralValue returns the Go value of the literal
-func (i *IntegerLiteral) LiteralValue() interface{} {
-	// Remove underscores for parsing
-	val := strings.ReplaceAll(i.Value, "_", "")
-
-	// Parse according to base
-	n, _ := strconv.ParseInt(val, i.Base, 64)
-	if i.IsNegative {
-		n = -n
-	}
-	return n
-}
+func (n *BooleanLiteral) literalNode()            {}
+func (n *StringLiteral) literalNode()             {}
+func (n *InterpolatedStringLiteral) literalNode() {}
+func (n *RawStringLiteral) literalNode()          {}
+func (n *MultiLineStringLiteral) literalNode()    {}
+func (n *TupleLiteral) literalNode()              {}
+func (n *ArrayLiteral) literalNode()              {}
+func (n *SymbolLiteral) literalNode()             {}
+func (n *RuneLiteral) literalNode()               {}
+func (n *FloatLiteral) literalNode()              {}
+func (n *FixedSizeArrayLiteral) literalNode()     {}
 
 // float_literal = decimal_digit { decimal_digit | "_" } "." decimal_digit { decimal_digit | "_" } [ exponent ]
 //               | decimal_digit { decimal_digit | "_" } exponent .
@@ -74,38 +33,124 @@ func (i *IntegerLiteral) LiteralValue() interface{} {
 // FloatLiteral represents a floating point literal in the code
 type FloatLiteral struct {
 	BaseNode
-	Value       string // Original text representation
-	HasExponent bool
-	IsNegative  bool
+	Value      string // Original text representation
+	FloatValue float64
 }
 
 // NewFloatLiteral creates a new FloatLiteral node
-func NewFloatLiteral(value string, hasExponent bool, isNegative bool) *FloatLiteral {
+func NewFloatLiteral(value string, source *source.Source, startOffset int32, length int32) *FloatLiteral {
+	floatValue, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		return nil
+	}
 	return &FloatLiteral{
-		BaseNode:    BaseNode{Type: NodeFloatLiteral},
-		Value:       value,
-		HasExponent: hasExponent,
-		IsNegative:  isNegative,
+		BaseNode:   BaseNode{Type: NodeFloatLiteral, Source: source, StartOffset: startOffset, Length: length},
+		Value:      value,
+		FloatValue: floatValue,
 	}
 }
 
-// String returns a textual representation of the float literal
-func (f *FloatLiteral) String() string {
-	if f.IsNegative {
-		return "-" + f.Value
-	}
-	return f.Value
+// integer_literal = binary_literal
+//                 | hexadecimal_literal
+//                 | octal_literal
+//                 | decimal_literal .
+
+// Base type for integer literals
+type IntegerLiteral interface {
+	Literal
+	integerLiteralNode()
 }
 
-// LiteralValue returns the Go value of the literal
-func (f *FloatLiteral) LiteralValue() interface{} {
-	// Remove underscores for parsing
-	val := strings.ReplaceAll(f.Value, "_", "")
-	n, _ := strconv.ParseFloat(val, 64)
-	if f.IsNegative {
-		n = -n
+func (n *BinaryLiteral) integerLiteralNode()      {}
+func (n *HexadecimalLiteral) integerLiteralNode() {}
+func (n *OctalLiteral) integerLiteralNode()       {}
+func (n *DecimalLiteral) integerLiteralNode()     {}
+
+// binary_literal = "0b" ( "0" | "1" ) { "0" | "1" | "_" } .
+
+type BinaryLiteral struct {
+	BaseNode
+	Value        string // Original text representation
+	IntegerValue int64
+}
+
+// NewBinaryLiteral creates a new BinaryLiteral node
+func NewBinaryLiteral(value string, source *source.Source, startOffset int32, length int32) *BinaryLiteral {
+	integerValue, err := strconv.ParseInt(value, 2, 64)
+	if err != nil {
+		return nil
 	}
-	return n
+	return &BinaryLiteral{
+		BaseNode:     BaseNode{Type: NodeIntegerLiteral, Source: source, StartOffset: startOffset, Length: length},
+		Value:        value,
+		IntegerValue: integerValue,
+	}
+}
+
+// hexadecimal_literal = "0x" hex_digit { hex_digit | "_" } .
+// hex_digit = decimal_digit | "a"-"f" | "A"-"F" .
+
+type HexadecimalLiteral struct {
+	BaseNode
+	Value        string // Original text representation
+	IntegerValue int64
+}
+
+// NewHexadecimalLiteral creates a new HexadecimalLiteral node
+func NewHexadecimalLiteral(value string, source *source.Source, startOffset int32, length int32) *HexadecimalLiteral {
+	integerValue, err := strconv.ParseInt(value, 16, 64)
+	if err != nil {
+		return nil
+	}
+	return &HexadecimalLiteral{
+		BaseNode:     BaseNode{Type: NodeIntegerLiteral, Source: source, StartOffset: startOffset, Length: length},
+		Value:        value,
+		IntegerValue: integerValue,
+	}
+}
+
+// octal_literal = "0o" octal_digit { octal_digit } .
+// octal_digit = "0"-"7" .
+
+type OctalLiteral struct {
+	BaseNode
+	Value        string // Original text representation
+	IntegerValue int64
+}
+
+// NewOctalLiteral creates a new OctalLiteral node
+func NewOctalLiteral(value string, source *source.Source, startOffset int32, length int32) *OctalLiteral {
+	integerValue, err := strconv.ParseInt(value, 8, 64)
+	if err != nil {
+		return nil
+	}
+	return &OctalLiteral{
+		BaseNode:     BaseNode{Type: NodeIntegerLiteral, Source: source, StartOffset: startOffset, Length: length},
+		Value:        value,
+		IntegerValue: integerValue,
+	}
+}
+
+// decimal_literal = decimal_digit { decimal_digit | "_" } .
+// decimal_digit = "0"-"9" .
+
+type DecimalLiteral struct {
+	BaseNode
+	Value        string // Original text representation
+	IntegerValue int64
+}
+
+// NewDecimalLiteral creates a new DecimalLiteral node
+func NewDecimalLiteral(value string, source *source.Source, startOffset int32, length int32) *DecimalLiteral {
+	integerValue, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		return nil
+	}
+	return &DecimalLiteral{
+		BaseNode:     BaseNode{Type: NodeIntegerLiteral, Source: source, StartOffset: startOffset, Length: length},
+		Value:        value,
+		IntegerValue: integerValue,
+	}
 }
 
 // boolean_literal = "true" | "false" .
@@ -113,28 +158,17 @@ func (f *FloatLiteral) LiteralValue() interface{} {
 // BooleanLiteral represents a boolean literal (true or false)
 type BooleanLiteral struct {
 	BaseNode
-	Value bool
+	Value        string // Original text representation
+	BooleanValue bool
 }
 
 // NewBooleanLiteral creates a new BooleanLiteral node
-func NewBooleanLiteral(value bool) *BooleanLiteral {
+func NewBooleanLiteral(value string, source *source.Source, startOffset int32, length int32) *BooleanLiteral {
 	return &BooleanLiteral{
-		BaseNode: BaseNode{Type: NodeBooleanLiteral},
-		Value:    value,
+		BaseNode:     BaseNode{Type: NodeBooleanLiteral, Source: source, StartOffset: startOffset, Length: length},
+		Value:        value,
+		BooleanValue: value == "true",
 	}
-}
-
-// String returns a textual representation of the boolean literal
-func (b *BooleanLiteral) String() string {
-	if b.Value {
-		return "true"
-	}
-	return "false"
-}
-
-// LiteralValue returns the Go value of the literal
-func (b *BooleanLiteral) LiteralValue() interface{} {
-	return b.Value
 }
 
 // string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' - eol } '"' .
@@ -142,27 +176,17 @@ func (b *BooleanLiteral) LiteralValue() interface{} {
 // StringLiteral represents a string literal in the code
 type StringLiteral struct {
 	BaseNode
-	Value string // The string value (without quotes)
-	Raw   string // Original text representation (with quotes)
+	Value       string // Original text representation
+	StringValue string // The string value (without quotes)
 }
 
 // NewStringLiteral creates a new StringLiteral node
-func NewStringLiteral(value string, raw string) *StringLiteral {
+func NewStringLiteral(value string, source *source.Source, startOffset int32, length int32) *StringLiteral {
 	return &StringLiteral{
-		BaseNode: BaseNode{Type: NodeStringLiteral},
-		Value:    value,
-		Raw:      raw,
+		BaseNode:    BaseNode{Type: NodeStringLiteral, Source: source, StartOffset: startOffset, Length: length},
+		Value:       value,
+		StringValue: value,
 	}
-}
-
-// String returns a textual representation of the string literal
-func (s *StringLiteral) String() string {
-	return s.Raw
-}
-
-// LiteralValue returns the Go value of the literal
-func (s *StringLiteral) LiteralValue() interface{} {
-	return s.Value
 }
 
 // raw_string_literal = "`" { "``" | character - "`" } "`" .
@@ -170,25 +194,17 @@ func (s *StringLiteral) LiteralValue() interface{} {
 // RawStringLiteral represents a raw string literal enclosed in backticks
 type RawStringLiteral struct {
 	BaseNode
-	Value string // The string value (without backticks)
+	Value       string // Original text representation
+	StringValue string // The string value (without backticks)
 }
 
 // NewRawStringLiteral creates a new RawStringLiteral node
-func NewRawStringLiteral(value string) *RawStringLiteral {
+func NewRawStringLiteral(value string, source *source.Source, startOffset int32, length int32) *RawStringLiteral {
 	return &RawStringLiteral{
-		BaseNode: BaseNode{Type: NodeRawStringLiteral},
-		Value:    value,
+		BaseNode:    BaseNode{Type: NodeRawStringLiteral, Source: source, StartOffset: startOffset, Length: length},
+		Value:       value,
+		StringValue: value,
 	}
-}
-
-// String returns a textual representation of the raw string literal
-func (r *RawStringLiteral) String() string {
-	return "`" + r.Value + "`"
-}
-
-// LiteralValue returns the Go value of the literal
-func (r *RawStringLiteral) LiteralValue() interface{} {
-	return r.Value
 }
 
 // interpolation = "\\(" expression ")" .
@@ -196,20 +212,15 @@ func (r *RawStringLiteral) LiteralValue() interface{} {
 // Interpolation represents an interpolated expression within a string
 type Interpolation struct {
 	BaseNode
-	Expression Node // The expression to be interpolated
+	Expression Expression // The expression to be interpolated
 }
 
 // NewInterpolation creates a new Interpolation node
-func NewInterpolation(expr Node) *Interpolation {
+func NewInterpolation(expr Expression, source *source.Source) *Interpolation {
 	return &Interpolation{
-		BaseNode:   BaseNode{Type: NodeInterpolation},
+		BaseNode:   BaseNode{Type: NodeInterpolation, Source: source, StartOffset: int32(expr.Pos().Offset), Length: int32(expr.End().Offset - expr.Pos().Offset)},
 		Expression: expr,
 	}
-}
-
-// String returns a textual representation of the interpolation
-func (i *Interpolation) String() string {
-	return "\\(" + i.Expression.String() + ")"
 }
 
 // interpolated_string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - '"' - eol } '"' .
@@ -221,9 +232,9 @@ type InterpolatedStringLiteral struct {
 }
 
 // NewInterpolatedStringLiteral creates a new InterpolatedStringLiteral node
-func NewInterpolatedStringLiteral(parts []Node) *InterpolatedStringLiteral {
+func NewInterpolatedStringLiteral(parts []Node, source *source.Source) *InterpolatedStringLiteral {
 	return &InterpolatedStringLiteral{
-		BaseNode: BaseNode{Type: NodeInterpolatedStringLiteral},
+		BaseNode: BaseNode{Type: NodeInterpolatedStringLiteral, Source: source, StartOffset: int32(parts[0].Pos().Offset), Length: int32(parts[len(parts)-1].End().Offset - parts[0].Pos().Offset)},
 		Parts:    parts,
 	}
 }
@@ -240,7 +251,7 @@ func (i *InterpolatedStringLiteral) String() string {
 }
 
 // LiteralValue returns the Go value of the literal (concatenated parts)
-func (i *InterpolatedStringLiteral) LiteralValue() interface{} {
+func (i *InterpolatedStringLiteral) LiteralValue() any {
 	// This is a complex operation that would be resolved at runtime
 	// For now, return a simplified string representation
 	return i.String()
@@ -281,7 +292,7 @@ func (m *MultiLineStringLiteral) String() string {
 }
 
 // LiteralValue returns the Go value of the literal
-func (m *MultiLineStringLiteral) LiteralValue() interface{} {
+func (m *MultiLineStringLiteral) LiteralValue() any {
 	return strings.Join(m.Lines, "\n")
 }
 
@@ -290,27 +301,18 @@ func (m *MultiLineStringLiteral) LiteralValue() interface{} {
 // RuneLiteral represents a rune literal in the code
 type RuneLiteral struct {
 	BaseNode
-	Value rune   // The rune value
-	Raw   string // Original text representation
+	Value     string // Original text representation
+	RuneValue rune   // The rune value
 }
 
 // NewRuneLiteral creates a new RuneLiteral node
-func NewRuneLiteral(value rune, raw string) *RuneLiteral {
+func NewRuneLiteral(value string, source *source.Source, startOffset int32, length int32) *RuneLiteral {
+	runeValue, _, _, _ := strconv.UnquoteChar(value, '\'')
 	return &RuneLiteral{
-		BaseNode: BaseNode{Type: NodeRuneLiteral},
-		Value:    value,
-		Raw:      raw,
+		BaseNode:  BaseNode{Type: NodeRuneLiteral, Source: source, StartOffset: startOffset, Length: length},
+		Value:     value,
+		RuneValue: runeValue,
 	}
-}
-
-// String returns a textual representation of the rune literal
-func (r *RuneLiteral) String() string {
-	return r.Raw
-}
-
-// LiteralValue returns the Go value of the literal
-func (r *RuneLiteral) LiteralValue() interface{} {
-	return r.Value
 }
 
 // symbol_literal = ":" identifier .
@@ -318,34 +320,21 @@ func (r *RuneLiteral) LiteralValue() interface{} {
 // SymbolLiteral represents a symbol literal in the code (e.g., :name)
 type SymbolLiteral struct {
 	BaseNode
-	Value string // Symbol name without the colon
+	Value string // Original text representation
 }
 
 // NewSymbolLiteral creates a new SymbolLiteral node
-func NewSymbolLiteral(value string) *SymbolLiteral {
+func NewSymbolLiteral(value string, source *source.Source, startOffset int32, length int32) *SymbolLiteral {
 	return &SymbolLiteral{
-		BaseNode: BaseNode{Type: NodeSymbolLiteral},
+		BaseNode: BaseNode{Type: NodeSymbolLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:    value,
 	}
-}
-
-// String returns a textual representation of the symbol literal
-func (s *SymbolLiteral) String() string {
-	return ":" + s.Value
-}
-
-// LiteralValue returns the Go value of the literal
-func (s *SymbolLiteral) LiteralValue() interface{} {
-	return s.Value
 }
 
 // tuple_member = expression .
 
 // TupleMember represents a member of a tuple
-type TupleMember struct {
-	BaseNode
-	Value Node // The value expression
-}
+type TupleMember = Expression
 
 // labeled_tuple_member = identifier ":" tuple_member .
 
@@ -353,12 +342,7 @@ type TupleMember struct {
 type LabeledTupleMember struct {
 	BaseNode
 	Label *Identifier // The label
-	Value Node        // The value expression
-}
-
-// String returns a textual representation of the labeled tuple member
-func (l *LabeledTupleMember) String() string {
-	return l.Label.String() + ": " + l.Value.String()
+	Value TupleMember // The value expression
 }
 
 // tuple_literal = "(" [ labeled_tuple_members | tuple_members ] ")" .
@@ -366,13 +350,15 @@ func (l *LabeledTupleMember) String() string {
 // TupleLiteral represents a tuple literal in the code
 type TupleLiteral struct {
 	BaseNode
+	Labeled bool   // Whether the tuple is labeled
 	Members []Node // Mix of TupleMember and LabeledTupleMember nodes
 }
 
 // NewTupleLiteral creates a new TupleLiteral node
-func NewTupleLiteral(members []Node) *TupleLiteral {
+func NewTupleLiteral(labeled bool, members []Node) *TupleLiteral {
 	return &TupleLiteral{
 		BaseNode: BaseNode{Type: NodeTupleLiteral},
+		Labeled:  labeled,
 		Members:  members,
 	}
 }
@@ -392,7 +378,7 @@ func (t *TupleLiteral) String() string {
 }
 
 // LiteralValue returns the Go value of the literal
-func (t *TupleLiteral) LiteralValue() interface{} {
+func (t *TupleLiteral) LiteralValue() any {
 	// This is a complex value that would be represented differently at runtime
 	return t.String()
 }
@@ -434,7 +420,7 @@ func (a *ArrayLiteral) String() string {
 }
 
 // LiteralValue returns the Go value of the literal
-func (a *ArrayLiteral) LiteralValue() interface{} {
+func (a *ArrayLiteral) LiteralValue() any {
 	// This is a complex value that would be represented differently at runtime
 	return a.String()
 }
@@ -473,7 +459,7 @@ func (f *FixedSizeArrayLiteral) String() string {
 }
 
 // LiteralValue returns the Go value of the literal
-func (f *FixedSizeArrayLiteral) LiteralValue() interface{} {
+func (f *FixedSizeArrayLiteral) LiteralValue() any {
 	// This is a complex value that would be represented differently at runtime
 	return f.String()
 }

@@ -10,7 +10,12 @@ import (
 
 type Expression interface {
 	Node
+	expressionNode()
 }
+
+func (n *TryExpression) expressionNode()    {}
+func (n *BinaryExpression) expressionNode() {}
+func (n *UnaryExpression) expressionNode()  {}
 
 // function_call = function_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
 
