@@ -33,16 +33,12 @@ func (n *FixedSizeArrayLiteral) literalNode()     {}
 // FloatLiteral represents a floating point literal in the code
 type FloatLiteral struct {
 	BaseNode
-	Value      string // Original text representation
-	FloatValue float64
+	Value      string  // Original text representation
+	FloatValue float64 // The floating point value
 }
 
 // NewFloatLiteral creates a new FloatLiteral node
-func NewFloatLiteral(value string, source *source.Source, startOffset int32, length int32) *FloatLiteral {
-	floatValue, err := strconv.ParseFloat(value, 64)
-	if err != nil {
-		return nil
-	}
+func NewFloatLiteral(value string, floatValue float64, source *source.Source, startOffset int32, length int32) *FloatLiteral {
 	return &FloatLiteral{
 		BaseNode:   BaseNode{Type: NodeFloatLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:      value,

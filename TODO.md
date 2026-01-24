@@ -17,7 +17,7 @@
 
 - [ ] literal
     - [ ] number
-        - [ ] float_literal
+        - [x] float_literal
         - [ ] integer_literal
             - [ ] binary_literal
             - [ ] hexadecimal_literal

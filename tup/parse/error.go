@@ -45,7 +45,7 @@ func errorExpectingOneOf(expecting string, tokens []tok.Token, errors []error) *
 
 func errorGot(tokens []tok.Token) (got string, line int, column int) {
 	if len(tokens) > 0 {
-		got = tokens[0].Type.String()
+		got = tokens[0].Value()
 		line = tokens[0].Line()
 		column = tokens[0].Column()
 	} else {
