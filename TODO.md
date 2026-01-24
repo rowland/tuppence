@@ -19,7 +19,7 @@
     - [ ] number
         - [x] float_literal
         - [ ] integer_literal
-            - [ ] binary_literal
+            - [x] binary_literal
             - [ ] hexadecimal_literal
             - [ ] octal_literal
             - [ ] decimal_literal

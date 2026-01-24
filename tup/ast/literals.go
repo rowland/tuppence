@@ -71,11 +71,7 @@ type BinaryLiteral struct {
 }
 
 // NewBinaryLiteral creates a new BinaryLiteral node
-func NewBinaryLiteral(value string, source *source.Source, startOffset int32, length int32) *BinaryLiteral {
-	integerValue, err := strconv.ParseInt(value, 2, 64)
-	if err != nil {
-		return nil
-	}
+func NewBinaryLiteral(value string, integerValue int64, source *source.Source, startOffset int32, length int32) *BinaryLiteral {
 	return &BinaryLiteral{
 		BaseNode:     BaseNode{Type: NodeIntegerLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:        value,

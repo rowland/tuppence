@@ -319,7 +319,7 @@ func TestBinaryLiterals(t *testing.T) {
 		wantType TokenType
 		wantErr  bool
 	}{
-		// Basic valid cases
+		// Basic cases
 		{"empty_after_prefix", "0b", TokBinLit, true},
 		{"zero", "0b0", TokBinLit, false},
 		{"one", "0b1", TokBinLit, false},
