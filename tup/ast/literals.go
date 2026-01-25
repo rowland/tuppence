@@ -89,11 +89,7 @@ type HexadecimalLiteral struct {
 }
 
 // NewHexadecimalLiteral creates a new HexadecimalLiteral node
-func NewHexadecimalLiteral(value string, source *source.Source, startOffset int32, length int32) *HexadecimalLiteral {
-	integerValue, err := strconv.ParseInt(value, 16, 64)
-	if err != nil {
-		return nil
-	}
+func NewHexadecimalLiteral(value string, integerValue int64, source *source.Source, startOffset int32, length int32) *HexadecimalLiteral {
 	return &HexadecimalLiteral{
 		BaseNode:     BaseNode{Type: NodeIntegerLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:        value,

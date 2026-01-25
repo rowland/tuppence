@@ -8,6 +8,8 @@ import (
 	"github.com/rowland/tuppence/tup/tok"
 )
 
+// binary_literal = "0b" ( "0" | "1" ) { "0" | "1" | "_" } .
+
 func BinaryLiteral(tokens []tok.Token) (item *ast.BinaryLiteral, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 	if peek(remainder).Type != tok.TokBinLit || peek(remainder).Invalid {
