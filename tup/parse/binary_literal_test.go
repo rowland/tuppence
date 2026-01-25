@@ -11,7 +11,7 @@ import (
 func TestBinaryLiteral(t *testing.T) {
 	tests := []struct {
 		input   string
-		want    *ast.BinaryLiteral
+		want    *ast.IntegerLiteral
 		wantErr bool
 	}{
 		// Basic cases

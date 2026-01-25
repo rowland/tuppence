@@ -13,11 +13,8 @@ type Literal interface {
 	literalNode()
 }
 
-func (n *FloatLiteral) literalNode()       {}
-func (n *BinaryLiteral) literalNode()      {}
-func (n *HexadecimalLiteral) literalNode() {}
-func (n *OctalLiteral) literalNode()       {}
-func (n *DecimalLiteral) literalNode()     {}
+func (n *FloatLiteral) literalNode()   {}
+func (n *IntegerLiteral) literalNode() {}
 
 func (n *BooleanLiteral) literalNode()            {}
 func (n *StringLiteral) literalNode()             {}
@@ -38,11 +35,8 @@ type Number interface {
 	numberNode()
 }
 
-func (n *FloatLiteral) numberNode()       {}
-func (n *BinaryLiteral) numberNode()      {}
-func (n *HexadecimalLiteral) numberNode() {}
-func (n *OctalLiteral) numberNode()       {}
-func (n *DecimalLiteral) numberNode()     {}
+func (n *FloatLiteral) numberNode()   {}
+func (n *IntegerLiteral) numberNode() {}
 
 // float_literal = decimal_digit { decimal_digit | "_" } "." decimal_digit { decimal_digit | "_" } [ exponent ]
 //               | decimal_digit { decimal_digit | "_" } exponent .
@@ -68,85 +62,57 @@ func NewFloatLiteral(value string, floatValue float64, source *source.Source, st
 //                 | octal_literal
 //                 | decimal_literal .
 
-// Base type for integer literals
-type IntegerLiteral interface {
-	Number
-	integerLiteralNode()
-}
-
-func (n *BinaryLiteral) integerLiteralNode()      {}
-func (n *HexadecimalLiteral) integerLiteralNode() {}
-func (n *OctalLiteral) integerLiteralNode()       {}
-func (n *DecimalLiteral) integerLiteralNode()     {}
-
-// binary_literal = "0b" ( "0" | "1" ) { "0" | "1" | "_" } .
-
-type BinaryLiteral struct {
+type IntegerLiteral struct {
 	BaseNode
 	Value        string // Original text representation
 	IntegerValue int64
+	Base         int // 2, 8, 10, 16
 }
 
-// NewBinaryLiteral creates a new BinaryLiteral node
-func NewBinaryLiteral(value string, integerValue int64, source *source.Source, startOffset int32, length int32) *BinaryLiteral {
-	return &BinaryLiteral{
+// binary_literal = "0b" ( "0" | "1" ) { "0" | "1" | "_" } .
+
+func NewBinaryLiteral(value string, integerValue int64, source *source.Source, startOffset int32, length int32) *IntegerLiteral {
+	return &IntegerLiteral{
 		BaseNode:     BaseNode{Type: NodeIntegerLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:        value,
 		IntegerValue: integerValue,
+		Base:         2,
 	}
 }
 
 // hexadecimal_literal = "0x" hex_digit { hex_digit | "_" } .
 // hex_digit = decimal_digit | "a"-"f" | "A"-"F" .
 
-type HexadecimalLiteral struct {
-	BaseNode
-	Value        string // Original text representation
-	IntegerValue int64
-}
-
-// NewHexadecimalLiteral creates a new HexadecimalLiteral node
-func NewHexadecimalLiteral(value string, integerValue int64, source *source.Source, startOffset int32, length int32) *HexadecimalLiteral {
-	return &HexadecimalLiteral{
+func NewHexadecimalLiteral(value string, integerValue int64, source *source.Source, startOffset int32, length int32) *IntegerLiteral {
+	return &IntegerLiteral{
 		BaseNode:     BaseNode{Type: NodeIntegerLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:        value,
 		IntegerValue: integerValue,
+		Base:         16,
 	}
 }
 
 // octal_literal = "0o" octal_digit { octal_digit } .
 // octal_digit = "0"-"7" .
 
-type OctalLiteral struct {
-	BaseNode
-	Value        string // Original text representation
-	IntegerValue int64
-}
-
-// NewOctalLiteral creates a new OctalLiteral node
-func NewOctalLiteral(value string, integerValue int64, source *source.Source, startOffset int32, length int32) *OctalLiteral {
-	return &OctalLiteral{
+func NewOctalLiteral(value string, integerValue int64, source *source.Source, startOffset int32, length int32) *IntegerLiteral {
+	return &IntegerLiteral{
 		BaseNode:     BaseNode{Type: NodeIntegerLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:        value,
 		IntegerValue: integerValue,
+		Base:         8,
 	}
 }
 
 // decimal_literal = decimal_digit { decimal_digit | "_" } .
 // decimal_digit = "0"-"9" .
 
-type DecimalLiteral struct {
-	BaseNode
-	Value        string // Original text representation
-	IntegerValue int64
-}
-
-// NewDecimalLiteral creates a new DecimalLiteral node
-func NewDecimalLiteral(value string, integerValue int64, source *source.Source, startOffset int32, length int32) *DecimalLiteral {
-	return &DecimalLiteral{
+func NewDecimalLiteral(value string, integerValue int64, source *source.Source, startOffset int32, length int32) *IntegerLiteral {
+	return &IntegerLiteral{
 		BaseNode:     BaseNode{Type: NodeIntegerLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:        value,
 		IntegerValue: integerValue,
+		Base:         10,
 	}
 }
 

@@ -30,7 +30,7 @@ func Number(tokens []tok.Token) (item ast.Number, remainder []tok.Token, err err
 //                 | octal_literal
 //                 | decimal_literal .
 
-func IntegerLiteral(tokens []tok.Token) (item ast.IntegerLiteral, remainder []tok.Token, err error) {
+func IntegerLiteral(tokens []tok.Token) (item *ast.IntegerLiteral, remainder []tok.Token, err error) {
 	var errors []error
 
 	binaryLit, remainder, err := BinaryLiteral(tokens)

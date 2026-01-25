@@ -11,7 +11,7 @@ import (
 // decimal_literal = decimal_digit { decimal_digit | "_" } .
 // decimal_digit = "0"-"9" .
 
-func DecimalLiteral(tokens []tok.Token) (item *ast.DecimalLiteral, remainder []tok.Token, err error) {
+func DecimalLiteral(tokens []tok.Token) (item *ast.IntegerLiteral, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 	if peek(remainder).Type != tok.TokDecLit || peek(remainder).Invalid {
 		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokDecLit], remainder)

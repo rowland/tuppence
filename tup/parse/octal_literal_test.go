@@ -11,7 +11,7 @@ import (
 func TestOctalLiteral(t *testing.T) {
 	tests := []struct {
 		input   string
-		want    *ast.OctalLiteral
+		want    *ast.IntegerLiteral
 		wantErr bool
 	}{
 		// Single digits

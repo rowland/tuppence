@@ -10,7 +10,7 @@ import (
 
 // binary_literal = "0b" ( "0" | "1" ) { "0" | "1" | "_" } .
 
-func BinaryLiteral(tokens []tok.Token) (item *ast.BinaryLiteral, remainder []tok.Token, err error) {
+func BinaryLiteral(tokens []tok.Token) (item *ast.IntegerLiteral, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 	if peek(remainder).Type != tok.TokBinLit || peek(remainder).Invalid {
 		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokBinLit], remainder)

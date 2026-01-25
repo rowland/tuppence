@@ -11,7 +11,7 @@ import (
 func TestDecimalLiteral(t *testing.T) {
 	tests := []struct {
 		input   string
-		want    *ast.DecimalLiteral
+		want    *ast.IntegerLiteral
 		wantErr bool
 	}{
 		// Single digits

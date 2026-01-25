@@ -11,7 +11,7 @@ import (
 // hexadecimal_literal = "0x" hex_digit { hex_digit | "_" } .
 // hex_digit = decimal_digit | "a"-"f" | "A"-"F" .
 
-func HexadecimalLiteral(tokens []tok.Token) (item *ast.HexadecimalLiteral, remainder []tok.Token, err error) {
+func HexadecimalLiteral(tokens []tok.Token) (item *ast.IntegerLiteral, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 	if peek(remainder).Type != tok.TokHexLit || peek(remainder).Invalid {
 		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokHexLit], remainder)

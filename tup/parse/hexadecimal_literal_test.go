@@ -11,7 +11,7 @@ import (
 func TestHexadecimalLiteral(t *testing.T) {
 	tests := []struct {
 		input   string
-		want    *ast.HexadecimalLiteral
+		want    *ast.IntegerLiteral
 		wantErr bool
 	}{
 		// Single digits (0-9)
