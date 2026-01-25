@@ -126,11 +126,11 @@ type BooleanLiteral struct {
 }
 
 // NewBooleanLiteral creates a new BooleanLiteral node
-func NewBooleanLiteral(value string, source *source.Source, startOffset int32, length int32) *BooleanLiteral {
+func NewBooleanLiteral(value string, booleanValue bool, source *source.Source, startOffset int32, length int32) *BooleanLiteral {
 	return &BooleanLiteral{
 		BaseNode:     BaseNode{Type: NodeBooleanLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:        value,
-		BooleanValue: value == "true",
+		BooleanValue: booleanValue,
 	}
 }
 
