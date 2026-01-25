@@ -13,9 +13,6 @@ func FloatLiteral(tokens []tok.Token) (item *ast.FloatLiteral, remainder []tok.T
 		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokFloatLit], remainder)
 	}
 	value := remainder[0].Value()
-	floatValue, err := strconv.ParseFloat(value, 64)
-	if err != nil {
-		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokFloatLit], remainder)
-	}
+	floatValue, _ := strconv.ParseFloat(value, 64)
 	return ast.NewFloatLiteral(value, floatValue, remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
 }

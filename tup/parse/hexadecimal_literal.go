@@ -17,9 +17,6 @@ func HexadecimalLiteral(tokens []tok.Token) (item *ast.HexadecimalLiteral, remai
 		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokHexLit], remainder)
 	}
 	value := remainder[0].Value()
-	integerValue, err := strconv.ParseInt(strings.ReplaceAll(value, "_", ""), 0, 64)
-	if err != nil {
-		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokHexLit], remainder)
-	}
+	integerValue, _ := strconv.ParseInt(strings.ReplaceAll(value, "_", ""), 0, 64)
 	return ast.NewHexadecimalLiteral(value, integerValue, remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
 }

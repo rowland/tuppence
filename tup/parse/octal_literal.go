@@ -17,9 +17,6 @@ func OctalLiteral(tokens []tok.Token) (item *ast.OctalLiteral, remainder []tok.T
 		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokOctLit], remainder)
 	}
 	value := remainder[0].Value()
-	integerValue, err := strconv.ParseInt(strings.ReplaceAll(value, "_", ""), 0, 64)
-	if err != nil {
-		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokOctLit], remainder)
-	}
+	integerValue, _ := strconv.ParseInt(strings.ReplaceAll(value, "_", ""), 0, 64)
 	return ast.NewOctalLiteral(value, integerValue, remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
 }
