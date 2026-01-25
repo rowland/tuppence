@@ -21,7 +21,7 @@
         - [ ] integer_literal
             - [x] binary_literal
             - [x] hexadecimal_literal
-            - [ ] octal_literal
+            - [x] octal_literal
             - [ ] decimal_literal
     - [ ] boolean_literal
     - [ ] string_literal

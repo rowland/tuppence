@@ -107,11 +107,7 @@ type OctalLiteral struct {
 }
 
 // NewOctalLiteral creates a new OctalLiteral node
-func NewOctalLiteral(value string, source *source.Source, startOffset int32, length int32) *OctalLiteral {
-	integerValue, err := strconv.ParseInt(value, 8, 64)
-	if err != nil {
-		return nil
-	}
+func NewOctalLiteral(value string, integerValue int64, source *source.Source, startOffset int32, length int32) *OctalLiteral {
 	return &OctalLiteral{
 		BaseNode:     BaseNode{Type: NodeIntegerLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:        value,
