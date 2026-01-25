@@ -7,13 +7,17 @@ import (
 	"github.com/rowland/tuppence/tup/source"
 )
 
-// identifier = ( lowercase_letter | "_" ) { letter | decimal_digit | "_" } .
-
 // Base type for all literals
 type Literal interface {
 	Node
 	literalNode()
 }
+
+func (n *FloatLiteral) literalNode()       {}
+func (n *BinaryLiteral) literalNode()      {}
+func (n *HexadecimalLiteral) literalNode() {}
+func (n *OctalLiteral) literalNode()       {}
+func (n *DecimalLiteral) literalNode()     {}
 
 func (n *BooleanLiteral) literalNode()            {}
 func (n *StringLiteral) literalNode()             {}
@@ -24,8 +28,21 @@ func (n *TupleLiteral) literalNode()              {}
 func (n *ArrayLiteral) literalNode()              {}
 func (n *SymbolLiteral) literalNode()             {}
 func (n *RuneLiteral) literalNode()               {}
-func (n *FloatLiteral) literalNode()              {}
 func (n *FixedSizeArrayLiteral) literalNode()     {}
+
+// number = float_literal | integer_literal .
+
+// Base type for number literals
+type Number interface {
+	Literal
+	numberNode()
+}
+
+func (n *FloatLiteral) numberNode()       {}
+func (n *BinaryLiteral) numberNode()      {}
+func (n *HexadecimalLiteral) numberNode() {}
+func (n *OctalLiteral) numberNode()       {}
+func (n *DecimalLiteral) numberNode()     {}
 
 // float_literal = decimal_digit { decimal_digit | "_" } "." decimal_digit { decimal_digit | "_" } [ exponent ]
 //               | decimal_digit { decimal_digit | "_" } exponent .
@@ -53,7 +70,7 @@ func NewFloatLiteral(value string, floatValue float64, source *source.Source, st
 
 // Base type for integer literals
 type IntegerLiteral interface {
-	Literal
+	Number
 	integerLiteralNode()
 }
 
