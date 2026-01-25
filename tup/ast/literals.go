@@ -125,11 +125,7 @@ type DecimalLiteral struct {
 }
 
 // NewDecimalLiteral creates a new DecimalLiteral node
-func NewDecimalLiteral(value string, source *source.Source, startOffset int32, length int32) *DecimalLiteral {
-	integerValue, err := strconv.ParseInt(value, 10, 64)
-	if err != nil {
-		return nil
-	}
+func NewDecimalLiteral(value string, integerValue int64, source *source.Source, startOffset int32, length int32) *DecimalLiteral {
 	return &DecimalLiteral{
 		BaseNode:     BaseNode{Type: NodeIntegerLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:        value,

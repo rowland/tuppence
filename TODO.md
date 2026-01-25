@@ -22,7 +22,7 @@
             - [x] binary_literal
             - [x] hexadecimal_literal
             - [x] octal_literal
-            - [ ] decimal_literal
+            - [x] decimal_literal
     - [ ] boolean_literal
     - [ ] string_literal
     - [ ] interpolated_string_literal
