@@ -162,11 +162,11 @@ type RawStringLiteral struct {
 }
 
 // NewRawStringLiteral creates a new RawStringLiteral node
-func NewRawStringLiteral(value string, source *source.Source, startOffset int32, length int32) *RawStringLiteral {
+func NewRawStringLiteral(value string, stringValue string, source *source.Source, startOffset int32, length int32) *RawStringLiteral {
 	return &RawStringLiteral{
 		BaseNode:    BaseNode{Type: NodeRawStringLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:       value,
-		StringValue: value,
+		StringValue: stringValue,
 	}
 }
 

@@ -16,7 +16,7 @@
 ## AST / parse / test
 
 - [ ] literal
-    - [ ] number
+    - [x] number
         - [x] float_literal
         - [x] integer_literal
             - [x] binary_literal
@@ -26,7 +26,7 @@
     - [x] boolean_literal
     - [ ] string_literal
     - [ ] interpolated_string_literal
-    - [ ] raw_string_literal
+    - [x] raw_string_literal
     - [ ] multi_line_string_literal
     - [ ] tuple_literal
     - [ ] array_literal
