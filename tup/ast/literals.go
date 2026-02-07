@@ -144,11 +144,11 @@ type StringLiteral struct {
 }
 
 // NewStringLiteral creates a new StringLiteral node
-func NewStringLiteral(value string, source *source.Source, startOffset int32, length int32) *StringLiteral {
+func NewStringLiteral(value string, stringValue string, source *source.Source, startOffset int32, length int32) *StringLiteral {
 	return &StringLiteral{
 		BaseNode:    BaseNode{Type: NodeStringLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:       value,
-		StringValue: value,
+		StringValue: stringValue,
 	}
 }
 
