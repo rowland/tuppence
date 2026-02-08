@@ -24,14 +24,17 @@
             - [x] octal_literal
             - [x] decimal_literal
     - [x] boolean_literal
-    - [ ] string_literal
+    - [x] string_literal
+        - [x] escape_sequence
+        - [x] byte_escape_sequence
+        - [x] unicode_escape_sequence
     - [ ] interpolated_string_literal
     - [x] raw_string_literal
     - [ ] multi_line_string_literal
     - [ ] tuple_literal
     - [ ] array_literal
     - [ ] symbol_literal
-    - [ ] rune_literal
+    - [x] rune_literal
     - [ ] fixed_size_array_literal
 
 - [ ] add_sub_op
@@ -51,7 +54,6 @@
 - [ ] block_body
 - [ ] block_parameters
 - [ ] break_expression
-- [ ] byte_escape_sequence
 - [ ] case_block
 - [ ] chained_expression
 - [ ] character
@@ -76,7 +78,6 @@
 - [ ] enum_member_declaration
 - [ ] eol
 - [ ] error_tuple
-- [ ] escape_sequence
 - [ ] exponent
 - [ ] export_assignment
 - [ ] export_declaration
@@ -206,7 +207,6 @@
 - [ ] type_qualified_function_declaration
 - [ ] type_reference
 - [ ] unary_expression
-- [ ] unicode_escape_sequence
 - [ ] union_declaration
 - [ ] union_declaration_with_error
 - [ ] union_member

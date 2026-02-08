@@ -1,7 +1,6 @@
 package ast
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/rowland/tuppence/tup/source"
@@ -269,8 +268,7 @@ type RuneLiteral struct {
 }
 
 // NewRuneLiteral creates a new RuneLiteral node
-func NewRuneLiteral(value string, source *source.Source, startOffset int32, length int32) *RuneLiteral {
-	runeValue, _, _, _ := strconv.UnquoteChar(value, '\'')
+func NewRuneLiteral(value string, runeValue rune, source *source.Source, startOffset int32, length int32) *RuneLiteral {
 	return &RuneLiteral{
 		BaseNode:  BaseNode{Type: NodeRuneLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:     value,
