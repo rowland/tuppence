@@ -43,10 +43,10 @@ func TestHexadecimalLiteral(t *testing.T) {
 		{input: "0xF", want: ast.NewHexadecimalLiteral("0xF", 15, nil, 0, 3)}, // uppercase_f
 
 		// Invalid letters
-		{input: "0xg", want: ast.NewHexadecimalLiteral("0xg", 0, nil, 0, 3), wantErr: true}, // invalid_g
-		{input: "0xG", want: ast.NewHexadecimalLiteral("0xG", 0, nil, 0, 3), wantErr: true}, // invalid_G
-		{input: "0xz", want: ast.NewHexadecimalLiteral("0xz", 0, nil, 0, 3), wantErr: true}, // invalid_z
-		{input: "0xZ", want: ast.NewHexadecimalLiteral("0xZ", 0, nil, 0, 3), wantErr: true}, // invalid_Z
+		{input: "0xg", want: nil, wantErr: true}, // invalid_g
+		{input: "0xG", want: nil, wantErr: true}, // invalid_G
+		{input: "0xz", want: nil, wantErr: true}, // invalid_z
+		{input: "0xZ", want: nil, wantErr: true}, // invalid_Z
 
 		// Complex numbers
 		{input: "0x0000", want: ast.NewHexadecimalLiteral("0x0000", 0, nil, 0, 6)},                                          // leading_zeros
@@ -58,15 +58,15 @@ func TestHexadecimalLiteral(t *testing.T) {
 		{input: "0x0123_4567_89AB_CDEF", want: ast.NewHexadecimalLiteral("0x0123_4567_89AB_CDEF", 81985529216486895, nil, 0, 21), wantErr: false},                         // single_group_underscore
 		{input: "0x01_23_45_67_89AB_CDE_F", want: ast.NewHexadecimalLiteral("0x01_23_45_67_89AB_CDE_F", 81985529216486895, nil, 0, 24), wantErr: false},                   // multiple_group_underscore
 		{input: "0x0_1_2_3_4_5_6_7_8_9_A_B_C_D_E_F", want: ast.NewHexadecimalLiteral("0x0_1_2_3_4_5_6_7_8_9_A_B_C_D_E_F", 81985529216486895, nil, 0, 33), wantErr: false}, // max_underscores
-		{input: "0x_", want: ast.NewHexadecimalLiteral("0x_", 0, nil, 0, 3), wantErr: true},                                                                               // invalid_leading_underscore
-		{input: "0x_1", want: ast.NewHexadecimalLiteral("0x_1", 0, nil, 0, 4), wantErr: true},                                                                             // invalid_underscore_after_prefix
-		{input: "0x1_", want: ast.NewHexadecimalLiteral("0x1_", 1, nil, 0, 4), wantErr: false},                                                                            // valid_trailing_underscore
-		{input: "0x0__1", want: ast.NewHexadecimalLiteral("0x0__1", 1, nil, 0, 6), wantErr: false},                                                                        // valid_double_underscore
-		{input: "0x0_1_", want: ast.NewHexadecimalLiteral("0x0_1_", 1, nil, 0, 6), wantErr: false},                                                                        // valid_middle_underscore
+		{input: "0x_", want: nil, wantErr: true},                                                   // invalid_leading_underscore
+		{input: "0x_1", want: nil, wantErr: true},                                                  // invalid_underscore_after_prefix
+		{input: "0x1_", want: ast.NewHexadecimalLiteral("0x1_", 1, nil, 0, 4), wantErr: false},     // valid_trailing_underscore
+		{input: "0x0__1", want: ast.NewHexadecimalLiteral("0x0__1", 1, nil, 0, 6), wantErr: false}, // valid_double_underscore
+		{input: "0x0_1_", want: ast.NewHexadecimalLiteral("0x0_1_", 1, nil, 0, 6), wantErr: false}, // valid_middle_underscore
 
 		// Invalid prefix cases
-		{input: "0X0", want: ast.NewHexadecimalLiteral("0X0", 0, nil, 0, 3), wantErr: true}, // invalid_uppercase_prefix
-		{input: "0x", want: ast.NewHexadecimalLiteral("0x", 0, nil, 0, 2), wantErr: true},   // empty_after_prefix
+		{input: "0X0", want: nil, wantErr: true}, // invalid_uppercase_prefix
+		{input: "0x", want: nil, wantErr: true},  // empty_after_prefix
 
 		// Sequence cases
 		{input: "0x1,", want: ast.NewHexadecimalLiteral("0x1", 1, nil, 0, 3)},   // hex_then_comma
@@ -84,6 +84,9 @@ func TestHexadecimalLiteral(t *testing.T) {
 			if test.wantErr {
 				if err == nil {
 					t.Errorf("HexadecimalLiteral(%q) = %v, want error", test.input, got)
+				}
+				if test.want == nil && got != nil {
+					t.Errorf("HexadecimalLiteral(%q) = %v, want nil", test.input, got)
 				}
 				return
 			}

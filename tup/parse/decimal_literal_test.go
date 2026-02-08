@@ -36,13 +36,13 @@ func TestDecimalLiteral(t *testing.T) {
 		{input: "0_1_2_3_4_5_6_7_8_9_0", want: ast.NewDecimalLiteral("0_1_2_3_4_5_6_7_8_9_0", 1234567890, nil, 0, 21)},
 
 		// Invalid characters in numbers
-		{input: "123a", want: ast.NewDecimalLiteral("123a", 0, nil, 0, 4), wantErr: true},
-		{input: "123A", want: ast.NewDecimalLiteral("123A", 0, nil, 0, 4), wantErr: true},
-		{input: "12a34", want: ast.NewDecimalLiteral("12a34", 0, nil, 0, 5), wantErr: true},
+		{input: "123a", want: nil, wantErr: true},
+		{input: "123A", want: nil, wantErr: true},
+		{input: "12a34", want: nil, wantErr: true},
 
 		// Identifiers that look like numbers
-		{input: "_123", want: ast.NewDecimalLiteral("_123", 123, nil, 0, 4), wantErr: true},
-		{input: "__123", want: ast.NewDecimalLiteral("__123", 123, nil, 0, 5), wantErr: true},
+		{input: "_123", want: nil, wantErr: true},
+		{input: "__123", want: nil, wantErr: true},
 
 		// Valid number followed by underscore
 		{input: "123_", want: ast.NewDecimalLiteral("123_", 123, nil, 0, 4)},
@@ -64,6 +64,9 @@ func TestDecimalLiteral(t *testing.T) {
 			if test.wantErr {
 				if err == nil {
 					t.Errorf("DecimalLiteral(%q) = %v, want error", test.input, got)
+				}
+				if test.want == nil && got != nil {
+					t.Errorf("DecimalLiteral(%q) = %v, want nil", test.input, got)
 				}
 				return
 			}

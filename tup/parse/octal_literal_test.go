@@ -25,15 +25,15 @@ func TestOctalLiteral(t *testing.T) {
 		{input: "0o7", want: ast.NewOctalLiteral("0o7", 7, nil, 0, 3)}, // seven
 
 		// Invalid digits
-		{input: "0o8", want: ast.NewOctalLiteral("0o8", 0, nil, 0, 3), wantErr: true}, // invalid_8
-		{input: "0o9", want: ast.NewOctalLiteral("0o9", 0, nil, 0, 3), wantErr: true}, // invalid_9
-		{input: "0oa", want: ast.NewOctalLiteral("0oa", 0, nil, 0, 3), wantErr: true}, // invalid_a
-		{input: "0ob", want: ast.NewOctalLiteral("0ob", 0, nil, 0, 3), wantErr: true}, // invalid_b
-		{input: "0oc", want: ast.NewOctalLiteral("0oc", 0, nil, 0, 3), wantErr: true}, // invalid_c
-		{input: "0od", want: ast.NewOctalLiteral("0od", 0, nil, 0, 3), wantErr: true}, // invalid_d
-		{input: "0oe", want: ast.NewOctalLiteral("0oe", 0, nil, 0, 3), wantErr: true}, // invalid_e
-		{input: "0of", want: ast.NewOctalLiteral("0of", 0, nil, 0, 3), wantErr: true}, // invalid_f
-		{input: "0oz", want: ast.NewOctalLiteral("0oz", 0, nil, 0, 3), wantErr: true}, // invalid_z
+		{input: "0o8", want: nil, wantErr: true}, // invalid_8
+		{input: "0o9", want: nil, wantErr: true}, // invalid_9
+		{input: "0oa", want: nil, wantErr: true}, // invalid_a
+		{input: "0ob", want: nil, wantErr: true}, // invalid_b
+		{input: "0oc", want: nil, wantErr: true}, // invalid_c
+		{input: "0od", want: nil, wantErr: true}, // invalid_d
+		{input: "0oe", want: nil, wantErr: true}, // invalid_e
+		{input: "0of", want: nil, wantErr: true}, // invalid_f
+		{input: "0oz", want: nil, wantErr: true}, // invalid_z
 
 		// Complex numbers
 		{input: "0o01234567", want: ast.NewOctalLiteral("0o01234567", 342391, nil, 0, 10)},               // all_octal_digits
@@ -42,19 +42,19 @@ func TestOctalLiteral(t *testing.T) {
 		{input: "0o0_1_2_3_4_5_6_7", want: ast.NewOctalLiteral("0o0_1_2_3_4_5_6_7", 342391, nil, 0, 17)}, // max_underscores
 
 		// Invalid underscore positions
-		{input: "0o_", want: ast.NewOctalLiteral("0o_", 0, nil, 0, 3), wantErr: true},        // invalid_leading_underscore
-		{input: "0o_0", want: ast.NewOctalLiteral("0o_0", 0, nil, 0, 4), wantErr: true},      // invalid_underscore_after_prefix
+		{input: "0o_", want: nil, wantErr: true},                                             // invalid_leading_underscore
+		{input: "0o_0", want: nil, wantErr: true},                                            // invalid_underscore_after_prefix
 		{input: "0o1_", want: ast.NewOctalLiteral("0o1_", 1, nil, 0, 4), wantErr: false},     // valid_trailing_underscore
 		{input: "0o0__1", want: ast.NewOctalLiteral("0o0__1", 1, nil, 0, 6), wantErr: false}, // valid_double_underscore
 		{input: "0o0_1_", want: ast.NewOctalLiteral("0o0_1_", 1, nil, 0, 6), wantErr: false}, // valid_middle_underscore
 
 		// Invalid prefix cases
-		{input: "0O0", want: ast.NewOctalLiteral("0O0", 0, nil, 0, 3), wantErr: true}, // invalid_uppercase_prefix
-		{input: "0o", want: ast.NewOctalLiteral("0o", 0, nil, 0, 2), wantErr: true},   // empty_after_prefix
+		{input: "0O0", want: nil, wantErr: true}, // invalid_uppercase_prefix
+		{input: "0o", want: nil, wantErr: true},  // empty_after_prefix
 
 		// Invalid suffix cases
-		{input: "0o1e", want: ast.NewOctalLiteral("0o1e", 0, nil, 0, 4), wantErr: true},   // invalid_e_suffix
-		{input: "0o1e0", want: ast.NewOctalLiteral("0o1e0", 0, nil, 0, 5), wantErr: true}, // invalid_e_suffix_with_number
+		{input: "0o1e", want: nil, wantErr: true},  // invalid_e_suffix
+		{input: "0o1e0", want: nil, wantErr: true}, // invalid_e_suffix_with_number
 
 		// Sequence cases
 		{input: "0o1,", want: ast.NewOctalLiteral("0o1", 1, nil, 0, 3)},   // octal_then_comma
@@ -72,6 +72,9 @@ func TestOctalLiteral(t *testing.T) {
 			if test.wantErr {
 				if err == nil {
 					t.Errorf("OctalLiteral(%q) = %v, want error", test.input, got)
+				}
+				if test.want == nil && got != nil {
+					t.Errorf("OctalLiteral(%q) = %v, want nil", test.input, got)
 				}
 				return
 			}

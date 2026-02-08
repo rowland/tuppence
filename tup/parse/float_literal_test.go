@@ -30,14 +30,14 @@ func TestFloatLiteral(t *testing.T) {
 		{input: "3.14_159", want: ast.NewFloatLiteral("3.14_159", 3.14159, nil, 0, 8)},
 
 		// Invalid floats
-		{input: "1.2e", want: ast.NewFloatLiteral("1.2e", 0, nil, 0, 4), wantErr: true},       // missing exponent digits
-		{input: "1.2ez", want: ast.NewFloatLiteral("1.2ez", 0, nil, 0, 5), wantErr: true},     // non-digit exponent suffix
-		{input: "1.2e++3", want: ast.NewFloatLiteral("1.2e++3", 0, nil, 0, 7), wantErr: true}, // double sign
-		{input: "123e", want: ast.NewFloatLiteral("123e", 0, nil, 0, 4), wantErr: true},       // no exponent digits
-		{input: "12.34e-", want: ast.NewFloatLiteral("12.34e-", 0, nil, 0, 7), wantErr: true}, // minus with no digits
-		{input: "0. ", want: ast.NewFloatLiteral("0. ", 0, nil, 0, 2), wantErr: true},         // decimal not followed by a digit or another dot
-		{input: "1. ", want: ast.NewFloatLiteral("1. ", 0, nil, 0, 2), wantErr: true},         // decimal not followed by a digit or another dot
-		{input: "12. ", want: ast.NewFloatLiteral("12. ", 0, nil, 0, 3), wantErr: true},       // decimal not followed by a digit or another dot
+		{input: "1.2e", want: nil, wantErr: true},    // missing exponent digits
+		{input: "1.2ez", want: nil, wantErr: true},   // non-digit exponent suffix
+		{input: "1.2e++3", want: nil, wantErr: true}, // double sign
+		{input: "123e", want: nil, wantErr: true},    // no exponent digits
+		{input: "12.34e-", want: nil, wantErr: true}, // minus with no digits
+		{input: "0. ", want: nil, wantErr: true},     // decimal not followed by a digit or another dot
+		{input: "1. ", want: nil, wantErr: true},     // decimal not followed by a digit or another dot
+		{input: "12. ", want: nil, wantErr: true},    // decimal not followed by a digit or another dot
 	}
 
 	for _, test := range tests {
@@ -51,6 +51,9 @@ func TestFloatLiteral(t *testing.T) {
 			if test.wantErr {
 				if err == nil {
 					t.Errorf("FloatLiteral(%q) = %v, want error", test.input, got)
+				}
+				if test.want == nil && got != nil {
+					t.Errorf("FloatLiteral(%q) = %v, want nil", test.input, got)
 				}
 				return
 			}

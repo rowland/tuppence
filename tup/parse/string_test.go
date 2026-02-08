@@ -55,26 +55,26 @@ func TestStringLiteral(t *testing.T) {
 		{"mixed_all", `"Hello\n\t\u1234\xFF\0World"`, ast.NewStringLiteral(`"Hello\n\t\u1234\xFF\0World"`, "Hello\n\t\u1234\xFF\x00World", nil, 0, 28), false},
 
 		// Invalid cases - Unicode
-		{"invalid_unicode_empty", `"\u"`, ast.NewStringLiteral(`"\u"`, "", nil, 0, 4), true},
-		{"invalid_unicode_short", `"\u123"`, ast.NewStringLiteral(`"\u123"`, "", nil, 0, 4), true},
-		{"invalid_unicode_long", `"\U1234"`, ast.NewStringLiteral(`"\U1234"`, "", nil, 0, 6), true},
-		{"invalid_unicode_letters", `"\uXYZ"`, ast.NewStringLiteral(`"\uXYZ"`, "", nil, 0, 4), true},
-		{"invalid_unicode_partial", `"\u12G4"`, ast.NewStringLiteral(`"\u12G4"`, "", nil, 0, 6), true},
-		{"invalid_unicode_space", `"\u 123"`, ast.NewStringLiteral(`"\u 123"`, "", nil, 0, 6), true},
+		{"invalid_unicode_empty", `"\u"`, nil, true},
+		{"invalid_unicode_short", `"\u123"`, nil, true},
+		{"invalid_unicode_long", `"\U1234"`, nil, true},
+		{"invalid_unicode_letters", `"\uXYZ"`, nil, true},
+		{"invalid_unicode_partial", `"\u12G4"`, nil, true},
+		{"invalid_unicode_space", `"\u 123"`, nil, true},
 
 		// Invalid cases - Hex
-		{"invalid_hex_empty", `"\x"`, ast.NewStringLiteral(`"\x"`, "", nil, 0, 2), true},
-		{"invalid_hex_short", `"\xF"`, ast.NewStringLiteral(`"\xF"`, "", nil, 0, 3), true},
-		{"invalid_hex_letters", `"\xXY"`, ast.NewStringLiteral(`"\xXY"`, "", nil, 0, 4), true},
-		{"invalid_hex_space", `"\x F"`, ast.NewStringLiteral(`"\x F"`, "", nil, 0, 4), true},
+		{"invalid_hex_empty", `"\x"`, nil, true},
+		{"invalid_hex_short", `"\xF"`, nil, true},
+		{"invalid_hex_letters", `"\xXY"`, nil, true},
+		{"invalid_hex_space", `"\x F"`, nil, true},
 
 		// Invalid cases - General
-		{"unterminated", `"abc`, ast.NewStringLiteral(`"abc"`, "", nil, 0, 3), true},
-		{"unterminated_escape", `"abc\`, ast.NewStringLiteral(`"abc\"`, "", nil, 0, 4), true},
-		{"invalid_escape", `"\k"`, ast.NewStringLiteral("\\k", "\\k", nil, 0, 3), true},
-		{"invalid_escape_exclamation", `"\!"`, ast.NewStringLiteral(`"\!"`, "", nil, 0, 3), true},
-		{"bare_backslash", `"\"`, ast.NewStringLiteral("\"", "\"", nil, 0, 1), true},
-		{"newline_in_string", "\"abc\ndef\"", ast.NewStringLiteral("abc\ndef", "abc\ndef", nil, 0, 9), true},
+		{"unterminated", `"abc`, nil, true},
+		{"unterminated_escape", `"abc\`, nil, true},
+		{"invalid_escape", `"\k"`, nil, true},
+		{"invalid_escape_exclamation", `"\!"`, nil, true},
+		{"bare_backslash", `"\"`, nil, true},
+		{"newline_in_string", "\"abc\ndef\"", nil, true},
 	}
 
 	for _, test := range tests {
@@ -88,6 +88,9 @@ func TestStringLiteral(t *testing.T) {
 			if test.wantErr {
 				if err == nil {
 					t.Errorf("StringLiteral(%q) = %v, want error", test.input, got)
+				}
+				if test.want == nil && got != nil {
+					t.Errorf("StringLiteral(%q) = %v, want nil", test.input, got)
 				}
 				return
 			}

@@ -51,13 +51,13 @@ func TestRawStringLiteral(t *testing.T) {
 		{"all_whitespace_types", "`\n\t\r \f\v`", ast.NewRawStringLiteral("`\n\t\r \f\v`", "\n\t\r \f\v", nil, 0, 8), false},
 
 		// Invalid cases
-		{"unterminated_after_backtick", "`abc``", ast.NewRawStringLiteral("`abc``", "abc`", nil, 0, 5), true},
-		{"unterminated", "`abc", ast.NewRawStringLiteral("`abc", "abc", nil, 0, 3), true},
-		{"unterminated_with_newlines", "`first\nsecond\nthird", ast.NewRawStringLiteral("`first\nsecond\nthird", "first\nsecond\nthird", nil, 0, 17), true},
-		{"unterminated_after_escape", "`abc``def", ast.NewRawStringLiteral("`abc``def", "abc`def", nil, 0, 10), true},
-		{"unterminated_unicode", "`αβγ", ast.NewRawStringLiteral("`αβγ", "αβγ", nil, 0, 3), true},
-		{"unterminated_emoji", "`🙂🌟", ast.NewRawStringLiteral("`🙂🌟", "🙂🌟", nil, 0, 5), true},
-		{"empty_unterminated", "`", ast.NewRawStringLiteral("`", "", nil, 0, 1), true},
+		{"unterminated_after_backtick", "`abc``", nil, true},
+		{"unterminated", "`abc", nil, true},
+		{"unterminated_with_newlines", "`first\nsecond\nthird", nil, true},
+		{"unterminated_after_escape", "`abc``def", nil, true},
+		{"unterminated_unicode", "`αβγ", nil, true},
+		{"unterminated_emoji", "`🙂🌟", nil, true},
+		{"empty_unterminated", "`", nil, true},
 	}
 
 	for _, test := range tests {
@@ -71,6 +71,9 @@ func TestRawStringLiteral(t *testing.T) {
 			if test.wantErr {
 				if err == nil {
 					t.Errorf("RawStringLiteral(%q) = %v, want error", test.input, got)
+				}
+				if test.want == nil && got != nil {
+					t.Errorf("RawStringLiteral(%q) = %v, want nil", test.input, got)
 				}
 				return
 			}
