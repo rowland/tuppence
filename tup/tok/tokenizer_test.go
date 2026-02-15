@@ -968,80 +968,80 @@ func TestRestOp(t *testing.T) {
 	})
 }
 
-func TestSymbolLiterals(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    string
-		wantType TokenType
-		wantErr  bool
-		isSeq    bool
-		seqTypes []TokenType
-	}{
-		// Valid simple symbol literals
-		{"uppercase_A", ":A", TokSymLit, false, false, nil},
-		{"uppercase_Z", ":Z", TokSymLit, false, false, nil},
-		{"lowercase_a", ":a", TokSymLit, false, false, nil},
-		{"lowercase_z", ":z", TokSymLit, false, false, nil},
-		{"all_uppercase", ":ABCDEFGHIJKLMNOPQRSTUVWXYZ", TokSymLit, false, false, nil},
-		{"all_lowercase", ":abcdefghijklmnopqrstuvwxyz", TokSymLit, false, false, nil},
-		{"letters and digits", ":a100", TokSymLit, false, false, nil},
-		{"letters and digits and underscore", ":a100_", TokSymLit, false, false, nil},
+// func TestSymbolLiterals(t *testing.T) {
+// 	tests := []struct {
+// 		name     string
+// 		input    string
+// 		wantType TokenType
+// 		wantErr  bool
+// 		isSeq    bool
+// 		seqTypes []TokenType
+// 	}{
+// 		// Valid simple symbol literals
+// 		{"uppercase_A", ":A", TokSymLit, false, false, nil},
+// 		{"uppercase_Z", ":Z", TokSymLit, false, false, nil},
+// 		{"lowercase_a", ":a", TokSymLit, false, false, nil},
+// 		{"lowercase_z", ":z", TokSymLit, false, false, nil},
+// 		{"all_uppercase", ":ABCDEFGHIJKLMNOPQRSTUVWXYZ", TokSymLit, false, false, nil},
+// 		{"all_lowercase", ":abcdefghijklmnopqrstuvwxyz", TokSymLit, false, false, nil},
+// 		{"letters and digits", ":a100", TokSymLit, false, false, nil},
+// 		{"letters and digits and underscore", ":a100_", TokSymLit, false, false, nil},
 
-		// Valid quoted symbol literal
-		{"quoted_symbol", `:"anything but a newline"`, TokSymLit, false, false, nil},
+// 		// Valid quoted symbol literal
+// 		{"quoted_symbol", `:"anything but a newline"`, TokSymLit, false, false, nil},
 
-		// Invalid symbol literals
-		{"invalid_digit_0", ":0", TokSymLit, true, false, nil},
-		{"invalid_digit_1", ":1", TokSymLit, true, false, nil},
-		{"invalid_digit_9", ":9", TokSymLit, true, false, nil},
-		{"unterminated_quoted", `:"this symbol does not end`, TokSymLit, true, false, nil},
-		{"newline_in_quoted", ":\"no\nnewlines!", TokSymLit, true, false, nil},
+// 		// Invalid symbol literals
+// 		{"invalid_digit_0", ":0", TokSymLit, true, false, nil},
+// 		{"invalid_digit_1", ":1", TokSymLit, true, false, nil},
+// 		{"invalid_digit_9", ":9", TokSymLit, true, false, nil},
+// 		{"unterminated_quoted", `:"this symbol does not end`, TokSymLit, true, false, nil},
+// 		{"newline_in_quoted", ":\"no\nnewlines!", TokSymLit, true, false, nil},
 
-		// Symbol in sequence
-		{"symbol_in_assignment", "foo = :foo", TokSymLit, false, true, []TokenType{
-			TokID,       // foo
-			TokOpAssign, // =
-			TokSymLit,   // :foo
-			TokEOF,
-		}},
+// 		// Symbol in sequence
+// 		{"symbol_in_assignment", "foo = :foo", TokSymLit, false, true, []TokenType{
+// 			TokID,       // foo
+// 			TokOpAssign, // =
+// 			TokSymLit,   // :foo
+// 			TokEOF,
+// 		}},
 
-		{"symbol_in_comparison", `:foo == Symbol("foo")`, TokSymLit, false, true, []TokenType{
-			TokSymLit,     // :foo
-			TokOpEQ,       // ==
-			TokTypeID,     // Symbol
-			TokOpenParen,  // (
-			TokStrLit,     // "foo"
-			TokCloseParen, // )
-			TokEOF,
-		}},
+// 		{"symbol_in_comparison", `:foo == Symbol("foo")`, TokSymLit, false, true, []TokenType{
+// 			TokSymLit,     // :foo
+// 			TokOpEQ,       // ==
+// 			TokTypeID,     // Symbol
+// 			TokOpenParen,  // (
+// 			TokStrLit,     // "foo"
+// 			TokCloseParen, // )
+// 			TokEOF,
+// 		}},
 
-		// Invalid symbol in sequence
-		{"invalid_symbol_in_seq", `foo = :"foo`, TokSymLit, true, true, []TokenType{
-			TokID,       // foo
-			TokOpAssign, // =
-			TokSymLit,   // :"foo
-			TokEOF,
-		}},
-	}
+// 		// Invalid symbol in sequence
+// 		{"invalid_symbol_in_seq", `foo = :"foo`, TokSymLit, true, true, []TokenType{
+// 			TokID,       // foo
+// 			TokOpAssign, // =
+// 			TokSymLit,   // :"foo
+// 			TokEOF,
+// 		}},
+// 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if tt.isSeq {
-				if tt.wantErr {
-					testTokenizeSeqInvalid(t, tt.input, tt.seqTypes, true)
-				} else {
-					testTokenizeSeq(t, tt.input, tt.seqTypes)
-				}
-			} else {
-				if tt.wantErr {
-					testTokenizeInvalid(t, tt.input, tt.wantType)
-				} else {
-					testTokenize(t, tt.input, tt.wantType)
-				}
-			}
-		})
-	}
-}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			if tt.isSeq {
+// 				if tt.wantErr {
+// 					testTokenizeSeqInvalid(t, tt.input, tt.seqTypes, true)
+// 				} else {
+// 					testTokenizeSeq(t, tt.input, tt.seqTypes)
+// 				}
+// 			} else {
+// 				if tt.wantErr {
+// 					testTokenizeInvalid(t, tt.input, tt.wantType)
+// 				} else {
+// 					testTokenize(t, tt.input, tt.wantType)
+// 				}
+// 			}
+// 		})
+// 	}
+// }
 
 // TestErrorOffset specifically tests that the error offset is correctly set
 func TestErrorOffset(t *testing.T) {
@@ -1060,7 +1060,7 @@ func TestErrorOffset(t *testing.T) {
 		{"invalid_escape", "\"\\k\"", TokStrLit, 'k'},
 		{"invalid_hex_escape_short", "\"\\x1g\"", TokStrLit, 'g'},
 		{"invalid_unicode_escape_short", "\"\\u12zg\"", TokStrLit, 'z'},
-		{"symbol_starting_with_digit", ":123", TokSymLit, '1'},
+		// {"symbol_starting_with_digit", ":123", TokSymLit, '1'},
 		// These are treated as decimal literals followed by invalid characters
 		{"uppercase_hex_prefix", "0X1", TokDecLit, 'X'},
 		{"uppercase_bin_prefix", "0B1", TokDecLit, 'B'},

@@ -10,6 +10,7 @@ const (
 	TokCloseBracket                  // ]
 	TokCloseParen                    // )
 	TokColon                         // :
+	TokColonNoSpace                  // : (no space after)
 	TokComma                         // ,
 	TokDot                           // .
 	TokOpenBrace                     // {
@@ -114,7 +115,6 @@ const (
 	TokRawStrLit    // `\no\escapes`
 	TokStrLit       // "Hello, World"
 	TokMultiStrLit  // ```\nHello, World\n```
-	TokSymLit       // :ok
 
 	// Comments
 	TokComment // #
@@ -136,6 +136,7 @@ var TokenTypes = map[TokenType]string{
 	TokCloseBracket: "]",
 	TokCloseParen:   ")",
 	TokColon:        ":",
+	TokColonNoSpace: ":",
 	TokComma:        ",",
 	TokDot:          ".",
 	TokOpenBrace:    "{",
@@ -240,7 +241,6 @@ var TokenTypes = map[TokenType]string{
 	TokRawStrLit:    "raw_string_literal",
 	TokStrLit:       "string_literal",
 	TokMultiStrLit:  "multi_line_string_literal",
-	TokSymLit:       "symbol_literal",
 
 	// Comments
 	TokComment: "comment",

@@ -115,26 +115,26 @@ func TestRenameIdentifier(t *testing.T) {
 		wantErr    bool
 	}{
 		{
-			input:      "x: y", // see identifier followed by colon followed by identifier
+			input:      "x: y",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokColon, tok.TokID, tok.TokEOF},
 			want:       ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), ast.NewIdentifier("y", nil, 0, 1)),
 			wantErr:    false,
 		},
 		{
-			input:      "x:y", // see identifier followed by symbol
-			tokenTypes: []tok.TokenType{tok.TokID, tok.TokSymLit, tok.TokEOF},
-			want:       ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), nil),
+			input:      "x:y",
+			tokenTypes: []tok.TokenType{tok.TokID, tok.TokColonNoSpace, tok.TokID, tok.TokEOF},
+			want:       ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), ast.NewIdentifier("y", nil, 0, 1)),
 			wantErr:    false,
 		},
 		{
-			input:      "x:Y", // see identifier followed by symbol
-			tokenTypes: []tok.TokenType{tok.TokID, tok.TokSymLit, tok.TokEOF},
-			want:       ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), nil),
-			wantErr:    false,
-		},
-		{
-			input:      "x: Y", // see identifier followed by colon followed by type identifier
+			input:      "x: Y",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokColon, tok.TokTypeID, tok.TokEOF},
+			want:       nil,
+			wantErr:    true,
+		},
+		{
+			input:      "x:Y",
+			tokenTypes: []tok.TokenType{tok.TokID, tok.TokColonNoSpace, tok.TokTypeID, tok.TokEOF},
 			want:       nil,
 			wantErr:    true,
 		},
@@ -152,36 +152,37 @@ func TestRenameIdentifier(t *testing.T) {
 			}
 
 			got, _, err := RenameIdentifier(tokens)
+			// fmt.Printf("got: %#v\n", got)
 
 			if test.wantErr {
 				if err == nil {
-					t.Errorf("RenameIdentifier(%q): want error", test.input)
+					t.Errorf("RenameIdentifier(%q): want error (E1)", test.input)
 				}
 				return
 			}
 
 			if !test.wantErr && err != nil {
-				t.Fatalf("RenameIdentifier(%q): got error %v, want nil", test.input, err)
+				t.Fatalf("RenameIdentifier(%q): got error %v, want nil (E2)", test.input, err)
 			}
 			if got == nil {
-				t.Fatalf("RenameIdentifier(%q): got nil, want %v", test.input, test.want)
+				t.Fatalf("RenameIdentifier(%q): got nil, want %v (E3)", test.input, test.want)
 			}
 			if got.Identifier == nil {
-				t.Fatalf("RenameIdentifier(%q).Identifier: got nil, want %v", test.input, test.want.Identifier)
+				t.Fatalf("RenameIdentifier(%q).Identifier: got nil, want %v (E4)", test.input, test.want.Identifier)
 			}
 			if got.Identifier.Name != test.want.Identifier.Name {
-				t.Errorf("RenameIdentifier(%q).Identifier.Name: got %v, want %v", test.input, got.Identifier.Name, test.want.Identifier.Name)
+				t.Errorf("RenameIdentifier(%q).Identifier.Name: got %v, want %v (E5)", test.input, got.Identifier.Name, test.want.Identifier.Name)
 			}
-			if test.want.Original != nil {
-				if got.Original == nil {
-					t.Fatalf("RenameIdentifier(%q).Original: got nil, want %v", test.input, test.want.Original)
-				}
-				if got.Original.Name != test.want.Original.Name {
-					t.Errorf("RenameIdentifier(%q).Original.Name: got %v, want %v", test.input, got.Original.Name, test.want.Original.Name)
+			if test.want.Original == nil {
+				if got.Original != nil {
+					t.Fatalf("RenameIdentifier(%q).Original: got %v, want nil (E6)", test.input, got.Original)
 				}
 			} else {
-				if got.Original != nil {
-					t.Fatalf("RenameIdentifier(%q).Original: got %v, want nil", test.input, got.Original)
+				if got.Original == nil {
+					t.Fatalf("RenameIdentifier(%q).Original: got nil, want %v (E7)", test.input, test.want.Original)
+				}
+				if got.Original.Name != test.want.Original.Name {
+					t.Errorf("RenameIdentifier(%q).Original.Name: got %v, want %v (E8)", test.input, got.Original.Name, test.want.Original.Name)
 				}
 			}
 		})
@@ -203,8 +204,8 @@ func TestRenameType(t *testing.T) {
 		},
 		{
 			input:      "Foo:Bar",
-			tokenTypes: []tok.TokenType{tok.TokTypeID, tok.TokSymLit, tok.TokEOF},
-			want:       ast.NewRenameType(ast.NewTypeIdentifier("Foo", nil, 0, 3), nil),
+			tokenTypes: []tok.TokenType{tok.TokTypeID, tok.TokColonNoSpace, tok.TokTypeID, tok.TokEOF},
+			want:       ast.NewRenameType(ast.NewTypeIdentifier("Foo", nil, 0, 3), ast.NewTypeIdentifier("Bar", nil, 0, 3)),
 			wantErr:    false,
 		},
 		{

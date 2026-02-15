@@ -29,21 +29,22 @@ func TypeIdentifier(tokens []tok.Token) (item *ast.TypeIdentifier, remainder []t
 
 func RenameIdentifier(tokens []tok.Token) (item *ast.RenameIdentifier, remainder []tok.Token, err error) {
 	identifier, remainder, err := Identifier(tokens)
-	if identifier == nil || err != nil {
+	if err != nil {
 		return nil, nil, err
 	}
 
 	remainder2, err2 := Colon(remainder)
-	if err2 == nil {
-		// colon found, so original identifier expected
-		original, remainder3, err3 := Identifier(remainder2)
-		if err3 == nil {
-			return ast.NewRenameIdentifier(identifier, original), remainder3, nil
-		}
+	if err2 != nil {
+		// no colon found, so no renaming
+		return ast.NewRenameIdentifier(identifier, nil), remainder, nil
+	}
+
+	// colon found, so original identifier expected
+	original, remainder3, err3 := Identifier(remainder2)
+	if err3 != nil {
 		return nil, nil, err3
 	}
-	// no colon found, so no renaming
-	return ast.NewRenameIdentifier(identifier, nil), remainder, nil
+	return ast.NewRenameIdentifier(identifier, original), remainder3, nil
 }
 
 // rename_type = type_identifier [ ":" type_identifier ] .

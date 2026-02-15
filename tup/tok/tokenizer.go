@@ -31,9 +31,6 @@ const (
 	stateEscSeq
 	stateHexEsc
 	stateComment
-	stateColon
-	stateSym
-	stateQuotedSym
 	stateMultiStrBody
 )
 
@@ -151,8 +148,13 @@ outer:
 				tokenType = TokCloseParen
 				done = true
 			case ':':
-				tokenType = TokColon
-				st = stateColon
+				switch t.peek(2) {
+				case ": ", ":\t", ":\r", ":\n":
+					tokenType = TokColon
+				default:
+					tokenType = TokColonNoSpace
+				}
+				done = true
 			case ',':
 				tokenType = TokComma
 				done = true
@@ -382,41 +384,6 @@ outer:
 					markInvalid()
 					done = true
 				}
-			}
-		case stateColon:
-			switch {
-			case isIdentifierStart(c):
-				tokenType = TokSymLit
-				st = stateSym
-			case isDecDigit(c):
-				tokenType = TokSymLit
-				st = stateSym
-				markInvalid()
-			case c == '"':
-				tokenType = TokSymLit
-				st = stateQuotedSym
-			default:
-				break outer
-			}
-		case stateSym:
-			switch {
-			case isIdentifierChar(c):
-				// continue symbol
-			default:
-				break outer
-			}
-		case stateQuotedSym:
-			switch c {
-			case 0:
-				markInvalid()
-				break outer
-			case '"':
-				done = true
-			case '\n':
-				markInvalid()
-				break outer
-			default:
-				// Just continue consuming characters in the string
 			}
 		case stateID:
 			switch {

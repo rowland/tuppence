@@ -39,9 +39,13 @@ func TestColon(t *testing.T) {
 		input   string
 		wantErr bool
 	}{
-		{input: ":", wantErr: false}, // sees colon
-		{input: ":x", wantErr: true}, // sees symbol
-		{input: "x:", wantErr: true}, // sees identifier followed by colon
+		{input: ":", wantErr: false},   // sees colon
+		{input: ": ", wantErr: false},  // sees colon
+		{input: ":\t", wantErr: false}, // sees colon
+		{input: ":\r", wantErr: false}, // sees colon
+		{input: ":\n", wantErr: false}, // sees colon
+		{input: ":x", wantErr: false},  // sees colon followed by identifier
+		{input: "x:", wantErr: true},   // sees identifier followed by colon
 	}
 	for _, test := range tests {
 		t.Run(test.input, func(t *testing.T) {

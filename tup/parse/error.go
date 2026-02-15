@@ -16,6 +16,9 @@ type Error struct {
 }
 
 func (err *Error) Error() string {
+	if len(err.SubErrors) > 0 {
+		return fmt.Sprintf(`expecting %#v, got %#v at row %d, col %d: %v`, err.Expecting, err.Got, err.Line+1, err.Column+1, err.SubErrors)
+	}
 	return fmt.Sprintf(`expecting %#v, got %#v at row %d, col %d`, err.Expecting, err.Got, err.Line+1, err.Column+1)
 }
 
