@@ -2,6 +2,7 @@ package parse
 
 import (
 	"github.com/rowland/tuppence/tup/ast"
+	"github.com/rowland/tuppence/tup/source"
 	"github.com/rowland/tuppence/tup/tok"
 )
 
@@ -88,5 +89,16 @@ func TypeReference(tokens []tok.Token) (item *ast.TypeReference, remainder []tok
 	if err != nil {
 		return nil, nil, err
 	}
-	return ast.NewTypeReference(identifiers, typeIdentifier, remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
+	var src *source.Source
+	var startOffset, length int32
+	if len(identifiers) > 0 {
+		src = identifiers[0].Source
+		startOffset = identifiers[0].StartOffset
+		length = typeIdentifier.StartOffset + typeIdentifier.Length - identifiers[0].StartOffset
+	} else {
+		src = typeIdentifier.Source
+		startOffset = typeIdentifier.StartOffset
+		length = typeIdentifier.Length
+	}
+	return ast.NewTypeReference(identifiers, typeIdentifier, src, startOffset, length), remainder, nil
 }

@@ -36,11 +36,23 @@
     - [ ] symbol_literal
     - [x] rune_literal
     - [ ] fixed_size_array_literal
-
+- [x] namespace
+- [x] namespaced_annotation
+- [ ] function_identifier
+- [ ] size
 - [ ] add_sub_op
-- [ ] annotation
+- [ ] mul_div_op
+- [ ] rel_op
+- [ ] compound_assignment_op
+
+- [ ] logical_or_op "||"
+- [ ] logical_and_op "&&"
+- [ ] unary_op ( "-" | "!" | "~" )
+- [ ] is_op
+
+- [x] annotation
 - [ ] annotations
-- [ ] annotation_value
+- [x] annotation_value
 - [ ] argument
 - [ ] arguments
 - [ ] array_function_call
@@ -59,7 +71,6 @@
 - [ ] character
 - [ ] comment
 - [ ] compound_assignment
-- [ ] compound_assignment_op
 - [ ] condition
 - [ ] constant
 - [ ] content_line
@@ -100,7 +111,6 @@
 - [ ] function_declaration
 - [ ] function_declaration_type
 - [ ] function_declaration_lhs
-- [ ] function_identifier
 - [ ] function_parameter_types
 - [ ] function_type
 - [ ] function_type_declaration
@@ -119,7 +129,6 @@
 - [ ] inline_for_expression
 - [ ] inline_union
 - [ ] interpolation
-- [ ] is_op
 - [ ] iterable
 - [ ] iterable_header
 - [ ] labeled_argument
@@ -144,10 +153,7 @@
 - [ ] member_access
 - [ ] meta_expression
 - [ ] module
-- [ ] mul_div_op
 - [ ] named_tuple
-- [ ] namespace
-- [ ] namespaced_annotation
 - [ ] nilable_type
 - [ ] nonzero_digit
 - [ ] not_eol
@@ -168,7 +174,6 @@
 - [ ] range
 - [ ] range_bound
 - [ ] relational_comparison
-- [ ] rel_op
 - [ ] rename_identifier
 - [ ] rename_type
 - [ ] rest_operator
@@ -177,7 +182,6 @@
 - [ ] return_type
 - [ ] safe_indexed_access
 - [ ] simple_annotation
-- [ ] size
 - [ ] spread_argument
 - [ ] statement
 - [ ] step_expression

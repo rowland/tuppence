@@ -56,23 +56,17 @@ func (a *NamespacedAnnotation) String() string {
 
 // annotation_value = string_literal | ["-"] number | boolean_literal | type_reference .
 
-type AnnotationValue struct {
-	BaseNode
-	Value Node // The value (could be a literal, identifier, or expression)
+type AnnotationValue interface {
+	Node
+	annotationValueNode()
 }
 
 // NewAnnotationValue creates a new AnnotationValue node
-func NewAnnotationValue(value Node) *AnnotationValue {
-	return &AnnotationValue{
-		BaseNode: BaseNode{Type: NodeAnnotationValue},
-		Value:    value,
-	}
-}
-
-// String returns a textual representation of the annotation value
-func (a *AnnotationValue) String() string {
-	return a.Value.String()
-}
+func (n *StringLiteral) annotationValueNode()  {}
+func (n *IntegerLiteral) annotationValueNode() {}
+func (n *FloatLiteral) annotationValueNode()   {}
+func (n *BooleanLiteral) annotationValueNode() {}
+func (n *TypeReference) annotationValueNode()  {}
 
 // Annotations represents a list of annotations
 type Annotations struct {
