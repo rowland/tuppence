@@ -2,21 +2,24 @@ package ast
 
 import (
 	"strings"
+
+	"github.com/rowland/tuppence/tup/source"
 )
 
-// TypeReference represents a reference to a defined type
+// type_reference = [ identifier { "." identifier } "." ] type_identifier .
+
 type TypeReference struct {
 	BaseNode
+	Identifiers    []*Identifier   // The identifiers in the type reference
 	TypeIdentifier *TypeIdentifier // The type identifier
-	IsLocal        bool            // Whether it's a local type reference
 }
 
 // NewTypeReference creates a new TypeReference node
-func NewTypeReference(typeIdentifier *TypeIdentifier, isLocal bool) *TypeReference {
+func NewTypeReference(identifiers []*Identifier, typeIdentifier *TypeIdentifier, source *source.Source, startOffset int32, length int32) *TypeReference {
 	return &TypeReference{
-		BaseNode:       BaseNode{Type: NodeTypeReference},
+		BaseNode:       BaseNode{Type: NodeTypeReference, Source: source, StartOffset: startOffset, Length: length},
 		TypeIdentifier: typeIdentifier,
-		IsLocal:        isLocal,
+		Identifiers:    identifiers,
 	}
 }
 

@@ -32,15 +32,18 @@ func RenameIdentifier(tokens []tok.Token) (item *ast.RenameIdentifier, remainder
 	if identifier == nil || err != nil {
 		return nil, nil, err
 	}
-	var original *ast.Identifier
-	if peek(remainder).Type == tok.TokColon {
-		remainder = remainder[1:]
-		original, remainder, err = Identifier(remainder)
-		if original == nil || err != nil {
-			return nil, nil, err
+
+	remainder2, err2 := Colon(remainder)
+	if err2 == nil {
+		// colon found, so original identifier expected
+		original, remainder3, err3 := Identifier(remainder2)
+		if err3 == nil {
+			return ast.NewRenameIdentifier(identifier, original), remainder3, nil
 		}
+		return nil, nil, err3
 	}
-	return ast.NewRenameIdentifier(identifier, original), remainder, nil
+	// no colon found, so no renaming
+	return ast.NewRenameIdentifier(identifier, nil), remainder, nil
 }
 
 // rename_type = type_identifier [ ":" type_identifier ] .
@@ -51,12 +54,38 @@ func RenameType(tokens []tok.Token) (item *ast.RenameType, remainder []tok.Token
 		return nil, nil, err
 	}
 	var original *ast.TypeIdentifier
-	if peek(remainder).Type == tok.TokColon {
-		remainder = remainder[1:]
+	remainder, err = Colon(remainder)
+	if err == nil {
 		original, remainder, err = TypeIdentifier(remainder)
-		if original == nil || err != nil {
+		if err != nil {
 			return nil, nil, err
 		}
 	}
 	return ast.NewRenameType(typeIdentifier, original), remainder, nil
+}
+
+// type_reference = [ identifier { "." identifier } "." ] type_identifier .
+
+func TypeReference(tokens []tok.Token) (item *ast.TypeReference, remainder []tok.Token, err error) {
+	remainder = skipComments(tokens)
+	var identifiers []*ast.Identifier
+	for {
+		var identifier *ast.Identifier
+		var remainder2 []tok.Token
+		identifier, remainder2, err = Identifier(remainder)
+		if err != nil {
+			break
+		}
+		remainder = remainder2
+		identifiers = append(identifiers, identifier)
+		remainder, err = Dot(remainder)
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+	typeIdentifier, remainder, err := TypeIdentifier(remainder)
+	if err != nil {
+		return nil, nil, err
+	}
+	return ast.NewTypeReference(identifiers, typeIdentifier, remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
 }

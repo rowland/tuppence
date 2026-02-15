@@ -95,3 +95,11 @@ func (t *Token) ErrorColumn() int {
 	}
 	return t.File.Column(int(t.ErrorOffset))
 }
+
+func Types(tokens []Token) []TokenType {
+	types := make([]TokenType, len(tokens))
+	for i, token := range tokens {
+		types[i] = token.Type
+	}
+	return types
+}
