@@ -286,7 +286,7 @@ named_tuple = type_identifier tuple_type .
 
 namespace = letter { letter | decimal_digit | "_" } .
 
-namespaced_annotation = "@" namespace ":" identifier annotation_value .
+namespaced_annotation = "@" namespace ":" identifier annotation_value eol .
 
 nilable_type = "?" local_type_reference .
 
@@ -387,7 +387,7 @@ rune_literal = "'" ( byte_escape_sequence | unicode_escape_sequence | escape_seq
 
 safe_indexed_access = expression "[" index "]" "!" .
 
-simple_annotation = "@" identifier .
+simple_annotation = "@" identifier eol .
 
 size = decimal_literal | identifier .
 

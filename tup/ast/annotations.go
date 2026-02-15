@@ -12,7 +12,7 @@ type Annotation interface {
 func (n *SimpleAnnotation) annotationNode()     {}
 func (n *NamespacedAnnotation) annotationNode() {}
 
-// simple_annotation = "@" identifier .
+// simple_annotation = "@" identifier eol .
 
 type SimpleAnnotation struct {
 	BaseNode
@@ -31,7 +31,7 @@ func (a *SimpleAnnotation) String() string {
 	return "@" + a.Identifier
 }
 
-// namespaced_annotation = "@" namespace ":" identifier annotation_value .
+// namespaced_annotation = "@" namespace ":" identifier annotation_value eol .
 
 type NamespacedAnnotation struct {
 	BaseNode
