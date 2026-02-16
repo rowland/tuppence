@@ -76,6 +76,7 @@ const (
 
 	// Identifiers
 	TokID     // id
+	TokFuncID // foo? or foo!
 	TokTypeID // ID
 
 	// Keywords
@@ -202,6 +203,7 @@ var TokenTypes = map[TokenType]string{
 
 	// Identifiers
 	TokID:     "identifier",
+	TokFuncID: "function_identifier",
 	TokTypeID: "type_identifier",
 
 	// Keywords

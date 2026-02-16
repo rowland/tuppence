@@ -362,3 +362,71 @@ func TestTypeReference(t *testing.T) {
 		})
 	}
 }
+
+func TestFunctionIdentifier(t *testing.T) {
+	tests := []struct {
+		input      string
+		tokenTypes []tok.TokenType
+		want       *ast.FunctionIdentifier
+		wantErr    bool
+	}{
+		{
+			input:      "foo",
+			tokenTypes: []tok.TokenType{tok.TokID, tok.TokEOF},
+			want:       ast.NewFunctionIdentifier("foo", nil, 0, 3),
+			wantErr:    false,
+		},
+		{
+			input:      "foo?",
+			tokenTypes: []tok.TokenType{tok.TokFuncID, tok.TokEOF},
+			want:       ast.NewFunctionIdentifier("foo?", nil, 0, 4),
+			wantErr:    false,
+		},
+		{
+			input:      "foo!",
+			tokenTypes: []tok.TokenType{tok.TokFuncID, tok.TokEOF},
+			want:       ast.NewFunctionIdentifier("foo!", nil, 0, 4),
+			wantErr:    false,
+		},
+		{
+			input:      "Foo",
+			tokenTypes: []tok.TokenType{tok.TokTypeID, tok.TokEOF},
+			want:       nil,
+			wantErr:    true,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.input, func(t *testing.T) {
+			source := source.NewSource([]byte(test.input), "test.tup")
+			tokens, err := tok.Tokenize(source.Contents, source.Filename)
+			if err != nil {
+				t.Errorf("Tokenize(%q) = %v", test.input, err)
+			}
+
+			if !slices.Equal(tok.Types(tokens), test.tokenTypes) {
+				t.Fatalf("tokenTypes: %v, want %v", tok.Types(tokens), test.tokenTypes)
+			}
+
+			got, _, err := FunctionIdentifier(tokens)
+
+			if test.wantErr {
+				if err == nil {
+					t.Errorf("FunctionIdentifier(%q): want error", test.input)
+				}
+				return
+			}
+
+			if !test.wantErr && err != nil {
+				t.Fatalf("FunctionIdentifier(%q): got error %v, want nil", test.input, err)
+			}
+
+			if got == nil {
+				t.Fatalf("FunctionIdentifier(%q): got nil, want %v", test.input, test.want)
+			}
+
+			if got.Name != test.want.Name {
+				t.Errorf("FunctionIdentifier(%q).Name: got %v, want %v", test.input, got.Name, test.want.Name)
+			}
+		})
+	}
+}

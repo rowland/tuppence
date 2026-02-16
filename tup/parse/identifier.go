@@ -102,3 +102,13 @@ func TypeReference(tokens []tok.Token) (item *ast.TypeReference, remainder []tok
 	}
 	return ast.NewTypeReference(identifiers, typeIdentifier, src, startOffset, length), remainder, nil
 }
+
+// function_identifier = lowercase_letter { letter | decimal_digit | "_" } [ "?" | "!" ] .
+
+func FunctionIdentifier(tokens []tok.Token) (item *ast.FunctionIdentifier, remainder []tok.Token, err error) {
+	remainder = skipComments(tokens)
+	if peek(remainder).Type != tok.TokFuncID && peek(remainder).Type != tok.TokID {
+		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokFuncID], remainder)
+	}
+	return ast.NewFunctionIdentifier(remainder[0].Value(), remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
+}

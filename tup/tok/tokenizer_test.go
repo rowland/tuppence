@@ -275,8 +275,10 @@ func TestAssignment(t *testing.T) {
 }
 
 func TestIdentifiers(t *testing.T) {
-	testTokenizeSeq(t, "abc Def", []TokenType{
+	testTokenizeSeq(t, "abc foo? foo! Def", []TokenType{
 		TokID,
+		TokFuncID,
+		TokFuncID,
 		TokTypeID,
 	})
 }

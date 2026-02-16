@@ -389,6 +389,9 @@ outer:
 			switch {
 			case isIdentifierStart(c) || isDecDigit(c):
 				// Continue identifier.
+			case c == '?' || c == '!':
+				tokenType = TokFuncID
+				done = true
 			default:
 				lexeme := string(t.source[start:t.index])
 				if reserved, ok := GetReserved(lexeme); ok {

@@ -38,7 +38,7 @@
     - [ ] fixed_size_array_literal
 - [x] namespace
 - [x] namespaced_annotation
-- [ ] function_identifier
+- [x] function_identifier
 - [ ] size
 - [ ] add_sub_op
 - [ ] mul_div_op
