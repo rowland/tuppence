@@ -45,6 +45,13 @@ func TestAnnotation(t *testing.T) {
 			want:       ast.NewNamespacedAnnotation("x", "y", ast.NewDecimalLiteral("1", 1, nil, 0, 1)),
 			wantErr:    false,
 		},
+		// {
+		// 	name:       "namespaced with negative integer value",
+		// 	input:      "@x:y -1\n",
+		// 	tokenTypes: []tok.TokenType{tok.TokAt, tok.TokID, tok.TokColonNoSpace, tok.TokID, tok.TokDecLit, tok.TokEOL, tok.TokEOF},
+		// 	want:       ast.NewNamespacedAnnotation("x", "y", ast.NewDecimalLiteral("1", 1, nil, 0, 1)),
+		// 	wantErr:    false,
+		// },
 		{
 			name:       "namespaced with float value",
 			input:      "@x:y 1.0\n",
