@@ -33,3 +33,11 @@ var Dot = expectFunc(tok.TokDot)
 // eol = "\r\n" | "\r" | "\n" .
 
 var EOL = expectFunc(tok.TokEOL)
+
+// open_bracket = "[" .
+
+var OpenBracket = expectFunc(tok.TokOpenBracket)
+
+// close_bracket = "]" .
+
+var CloseBracket = expectFunc(tok.TokCloseBracket)

@@ -389,7 +389,7 @@ safe_indexed_access = expression "[" index "]" "!" .
 
 simple_annotation = "@" identifier eol .
 
-size = decimal_literal | identifier .
+size = integer_literal | identifier .
 
 spread_argument = "..." expression .
 

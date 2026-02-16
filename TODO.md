@@ -39,7 +39,7 @@
 - [x] namespace
 - [x] namespaced_annotation
 - [x] function_identifier
-- [ ] size
+- [x] size
 - [ ] add_sub_op
 - [ ] mul_div_op
 - [ ] rel_op

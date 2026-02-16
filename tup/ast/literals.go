@@ -350,12 +350,12 @@ func (t *TupleLiteral) LiteralValue() any {
 // ArrayLiteral represents an array literal in the code
 type ArrayLiteral struct {
 	BaseNode
-	Elements      []Node          // The array elements
+	Elements      []Expression    // The array elements
 	TypeSpecifier *TypeIdentifier // Optional type specifier (may be nil)
 }
 
 // NewArrayLiteral creates a new ArrayLiteral node
-func NewArrayLiteral(elements []Node, typeSpecifier *TypeIdentifier) *ArrayLiteral {
+func NewArrayLiteral(elements []Expression, typeSpecifier *TypeIdentifier) *ArrayLiteral {
 	return &ArrayLiteral{
 		BaseNode:      BaseNode{Type: NodeArrayLiteral},
 		Elements:      elements,
