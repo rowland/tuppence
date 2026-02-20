@@ -14,12 +14,33 @@ func Expression(tokens []tok.Token) (item ast.Expression, remainder []tok.Token,
 }
 
 // try_expression = "try" expression
-//                | "try_continue" [ expression ]
-//                | "try_break" [ expression ] .
+//                | "try_continue" expression
+//                | "try_break" expression .
 
-// func tryExpression(tokens []tok.Token) (item ast.TryExpression, remainder []tok.Token, err error) {
-// 	return nil, nil, nil
-// }
+func TryExpression(tokens []tok.Token) (item *ast.TryExpression, remainder []tok.Token, err error) {
+	remainder = skipComments(tokens)
+
+	var variant ast.TryVariant
+	tokenType := peek(remainder).Type
+
+	switch tokenType {
+	case tok.TokKwTry:
+		variant = ast.TryStandard
+	case tok.TokKwTryContinue:
+		variant = ast.TryContinue
+	case tok.TokKwTryBreak:
+		variant = ast.TryBreak
+	default:
+		return nil, tokens, ErrNoMatch
+	}
+
+	expression, remainder, err := Expression(remainder)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewTryExpression(variant, expression), remainder, nil
+}
 
 // binary_expression = chained_expression .
 // chained_expression = prec1_expression { "|>" function_call } .

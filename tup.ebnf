@@ -419,8 +419,8 @@ top_level_item = ( type_qualified_function_declaration
                  ) .
 
 try_expression = "try" expression
-               | "try_continue" [ expression ]
-               | "try_break" [ expression ] .
+               | "try_continue" expression
+               | "try_break" expression .
 
 tuple_literal = "(" [ labeled_tuple_members | tuple_members ] ")" .
 
