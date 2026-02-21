@@ -11,7 +11,7 @@ import (
 func Identifier(tokens []tok.Token) (item *ast.Identifier, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 	if peek(remainder).Type != tok.TokID {
-		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokID], remainder)
+		return nil, tokens, ErrNoMatch
 	}
 	return ast.NewIdentifier(remainder[0].Value(), remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
 }
@@ -20,9 +20,13 @@ func Identifier(tokens []tok.Token) (item *ast.Identifier, remainder []tok.Token
 
 func TypeIdentifier(tokens []tok.Token) (item *ast.TypeIdentifier, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
+
 	if peek(remainder).Type != tok.TokTypeID {
-		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokTypeID], remainder)
+		return nil, tokens, ErrNoMatch
+	} else if peek(remainder).Invalid {
+		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokTypeID], remainder)
 	}
+
 	return ast.NewTypeIdentifier(remainder[0].Value(), remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
 }
 
@@ -30,21 +34,26 @@ func TypeIdentifier(tokens []tok.Token) (item *ast.TypeIdentifier, remainder []t
 
 func RenameIdentifier(tokens []tok.Token) (item *ast.RenameIdentifier, remainder []tok.Token, err error) {
 	identifier, remainder, err := Identifier(tokens)
-	if err != nil {
-		return nil, nil, err
+	if err == ErrNoMatch {
+		return nil, tokens, ErrNoMatch
+	} else if err != nil {
+		return nil, remainder, err
 	}
 
 	remainder2, err2 := Colon(remainder)
-	if err2 != nil {
+	if err2 == ErrNoMatch {
 		// no colon found, so no renaming
-		return ast.NewRenameIdentifier(identifier, nil), remainder, nil
+		return ast.NewRenameIdentifier(identifier, nil), remainder2, nil
+	} else if err2 != nil {
+		return nil, remainder2, err2
 	}
 
 	// colon found, so original identifier expected
 	original, remainder3, err3 := Identifier(remainder2)
 	if err3 != nil {
-		return nil, nil, err3
+		return nil, remainder3, err3
 	}
+
 	return ast.NewRenameIdentifier(identifier, original), remainder3, nil
 }
 
@@ -52,43 +61,61 @@ func RenameIdentifier(tokens []tok.Token) (item *ast.RenameIdentifier, remainder
 
 func RenameType(tokens []tok.Token) (item *ast.RenameType, remainder []tok.Token, err error) {
 	typeIdentifier, remainder, err := TypeIdentifier(tokens)
-	if typeIdentifier == nil || err != nil {
-		return nil, nil, err
+	if err == ErrNoMatch {
+		return nil, tokens, ErrNoMatch
+	} else if err != nil {
+		return nil, remainder, err
 	}
-	var original *ast.TypeIdentifier
-	remainder, err = Colon(remainder)
-	if err == nil {
-		original, remainder, err = TypeIdentifier(remainder)
-		if err != nil {
-			return nil, nil, err
-		}
+
+	remainder2, err2 := Colon(remainder)
+	if err2 == ErrNoMatch {
+		// no colon found, so no renaming
+		return ast.NewRenameType(typeIdentifier, nil), remainder, nil
+	} else if err2 != nil {
+		return nil, remainder2, err2
 	}
-	return ast.NewRenameType(typeIdentifier, original), remainder, nil
+
+	// colon found, so original type identifier expected
+	original, remainder3, err3 := TypeIdentifier(remainder2)
+	if err3 != nil {
+		return nil, remainder3, err3
+	}
+
+	return ast.NewRenameType(typeIdentifier, original), remainder3, nil
 }
 
 // type_reference = [ identifier { "." identifier } "." ] type_identifier .
 
 func TypeReference(tokens []tok.Token) (item *ast.TypeReference, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
+
 	var identifiers []*ast.Identifier
 	for {
 		var identifier *ast.Identifier
 		var remainder2 []tok.Token
 		identifier, remainder2, err = Identifier(remainder)
-		if err != nil {
+
+		if err == ErrNoMatch {
 			break
+		} else if err != nil {
+			return nil, remainder2, err
 		}
+
 		remainder = remainder2
 		identifiers = append(identifiers, identifier)
 		remainder, err = Dot(remainder)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, errorExpecting(tok.TokenTypes[tok.TokDot], remainder)
 		}
 	}
+
 	typeIdentifier, remainder, err := TypeIdentifier(remainder)
-	if err != nil {
+	if err == ErrNoMatch {
+		return nil, tokens, ErrNoMatch
+	} else if err != nil {
 		return nil, nil, err
 	}
+
 	var src *source.Source
 	var startOffset, length int32
 	if len(identifiers) > 0 {
@@ -107,8 +134,18 @@ func TypeReference(tokens []tok.Token) (item *ast.TypeReference, remainder []tok
 
 func FunctionIdentifier(tokens []tok.Token) (item *ast.FunctionIdentifier, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
+
 	if peek(remainder).Type != tok.TokFuncID && peek(remainder).Type != tok.TokID {
-		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokFuncID], remainder)
+		return nil, tokens, ErrNoMatch
+	} else if peek(remainder).Invalid {
+		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokFuncID], remainder)
 	}
-	return ast.NewFunctionIdentifier(remainder[0].Value(), remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
+
+	return ast.NewFunctionIdentifier(
+			remainder[0].Value(),
+			remainder[0].File,
+			remainder[0].Offset,
+			remainder[0].Length),
+		remainder[1:],
+		nil
 }

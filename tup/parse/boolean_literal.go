@@ -9,9 +9,13 @@ import (
 
 func BooleanLiteral(tokens []tok.Token) (item *ast.BooleanLiteral, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
-	if peek(remainder).Type != tok.TokBoolLit || peek(remainder).Invalid {
-		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokBoolLit], remainder)
+
+	if peek(remainder).Type != tok.TokBoolLit {
+		return nil, tokens, ErrNoMatch
+	} else if peek(remainder).Invalid {
+		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokBoolLit], remainder)
 	}
+
 	return ast.NewBooleanLiteral(
 			remainder[0].Value(),
 			remainder[0].Value() == "true",

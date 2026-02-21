@@ -1,26 +1,30 @@
 package parse
 
-import "github.com/rowland/tuppence/tup/tok"
+import (
+	"slices"
+
+	"github.com/rowland/tuppence/tup/tok"
+)
 
 func expectFunc(tokenTypes ...tok.TokenType) func([]tok.Token) (remainder []tok.Token, err error) {
 	return func(tokens []tok.Token) (remainder []tok.Token, err error) {
 		remainder = skipComments(tokens)
-		for _, tokenType := range tokenTypes {
-			if peek(remainder).Type == tokenType {
-				return remainder[1:], nil
-			}
-			err = errorExpecting(tok.TokenTypes[tokenType], remainder)
+
+		if slices.Contains(tokenTypes, peek(remainder).Type) {
+			return remainder[1:], nil
 		}
-		if len(tokenTypes) > 0 {
-			return nil, errorExpecting(tok.TokenTypes[tokenTypes[0]], remainder)
-		}
-		panic("unexpected token type")
+
+		return nil, ErrNoMatch
 	}
 }
 
 // at = "@" .
 
 var At = expectFunc(tok.TokAt)
+
+// close_bracket = "]" .
+
+var CloseBracket = expectFunc(tok.TokCloseBracket)
 
 // colon = ":" .
 
@@ -37,7 +41,3 @@ var EOL = expectFunc(tok.TokEOL)
 // open_bracket = "[" .
 
 var OpenBracket = expectFunc(tok.TokOpenBracket)
-
-// close_bracket = "]" .
-
-var CloseBracket = expectFunc(tok.TokCloseBracket)

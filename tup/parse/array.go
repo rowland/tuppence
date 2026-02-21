@@ -9,21 +9,18 @@ import (
 
 func Size(tokens []tok.Token) (size ast.Size, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
-	var errors []error
 
 	integerLit, remainder2, err := IntegerLiteral(remainder)
 	if err == nil {
 		return integerLit, remainder2, nil
 	}
-	errors = append(errors, err)
 
 	identifier, remainder3, err := Identifier(remainder)
 	if err == nil {
 		return identifier, remainder3, nil
 	}
-	errors = append(errors, err)
 
-	return nil, nil, errorExpectingOneOf("size", tokens, errors)
+	return nil, tokens, ErrNoMatch
 }
 
 // array_literal = "[" [ array_members | array_literal ] "]"

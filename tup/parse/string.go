@@ -14,9 +14,13 @@ import (
 
 func StringLiteral(tokens []tok.Token) (item *ast.StringLiteral, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
-	if peek(remainder).Type != tok.TokStrLit || peek(remainder).Invalid {
-		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokStrLit], remainder)
+
+	if peek(remainder).Type != tok.TokStrLit {
+		return nil, tokens, ErrNoMatch
+	} else if peek(remainder).Invalid {
+		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokStrLit], remainder)
 	}
+
 	value := remainder[0].Value()
 
 	var sb strings.Builder
