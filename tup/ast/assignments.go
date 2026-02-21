@@ -146,3 +146,27 @@ func (l *LabeledAssignmentLHS) String() string {
 }
 
 func (l *LabeledAssignmentLHS) assignmentLHSNode() {}
+
+// CompoundAssignment represents a compound assignment (e.g., x += y)
+type CompoundAssignment struct {
+	BaseNode
+	Left     Node                 // The left operand (target of assignment)
+	Operator CompoundAssignmentOp // The compound assignment operator
+	Right    Node                 // The right operand
+}
+
+// String returns a textual representation of the operator
+// NewCompoundAssignment creates a new CompoundAssignment node
+func NewCompoundAssignment(left Node, operator CompoundAssignmentOp, right Node) *CompoundAssignment {
+	return &CompoundAssignment{
+		BaseNode: BaseNode{Type: NodeCompoundAssignmentOp},
+		Left:     left,
+		Operator: operator,
+		Right:    right,
+	}
+}
+
+// String returns a textual representation of the compound assignment
+func (c *CompoundAssignment) String() string {
+	return c.Left.String() + " " + c.Operator.String() + " " + c.Right.String()
+}

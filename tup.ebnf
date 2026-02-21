@@ -1,4 +1,6 @@
-add_sub_op = "+" | "?+" | "-" | "?-" | "|" .
+add_op = "+" .
+
+add_sub_op = add_op | checked_add_op | sub_op | checked_sub_op | bit_or_op .
 
 annotation = namespaced_annotation | simple_annotation .
 
@@ -30,6 +32,12 @@ binary_expression = chained_expression .
 
 binary_literal = "0b" ( "0" | "1" ) { "0" | "1" | "_" } .
 
+bit_and_op = "&" .
+
+bit_not_op = "~" .
+
+bit_or_op = "|" .
+
 block = "{" block_body "}" .
 
 block_body = { statement } expression .
@@ -48,11 +56,21 @@ chained_expression = prec1_expression { "|>" function_call } .
 
 character = (* valid UTF-8 codepoint *) .
 
+checked_add_op = "?+" .
+
+checked_div_op = "?/" .
+
+checked_mul_op = "?*" .
+
+checked_sub_op = "?-" .
+
 comment = "#" { not_eol } eol .
+
+compare_op = "<=>" .
 
 compound_assignment = identifier compound_assignment_op expression .
 
-compound_assignment_op = "+=" | "-=" | "*=" | "/=" | "<<=" | ">>=" .
+compound_assignment_op = plus_eq_op | minus_eq_op | mul_eq_op | div_eq_op | shift_left_eq_op | shift_right_eq_op .
 
 condition = expression .
 
@@ -83,9 +101,9 @@ decimal_digit = "0"-"9" .
 
 decimal_literal = decimal_digit { decimal_digit | "_" } .
 
-structured_match = labeled_pattern
-                 | tuple_pattern
-                 | array_pattern .
+div_eq_op = "/=" .
+
+div_op = "/" .
 
 dynamic_array = "[" "]" (type_reference | array_type) .
 
@@ -98,6 +116,8 @@ enum_members = enum_member_declaration { eol enum_member_declaration } eol .
 enum_member_declaration = annotations identifier [ "=" integer_literal ] .
 
 eol = ( "\r\n" | "\r" | "\n" ) .
+
+eq_op = "==" .
 
 error_tuple = "error" tuple_type .
 
@@ -175,6 +195,10 @@ function_type_declaration_lhs = function_type_identifier [ function_parameter_ty
 function_type_identifier = type_identifier .
 
 generic_type = type_reference type_argument_list .
+
+gt_op = ">" .
+
+gte_op = ">=" .
 
 hex_digit = decimal_digit | "a"-"f" | "A"-"F" .
 
@@ -263,12 +287,24 @@ literal = number
 
 local_type_reference = type_reference | identifier .
 
+logical_and_op = "&&" .
+
+logical_not_op = "!" .
+
+logical_or_op = "||" .
+
 lowercase_letter = "a"-"z" .
+
+lt_op = "<" .
+
+lte_op = "<=" .
 
 match_condition = list_match
                 | pattern_match .
 
 match_element = constant | range .
+
+match_op = "=~" .
 
 member_access = ( expression | type_identifier ) "." ( decimal_literal 
                                                      | identifier 
@@ -276,17 +312,27 @@ member_access = ( expression | type_identifier ) "." ( decimal_literal
 
 meta_expression = "$" labeled_tuple .
 
+minus_eq_op = "-=" .
+
+mod_op = "%" .
+
 module = { top_level_item } .
 
-multi_line_string_literal = "```" [ function_call_context ] eol { indented_line } indented_closing .
+mul_div_op = mul_op | checked_mul_op | div_op | checked_div_op | mod_op | checked_mod_op | bit_and_op | shift_left_op | shift_right_op .
 
-mul_div_op = "*" | "?*" | "/" | "?/" | "%" | "&" | "<<" | ">>" .
+mul_eq_op = "*=" .
+
+mul_op = "*" .
+
+multi_line_string_literal = "```" [ function_call_context ] eol { indented_line } indented_closing .
 
 named_tuple = type_identifier tuple_type .
 
 namespace = letter { letter | decimal_digit | "_" } .
 
 namespaced_annotation = "@" namespace ":" identifier annotation_value eol .
+
+neq_op = "!=" .
 
 nilable_type = "?" local_type_reference .
 
@@ -320,9 +366,11 @@ pattern_match = type_reference "(" pattern ")"
               | structured_match
               | type_reference .
 
-prec1_expression = prec2_expression { "||" prec2_expression } .
+plus_eq_op = "+=" .
 
-prec2_expression = prec3_expression { "&&" prec3_expression } .
+prec1_expression = prec2_expression { logical_or_op prec2_expression } .
+
+prec2_expression = prec3_expression { logical_and_op prec3_expression } .
 
 prec3_expression = type_comparison | relational_comparison .
 
@@ -363,9 +411,9 @@ range_bound = "(" expression ")"
 
 raw_string_literal = "`" { "``" | character - "`" } "`" .
 
-relational_comparison = prec4_expression { rel_op prec4_expression } .
+rel_op = eq_op | neq_op | lt_op | lte_op | gt_op | gte_op | match_op | compare_op .
 
-rel_op = "==" | "<" | ">" | "<=" | ">=" | "!=" .
+relational_comparison = prec4_expression { rel_op prec4_expression } .
 
 rename_identifier = identifier [ ":" identifier ] .
 
@@ -387,6 +435,14 @@ rune_literal = "'" ( byte_escape_sequence | unicode_escape_sequence | escape_seq
 
 safe_indexed_access = expression "[" index "]" "!" .
 
+shift_left_eq_op = "<<=" .
+
+shift_left_op = "<<" .
+
+shift_right_eq_op = ">>=" .
+
+shift_right_op = ">>" .
+
 simple_annotation = "@" identifier eol .
 
 size = integer_literal | identifier .
@@ -405,6 +461,12 @@ statement = ( type_qualified_function_declaration
 step_expression = expression .
 
 string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' - eol } '"' .
+
+structured_match = labeled_pattern
+                 | tuple_pattern
+                 | array_pattern .
+
+sub_op = "-" .
 
 switch_statement = "switch" expression "{" case_block { case_block } [ else_block ] "}" .
 
@@ -489,8 +551,10 @@ type_qualified_function_declaration = annotations type_identifier "." function_d
 
 type_reference = [ identifier { "." identifier } "." ] type_identifier .
 
-unary_expression = ( "-" | "!" | "~" ) valid_negatable_expression
+unary_expression = unary_op valid_negatable_expression
                  | primary_expression .
+
+unary_op = add_op | sub_op | logical_not_op | bit_not_op .
 
 unicode_escape_sequence = "\\" "u" hex_digit hex_digit hex_digit hex_digit
                         | "\\" "U" hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit .

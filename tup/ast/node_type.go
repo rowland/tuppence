@@ -109,7 +109,8 @@ const (
 	NodeCheckedArithmeticOp
 	NodeCompoundAssignmentOp
 	NodeIsOp
-	NodeLogicalOp
+	NodeLogicalOrOp
+	NodeLogicalAndOp
 	NodeMulDivOp
 	NodeRelOp
 	NodeShortCircuitOp
@@ -281,7 +282,8 @@ var NodeTypes = map[NodeType]string{
 	NodeCheckedArithmeticOp:  "CheckedArithmeticOp",
 	NodeCompoundAssignmentOp: "CompoundAssignmentOp",
 	NodeIsOp:                 "IsOp",
-	NodeLogicalOp:            "LogicalOp",
+	NodeLogicalOrOp:          "LogicalOrOp",
+	NodeLogicalAndOp:         "LogicalAndOp",
 	NodeMulDivOp:             "MulDivOp",
 	NodeRelOp:                "RelOp",
 	NodeShortCircuitOp:       "ShortCircuitOp",

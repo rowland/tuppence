@@ -1,6 +1,10 @@
 package parse
 
-import "github.com/rowland/tuppence/tup/tok"
+import (
+	"errors"
+
+	"github.com/rowland/tuppence/tup/tok"
+)
 
 func peek(tokens []tok.Token) tok.Token {
 	if len(tokens) == 0 {
@@ -8,3 +12,5 @@ func peek(tokens []tok.Token) tok.Token {
 	}
 	return tokens[0]
 }
+
+var ErrNoMatch = errors.New("no match")

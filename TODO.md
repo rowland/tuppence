@@ -41,14 +41,45 @@
 - [x] function_identifier
 - [x] size
 - [ ] add_sub_op
+    - [.] add_op
+    - [.] checked_add_op
+    - [.] sub_op
+    - [.] checked_sub_op
+    - [.] bit_or_op
 - [ ] mul_div_op
+    - [.] mul_op
+    - [.] checked_mul_op
+    - [.] div_op
+    - [.] checked_div_op
+    - [.] mod_op
+    - [.] check_mod_op
+    - [.] bit_and_op
+    - [.] shift_left_op
+    - [.] shift_right_op
 - [ ] rel_op
+    - [.] eq_op
+    - [.] neq_op
+    - [.] lt_op
+    - [.] lte_op
+    - [.] gt_op
+    - [.] gte_op
+    - [.] match_op
+    - [.] compare_op
 - [ ] compound_assignment_op
-
-- [ ] logical_or_op "||"
-- [ ] logical_and_op "&&"
-- [ ] unary_op ( "-" | "!" | "~" )
-- [ ] is_op
+    - [.] plus_eq_op
+    - [.] minus_eq_op
+    - [.] mul_eq_op
+    - [.] div_eq_op
+    - [.] shift_left_eq_op
+    - [.] shift_right_eq_op
+- [ ] unary_op ( "+" | "-" | "!" | "~" )
+      [.] pos_sign_op
+    - [.] neg_sign_op
+    - [.] logical_not_op
+    - [.] bit_not_op
+- [.] logical_and_op "&&"
+- [.] logical_or_op "||"
+- [.] is_op
 
 - [x] annotation
 - [ ] annotations

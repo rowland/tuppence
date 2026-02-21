@@ -326,7 +326,7 @@ func (b *BinaryExpression) String() string {
 	return b.Left.String() + " " + string(b.Operator) + " " + b.Right.String()
 }
 
-// unary_expression = ( "-" | "!" | "~" ) valid_negatable_expression
+// unary_expression = ( sub_op | logical_not_op | bit_not_op ) valid_negatable_expression
 //                  | primary_expression .
 
 // UnaryExpression represents a unary expression (e.g., -x, !y)
