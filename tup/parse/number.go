@@ -21,6 +21,5 @@ func Number(tokens []tok.Token) (item ast.Number, remainder []tok.Token, err err
 	}
 	errors = append(errors, err)
 
-	return nil, nil, errorExpectingOneOf("number", tokens, errors)
-
+	return nil, nil, ErrNoMatch
 }

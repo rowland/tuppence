@@ -22,16 +22,15 @@ package ast
 //	                  | literal .
 
 type PrimaryExpression interface {
+	Expression
 	primaryExpressionNode()
 }
 
-func (n *Block) primaryExpressionNode()               {}
-func (n *IfExpression) primaryExpressionNode()        {}
-func (n *ForExpression) primaryExpressionNode()       {}
-func (n *InlineForExpression) primaryExpressionNode() {}
-func (n *ArrayFunctionCall) primaryExpressionNode()   {}
-
-// func (n *ImportExpression) primaryExpressionNode()      {}
+func (n *Block) primaryExpressionNode()                 {}
+func (n *IfExpression) primaryExpressionNode()          {}
+func (n *ForExpression) primaryExpressionNode()         {}
+func (n *InlineForExpression) primaryExpressionNode()   {}
+func (n *ArrayFunctionCall) primaryExpressionNode()     {}
 func (n *TypeofExpression) primaryExpressionNode()      {}
 func (n *FunctionCall) primaryExpressionNode()          {}
 func (n *TypeConstructorCall) primaryExpressionNode()   {}
@@ -45,18 +44,16 @@ func (n *IndexedAccess) primaryExpressionNode()         {}
 func (n *Range) primaryExpressionNode()                 {}
 func (n *Identifier) primaryExpressionNode()            {}
 
-// func (n *Literal) primaryExpressionNode() {}
+// func (n *ImportExpression) primaryExpressionNode()      {}
 
 // function_block = "{" [ block_parameters ] block_body "}" .
 
-// FunctionBlock represents a block used as a function body
 type FunctionBlock struct {
 	BaseNode
 	Parameters *BlockParameters // Optional block parameters
 	Body       *BlockBody       // The function body
 }
 
-// NewFunctionBlock creates a new FunctionBlock node
 func NewFunctionBlock(parameters *BlockParameters, body *BlockBody) *FunctionBlock {
 	return &FunctionBlock{
 		BaseNode:   BaseNode{Type: NodeFunctionBlock},
@@ -65,7 +62,6 @@ func NewFunctionBlock(parameters *BlockParameters, body *BlockBody) *FunctionBlo
 	}
 }
 
-// String returns a textual representation of the function block
 func (f *FunctionBlock) String() string {
 	result := "{"
 	if f.Parameters != nil {
@@ -82,14 +78,12 @@ func (f *FunctionBlock) String() string {
 
 // function_call_context = function_identifier [ "(" ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ")" ] .
 
-// FunctionCallContext represents a context in which a function is called
 type FunctionCallContext struct {
 	BaseNode
-	Function  Node               // The function being called
-	Arguments *FunctionArguments // The arguments passed to the function
+	Function  Node
+	Arguments *FunctionArguments
 }
 
-// NewFunctionCallContext creates a new FunctionCallContext node
 func NewFunctionCallContext(function Node, arguments *FunctionArguments) *FunctionCallContext {
 	return &FunctionCallContext{
 		BaseNode:  BaseNode{Type: NodeFunctionCallContext},
@@ -98,22 +92,19 @@ func NewFunctionCallContext(function Node, arguments *FunctionArguments) *Functi
 	}
 }
 
-// String returns a textual representation of the function call context
 func (f *FunctionCallContext) String() string {
 	return f.Function.String() + f.Arguments.String()
 }
 
 // function_arguments = ( labeled_arguments
-// 	| arguments [ "," labeled_arguments ]
-// 	) [ partial_application ] .
+// 	                    | arguments [ "," labeled_arguments ]
+// 	                    ) [ partial_application ] .
 
-// FunctionArguments represents the arguments passed to a function
 type FunctionArguments struct {
 	BaseNode
 	Arguments []Node // List of arguments
 }
 
-// NewFunctionArguments creates a new FunctionArguments node
 func NewFunctionArguments(arguments []Node) *FunctionArguments {
 	return &FunctionArguments{
 		BaseNode:  BaseNode{Type: NodeFunctionArguments},
@@ -121,7 +112,6 @@ func NewFunctionArguments(arguments []Node) *FunctionArguments {
 	}
 }
 
-// String returns a textual representation of the function arguments
 func (f *FunctionArguments) String() string {
 	result := "("
 	for i, arg := range f.Arguments {
@@ -136,14 +126,12 @@ func (f *FunctionArguments) String() string {
 
 // labeled_argument = ( identifier ":" expression | spread_argument ) .
 
-// LabeledArgument represents a labeled argument in a function call
 type LabeledArgument struct {
 	BaseNode
 	Label *Identifier // The argument label
 	Value Node        // The argument value
 }
 
-// NewLabeledArgument creates a new LabeledArgument node
 func NewLabeledArgument(label *Identifier, value Node) *LabeledArgument {
 	return &LabeledArgument{
 		BaseNode: BaseNode{Type: NodeLabeledArgument},
@@ -152,20 +140,17 @@ func NewLabeledArgument(label *Identifier, value Node) *LabeledArgument {
 	}
 }
 
-// String returns a textual representation of the labeled argument
 func (l *LabeledArgument) String() string {
 	return l.Label.String() + ": " + l.Value.String()
 }
 
 // spread_argument = "..." expression .
 
-// SpreadArgument represents a spread argument in a function call
 type SpreadArgument struct {
 	BaseNode
 	Expression Node // The expression being spread
 }
 
-// NewSpreadArgument creates a new SpreadArgument node
 func NewSpreadArgument(expression Node) *SpreadArgument {
 	return &SpreadArgument{
 		BaseNode:   BaseNode{Type: NodeSpreadArgument},
@@ -173,21 +158,18 @@ func NewSpreadArgument(expression Node) *SpreadArgument {
 	}
 }
 
-// String returns a textual representation of the spread argument
 func (s *SpreadArgument) String() string {
 	return "..." + s.Expression.String()
 }
 
 // partial_application = [ "," ] "*" .
 
-// PartialApplication represents a partial function application using the _ placeholder
 type PartialApplication struct {
 	BaseNode
 	Function  Node               // The function being partially applied
 	Arguments *FunctionArguments // The arguments with placeholders
 }
 
-// NewPartialApplication creates a new PartialApplication node
 func NewPartialApplication(function Node, arguments *FunctionArguments) *PartialApplication {
 	return &PartialApplication{
 		BaseNode:  BaseNode{Type: NodePartialApplication},
@@ -196,41 +178,35 @@ func NewPartialApplication(function Node, arguments *FunctionArguments) *Partial
 	}
 }
 
-// String returns a textual representation of the partial application
 func (p *PartialApplication) String() string {
 	return p.Function.String() + p.Arguments.String()
 }
 
 // initializer = assignment .
 
-// Initializer represents an initializer expression
 type Initializer struct {
 	BaseNode
-	Expression Node // The initializer expression
+	Assignment Assignment
 }
 
-// NewInitializer creates a new Initializer node
-func NewInitializer(expression Node) *Initializer {
+func NewInitializer(assignment Assignment) *Initializer {
 	return &Initializer{
 		BaseNode:   BaseNode{Type: NodeInitializer},
-		Expression: expression,
+		Assignment: assignment,
 	}
 }
 
-// String returns a textual representation of the initializer
 func (i *Initializer) String() string {
-	return i.Expression.String()
+	return i.Assignment.String()
 }
 
 // step_expression = expression .
 
-// StepExpression represents a step expression in a for loop
 type StepExpression struct {
 	BaseNode
 	Expression Node // The step expression
 }
 
-// NewStepExpression creates a new StepExpression node
 func NewStepExpression(expression Node) *StepExpression {
 	return &StepExpression{
 		BaseNode:   BaseNode{Type: NodeStepExpression},
@@ -238,27 +214,24 @@ func NewStepExpression(expression Node) *StepExpression {
 	}
 }
 
-// String returns a textual representation of the step expression
 func (s *StepExpression) String() string {
 	return s.Expression.String()
 }
 
 // statement = ( type_qualified_function_declaration
-// 	| type_qualified_declaration
-// 	| type_declaration
-// 	| function_declaration
-// 	| compound_assignment
-// 	| assignment
-// 	| expression
-// 	) .
+// 	           | type_qualified_declaration
+// 	           | type_declaration
+// 	           | function_declaration
+// 	           | compound_assignment
+// 	           | assignment
+// 	           | expression
+// 	           ) .
 
-// Statement represents a statement in a block
 type Statement struct {
 	BaseNode
 	Expression Node // The statement expression
 }
 
-// NewStatement creates a new Statement node
 func NewStatement(expression Node) *Statement {
 	return &Statement{
 		BaseNode:   BaseNode{Type: NodeStatement},
@@ -266,7 +239,6 @@ func NewStatement(expression Node) *Statement {
 	}
 }
 
-// String returns a textual representation of the statement
 func (s *Statement) String() string {
 	return s.Expression.String() + ";"
 }
@@ -279,7 +251,6 @@ type Iterable struct {
 	Expression Node // The expression that produces an iterable value
 }
 
-// NewIterable creates a new Iterable node
 func NewIterable(expression Node) *Iterable {
 	return &Iterable{
 		BaseNode:   BaseNode{Type: NodeIterable},
@@ -287,7 +258,6 @@ func NewIterable(expression Node) *Iterable {
 	}
 }
 
-// String returns a textual representation of the iterable
 func (i *Iterable) String() string {
 	return i.Expression.String()
 }

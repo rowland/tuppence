@@ -66,7 +66,7 @@ func TryExpression(tokens []tok.Token) (item *ast.TryExpression, remainder []tok
 // binary_expression = chained_expression .
 
 func BinaryExpression(tokens []tok.Token) (item *ast.BinaryExpression, remainder []tok.Token, err error) {
-	return nil, nil, nil
+	return ChainedExpression(tokens)
 }
 
 // chained_expression = prec1_expression { "|>" function_call } .
@@ -75,22 +75,160 @@ func ChainedExpression(tokens []tok.Token) (item *ast.ChainedExpression, remaind
 	return nil, nil, nil
 }
 
-// unary_expression = ( sub_op | logical_not_op | bit_not_op ) valid_negatable_expression
+// prec1_expression = prec2_expression { logical_or_op prec2_expression } .
+
+func Prec1Expression(tokens []tok.Token) (item *ast.Prec1Expression, remainder []tok.Token, err error) {
+	return nil, nil, nil
+}
+
+// unary_expression = prefixed_unary_expression
 //                  | primary_expression .
 
 func UnaryExpression(tokens []tok.Token) (item *ast.UnaryExpression, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
-	var operator ast.Operator
-	switch {
-	case peek(remainder).Type == tok.TokOpMinus:
-		operator = ast.Operator("-")
-	case peek(remainder).Type == tok.TokOpNot:
-		operator = ast.Operator("!")
-	case peek(remainder).Type == tok.TokOpBitNot:
-		operator = ast.Operator("~")
-	default:
-		return nil, remainder, ErrNoMatch
+	expression, remainder, err := PrefixedUnaryExpression(remainder)
+	if err == nil {
+		return expression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, tokens, err
+	}
+
+	primaryExpression, remainder, err := PrimaryExpression(remainder)
+	if err == nil {
+		return ast.NewUnaryExpression(nil, primaryExpression), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, tokens, err
+	}
+
+	return nil, tokens, errorExpecting("unary expression", tokens)
+}
+
+// prefixed_unary_expression = unary_op negatable_expression .
+
+func PrefixedUnaryExpression(tokens []tok.Token) (item *ast.UnaryExpression, remainder []tok.Token, err error) {
+	operator, remainder, err := UnaryOp(remainder)
+	if err != nil {
+		return nil, tokens, err
+	}
+
+	expression, remainder, err := NegatableExpression(remainder)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewUnaryExpression(&operator, expression), remainder, nil
+}
+
+// negatable_expression = "(" expression ")"
+//                      | block
+//                      | function_call
+//                      | member_access
+//                      | tuple_update_expression
+//                      | safe_indexed_access
+//                      | indexed_access
+//                      | identifier
+//                      | literal .
+
+func NegatableExpression(tokens []tok.Token) (item ast.Expression, remainder []tok.Token, err error) {
+	remainder = skipComments(tokens)
+
+	if expression, remainder, err := parenthesizedExpression(remainder); err == nil {
+		return expression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, tokens, err
+	}
+
+	// block
+	// function_call
+	// member_access
+	// tuple_update_expression
+	// safe_indexed_access
+	// indexed_access
+
+	if identifier, remainder, err := Identifier(remainder); err == nil {
+		return ast.NewIdentifier(identifier.Name, identifier.Source, identifier.StartOffset, identifier.Length), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, tokens, err
+	}
+
+	if literal, remainder, err := Literal(remainder); err == nil {
+		return literal, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, tokens, err
+	}
+
+	return nil, tokens, ErrNoMatch
+}
+
+// primary_expression = "(" expression ")"
+//                    | block
+//                    | if_expression
+//                    | for_expression
+//                    | inline_for_expression
+//                    | array_function_call
+//                    | import_expression
+//                    | typeof_expression
+//                    | function_call
+//                    | type_constructor_call
+//                    | return_expression
+//                    | break_expression
+//                    | continue_expression
+//                    | member_access
+//                    | tuple_update_expression
+//                    | safe_indexed_access
+//                    | indexed_access
+//                    | range
+//                    | identifier
+//                    | literal .
+
+func PrimaryExpression(tokens []tok.Token) (item ast.Expression, remainder []tok.Token, err error) {
+	if expression, remainder, err := parenthesizedExpression(remainder); err == nil {
+		return expression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, tokens, err
+	}
+
+	// block
+	// if_expression
+	// for_expression
+	// inline_for_expression
+	// array_function_call
+	// import_expression
+	// typeof_expression
+	// function_call
+	// type_constructor_call
+	// return_expression
+	// break_expression
+	// continue_expression
+	// member_access
+	// tuple_update_expression
+	// safe_indexed_access
+	// indexed_access
+
+	if identifier, remainder, err := Identifier(remainder); err == nil {
+		return ast.NewIdentifier(identifier.Name, identifier.Source, identifier.StartOffset, identifier.Length), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, tokens, err
+	}
+
+	if literal, remainder, err := Literal(remainder); err == nil {
+		return literal, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, tokens, err
+	}
+
+	return nil, tokens, ErrNoMatch
+}
+
+// parenthesized_expression = "(" expression ")" .
+
+func parenthesizedExpression(tokens []tok.Token) (item ast.Expression, remainder []tok.Token, err error) {
+	remainder = skipComments(tokens)
+
+	remainder, err = OpenParen(remainder)
+	if err != nil {
+		return nil, tokens, err
 	}
 
 	expression, remainder, err := Expression(remainder)
@@ -98,5 +236,10 @@ func UnaryExpression(tokens []tok.Token) (item *ast.UnaryExpression, remainder [
 		return nil, remainder, err
 	}
 
-	return ast.NewUnaryExpression(operator, expression), remainder, nil
+	remainder, err = CloseParen(remainder)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	return expression, remainder, nil
 }

@@ -65,6 +65,12 @@ const (
 	NodeIndexedAccess
 	NodeMemberAccess
 	NodeMetaExpression
+	NodePrec1Expression
+	NodePrec2Expression
+	NodePrec3Expression
+	NodePrec4Expression
+	NodePrec5Expression
+	NodePrec6Expression
 	NodeRelationalComparison
 	NodeReturnExpression
 	NodeSafeIndexedAccess
@@ -74,6 +80,7 @@ const (
 	NodeTypeConstructorCall
 	NodeTypeofExpression
 	NodeUFCSFunctionCall
+	NodePrefixedUnaryExpression
 	NodeUnaryExpression
 
 	// Identifier node types
@@ -228,27 +235,34 @@ var NodeTypes = map[NodeType]string{
 	NodeTypeQualifiedFunctionDeclaration:       "TypeQualifiedFunctionDeclaration",
 
 	// Expression node types
-	NodeArrayFunctionCall:     "ArrayFunctionCall",
-	NodeBinaryExpression:      "BinaryExpression",
-	NodeBreakExpression:       "BreakExpression",
-	NodeBuiltinFunctionCall:   "BuiltinFunctionCall",
-	NodeChainedExpression:     "ChainedExpression",
-	NodeConstant:              "NodeConstant",
-	NodeContinueExpression:    "ContinueExpression",
-	NodeFunctionCall:          "FunctionCall",
-	NodeIndexedAccess:         "IndexedAccess",
-	NodeMemberAccess:          "MemberAccess",
-	NodeMetaExpression:        "MetaExpression",
-	NodeRelationalComparison:  "RelationalComparison",
-	NodeReturnExpression:      "ReturnExpression",
-	NodeSafeIndexedAccess:     "SafeIndexedAccess",
-	NodeTryExpression:         "TryExpression",
-	NodeTupleUpdateExpression: "TupleUpdateExpression",
-	NodeTypeComparison:        "TypeComparison",
-	NodeTypeConstructorCall:   "TypeConstructorCall",
-	NodeTypeofExpression:      "TypeofExpression",
-	NodeUFCSFunctionCall:      "UFCSFunctionCall",
-	NodeUnaryExpression:       "UnaryExpression",
+	NodeArrayFunctionCall:       "ArrayFunctionCall",
+	NodeBinaryExpression:        "BinaryExpression",
+	NodeBreakExpression:         "BreakExpression",
+	NodeBuiltinFunctionCall:     "BuiltinFunctionCall",
+	NodeChainedExpression:       "ChainedExpression",
+	NodeConstant:                "NodeConstant",
+	NodeContinueExpression:      "ContinueExpression",
+	NodeFunctionCall:            "FunctionCall",
+	NodeIndexedAccess:           "IndexedAccess",
+	NodeMemberAccess:            "MemberAccess",
+	NodeMetaExpression:          "MetaExpression",
+	NodePrec1Expression:         "Prec1Expression",
+	NodePrec2Expression:         "Prec2Expression",
+	NodePrec3Expression:         "Prec3Expression",
+	NodePrec4Expression:         "Prec4Expression",
+	NodePrec5Expression:         "Prec5Expression",
+	NodePrec6Expression:         "Prec6Expression",
+	NodeRelationalComparison:    "RelationalComparison",
+	NodeReturnExpression:        "ReturnExpression",
+	NodeSafeIndexedAccess:       "SafeIndexedAccess",
+	NodeTryExpression:           "TryExpression",
+	NodeTupleUpdateExpression:   "TupleUpdateExpression",
+	NodeTypeComparison:          "TypeComparison",
+	NodeTypeConstructorCall:     "TypeConstructorCall",
+	NodeTypeofExpression:        "TypeofExpression",
+	NodeUFCSFunctionCall:        "UFCSFunctionCall",
+	NodePrefixedUnaryExpression: "PrefixedUnaryExpression",
+	NodeUnaryExpression:         "UnaryExpression",
 
 	// Identifier node types
 	NodeFunctionIdentifier: "FunctionIdentifier",

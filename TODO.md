@@ -251,4 +251,4 @@
 - [ ] union_member_no_annotations
 - [ ] union_with_error
 - [ ] uppercase_letter
-- [ ] valid_negatable_expression
+- [ ] negatable_expression

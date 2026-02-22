@@ -8,7 +8,7 @@ import (
 
 // Base type for all literals
 type Literal interface {
-	Node
+	Expression
 	literalNode()
 }
 

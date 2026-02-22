@@ -22,10 +22,6 @@ func expectFunc(tokenTypes ...tok.TokenType) func([]tok.Token) (remainder []tok.
 
 var At = expectFunc(tok.TokAt)
 
-// close_bracket = "]" .
-
-var CloseBracket = expectFunc(tok.TokCloseBracket)
-
 // colon = ":" .
 
 var Colon = expectFunc(tok.TokColon, tok.TokColonNoSpace)
@@ -41,3 +37,15 @@ var EOL = expectFunc(tok.TokEOL)
 // open_bracket = "[" .
 
 var OpenBracket = expectFunc(tok.TokOpenBracket)
+
+// close_bracket = "]" .
+
+var CloseBracket = expectFunc(tok.TokCloseBracket)
+
+// open_paren = "(" .
+
+var OpenParen = expectFunc(tok.TokOpenParen)
+
+// close_paren = ")" .
+
+var CloseParen = expectFunc(tok.TokCloseParen)

@@ -17,6 +17,207 @@ func (n *TryExpression) expressionNode()    {}
 func (n *BinaryExpression) expressionNode() {}
 func (n *UnaryExpression) expressionNode()  {}
 
+func (n *Identifier) expressionNode()            {}
+func (n *Block) expressionNode()                 {}
+func (n *IfExpression) expressionNode()          {}
+func (n *ForExpression) expressionNode()         {}
+func (n *InlineForExpression) expressionNode()   {}
+func (n *ArrayFunctionCall) expressionNode()     {}
+func (n *TypeofExpression) expressionNode()      {}
+func (n *FunctionCall) expressionNode()          {}
+func (n *TypeConstructorCall) expressionNode()   {}
+func (n *MemberAccess) expressionNode()          {}
+func (n *TupleUpdateExpression) expressionNode() {}
+func (n *SafeIndexedAccess) expressionNode()     {}
+func (n *IndexedAccess) expressionNode()         {}
+
+// func (n *ImportExpression) expressionNode() {}
+// func (n *ReturnExpression) expressionNode()      {}
+// func (n *BreakExpression) expressionNode()       {}
+// func (n *ContinueExpression) expressionNode()    {}
+
+func (n *FloatLiteral) expressionNode()              {}
+func (n *IntegerLiteral) expressionNode()            {}
+func (n *BooleanLiteral) expressionNode()            {}
+func (n *StringLiteral) expressionNode()             {}
+func (n *InterpolatedStringLiteral) expressionNode() {}
+func (n *RawStringLiteral) expressionNode()          {}
+func (n *MultiLineStringLiteral) expressionNode()    {}
+func (n *TupleLiteral) expressionNode()              {}
+func (n *ArrayLiteral) expressionNode()              {}
+func (n *SymbolLiteral) expressionNode()             {}
+func (n *RuneLiteral) expressionNode()               {}
+func (n *FixedSizeArrayLiteral) expressionNode()     {}
+
+// prec1_expression = prec2_expression { logical_or_op prec2_expression } .
+
+type Prec1Expression struct {
+	BaseNode
+	Left  *Prec2Expression
+	Right *Prec2Expression
+}
+
+func NewPrec1Expression(left *Prec2Expression, right *Prec2Expression) *Prec1Expression {
+	return &Prec1Expression{
+		BaseNode: BaseNode{Type: NodePrec1Expression},
+		Left:     left,
+		Right:    right,
+	}
+}
+
+// String returns a textual representation of the prec1 expression
+func (p *Prec1Expression) String() string {
+	return p.Left.String() + " || " + p.Right.String()
+}
+
+// prec2_expression = prec3_expression { logical_and_op prec3_expression } .
+
+type Prec2Expression struct {
+	BaseNode
+	Left  Prec3Expression
+	Right Prec3Expression
+}
+
+// NewPrec2Expression creates a new Prec2Expression node
+func NewPrec2Expression(left Prec3Expression, right Prec3Expression) *Prec2Expression {
+	return &Prec2Expression{
+		BaseNode: BaseNode{Type: NodePrec2Expression},
+		Left:     left,
+		Right:    right,
+	}
+}
+
+// String returns a textual representation of the prec2 expression
+func (p *Prec2Expression) String() string {
+	return p.Left.String() + " && " + p.Right.String()
+}
+
+// prec3_expression = type_comparison | relational_comparison .
+
+type Prec3Expression interface {
+	Node
+	prec3ExpressionNode()
+}
+
+func (n *TypeComparison) prec3ExpressionNode()       {}
+func (n *RelationalComparison) prec3ExpressionNode() {}
+
+// prec4_expression = prec5_expression { add_sub_op prec5_expression } .
+
+type Prec4Expression struct {
+	BaseNode
+	Left     *Prec5Expression
+	Operator AddSubOp
+	Right    *Prec5Expression
+}
+
+func NewPrec4Expression(left *Prec5Expression, operator AddSubOp, right *Prec5Expression) *Prec4Expression {
+	return &Prec4Expression{
+		BaseNode: BaseNode{Type: NodePrec4Expression},
+		Left:     left,
+		Operator: operator,
+		Right:    right,
+	}
+}
+
+// String returns a textual representation of the prec4 expression
+func (p *Prec4Expression) String() string {
+	return p.Left.String() + " " + p.Operator.String() + " " + p.Right.String()
+}
+
+// prec5_expression = prec6_expression { mul_div_op prec6_expression } .
+
+type Prec5Expression struct {
+	BaseNode
+	Left     *Prec6Expression
+	Operator MulDivOp
+	Right    *Prec6Expression
+}
+
+func NewPrec5Expression(left *Prec6Expression, operator MulDivOp, right *Prec6Expression) *Prec5Expression {
+	return &Prec5Expression{
+		BaseNode: BaseNode{Type: NodePrec5Expression},
+		Left:     left,
+		Operator: operator,
+		Right:    right,
+	}
+}
+
+func (p *Prec5Expression) String() string {
+	return p.Left.String() + " " + p.Operator.String() + " " + p.Right.String()
+}
+
+// prec6_expression = unary_expression { "^" unary_expression } .
+
+type Prec6Expression struct {
+	BaseNode
+	Left  *UnaryExpression
+	Right *UnaryExpression
+}
+
+func NewPrec6Expression(left *UnaryExpression, right *UnaryExpression) *Prec6Expression {
+	return &Prec6Expression{
+		BaseNode: BaseNode{Type: NodePrec6Expression},
+		Left:     left,
+		Right:    right,
+	}
+}
+
+func (p *Prec6Expression) String() string {
+	return p.Left.String() + " ^ " + p.Right.String()
+}
+
+// type_predicate = type_reference | inline_union .
+
+type TypePredicate interface {
+	Node
+	typePredicateNode()
+}
+
+func (n *TypeReference) typePredicateNode() {}
+func (n *InlineUnion) typePredicateNode()   {}
+
+// type_comparison = prec4_expression is_op type_predicate .
+
+type TypeComparison struct {
+	BaseNode
+	Expression *Prec4Expression
+	Type       TypePredicate
+}
+
+func NewTypeComparison(expression *Prec4Expression, typePredicate TypePredicate) *TypeComparison {
+	return &TypeComparison{
+		BaseNode:   BaseNode{Type: NodeTypeComparison},
+		Expression: expression,
+		Type:       typePredicate,
+	}
+}
+
+func (t *TypeComparison) String() string {
+	return t.Expression.String() + " is " + t.Type.String()
+}
+
+// relational_comparison = prec4_expression { rel_op prec4_expression } .
+type RelationalComparison struct {
+	BaseNode
+	Left     *Prec4Expression
+	Operator RelOp
+	Right    *Prec4Expression
+}
+
+func NewRelationalComparison(left *Prec4Expression, operator RelOp, right *Prec4Expression) *RelationalComparison {
+	return &RelationalComparison{
+		BaseNode: BaseNode{Type: NodeRelationalComparison},
+		Left:     left,
+		Operator: operator,
+		Right:    right,
+	}
+}
+
+func (r *RelationalComparison) String() string {
+	return r.Left.String() + " " + r.Operator.String() + " " + r.Right.String()
+}
+
 // function_call = function_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
 
 // FunctionCall represents a function call expression
@@ -298,46 +499,20 @@ func (t *TypeofExpression) String() string {
 	return "typeof(" + t.Expression.String() + ")"
 }
 
-// Operator represents an operator in an expression
-type Operator string
-
 // binary_expression = chained_expression .
 
-// BinaryExpression represents a binary expression (e.g., a + b)
-type BinaryExpression struct {
-	BaseNode
-	Left     Node     // The left operand
-	Operator Operator // The operator
-	Right    Node     // The right operand
-}
+type BinaryExpression = ChainedExpression
 
-// NewBinaryExpression creates a new BinaryExpression node
-func NewBinaryExpression(left Node, operator Operator, right Node) *BinaryExpression {
-	return &BinaryExpression{
-		BaseNode: BaseNode{Type: NodeBinaryExpression},
-		Left:     left,
-		Operator: operator,
-		Right:    right,
-	}
-}
-
-// String returns a textual representation of the binary expression
-func (b *BinaryExpression) String() string {
-	return b.Left.String() + " " + string(b.Operator) + " " + b.Right.String()
-}
-
-// unary_expression = ( sub_op | logical_not_op | bit_not_op ) valid_negatable_expression
+// unary_expression = prefixed_unary_expression
 //                  | primary_expression .
 
-// UnaryExpression represents a unary expression (e.g., -x, !y)
 type UnaryExpression struct {
 	BaseNode
-	Operator   Operator // The operator
-	Expression Node     // The operand
+	Operator   *UnaryOp
+	Expression Expression
 }
 
-// NewUnaryExpression creates a new UnaryExpression node
-func NewUnaryExpression(operator Operator, expression Node) *UnaryExpression {
+func NewUnaryExpression(operator *UnaryOp, expression Expression) *UnaryExpression {
 	return &UnaryExpression{
 		BaseNode:   BaseNode{Type: NodeUnaryExpression},
 		Operator:   operator,
@@ -345,9 +520,11 @@ func NewUnaryExpression(operator Operator, expression Node) *UnaryExpression {
 	}
 }
 
-// String returns a textual representation of the unary expression
 func (u *UnaryExpression) String() string {
-	return string(u.Operator) + u.Expression.String()
+	if u.Operator != nil {
+		return u.Operator.String() + u.Expression.String()
+	}
+	return u.Expression.String()
 }
 
 // chained_expression = prec1_expression { "|>" function_call } .
@@ -485,54 +662,6 @@ func (t *TryExpression) String() string {
 		return string(t.Variant) + " " + t.Expression.String()
 	}
 	return string(t.Variant)
-}
-
-// type_comparison = prec4_expression is_op (type_reference | inline_union) .
-
-// TypeComparison represents a type comparison expression (e.g., x is Type)
-type TypeComparison struct {
-	BaseNode
-	Expression Node // The expression being tested
-	Type       Node // The type being tested against
-}
-
-// NewTypeComparison creates a new TypeComparison node
-func NewTypeComparison(expression Node, typeNode Node) *TypeComparison {
-	return &TypeComparison{
-		BaseNode:   BaseNode{Type: NodeTypeComparison},
-		Expression: expression,
-		Type:       typeNode,
-	}
-}
-
-// String returns a textual representation of the type comparison
-func (t *TypeComparison) String() string {
-	return t.Expression.String() + " is " + t.Type.String()
-}
-
-// relational_comparison = prec4_expression { rel_op prec4_expression } .
-
-// RelationalComparison represents a relational comparison expression (e.g., a < b)
-type RelationalComparison struct {
-	BaseNode
-	Left     Node     // The left operand
-	Operator Operator // The comparison operator
-	Right    Node     // The right operand
-}
-
-// NewRelationalComparison creates a new RelationalComparison node
-func NewRelationalComparison(left Node, operator Operator, right Node) *RelationalComparison {
-	return &RelationalComparison{
-		BaseNode: BaseNode{Type: NodeRelationalComparison},
-		Left:     left,
-		Operator: operator,
-		Right:    right,
-	}
-}
-
-// String returns a textual representation of the relational comparison
-func (r *RelationalComparison) String() string {
-	return r.Left.String() + " " + string(r.Operator) + " " + r.Right.String()
 }
 
 // meta_expression = "$" labeled_tuple .

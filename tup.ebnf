@@ -520,7 +520,7 @@ type_argument = type
 
 type_argument_list = "[" type_argument { "," type_argument } "]" .
 
-type_comparison = prec4_expression is_op (type_reference | inline_union) .
+type_comparison = prec4_expression is_op type_predicate .
 
 type_constructor_call = type_reference [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
 
@@ -545,14 +545,18 @@ type_parameter = identifier .
 
 type_parameters = "[" type_parameter { "," type_parameter } "]" .
 
+type_predicate = type_reference | inline_union .
+
 type_qualified_declaration = type_identifier "." identifier "=" expression .
 
 type_qualified_function_declaration = annotations type_identifier "." function_declaration_lhs "=" function_declaration_type block .
 
 type_reference = [ identifier { "." identifier } "." ] type_identifier .
 
-unary_expression = unary_op valid_negatable_expression
+unary_expression = prefixed_unary_expression
                  | primary_expression .
+
+prefixed_unary_expression = unary_op negatable_expression .
 
 unary_op = add_op | sub_op | logical_not_op | bit_not_op .
 
@@ -590,12 +594,12 @@ union_with_error = ( "!" union_member )
 
 uppercase_letter = "A"-"Z" .
 
-valid_negatable_expression = literal
-                           | "(" expression ")"
-                           | block
-                           | function_call
-                           | member_access
-                           | tuple_update_expression
-                           | safe_indexed_access
-                           | indexed_access
-                           | identifier .
+negatable_expression = "(" expression ")"
+                     | block
+                     | function_call
+                     | member_access
+                     | tuple_update_expression
+                     | safe_indexed_access
+                     | indexed_access
+                     | identifier
+                     | literal .
