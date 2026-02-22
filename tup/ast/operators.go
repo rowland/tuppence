@@ -87,6 +87,7 @@ const (
 	OpMinusEq
 	OpMulEq
 	OpDivEq
+	OpPowEq
 	OpShiftLeftEq
 	OpShiftRightEq
 )
@@ -96,6 +97,7 @@ var CompoundAssignmentOpStrings = map[CompoundAssignmentOp]string{
 	OpMinusEq:      "-=",
 	OpMulEq:        "*=",
 	OpDivEq:        "/=",
+	OpPowEq:        "^=",
 	OpShiftLeftEq:  "<<=",
 	OpShiftRightEq: ">>=",
 }

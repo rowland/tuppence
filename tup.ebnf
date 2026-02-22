@@ -70,7 +70,7 @@ compare_op = "<=>" .
 
 compound_assignment = identifier compound_assignment_op expression .
 
-compound_assignment_op = plus_eq_op | minus_eq_op | mul_eq_op | div_eq_op | shift_left_eq_op | shift_right_eq_op .
+compound_assignment_op = plus_eq_op | minus_eq_op | mul_eq_op | div_eq_op | pow_eq_op | shift_left_eq_op | shift_right_eq_op .
 
 condition = expression .
 
@@ -370,6 +370,10 @@ pipe_op = "|>" .
 
 plus_eq_op = "+=" .
 
+pow_eq_op = "^=" .
+
+pow_op = "^" .
+
 prec1_expression = prec2_expression { logical_or_op prec2_expression } .
 
 prec2_expression = prec3_expression { logical_and_op prec3_expression } .
@@ -380,7 +384,7 @@ prec4_expression = prec5_expression { add_sub_op prec5_expression } .
 
 prec5_expression = prec6_expression { mul_div_op prec6_expression } .
 
-prec6_expression = unary_expression { "^" unary_expression } .
+prec6_expression = unary_expression { pow_op unary_expression } .
 
 primary_expression = "(" expression ")"
                    | block

@@ -102,6 +102,8 @@ func CompoundAssignmentOp(tokens []tok.Token) (op ast.CompoundAssignmentOp, rema
 		op = ast.OpMulEq
 	case tok.TokOpDivEQ:
 		op = ast.OpDivEq
+	case tok.TokOpPowEQ:
+		op = ast.OpPowEq
 	case tok.TokOpSHL_EQ:
 		op = ast.OpShiftLeftEq
 	case tok.TokOpSHR_EQ:
@@ -180,6 +182,19 @@ func PipeOp(tokens []tok.Token) (remainder []tok.Token, err error) {
 
 	switch peek(remainder).Type {
 	case tok.TokOpPipe:
+		return remainder[1:], nil
+	default:
+		return tokens, ErrNoMatch
+	}
+}
+
+// pow_op = "^" .
+
+func PowOp(tokens []tok.Token) (remainder []tok.Token, err error) {
+	remainder = skipComments(tokens)
+
+	switch peek(remainder).Type {
+	case tok.TokOpPow:
 		return remainder[1:], nil
 	default:
 		return tokens, ErrNoMatch

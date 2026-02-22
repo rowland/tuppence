@@ -286,6 +286,12 @@ func TestCompoundAssignmentOp(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name:    "pow_eq",
+			input:   "^=",
+			want:    ast.OpPowEq,
+			wantErr: false,
+		},
+		{
 			name:    "shift_left_eq",
 			input:   "<<=",
 			want:    ast.OpShiftLeftEq,
@@ -538,6 +544,44 @@ func TestPipeOp(t *testing.T) {
 			}
 			if !test.wantErr && (len(remainder) != 1 || remainder[0].Type != tok.TokEOF) {
 				t.Errorf("PipeOp(%q) remainder = %v, want 1 token (EOF)", test.input, remainder)
+			}
+		})
+	}
+}
+
+func TestPowOp(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		wantErr bool
+	}{
+		{
+			name:    "pow operator",
+			input:   "^",
+			wantErr: false,
+		},
+		{
+			name:    "plus not allowed",
+			input:   "+",
+			wantErr: true,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			source := source.NewSource([]byte(test.input), "test.tup")
+			tokens, err := tok.Tokenize(source.Contents, source.Filename)
+			if err != nil {
+				t.Errorf("Tokenize(%q) = %v", test.input, err)
+			}
+			remainder, err := PowOp(tokens)
+			if test.wantErr && err == nil {
+				t.Fatalf("PowOp(%q) = %v, want error", test.input, err)
+			}
+			if !test.wantErr && err != nil {
+				t.Fatalf("PowOp(%q) = %v, want nil", test.input, err)
+			}
+			if !test.wantErr && (len(remainder) != 1 || remainder[0].Type != tok.TokEOF) {
+				t.Errorf("PowOp(%q) remainder = %v, want 1 token (EOF)", test.input, remainder)
 			}
 		})
 	}
