@@ -83,18 +83,18 @@
 - [x] pipe_op
 - [x] annotation
 - [x] annotation_value
-- [ ] chained_expression
-- [ ] binary_expression
-- [ ] prec1_expression
-- [ ] prec2_expression
-- [ ] prec3_expression
-- [ ] prec4_expression
-- [ ] prec5_expression
-- [ ] prec6_expression
-- [ ] primary_expression
-- [ ] try_expression
-- [ ] type_reference
-- [ ] unary_expression
+- [.] chained_expression
+- [.] binary_expression
+- [.] prec1_expression
+- [.] prec2_expression
+- [.] prec3_expression
+- [.] prec4_expression
+- [.] prec5_expression
+- [.] prec6_expression
+- [.] primary_expression
+- [.] try_expression
+- [.] type_reference
+- [.] unary_expression
 
 - [ ] function_call
 - [ ] annotations

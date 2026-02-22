@@ -9,26 +9,23 @@ import (
 //            | binary_expression
 //            | unary_expression .
 
-func Expression(tokens []tok.Token) (item ast.Expression, remainder []tok.Token, err error) {
-	tryExpr, remainder, err := TryExpression(tokens)
-	if err == nil {
+func Expression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	if tryExpr, remainder, err := TryExpression(tokens); err == nil {
 		return tryExpr, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
-	binaryExpr, remainder, err := BinaryExpression(tokens)
-	if err == nil {
+	if binaryExpr, remainder, err := BinaryExpression(tokens); err == nil {
 		return binaryExpr, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
-	unaryExpr, remainder, err := UnaryExpression(tokens)
-	if err == nil {
+	if unaryExpr, remainder, err := UnaryExpression(tokens); err == nil {
 		return unaryExpr, remainder, nil
 	} else if err != ErrNoMatch {
-		return nil, remainder, err
+		return nil, tokens, err
 	}
 
 	return nil, tokens, errorExpecting("expression", tokens)
@@ -38,7 +35,7 @@ func Expression(tokens []tok.Token) (item ast.Expression, remainder []tok.Token,
 //                | "try_continue" expression
 //                | "try_break" expression .
 
-func TryExpression(tokens []tok.Token) (item *ast.TryExpression, remainder []tok.Token, err error) {
+func TryExpression(tokens []tok.Token) (expr *ast.TryExpression, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
 	var variant ast.TryVariant
@@ -65,38 +62,256 @@ func TryExpression(tokens []tok.Token) (item *ast.TryExpression, remainder []tok
 
 // binary_expression = chained_expression .
 
-func BinaryExpression(tokens []tok.Token) (item *ast.BinaryExpression, remainder []tok.Token, err error) {
+func BinaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
 	return ChainedExpression(tokens)
 }
 
 // chained_expression = prec1_expression { "|>" function_call } .
 
-func ChainedExpression(tokens []tok.Token) (item *ast.ChainedExpression, remainder []tok.Token, err error) {
-	return nil, nil, nil
+func ChainedExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	remainder = skipComments(tokens)
+
+	prec1Expr, remainder, err := Prec1Expression(remainder)
+	if err == ErrNoMatch {
+		return nil, tokens, err
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	var functionCalls []*ast.FunctionCall
+
+	for {
+		remainder, err = PipeOp(remainder)
+		if err == ErrNoMatch {
+			break
+		} else if err != nil {
+			return nil, remainder, err
+		}
+
+		var functionCall *ast.FunctionCall
+		functionCall, remainder, err = FunctionCall(remainder)
+		if err != nil {
+			return nil, remainder, err
+		}
+		functionCalls = append(functionCalls, functionCall)
+	}
+
+	if len(functionCalls) == 0 {
+		return prec1Expr, remainder, nil
+	}
+
+	return ast.NewChainedExpression(prec1Expr, functionCalls), remainder, nil
 }
 
 // prec1_expression = prec2_expression { logical_or_op prec2_expression } .
 
-func Prec1Expression(tokens []tok.Token) (item *ast.Prec1Expression, remainder []tok.Token, err error) {
-	return nil, nil, nil
+func Prec1Expression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	prec2Expr, remainder, err := Prec2Expression(remainder)
+	if err == ErrNoMatch {
+		return nil, tokens, err
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	operands := []ast.Expression{prec2Expr}
+	for {
+		remainder, err = LogicalOrOp(remainder)
+		if err == ErrNoMatch {
+			break
+		} else if err != nil {
+			return nil, remainder, err
+		}
+
+		var operand ast.Expression
+		operand, remainder, err = Prec2Expression(remainder)
+		if err != nil {
+			return nil, remainder, err
+		}
+
+		operands = append(operands, operand)
+	}
+
+	if len(operands) == 1 {
+		return operands[0], remainder, nil
+	}
+
+	return ast.NewPrec1Expression(operands), remainder, nil
+}
+
+// prec2_expression = prec3_expression { logical_and_op prec3_expression } .
+
+func Prec2Expression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	prec3Expr, remainder, err := Prec3Expression(remainder)
+	if err == ErrNoMatch {
+		return nil, tokens, err
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	operands := []ast.Expression{prec3Expr}
+	for {
+		remainder, err = LogicalAndOp(remainder)
+		if err == ErrNoMatch {
+			break
+		} else if err != nil {
+			return nil, remainder, err
+		}
+
+		var operand ast.Expression
+		operand, remainder, err = Prec3Expression(remainder)
+		if err != nil {
+			return nil, remainder, err
+		}
+
+		operands = append(operands, operand)
+	}
+
+	if len(operands) == 1 {
+		return operands[0], remainder, nil
+	}
+
+	return ast.NewPrec2Expression(operands), remainder, nil
+}
+
+// prec3_expression = prec4_expression [ type_comparison_tail | relational_comparison_tail ] .
+
+func Prec3Expression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	left, remainder, err := Prec4Expression(remainder)
+	if err == ErrNoMatch {
+		return nil, tokens, err
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	typeComparisonTail, remainder, err := TypeComparisonTail(left, remainder)
+	if err == nil {
+		return typeComparisonTail, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	relationalComparisonTail, remainder, err := RelationalComparisonTail(left, remainder)
+	if err == nil {
+		return relationalComparisonTail, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return left, remainder, nil
+}
+
+// prec4_expression = prec5_expression { add_sub_op prec5_expression } .
+
+func Prec4Expression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	left, remainder, err := Prec5Expression(tokens)
+	if err == ErrNoMatch {
+		return nil, tokens, err
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	// Parse { add_sub_op prec5_expression }
+	for {
+		op, remainder2, err := AddSubOp(remainder)
+		if err == ErrNoMatch {
+			return left, remainder, nil // no tail => done
+		} else if err != nil {
+			return nil, remainder2, err
+		}
+
+		var right ast.Expression
+		right, remainder, err = Prec5Expression(remainder2)
+		if err == ErrNoMatch {
+			return nil, remainder, errorExpecting("prec5 expression", remainder2)
+		} else if err != nil {
+			return nil, remainder, err
+		}
+
+		left = ast.NewPrec4Expression(left, op, right)
+	}
+}
+
+// prec5_expression = prec6_expression { mul_div_op prec6_expression } .
+
+func Prec5Expression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	left, remainder, err := Prec6Expression(remainder)
+	if err == ErrNoMatch {
+		return nil, tokens, err
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	// Parse { mul_div_op prec6_expression }
+	for {
+		op, remainder2, err := MulDivOp(remainder)
+		if err == ErrNoMatch {
+			return left, remainder, nil // no tail => done
+		} else if err != nil {
+			return nil, remainder2, err
+		}
+
+		var right ast.Expression
+		right, remainder, err = Prec6Expression(remainder2)
+		if err == ErrNoMatch {
+			return nil, remainder, errorExpecting("prec6 expression", remainder2)
+		} else if err != nil {
+			return nil, remainder, err
+		}
+
+		left = ast.NewPrec5Expression(left, op, right)
+	}
+}
+
+// prec6_expression = unary_expression { "^" unary_expression } .
+
+func Prec6Expression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	left, remainder, err := UnaryExpression(remainder)
+	if err == ErrNoMatch {
+		return nil, tokens, err
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	operands := []ast.Expression{left}
+
+	for {
+		remainder, err = PowOp(remainder)
+		if err == ErrNoMatch {
+			break
+		} else if err != nil {
+			return nil, remainder, err
+		}
+
+		var operand ast.Expression
+		operand, remainder, err = UnaryExpression(remainder)
+		if err != nil {
+			return nil, remainder, err
+		}
+
+		operands = append(operands, operand)
+	}
+
+	if len(operands) == 1 {
+		return operands[0], remainder, nil
+	}
+
+	return ast.NewPrec6Expression(operands), remainder, nil
 }
 
 // unary_expression = prefixed_unary_expression
 //                  | primary_expression .
 
-func UnaryExpression(tokens []tok.Token) (item *ast.UnaryExpression, remainder []tok.Token, err error) {
+func UnaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
-	expression, remainder, err := PrefixedUnaryExpression(remainder)
-	if err == nil {
-		return expression, remainder, nil
+	if unaryExpression, remainder, err := PrefixedUnaryExpression(remainder); err == nil {
+		return unaryExpression, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, tokens, err
 	}
 
-	primaryExpression, remainder, err := PrimaryExpression(remainder)
-	if err == nil {
-		return ast.NewUnaryExpression(nil, primaryExpression), remainder, nil
+	if primaryExpression, remainder, err := PrimaryExpression(remainder); err == nil {
+		return primaryExpression, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, tokens, err
 	}
@@ -106,7 +321,7 @@ func UnaryExpression(tokens []tok.Token) (item *ast.UnaryExpression, remainder [
 
 // prefixed_unary_expression = unary_op negatable_expression .
 
-func PrefixedUnaryExpression(tokens []tok.Token) (item *ast.UnaryExpression, remainder []tok.Token, err error) {
+func PrefixedUnaryExpression(tokens []tok.Token) (expr *ast.UnaryExpression, remainder []tok.Token, err error) {
 	operator, remainder, err := UnaryOp(remainder)
 	if err != nil {
 		return nil, tokens, err
@@ -117,7 +332,7 @@ func PrefixedUnaryExpression(tokens []tok.Token) (item *ast.UnaryExpression, rem
 		return nil, remainder, err
 	}
 
-	return ast.NewUnaryExpression(&operator, expression), remainder, nil
+	return ast.NewUnaryExpression(operator, expression), remainder, nil
 }
 
 // negatable_expression = "(" expression ")"
@@ -130,7 +345,7 @@ func PrefixedUnaryExpression(tokens []tok.Token) (item *ast.UnaryExpression, rem
 //                      | identifier
 //                      | literal .
 
-func NegatableExpression(tokens []tok.Token) (item ast.Expression, remainder []tok.Token, err error) {
+func NegatableExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
 	if expression, remainder, err := parenthesizedExpression(remainder); err == nil {
@@ -182,7 +397,7 @@ func NegatableExpression(tokens []tok.Token) (item ast.Expression, remainder []t
 //                    | identifier
 //                    | literal .
 
-func PrimaryExpression(tokens []tok.Token) (item ast.Expression, remainder []tok.Token, err error) {
+func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
 	if expression, remainder, err := parenthesizedExpression(remainder); err == nil {
 		return expression, remainder, nil
 	} else if err != ErrNoMatch {
@@ -223,7 +438,7 @@ func PrimaryExpression(tokens []tok.Token) (item ast.Expression, remainder []tok
 
 // parenthesized_expression = "(" expression ")" .
 
-func parenthesizedExpression(tokens []tok.Token) (item ast.Expression, remainder []tok.Token, err error) {
+func parenthesizedExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
 	remainder, err = OpenParen(remainder)
@@ -242,4 +457,54 @@ func parenthesizedExpression(tokens []tok.Token) (item ast.Expression, remainder
 	}
 
 	return expression, remainder, nil
+}
+
+// function_call = function_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
+
+func FunctionCall(tokens []tok.Token) (expr *ast.FunctionCall, remainder []tok.Token, err error) {
+	return nil, nil, ErrNoMatch // TODO: Implement
+}
+
+// type_comparison_tail = is_op type_predicate .
+
+func TypeComparisonTail(left ast.Expression, tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	remainder, err = IsOp(tokens)
+	if err == ErrNoMatch {
+		return nil, tokens, err
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	right, remainder, err := TypePredicate(remainder)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("type predicate", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewTypeComparison(left, right), remainder, nil
+}
+
+// type_predicate = type_reference | inline_union .
+
+func TypePredicate(tokens []tok.Token) (expr ast.TypePredicate, remainder []tok.Token, err error) {
+	return nil, nil, ErrNoMatch // TODO: Implement
+}
+
+// relational_comparison_tail = rel_op prec4_expression .
+
+func RelationalComparisonTail(left ast.Expression, tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	operator, remainder, err := RelOp(tokens)
+	if err == ErrNoMatch {
+		return nil, tokens, err
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	right, remainder, err := Prec4Expression(remainder)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewRelationalComparison(left, operator, right), remainder, nil
 }

@@ -378,7 +378,7 @@ prec1_expression = prec2_expression { logical_or_op prec2_expression } .
 
 prec2_expression = prec3_expression { logical_and_op prec3_expression } .
 
-prec3_expression = type_comparison | relational_comparison .
+prec3_expression = prec4_expression [ type_comparison_tail | relational_comparison_tail ] .
 
 prec4_expression = prec5_expression { add_sub_op prec5_expression } .
 
@@ -419,7 +419,7 @@ raw_string_literal = "`" { "``" | character - "`" } "`" .
 
 rel_op = eq_op | neq_op | lt_op | lte_op | gt_op | gte_op | match_op | compare_op .
 
-relational_comparison = prec4_expression { rel_op prec4_expression } .
+relational_comparison_tail = rel_op prec4_expression .
 
 rename_identifier = identifier [ ":" identifier ] .
 
@@ -526,7 +526,7 @@ type_argument = type
 
 type_argument_list = "[" type_argument { "," type_argument } "]" .
 
-type_comparison = prec4_expression is_op type_predicate .
+type_comparison_tail = is_op type_predicate .
 
 type_constructor_call = type_reference [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
 
