@@ -172,3 +172,16 @@ func IsOp(tokens []tok.Token) (remainder []tok.Token, err error) {
 		return tokens, ErrNoMatch
 	}
 }
+
+// pipe_op = "|>" .
+
+func PipeOp(tokens []tok.Token) (remainder []tok.Token, err error) {
+	remainder = skipComments(tokens)
+
+	switch peek(remainder).Type {
+	case tok.TokOpPipe:
+		return remainder[1:], nil
+	default:
+		return tokens, ErrNoMatch
+	}
+}

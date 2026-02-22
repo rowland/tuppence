@@ -504,3 +504,41 @@ func TestIsOp(t *testing.T) {
 		})
 	}
 }
+
+func TestPipeOp(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		wantErr bool
+	}{
+		{
+			name:    "pipe operator",
+			input:   "|>",
+			wantErr: false,
+		},
+		{
+			name:    "plus not allowed",
+			input:   "+",
+			wantErr: true,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			source := source.NewSource([]byte(test.input), "test.tup")
+			tokens, err := tok.Tokenize(source.Contents, source.Filename)
+			if err != nil {
+				t.Errorf("Tokenize(%q) = %v", test.input, err)
+			}
+			remainder, err := PipeOp(tokens)
+			if test.wantErr && err == nil {
+				t.Fatalf("PipeOp(%q) = %v, want error", test.input, err)
+			}
+			if !test.wantErr && err != nil {
+				t.Fatalf("PipeOp(%q) = %v, want nil", test.input, err)
+			}
+			if !test.wantErr && (len(remainder) != 1 || remainder[0].Type != tok.TokEOF) {
+				t.Errorf("PipeOp(%q) remainder = %v, want 1 token (EOF)", test.input, remainder)
+			}
+		})
+	}
+}

@@ -306,6 +306,9 @@ outer:
 				} else if t.peek(2) == "|=" {
 					tokenType = TokOpBitOrEQ
 					t.index++
+				} else if t.peek(2) == "|>" {
+					tokenType = TokOpPipe
+					t.index++
 				} else {
 					tokenType = TokOpBitOr
 				}

@@ -55,6 +55,9 @@ const (
 	TokOpLogAnd // &&
 	TokOpLogOr  // ||
 
+	// Pipe Operator
+	TokOpPipe // |>
+
 	// Range and Rest Operators
 	TokOpRange
 	TokOpRest
@@ -182,6 +185,9 @@ var TokenTypes = map[TokenType]string{
 	// Logical Operators
 	TokOpLogAnd: "&&",
 	TokOpLogOr:  "||",
+
+	// Pipe Operator
+	TokOpPipe: "|>",
 
 	// Range and Rest Operators
 	TokOpRange: "..",

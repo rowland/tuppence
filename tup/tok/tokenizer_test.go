@@ -951,6 +951,18 @@ func TestFloatMemberAccess(t *testing.T) {
 	})
 }
 
+func TestPipeOp(t *testing.T) {
+	const source = "1 |> foo()"
+	testTokenizeSeq(t, source, []TokenType{
+		TokDecLit,     // 1
+		TokOpPipe,     // |>
+		TokID,         // foo
+		TokOpenParen,  // (
+		TokCloseParen, // )
+		TokEOF,        // EOF
+	})
+}
+
 func TestRangeOp(t *testing.T) {
 	const source = "1..2"
 	testTokenizeSeq(t, source, []TokenType{

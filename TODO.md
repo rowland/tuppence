@@ -6,7 +6,7 @@
 
 - [ ] MetaExpression details
 - [x] ContinueExpression
-- [ ] CheckedOperators
+- [x] CheckedOperators
 - [ ] @type:implements
 - [ ] Short circuiting
 - [x] CompoundAssignment
@@ -40,50 +40,64 @@
 - [x] namespaced_annotation
 - [x] function_identifier
 - [x] size
-- [ ] add_sub_op
-    - [.] add_op
-    - [.] checked_add_op
-    - [.] sub_op
-    - [.] checked_sub_op
-    - [.] bit_or_op
-- [ ] mul_div_op
-    - [.] mul_op
-    - [.] checked_mul_op
-    - [.] div_op
-    - [.] checked_div_op
-    - [.] mod_op
-    - [.] check_mod_op
-    - [.] bit_and_op
-    - [.] shift_left_op
-    - [.] shift_right_op
-- [ ] rel_op
-    - [.] eq_op
-    - [.] neq_op
-    - [.] lt_op
-    - [.] lte_op
-    - [.] gt_op
-    - [.] gte_op
-    - [.] match_op
-    - [.] compare_op
-- [ ] compound_assignment_op
-    - [.] plus_eq_op
-    - [.] minus_eq_op
-    - [.] mul_eq_op
-    - [.] div_eq_op
-    - [.] shift_left_eq_op
-    - [.] shift_right_eq_op
-- [ ] unary_op ( "+" | "-" | "!" | "~" )
-      [.] pos_sign_op
-    - [.] neg_sign_op
-    - [.] logical_not_op
-    - [.] bit_not_op
-- [.] logical_and_op "&&"
-- [.] logical_or_op "||"
-- [.] is_op
-
+- [x] add_sub_op
+    - [x] add_op
+    - [x] checked_add_op
+    - [x] sub_op
+    - [x] checked_sub_op
+    - [x] bit_or_op
+- [x] mul_div_op
+    - [x] mul_op
+    - [x] checked_mul_op
+    - [x] div_op
+    - [x] checked_div_op
+    - [x] mod_op
+    - [x] check_mod_op
+    - [x] bit_and_op
+    - [x] shift_left_op
+    - [x] shift_right_op
+- [x] rel_op
+    - [x] eq_op
+    - [x] neq_op
+    - [x] lt_op
+    - [x] lte_op
+    - [x] gt_op
+    - [x] gte_op
+    - [x] match_op
+    - [x] compare_op
+- [x] compound_assignment_op
+    - [x] plus_eq_op
+    - [x] minus_eq_op
+    - [x] mul_eq_op
+    - [x] div_eq_op
+    - [x] shift_left_eq_op
+    - [x] shift_right_eq_op
+- [x] unary_op ( "+" | "-" | "!" | "~" )
+      [x] pos_sign_op
+    - [x] neg_sign_op
+    - [x] logical_not_op
+    - [x] bit_not_op
+- [x] logical_and_op "&&"
+- [x] logical_or_op "||"
+- [x] is_op
+- [x] pipe_op
 - [x] annotation
-- [ ] annotations
 - [x] annotation_value
+- [ ] chained_expression
+- [ ] binary_expression
+- [ ] prec1_expression
+- [ ] prec2_expression
+- [ ] prec3_expression
+- [ ] prec4_expression
+- [ ] prec5_expression
+- [ ] prec6_expression
+- [ ] primary_expression
+- [ ] try_expression
+- [ ] type_reference
+- [ ] unary_expression
+
+- [ ] function_call
+- [ ] annotations
 - [ ] argument
 - [ ] arguments
 - [ ] array_function_call
@@ -92,13 +106,11 @@
 - [ ] array_type
 - [ ] assignment
 - [ ] assignment_lhs
-- [ ] binary_expression
 - [ ] block
 - [ ] block_body
 - [ ] block_parameters
 - [ ] break_expression
 - [ ] case_block
-- [ ] chained_expression
 - [ ] character
 - [ ] comment
 - [ ] compound_assignment
@@ -118,7 +130,6 @@
 - [ ] enum_declaration
 - [ ] enum_members
 - [ ] enum_member_declaration
-- [ ] eol
 - [ ] error_tuple
 - [ ] exponent
 - [ ] export_assignment
@@ -128,7 +139,9 @@
 - [ ] export_type_declaration
 - [ ] export_type_qualified_declaration
 - [ ] export_type_qualified_function_declaration
+- [ ] eol
 - [ ] expression
+- [ ] identifier
 - [ ] fixed_size_array
 - [ ] for_block
 - [ ] for_expression
@@ -137,7 +150,6 @@
 - [ ] iterable
 - [ ] function_arguments
 - [ ] function_block
-- [ ] function_call
 - [ ] function_call_context
 - [ ] function_declaration
 - [ ] function_declaration_type
@@ -149,7 +161,6 @@
 - [ ] function_type_identifier
 - [ ] generic_type
 - [ ] hex_digit
-- [ ] identifier
 - [ ] if_expression
 - [ ] import_expression
 - [ ] indented_closing
@@ -195,13 +206,6 @@
 - [ ] partial_application
 - [ ] pattern
 - [ ] pattern_match
-- [ ] prec1_expression
-- [ ] prec2_expression
-- [ ] prec3_expression
-- [ ] prec4_expression
-- [ ] prec5_expression
-- [ ] prec6_expression
-- [ ] primary_expression
 - [ ] range
 - [ ] range_bound
 - [ ] relational_comparison
@@ -218,7 +222,6 @@
 - [ ] step_expression
 - [ ] switch_statement
 - [ ] top_level_item
-- [ ] try_expression
 - [ ] tuple_member
 - [ ] tuple_members
 - [ ] tuple_pattern
@@ -240,8 +243,6 @@
 - [ ] type_parameters
 - [ ] type_qualified_declaration
 - [ ] type_qualified_function_declaration
-- [ ] type_reference
-- [ ] unary_expression
 - [ ] union_declaration
 - [ ] union_declaration_with_error
 - [ ] union_member

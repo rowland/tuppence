@@ -52,7 +52,7 @@ byte_escape_sequence = "\\" "x" hex_digit hex_digit .
 
 case_block = match_condition block .
 
-chained_expression = prec1_expression { "|>" function_call } .
+chained_expression = prec1_expression { pipe_op function_call } .
 
 character = (* valid UTF-8 codepoint *) .
 
@@ -365,6 +365,8 @@ pattern = labeled_pattern
 pattern_match = type_reference "(" pattern ")" 
               | structured_match
               | type_reference .
+
+pipe_op = "|>" .
 
 plus_eq_op = "+=" .
 
