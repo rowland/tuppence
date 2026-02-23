@@ -65,12 +65,12 @@ const (
 	NodeIndexedAccess
 	NodeMemberAccess
 	NodeMetaExpression
-	NodePrec1Expression
-	NodePrec2Expression
-	NodePrec3Expression
-	NodePrec4Expression
-	NodePrec5Expression
-	NodePrec6Expression
+	NodeLogicalOrExpression
+	NodeLogicalAndExpression
+	NodeComparisonExpression
+	NodeAddSubExpression
+	NodeMulDivExpression
+	NodePowExpression
 	NodeRelationalComparison
 	NodeReturnExpression
 	NodeSafeIndexedAccess
@@ -246,12 +246,12 @@ var NodeTypes = map[NodeType]string{
 	NodeIndexedAccess:           "IndexedAccess",
 	NodeMemberAccess:            "MemberAccess",
 	NodeMetaExpression:          "MetaExpression",
-	NodePrec1Expression:         "Prec1Expression",
-	NodePrec2Expression:         "Prec2Expression",
-	NodePrec3Expression:         "Prec3Expression",
-	NodePrec4Expression:         "Prec4Expression",
-	NodePrec5Expression:         "Prec5Expression",
-	NodePrec6Expression:         "Prec6Expression",
+	NodeLogicalOrExpression:     "LogicalOrExpression",
+	NodeLogicalAndExpression:    "LogicalAndExpression",
+	NodeComparisonExpression:    "ComparisonExpression",
+	NodeAddSubExpression:        "AddSubExpression",
+	NodeMulDivExpression:        "MulDivExpression",
+	NodePowExpression:           "PowExpression",
 	NodeRelationalComparison:    "RelationalComparison",
 	NodeReturnExpression:        "ReturnExpression",
 	NodeSafeIndexedAccess:       "SafeIndexedAccess",

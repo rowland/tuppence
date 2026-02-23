@@ -85,12 +85,12 @@
 - [x] annotation_value
 - [.] chained_expression
 - [.] binary_expression
-- [.] prec1_expression
-- [.] prec2_expression
-- [.] prec3_expression
-- [.] prec4_expression
-- [.] prec5_expression
-- [.] prec6_expression
+- [.] prec1_expression -> logical_or_expression
+- [.] prec2_expression -> logical_and_expression
+- [.] prec3_expression -> comparison_expression
+- [.] prec4_expression -> add_sub_expression
+- [.] prec5_expression -> mul_div_expression
+- [.] prec6_expression -> pow_expression
 - [.] primary_expression
 - [.] try_expression
 - [.] type_reference

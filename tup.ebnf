@@ -1,5 +1,7 @@
 add_op = "+" .
 
+add_sub_expression = mul_div_expression { add_sub_op mul_div_expression } .
+
 add_sub_op = add_op | checked_add_op | sub_op | checked_sub_op | bit_or_op .
 
 annotation = namespaced_annotation | simple_annotation .
@@ -52,7 +54,7 @@ byte_escape_sequence = "\\" "x" hex_digit hex_digit .
 
 case_block = match_condition block .
 
-chained_expression = prec1_expression { pipe_op function_call } .
+chained_expression = logical_or_expression { pipe_op function_call } .
 
 character = (* valid UTF-8 codepoint *) .
 
@@ -67,6 +69,8 @@ checked_sub_op = "?-" .
 comment = "#" { not_eol } eol .
 
 compare_op = "<=>" .
+
+comparison_expression = add_sub_expression [ type_comparison_tail | relational_comparison_tail ] .
 
 compound_assignment = identifier compound_assignment_op expression .
 
@@ -287,9 +291,13 @@ literal = number
 
 local_type_reference = type_reference | identifier .
 
+logical_and_expression = comparison_expression { logical_and_op comparison_expression } .
+
 logical_and_op = "&&" .
 
 logical_not_op = "!" .
+
+logical_or_expression = logical_and_expression { logical_or_op logical_and_expression } .
 
 logical_or_op = "||" .
 
@@ -317,6 +325,8 @@ minus_eq_op = "-=" .
 mod_op = "%" .
 
 module = { top_level_item } .
+
+mul_div_expression = pow_expression { mul_div_op pow_expression } .
 
 mul_div_op = mul_op | checked_mul_op | div_op | checked_div_op | mod_op | checked_mod_op | bit_and_op | shift_left_op | shift_right_op .
 
@@ -372,19 +382,9 @@ plus_eq_op = "+=" .
 
 pow_eq_op = "^=" .
 
+pow_expression = unary_expression { pow_op unary_expression } .
+
 pow_op = "^" .
-
-prec1_expression = prec2_expression { logical_or_op prec2_expression } .
-
-prec2_expression = prec3_expression { logical_and_op prec3_expression } .
-
-prec3_expression = prec4_expression [ type_comparison_tail | relational_comparison_tail ] .
-
-prec4_expression = prec5_expression { add_sub_op prec5_expression } .
-
-prec5_expression = prec6_expression { mul_div_op prec6_expression } .
-
-prec6_expression = unary_expression { pow_op unary_expression } .
 
 primary_expression = "(" expression ")"
                    | block
@@ -419,7 +419,7 @@ raw_string_literal = "`" { "``" | character - "`" } "`" .
 
 rel_op = eq_op | neq_op | lt_op | lte_op | gt_op | gte_op | match_op | compare_op .
 
-relational_comparison_tail = rel_op prec4_expression .
+relational_comparison_tail = rel_op add_sub_expression .
 
 rename_identifier = identifier [ ":" identifier ] .
 

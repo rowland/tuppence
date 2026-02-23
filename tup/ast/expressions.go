@@ -18,14 +18,14 @@ func (n *TryExpression) expressionNode()    {}
 func (n *BinaryExpression) expressionNode() {}
 func (n *UnaryExpression) expressionNode()  {}
 
-func (n *Prec1Expression) expressionNode() {}
-func (n *Prec2Expression) expressionNode() {}
-func (n *Prec4Expression) expressionNode() {}
-func (n *Prec5Expression) expressionNode() {}
-func (n *Prec6Expression) expressionNode() {}
+func (n *LogicalOrExpression) expressionNode()  {}
+func (n *LogicalAndExpression) expressionNode() {}
+func (n *AddSubExpression) expressionNode()     {}
+func (n *MulDivExpression) expressionNode()     {}
+func (n *PowExpression) expressionNode()        {}
+func (n *TypeComparison) expressionNode()       {}
+func (n *RelationalComparison) expressionNode() {}
 
-func (n *TypeComparison) expressionNode()        {}
-func (n *RelationalComparison) expressionNode()  {}
 func (n *Identifier) expressionNode()            {}
 func (n *Block) expressionNode()                 {}
 func (n *IfExpression) expressionNode()          {}
@@ -58,22 +58,22 @@ func (n *SymbolLiteral) expressionNode()             {}
 func (n *RuneLiteral) expressionNode()               {}
 func (n *FixedSizeArrayLiteral) expressionNode()     {}
 
-// prec1_expression = prec2_expression { logical_or_op prec2_expression } .
+// logical_or_expression = logical_and_expression { logical_or_op logical_and_expression } .
 
-type Prec1Expression struct {
+type LogicalOrExpression struct {
 	BaseNode
 	Operands []Expression
 }
 
-func NewPrec1Expression(operands []Expression) *Prec1Expression {
-	return &Prec1Expression{
-		BaseNode: BaseNode{Type: NodePrec1Expression},
+func NewLogicalOrExpression(operands []Expression) *LogicalOrExpression {
+	return &LogicalOrExpression{
+		BaseNode: BaseNode{Type: NodeLogicalOrExpression},
 		Operands: operands,
 	}
 }
 
-// String returns a textual representation of the prec1 expression
-func (p *Prec1Expression) String() string {
+// String returns a textual representation of the logical_or_expression
+func (p *LogicalOrExpression) String() string {
 	var builder strings.Builder
 	for i, operand := range p.Operands {
 		if i > 0 {
@@ -84,23 +84,23 @@ func (p *Prec1Expression) String() string {
 	return builder.String()
 }
 
-// prec2_expression = prec3_expression { logical_and_op prec3_expression } .
+// logical_and_expression = comparison_expression { logical_and_op comparison_expression } .
 
-type Prec2Expression struct {
+type LogicalAndExpression struct {
 	BaseNode
 	Operands []Expression
 }
 
-// NewPrec2Expression creates a new Prec2Expression node
-func NewPrec2Expression(operands []Expression) *Prec2Expression {
-	return &Prec2Expression{
-		BaseNode: BaseNode{Type: NodePrec2Expression},
+// NewLogicalAndExpression creates a new LogicalAndExpression node
+func NewLogicalAndExpression(operands []Expression) *LogicalAndExpression {
+	return &LogicalAndExpression{
+		BaseNode: BaseNode{Type: NodeLogicalAndExpression},
 		Operands: operands,
 	}
 }
 
-// String returns a textual representation of the prec2 expression
-func (p *Prec2Expression) String() string {
+// String returns a textual representation of the logical_and_expression
+func (p *LogicalAndExpression) String() string {
 	var builder strings.Builder
 	for i, operand := range p.Operands {
 		if i > 0 {
@@ -111,76 +111,76 @@ func (p *Prec2Expression) String() string {
 	return builder.String()
 }
 
-// prec3_expression = type_comparison | relational_comparison .
+// comparison_expression = type_comparison | relational_comparison .
 
-type Prec3Expression interface {
+type ComparisonExpression interface {
 	Node
-	prec3ExpressionNode()
+	comparisonExpressionNode()
 }
 
-func (n *TypeComparison) prec3ExpressionNode()       {}
-func (n *RelationalComparison) prec3ExpressionNode() {}
+func (n *TypeComparison) comparisonExpressionNode()       {}
+func (n *RelationalComparison) comparisonExpressionNode() {}
 
-// prec4_expression = prec5_expression { add_sub_op prec5_expression } .
+// add_sub_expression = mul_div_expression { add_sub_op mul_div_expression } .
 
-type Prec4Expression struct {
+type AddSubExpression struct {
 	BaseNode
 	Left     Expression
 	Operator AddSubOp
 	Right    Expression
 }
 
-func NewPrec4Expression(left Expression, operator AddSubOp, right Expression) *Prec4Expression {
-	return &Prec4Expression{
-		BaseNode: BaseNode{Type: NodePrec4Expression},
+func NewAddSubExpression(left Expression, operator AddSubOp, right Expression) *AddSubExpression {
+	return &AddSubExpression{
+		BaseNode: BaseNode{Type: NodeAddSubExpression},
 		Left:     left,
 		Operator: operator,
 		Right:    right,
 	}
 }
 
-// String returns a textual representation of the prec4 expression
-func (p *Prec4Expression) String() string {
+// String returns a textual representation of the add_sub_expression
+func (p *AddSubExpression) String() string {
 	return fmt.Sprintf("%s %s %s", p.Left, p.Operator, p.Right)
 }
 
-// prec5_expression = prec6_expression { mul_div_op prec6_expression } .
+// mul_div_expression = pow_expression { mul_div_op pow_expression } .
 
-type Prec5Expression struct {
+type MulDivExpression struct {
 	BaseNode
 	Left     Expression
 	Operator MulDivOp
 	Right    Expression
 }
 
-func NewPrec5Expression(left Expression, operator MulDivOp, right Expression) *Prec5Expression {
-	return &Prec5Expression{
-		BaseNode: BaseNode{Type: NodePrec5Expression},
+func NewMulDivExpression(left Expression, operator MulDivOp, right Expression) *MulDivExpression {
+	return &MulDivExpression{
+		BaseNode: BaseNode{Type: NodeMulDivExpression},
 		Left:     left,
 		Operator: operator,
 		Right:    right,
 	}
 }
 
-func (p *Prec5Expression) String() string {
+func (p *MulDivExpression) String() string {
 	return fmt.Sprintf("%s %s %s", p.Left, p.Operator, p.Right)
 }
 
-// prec6_expression = unary_expression { "^" unary_expression } .
+// pow_expression = unary_expression { "^" unary_expression } .
 
-type Prec6Expression struct {
+type PowExpression struct {
 	BaseNode
 	Operands []Expression
 }
 
-func NewPrec6Expression(operands []Expression) *Prec6Expression {
-	return &Prec6Expression{
-		BaseNode: BaseNode{Type: NodePrec6Expression},
+func NewPowExpression(operands []Expression) *PowExpression {
+	return &PowExpression{
+		BaseNode: BaseNode{Type: NodePowExpression},
 		Operands: operands,
 	}
 }
 
-func (p *Prec6Expression) String() string {
+func (p *PowExpression) String() string {
 	var builder strings.Builder
 	for i, operand := range p.Operands {
 		if i > 0 {
@@ -201,7 +201,7 @@ type TypePredicate interface {
 func (n *TypeReference) typePredicateNode() {}
 func (n *InlineUnion) typePredicateNode()   {}
 
-// type_comparison = prec4_expression is_op type_predicate .
+// type_comparison = add_sub_expression is_op type_predicate .
 
 type TypeComparison struct {
 	BaseNode
@@ -221,7 +221,7 @@ func (t *TypeComparison) String() string {
 	return fmt.Sprintf("%s is %s", t.Left, t.Right)
 }
 
-// relational_comparison = prec4_expression { rel_op prec4_expression } .
+// relational_comparison = add_sub_expression { rel_op add_sub_expression } .
 type RelationalComparison struct {
 	BaseNode
 	Left     Expression
@@ -548,7 +548,7 @@ func (u *UnaryExpression) String() string {
 	return u.Operator.String() + u.Expression.String()
 }
 
-// chained_expression = prec1_expression { "|>" function_call } .
+// chained_expression = logical_or_expression { "|>" function_call } .
 
 // ChainedExpression represents a chained pipe expression (e.g., a |> b |> c)
 type ChainedExpression struct {
