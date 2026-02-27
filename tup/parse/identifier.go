@@ -104,8 +104,10 @@ func TypeReference(tokens []tok.Token) (item *ast.TypeReference, remainder []tok
 		remainder = remainder2
 		identifiers = append(identifiers, identifier)
 		remainder, err = Dot(remainder)
-		if err != nil {
-			return nil, nil, errorExpecting(tok.TokenTypes[tok.TokDot], remainder)
+		if err == ErrNoMatch {
+			return nil, tokens, ErrNoMatch
+		} else if err != nil {
+			return nil, remainder, err
 		}
 	}
 

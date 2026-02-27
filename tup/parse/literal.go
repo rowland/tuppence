@@ -92,5 +92,5 @@ func Literal(tokens []tok.Token) (item ast.Literal, remainder []tok.Token, err e
 	// 	return nil, tokens, err
 	// }
 
-	return nil, tokens, errorExpecting("literal", tokens)
+	return nil, tokens, ErrNoMatch
 }

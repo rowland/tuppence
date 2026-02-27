@@ -13,8 +13,10 @@ import (
 
 func RuneLiteral(tokens []tok.Token) (item *ast.RuneLiteral, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
-	if peek(remainder).Type != tok.TokRuneLit || peek(remainder).Invalid {
-		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokRuneLit], remainder)
+	if peek(remainder).Type != tok.TokRuneLit {
+		return nil, tokens, ErrNoMatch
+	} else if peek(remainder).Invalid {
+		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokRuneLit], remainder)
 	}
 	value := remainder[0].Value()
 

@@ -28,7 +28,7 @@ func Expression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token,
 		return nil, tokens, err
 	}
 
-	return nil, tokens, errorExpecting("expression", tokens)
+	return nil, tokens, ErrNoMatch
 }
 
 // try_expression = "try" expression
