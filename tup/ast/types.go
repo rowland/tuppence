@@ -28,7 +28,18 @@ func (t *TypeReference) String() string {
 	return t.TypeIdentifier.String()
 }
 
-// NilableType represents a nilable type (prefixed with ?)
+// local_type_reference = type_reference | identifier .
+
+type LocalTypeReference interface {
+	Node
+	localTypeReferenceNode()
+}
+
+func (n *TypeReference) localTypeReferenceNode() {}
+func (n *Identifier) localTypeReferenceNode()    {}
+
+// nilable_type = "?" local_type_reference .
+
 type NilableType struct {
 	BaseNode
 	InnerType Node // The type that is made nilable

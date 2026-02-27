@@ -95,42 +95,84 @@
 - [.] try_expression
 - [.] type_reference
 - [.] unary_expression
-
 - [ ] function_call
-- [ ] annotations
-- [ ] argument
-- [ ] arguments
+    - [ ] function_parameter_types
+        - [x] local_type_reference
+            - [x] identifier
+    - [ ] function_arguments
+        - [ ] labeled_arguments
+            - [ ] labeled_argument
+        - [ ] arguments
+            - [ ] argument
+                - [ ] expression
+                - [ ] spread_argument
+        - [ ] partial_application
+    - [ ] function_block
+        - [ ] block_parameters
+            - [ ] assignment_lhs
+        - [ ] block_body
+            - [ ] statement
+                - [ ] type_qualified_function_declaration
+                    - [ ] annotations
+                    - [ ] type_identifier
+                    - [ ] function_declaration_lhs
+                    - [ ] function_declaration_type
+                        - [ ] labeled_parameters
+                        - [ ] parameters
+                            - [ ] parameter
+                                - [ ] nilable_type
+                                - [ ] type
+                                    - [ ] fixed_size_array
+                                        - [ ] array_type
+                                    - [ ] dynamic_array
+                                    - [ ] function_type
+                                    - [ ] tuple_type
+                                    - [ ] error_tuple
+                                    - [ ] generic_type
+                                        - [ ] type_argument_list
+                                            - [ ] type_argument
+                                    - [ ] inline_union
+                         - [ ] union_type
+                                - [ ] union_declaration
+                                    - [ ] union_members
+                                        - [ ] union_member_declaration
+                                            - [ ] union_member_no_annotations
+                                - [ ] union_member
+                                    - [ ] named_tuple
+                                    - [ ] contract_declaration
+                                        - [ ] contract_members
+                                            - [ ] contract_member
+                                                - [ ] contract_function
+                                                - [ ] contract_field
+                        - [ ] return_type
+                            - [ ] union_with_error
+                            - [ ] union_declaration_with_error
+                    - [ ] block
+                - [ ] type_qualified_declaration
+                - [ ] type_declaration
+                    - [ ] type_declaration_lhs
+                    - [ ] type_declaration_rhs
+                - [ ] function_declaration
+                - [ ] compound_assignment
+                - [ ] assignment
+
 - [ ] array_function_call
 - [ ] array_members
 - [ ] array_pattern
-- [ ] array_type
-- [ ] assignment
-- [ ] assignment_lhs
-- [ ] block
-- [ ] block_body
-- [ ] block_parameters
 - [ ] break_expression
 - [ ] case_block
 - [ ] character
 - [ ] comment
-- [ ] compound_assignment
 - [ ] condition
 - [ ] constant
 - [ ] content_line
 - [ ] continue_expression
-- [ ] contract_declaration
-- [ ] contract_members
-- [ ] contract_member
-- [ ] contract_function
-- [ ] contract_field
 - [ ] decimal_digit
 - [ ] structured_match
-- [ ] dynamic_array
 - [ ] else_block
 - [ ] enum_declaration
 - [ ] enum_members
 - [ ] enum_member_declaration
-- [ ] error_tuple
 - [ ] exponent
 - [ ] export_assignment
 - [ ] export_declaration
@@ -140,26 +182,15 @@
 - [ ] export_type_qualified_declaration
 - [ ] export_type_qualified_function_declaration
 - [ ] eol
-- [ ] expression
-- [ ] identifier
-- [ ] fixed_size_array
 - [ ] for_block
 - [ ] for_expression
 - [ ] for_header
 - [ ] for_in_header
 - [ ] iterable
-- [ ] function_arguments
-- [ ] function_block
 - [ ] function_call_context
-- [ ] function_declaration
-- [ ] function_declaration_type
-- [ ] function_declaration_lhs
-- [ ] function_parameter_types
-- [ ] function_type
 - [ ] function_type_declaration
 - [ ] function_type_declaration_lhs
 - [ ] function_type_identifier
-- [ ] generic_type
 - [ ] hex_digit
 - [ ] if_expression
 - [ ] import_expression
@@ -169,15 +200,11 @@
 - [ ] indexed_access
 - [ ] initializer
 - [ ] inline_for_expression
-- [ ] inline_union
 - [ ] interpolation
 - [ ] iterable
 - [ ] iterable_header
-- [ ] labeled_argument
-- [ ] labeled_arguments
 - [ ] labeled_assignment_lhs
 - [ ] labeled_parameter
-- [ ] labeled_parameters
 - [ ] labeled_pattern
 - [ ] labeled_rest_parameter
 - [ ] labeled_tuple
@@ -188,22 +215,16 @@
 - [ ] leading_whitespace
 - [ ] letter
 - [ ] list_match
-- [ ] local_type_reference
 - [ ] lowercase_letter
 - [ ] match_condition
 - [ ] match_element
 - [ ] member_access
 - [ ] meta_expression
 - [ ] module
-- [ ] named_tuple
-- [ ] nilable_type
 - [ ] nonzero_digit
 - [ ] not_eol
 - [ ] octal_digit
 - [ ] ordinal_assignment_lhs
-- [ ] parameter
-- [ ] parameters
-- [ ] partial_application
 - [ ] pattern
 - [ ] pattern_match
 - [ ] range
@@ -214,42 +235,21 @@
 - [ ] rest_operator
 - [ ] rest_parameter
 - [ ] return_expression
-- [ ] return_type
 - [ ] safe_indexed_access
 - [ ] simple_annotation
-- [ ] spread_argument
-- [ ] statement
 - [ ] step_expression
 - [ ] switch_statement
 - [ ] top_level_item
 - [ ] tuple_member
 - [ ] tuple_members
 - [ ] tuple_pattern
-- [ ] tuple_type
 - [ ] tuple_type_member
 - [ ] tuple_type_members
 - [ ] tuple_update_expression
-- [ ] type
 - [ ] typeof_expression
-- [ ] type_argument
-- [ ] type_argument_list
 - [ ] type_comparison
 - [ ] type_constructor_call
-- [ ] type_declaration
-- [ ] type_declaration_lhs
-- [ ] type_declaration_rhs
-- [ ] type_identifier
 - [ ] type_parameter
 - [ ] type_parameters
-- [ ] type_qualified_declaration
-- [ ] type_qualified_function_declaration
-- [ ] union_declaration
-- [ ] union_declaration_with_error
-- [ ] union_member
-- [ ] union_members
-- [ ] union_member_declaration
-- [ ] union_type
-- [ ] union_member_no_annotations
-- [ ] union_with_error
 - [ ] uppercase_letter
 - [ ] negatable_expression
