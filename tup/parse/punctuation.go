@@ -26,6 +26,10 @@ var At = expectFunc(tok.TokAt)
 
 var Colon = expectFunc(tok.TokColon, tok.TokColonNoSpace)
 
+// comma = "," .
+
+var Comma = expectFunc(tok.TokComma)
+
 // dot = "." .
 
 var Dot = expectFunc(tok.TokDot)
@@ -33,6 +37,10 @@ var Dot = expectFunc(tok.TokDot)
 // eol = "\r\n" | "\r" | "\n" .
 
 var EOL = expectFunc(tok.TokEOL)
+
+// star = "*" .
+
+var Star = expectFunc(tok.TokOpMul)
 
 // open_bracket = "[" .
 

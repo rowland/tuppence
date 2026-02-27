@@ -106,7 +106,7 @@
             - [ ] argument
                 - [ ] expression
                 - [ ] spread_argument
-        - [ ] partial_application
+        - [x] partial_application
     - [ ] function_block
         - [ ] block_parameters
             - [ ] assignment_lhs

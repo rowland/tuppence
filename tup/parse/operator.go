@@ -188,6 +188,28 @@ func PipeOp(tokens []tok.Token) (remainder []tok.Token, err error) {
 	}
 }
 
+// partial_application = [ "," ] "*" .
+
+func PartialApplication(tokens []tok.Token) (remainder []tok.Token, err error) {
+	remainder = skipComments(tokens)
+
+	remainder, err = Comma(remainder)
+	if err == ErrNoMatch {
+		return tokens, ErrNoMatch
+	} else if err != nil {
+		return remainder, err
+	}
+
+	remainder, err = Star(remainder)
+	if err == ErrNoMatch {
+		return tokens, ErrNoMatch
+	} else if err != nil {
+		return remainder, err
+	}
+
+	return remainder, nil
+}
+
 // pow_op = "^" .
 
 func PowOp(tokens []tok.Token) (remainder []tok.Token, err error) {
