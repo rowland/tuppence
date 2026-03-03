@@ -41,12 +41,10 @@ func RenameIdentifier(tokens []tok.Token) (ident *ast.RenameIdentifier, remainde
 		return nil, remainder, err
 	}
 
-	remainder2, err2 := Colon(remainder)
-	if err2 == ErrNoMatch {
+	remainder2, found := Colon(remainder)
+	if !found {
 		// no colon found, so no renaming
 		return ast.NewRenameIdentifier(identifier, nil), remainder2, nil
-	} else if err2 != nil {
-		return nil, remainder2, err2
 	}
 
 	// colon found, so original identifier expected
@@ -68,12 +66,10 @@ func RenameType(tokens []tok.Token) (typeIdent *ast.RenameType, remainder []tok.
 		return nil, remainder, err
 	}
 
-	remainder2, err2 := Colon(remainder)
-	if err2 == ErrNoMatch {
+	remainder2, found := Colon(remainder)
+	if !found {
 		// no colon found, so no renaming
 		return ast.NewRenameType(typeIdentifier, nil), remainder, nil
-	} else if err2 != nil {
-		return nil, remainder2, err2
 	}
 
 	// colon found, so original type identifier expected
@@ -105,11 +101,9 @@ func TypeReference(tokens []tok.Token) (typeRef *ast.TypeReference, remainder []
 
 		remainder = remainder2
 		identifiers = append(identifiers, identifier)
-		remainder, err = Dot(remainder)
-		if err == ErrNoMatch {
+		var found bool
+		if remainder, found = Dot(remainder); !found {
 			return nil, tokens, ErrNoMatch
-		} else if err != nil {
-			return nil, remainder, err
 		}
 	}
 

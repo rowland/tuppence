@@ -11,8 +11,8 @@ import (
 func Argument(tokens []tok.Token) (arg *ast.Argument, remainder []tok.Token, err error) {
 	// fmt.Println("Argument", tokens)
 
-	remainder, err = SpreadOp(tokens)
-	spread := (err == nil)
+	var spread bool
+	remainder, spread = SpreadOp(tokens)
 
 	if expression, remainder, err := Expression(remainder); err == nil {
 		return ast.NewArgument(expression, spread), remainder, nil
@@ -37,11 +37,9 @@ func Arguments(tokens []tok.Token) (args *ast.Arguments, remainder []tok.Token, 
 			return nil, tokens, err
 		}
 		argsList = append(argsList, arg)
-		remainder2, err := Comma(remainder)
-		if err == ErrNoMatch {
+		remainder2, found := Comma(remainder)
+		if !found {
 			break
-		} else if err != nil {
-			return nil, remainder2, err
 		}
 		if _, _, err = ArgumentLabel(remainder2); err == nil {
 			break // argument label found, so we're done
@@ -97,11 +95,9 @@ func LabeledArguments(tokens []tok.Token) (args *ast.LabeledArguments, remainder
 			return nil, remainder, err
 		}
 		argsList = append(argsList, arg)
-		remainder, err = Comma(remainder)
-		if err == ErrNoMatch {
+		var found bool
+		if remainder, found = Comma(remainder); !found {
 			break
-		} else if err != nil {
-			return nil, remainder, err
 		}
 	}
 	if len(argsList) > 0 {
@@ -128,11 +124,9 @@ func ArgumentsBody(tokens []tok.Token) (args *ast.Arguments, labeledArgs *ast.La
 		return nil, nil, remainder, err
 	}
 
-	remainder2, err := Comma(remainder)
-	if err == ErrNoMatch {
+	remainder2, found := Comma(remainder)
+	if !found {
 		return args, nil, remainder, nil
-	} else if err != nil {
-		return nil, nil, remainder2, err
 	}
 
 	labeledArgs, remainder2, err = LabeledArguments(remainder2)

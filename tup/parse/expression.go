@@ -85,11 +85,9 @@ func ChainedExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok
 	var functionCalls []*ast.FunctionCall
 
 	for {
-		remainder, err = PipeOp(remainder)
-		if err == ErrNoMatch {
+		var found bool
+		if remainder, found = PipeOp(remainder); !found {
 			break
-		} else if err != nil {
-			return nil, remainder, err
 		}
 
 		var functionCall *ast.FunctionCall
@@ -120,11 +118,9 @@ func LogicalOrExpression(tokens []tok.Token) (expr ast.Expression, remainder []t
 
 	operands := []ast.Expression{initial}
 	for {
-		remainder, err = LogicalOrOp(remainder)
-		if err == ErrNoMatch {
+		var found bool
+		if remainder, found = LogicalOrOp(remainder); !found {
 			break
-		} else if err != nil {
-			return nil, remainder, err
 		}
 
 		var operand ast.Expression
@@ -156,11 +152,9 @@ func LogicalAndExpression(tokens []tok.Token) (expr ast.Expression, remainder []
 
 	operands := []ast.Expression{initial}
 	for {
-		remainder, err = LogicalAndOp(remainder)
-		if err == ErrNoMatch {
+		var found bool
+		if remainder, found = LogicalAndOp(remainder); !found {
 			break
-		} else if err != nil {
-			return nil, remainder, err
 		}
 
 		var operand ast.Expression
@@ -285,11 +279,9 @@ func PowExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Tok
 	operands := []ast.Expression{left}
 
 	for {
-		remainder, err = PowOp(remainder)
-		if err == ErrNoMatch {
+		var found bool
+		if remainder, found = PowOp(remainder); !found {
 			break
-		} else if err != nil {
-			return nil, remainder, err
 		}
 
 		var operand ast.Expression
@@ -455,9 +447,9 @@ func parenthesizedExpression(tokens []tok.Token) (expr ast.Expression, remainder
 	// fmt.Println("ParenthesizedExpression", tokens)
 	remainder = skipComments(tokens)
 
-	remainder, err = OpenParen(remainder)
-	if err != nil {
-		return nil, remainder, err
+	var found bool
+	if remainder, found = OpenParen(remainder); !found {
+		return nil, remainder, ErrNoMatch
 	}
 
 	expression, remainder, err := Expression(remainder)
@@ -465,9 +457,8 @@ func parenthesizedExpression(tokens []tok.Token) (expr ast.Expression, remainder
 		return nil, remainder, err
 	}
 
-	remainder, err = CloseParen(remainder)
-	if err != nil {
-		return nil, remainder, err
+	if remainder, found = CloseParen(remainder); !found {
+		return nil, remainder, ErrNoMatch
 	}
 
 	return expression, remainder, nil
@@ -484,11 +475,9 @@ func FunctionCall(tokens []tok.Token) (expr *ast.FunctionCall, remainder []tok.T
 
 func TypeComparisonTail(left ast.Expression, tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
 	// fmt.Println("TypeComparisonTail", tokens)
-	remainder, err = IsOp(tokens)
-	if err == ErrNoMatch {
-		return nil, tokens, err
-	} else if err != nil {
-		return nil, remainder, err
+	var found bool
+	if remainder, found = IsOp(tokens); !found {
+		return nil, tokens, ErrNoMatch
 	}
 
 	right, remainder, err := TypePredicate(remainder)

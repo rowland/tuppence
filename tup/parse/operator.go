@@ -154,12 +154,11 @@ var PipeOp = expectFunc(tok.TokOpPipe)
 
 // partial_application = ","  "*" .
 
-func PartialApplication(tokens []tok.Token) (remainder []tok.Token, err error) {
+func PartialApplication(tokens []tok.Token) (remainder []tok.Token, found bool) {
 	remainder = skipComments(tokens)
 
-	remainder, err = Comma(remainder)
-	if err != nil {
-		return remainder, err
+	if remainder, found = Comma(remainder); !found {
+		return remainder, false
 	}
 
 	return Star(remainder)

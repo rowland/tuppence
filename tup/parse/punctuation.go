@@ -6,15 +6,15 @@ import (
 	"github.com/rowland/tuppence/tup/tok"
 )
 
-func expectFunc(tokenTypes ...tok.TokenType) func([]tok.Token) (remainder []tok.Token, err error) {
-	return func(tokens []tok.Token) (remainder []tok.Token, err error) {
+func expectFunc(tokenTypes ...tok.TokenType) func([]tok.Token) (remainder []tok.Token, found bool) {
+	return func(tokens []tok.Token) (remainder []tok.Token, found bool) {
 		remainder = skipComments(tokens)
 
 		if slices.Contains(tokenTypes, peek(remainder).Type) {
-			return remainder[1:], nil
+			return remainder[1:], true
 		}
 
-		return tokens, ErrNoMatch
+		return tokens, false
 	}
 }
 

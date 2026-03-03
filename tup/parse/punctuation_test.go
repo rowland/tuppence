@@ -23,12 +23,12 @@ func TestAt(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 			}
-			_, err = At(tokens)
-			if test.wantErr && err == nil {
-				t.Errorf("At(%q) = %v, want error", test.input, err)
+			_, found := At(tokens)
+			if test.wantErr && found {
+				t.Errorf("At(%q) = %v, want error", test.input, found)
 			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("At(%q) = %v, want nil", test.input, err)
+			if !test.wantErr && !found {
+				t.Fatalf("At(%q) = %v, want nil", test.input, found)
 			}
 		})
 	}
@@ -54,12 +54,12 @@ func TestColon(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 			}
-			_, err = Colon(tokens)
-			if test.wantErr && err == nil {
-				t.Errorf("Colon(%q) = %v, want error", test.input, err)
+			_, found := Colon(tokens)
+			if test.wantErr && found {
+				t.Errorf("Colon(%q) = %v, want error", test.input, found)
 			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("Colon(%q) = %v, want nil", test.input, err)
+			if !test.wantErr && !found {
+				t.Fatalf("Colon(%q) = %v, want nil", test.input, found)
 			}
 		})
 	}
@@ -82,12 +82,12 @@ func TestDot(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 			}
-			_, err = Dot(tokens)
-			if test.wantErr && err == nil {
-				t.Errorf("Dot(%q) = %v, want error", test.input, err)
+			_, found := Dot(tokens)
+			if test.wantErr && found {
+				t.Errorf("Dot(%q) = %v, want error", test.input, found)
 			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("Dot(%q) = %v, want nil", test.input, err)
+			if !test.wantErr && !found {
+				t.Fatalf("Dot(%q) = %v, want nil", test.input, found)
 			}
 		})
 	}

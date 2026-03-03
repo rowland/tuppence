@@ -421,12 +421,12 @@ func TestLogicalOrOp(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 			}
-			remainder, err := LogicalOrOp(tokens)
-			if test.wantErr && err == nil {
-				t.Fatalf("LogicalOrOp(%q) = %v, want error", test.input, err)
+			remainder, found := LogicalOrOp(tokens)
+			if test.wantErr && found {
+				t.Fatalf("LogicalOrOp(%q) = %v, want error", test.input, found)
 			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("LogicalOrOp(%q) = %v, want nil", test.input, err)
+			if !test.wantErr && !found {
+				t.Fatalf("LogicalOrOp(%q) = %v, want nil", test.input, found)
 			}
 			if !test.wantErr && (len(remainder) != 1 || remainder[0].Type != tok.TokEOF) {
 				t.Errorf("LogicalOrOp(%q) remainder = %v, want 1 token (EOF)", test.input, remainder)
@@ -459,12 +459,12 @@ func TestLogicalAndOp(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 			}
-			remainder, err := LogicalAndOp(tokens)
-			if test.wantErr && err == nil {
-				t.Fatalf("LogicalAndOp(%q) = %v, want error", test.input, err)
+			remainder, found := LogicalAndOp(tokens)
+			if test.wantErr && found {
+				t.Fatalf("LogicalAndOp(%q) = %v, want error", test.input, found)
 			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("LogicalAndOp(%q) = %v, want nil", test.input, err)
+			if !test.wantErr && !found {
+				t.Fatalf("LogicalAndOp(%q) = %v, want nil", test.input, found)
 			}
 			if !test.wantErr && (len(remainder) != 1 || remainder[0].Type != tok.TokEOF) {
 				t.Errorf("LogicalAndOp(%q) remainder = %v, want 1 token (EOF)", test.input, remainder)
@@ -497,12 +497,12 @@ func TestIsOp(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 			}
-			remainder, err := IsOp(tokens)
-			if test.wantErr && err == nil {
-				t.Fatalf("IsOp(%q) = %v, want error", test.input, err)
+			remainder, found := IsOp(tokens)
+			if test.wantErr && found {
+				t.Fatalf("IsOp(%q) = %v, want error", test.input, found)
 			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("IsOp(%q) = %v, want nil", test.input, err)
+			if !test.wantErr && !found {
+				t.Fatalf("IsOp(%q) = %v, want nil", test.input, found)
 			}
 			if !test.wantErr && (len(remainder) != 1 || remainder[0].Type != tok.TokEOF) {
 				t.Errorf("IsOp(%q) remainder = %v, want 1 token (EOF)", test.input, remainder)
@@ -535,12 +535,12 @@ func TestPipeOp(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 			}
-			remainder, err := PipeOp(tokens)
-			if test.wantErr && err == nil {
-				t.Fatalf("PipeOp(%q) = %v, want error", test.input, err)
+			remainder, found := PipeOp(tokens)
+			if test.wantErr && found {
+				t.Fatalf("PipeOp(%q) = %v, want error", test.input, found)
 			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("PipeOp(%q) = %v, want nil", test.input, err)
+			if !test.wantErr && !found {
+				t.Fatalf("PipeOp(%q) = %v, want nil", test.input, found)
 			}
 			if !test.wantErr && (len(remainder) != 1 || remainder[0].Type != tok.TokEOF) {
 				t.Errorf("PipeOp(%q) remainder = %v, want 1 token (EOF)", test.input, remainder)
@@ -573,12 +573,12 @@ func TestPowOp(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 			}
-			remainder, err := PowOp(tokens)
-			if test.wantErr && err == nil {
-				t.Fatalf("PowOp(%q) = %v, want error", test.input, err)
+			remainder, found := PowOp(tokens)
+			if test.wantErr && found {
+				t.Fatalf("PowOp(%q) = %v, want error", test.input, found)
 			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("PowOp(%q) = %v, want nil", test.input, err)
+			if !test.wantErr && !found {
+				t.Fatalf("PowOp(%q) = %v, want nil", test.input, found)
 			}
 			if !test.wantErr && (len(remainder) != 1 || remainder[0].Type != tok.TokEOF) {
 				t.Errorf("PowOp(%q) remainder = %v, want 1 token (EOF)", test.input, remainder)
@@ -603,12 +603,12 @@ func TestPartialApplication(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 			}
-			_, err = PartialApplication(tokens)
-			if test.wantErr && err == nil {
-				t.Errorf("PartialApplication(%q) = %v, want error", test.input, err)
+			_, found := PartialApplication(tokens)
+			if test.wantErr && found {
+				t.Errorf("PartialApplication(%q) = %v, want error", test.input, found)
 			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("PartialApplication(%q) = %v, want nil", test.input, err)
+			if !test.wantErr && !found {
+				t.Fatalf("PartialApplication(%q) = %v, want nil", test.input, found)
 			}
 		})
 	}

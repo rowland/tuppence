@@ -30,11 +30,9 @@ func Annotation(tokens []tok.Token) (annot ast.Annotation, remainder []tok.Token
 // namespaced_annotation = "@" namespace ":" identifier annotation_value eol .
 
 func NamespacedAnnotation(tokens []tok.Token) (annot *ast.NamespacedAnnotation, remainder []tok.Token, err error) {
-	remainder, err = At(tokens)
-	if err == ErrNoMatch {
+	var found bool
+	if remainder, found = At(tokens); !found {
 		return nil, tokens, ErrNoMatch
-	} else if err != nil {
-		return nil, remainder, err
 	}
 
 	namespace, remainder, err := Namespace(remainder)
@@ -44,11 +42,8 @@ func NamespacedAnnotation(tokens []tok.Token) (annot *ast.NamespacedAnnotation, 
 		return nil, remainder, err
 	}
 
-	remainder, err = Colon(remainder)
-	if err == ErrNoMatch {
+	if remainder, found = Colon(remainder); !found {
 		return nil, tokens, ErrNoMatch
-	} else if err != nil {
-		return nil, remainder, err
 	}
 
 	identifier, remainder, err := Identifier(remainder)
@@ -63,9 +58,8 @@ func NamespacedAnnotation(tokens []tok.Token) (annot *ast.NamespacedAnnotation, 
 		return nil, remainder, errorExpecting("annotation_value", remainder)
 	}
 
-	remainder, err = EOL(remainder)
-	if err != nil {
-		return nil, remainder, err
+	if remainder, found = EOL(remainder); !found {
+		return nil, remainder, ErrNoMatch
 	}
 
 	return ast.NewNamespacedAnnotation(namespace, identifier.Name, annotationValue), remainder, nil
@@ -74,11 +68,9 @@ func NamespacedAnnotation(tokens []tok.Token) (annot *ast.NamespacedAnnotation, 
 // simple_annotation = "@" identifier eol .
 
 func SimpleAnnotation(tokens []tok.Token) (annot *ast.SimpleAnnotation, remainder []tok.Token, err error) {
-	remainder, err = At(tokens)
-	if err == ErrNoMatch {
+	var found bool
+	if remainder, found = At(tokens); !found {
 		return nil, tokens, ErrNoMatch
-	} else if err != nil {
-		return nil, remainder, err
 	}
 
 	identifier, remainder, err := Identifier(remainder)
@@ -88,9 +80,8 @@ func SimpleAnnotation(tokens []tok.Token) (annot *ast.SimpleAnnotation, remainde
 		return nil, remainder, err
 	}
 
-	remainder, err = EOL(remainder)
-	if err != nil {
-		return nil, remainder, err
+	if remainder, found = EOL(remainder); !found {
+		return nil, remainder, ErrNoMatch
 	}
 
 	return ast.NewSimpleAnnotation(identifier.Name), remainder, nil

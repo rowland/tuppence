@@ -29,9 +29,9 @@ func Size(tokens []tok.Token) (size ast.Size, remainder []tok.Token, err error) 
 func ArrayLiteral(tokens []tok.Token) (arr *ast.ArrayLiteral, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
-	remainder, err = OpenBracket(remainder)
-	if err != nil {
-		return nil, nil, err
+	var found bool
+	if remainder, found = OpenBracket(remainder); !found {
+		return nil, nil, ErrNoMatch
 	}
 
 	arrayMembers, remainder, err := ArrayMembers(remainder)
@@ -39,9 +39,8 @@ func ArrayLiteral(tokens []tok.Token) (arr *ast.ArrayLiteral, remainder []tok.To
 		return nil, nil, err
 	}
 
-	remainder, err = CloseBracket(remainder)
-	if err != nil {
-		return nil, nil, err
+	if remainder, found = CloseBracket(remainder); !found {
+		return nil, nil, ErrNoMatch
 	}
 
 	arr = ast.NewArrayLiteral(arrayMembers, nil)
