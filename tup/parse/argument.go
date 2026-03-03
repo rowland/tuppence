@@ -37,15 +37,28 @@ func Arguments(tokens []tok.Token) (args *ast.Arguments, remainder []tok.Token, 
 			return nil, tokens, err
 		}
 		argsList = append(argsList, arg)
-		remainder, err = Comma(remainder)
+		remainder2, err := Comma(remainder)
 		if err == ErrNoMatch {
 			break
 		} else if err != nil {
-			return nil, remainder, err
+			return nil, remainder2, err
 		}
+		if _, _, err = ArgumentLabel(remainder2); err == nil {
+			break // argument label found, so we're done
+		}
+		remainder = remainder2
 	}
 	if len(argsList) > 0 {
 		return ast.NewArguments(argsList), remainder, nil
+	}
+	return nil, tokens, ErrNoMatch
+}
+
+// argument_label = identifier ":" .
+
+func ArgumentLabel(tokens []tok.Token) (ident *ast.Identifier, remainder []tok.Token, err error) {
+	if len(tokens) >= 2 && tokens[0].Type == tok.TokID && tokens[1].Type == tok.TokColon {
+		return ast.NewIdentifier(tokens[0].Value(), tokens[0].File, tokens[0].Offset, tokens[0].Length), tokens[2:], nil
 	}
 	return nil, tokens, ErrNoMatch
 }
@@ -55,12 +68,7 @@ func Arguments(tokens []tok.Token) (args *ast.Arguments, remainder []tok.Token, 
 func LabeledArgument(tokens []tok.Token) (arg *ast.LabeledArgument, remainder []tok.Token, err error) {
 	// fmt.Println("LabeledArgument", tokens)
 
-	identifier, remainder, err := Identifier(tokens)
-	if err != nil {
-		return nil, remainder, err
-	}
-
-	remainder, err = Colon(remainder)
+	identifier, remainder, err := ArgumentLabel(tokens)
 	if err != nil {
 		return nil, remainder, err
 	}
@@ -100,4 +108,37 @@ func LabeledArguments(tokens []tok.Token) (args *ast.LabeledArguments, remainder
 		return ast.NewLabeledArguments(argsList), remainder, nil
 	}
 	return nil, tokens, ErrNoMatch
+}
+
+// arguments_body = labeled_arguments
+//                | arguments [ "," labeled_arguments ]
+
+func ArgumentsBody(tokens []tok.Token) (args *ast.Arguments, labeledArgs *ast.LabeledArguments, remainder []tok.Token, err error) {
+	// fmt.Println("ArgumentsBody", tokens)
+
+	labeledArgs, remainder, err = LabeledArguments(tokens)
+	if err == nil {
+		return nil, labeledArgs, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, nil, remainder, err
+	}
+
+	args, remainder, err = Arguments(remainder)
+	if err != nil {
+		return nil, nil, remainder, err
+	}
+
+	remainder2, err := Comma(remainder)
+	if err == ErrNoMatch {
+		return args, nil, remainder, nil
+	} else if err != nil {
+		return nil, nil, remainder2, err
+	}
+
+	labeledArgs, remainder2, err = LabeledArguments(remainder2)
+	if err == nil {
+		return args, labeledArgs, remainder2, nil
+	}
+
+	return args, nil, remainder, nil
 }
