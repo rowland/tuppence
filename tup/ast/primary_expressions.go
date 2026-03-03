@@ -124,7 +124,7 @@ func (f *FunctionArguments) String() string {
 	return result
 }
 
-// labeled_argument = ( identifier ":" expression | spread_argument ) .
+// labeled_argument = ( identifier ":" argument ) .
 
 type LabeledArgument struct {
 	BaseNode
@@ -142,24 +142,6 @@ func NewLabeledArgument(label *Identifier, value Node) *LabeledArgument {
 
 func (l *LabeledArgument) String() string {
 	return l.Label.String() + ": " + l.Value.String()
-}
-
-// spread_argument = "..." expression .
-
-type SpreadArgument struct {
-	BaseNode
-	Expression Node // The expression being spread
-}
-
-func NewSpreadArgument(expression Node) *SpreadArgument {
-	return &SpreadArgument{
-		BaseNode:   BaseNode{Type: NodeSpreadArgument},
-		Expression: expression,
-	}
-}
-
-func (s *SpreadArgument) String() string {
-	return "..." + s.Expression.String()
 }
 
 // partial_application = [ "," ] "*" .

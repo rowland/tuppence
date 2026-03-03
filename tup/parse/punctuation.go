@@ -14,7 +14,7 @@ func expectFunc(tokenTypes ...tok.TokenType) func([]tok.Token) (remainder []tok.
 			return remainder[1:], nil
 		}
 
-		return nil, ErrNoMatch
+		return tokens, ErrNoMatch
 	}
 }
 

@@ -54,6 +54,8 @@ const (
 	NodeTypeQualifiedFunctionDeclaration
 
 	// Expression node types
+	NodeArgument
+	NodeArguments
 	NodeArrayFunctionCall
 	NodeBinaryExpression
 	NodeBreakExpression
@@ -235,6 +237,8 @@ var NodeTypes = map[NodeType]string{
 	NodeTypeQualifiedFunctionDeclaration:       "TypeQualifiedFunctionDeclaration",
 
 	// Expression node types
+	NodeArgument:                "Argument",
+	NodeArguments:               "Arguments",
 	NodeArrayFunctionCall:       "ArrayFunctionCall",
 	NodeBinaryExpression:        "BinaryExpression",
 	NodeBreakExpression:         "BreakExpression",

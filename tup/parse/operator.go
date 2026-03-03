@@ -138,55 +138,19 @@ func UnaryOp(tokens []tok.Token) (op ast.UnaryOp, remainder []tok.Token, err err
 
 // logical_or_op = "||" .
 
-func LogicalOrOp(tokens []tok.Token) (remainder []tok.Token, err error) {
-	remainder = skipComments(tokens)
-
-	switch peek(remainder).Type {
-	case tok.TokOpLogOr:
-		return remainder[1:], nil
-	default:
-		return tokens, ErrNoMatch
-	}
-}
+var LogicalOrOp = expectFunc(tok.TokOpLogOr)
 
 // logical_and_op = "&&" .
 
-func LogicalAndOp(tokens []tok.Token) (remainder []tok.Token, err error) {
-	remainder = skipComments(tokens)
-
-	switch peek(remainder).Type {
-	case tok.TokOpLogAnd:
-		return remainder[1:], nil
-	default:
-		return tokens, ErrNoMatch
-	}
-}
+var LogicalAndOp = expectFunc(tok.TokOpLogAnd)
 
 // is_op = "is" .
 
-func IsOp(tokens []tok.Token) (remainder []tok.Token, err error) {
-	remainder = skipComments(tokens)
-
-	switch peek(remainder).Type {
-	case tok.TokKwIs:
-		return remainder[1:], nil
-	default:
-		return tokens, ErrNoMatch
-	}
-}
+var IsOp = expectFunc(tok.TokKwIs)
 
 // pipe_op = "|>" .
 
-func PipeOp(tokens []tok.Token) (remainder []tok.Token, err error) {
-	remainder = skipComments(tokens)
-
-	switch peek(remainder).Type {
-	case tok.TokOpPipe:
-		return remainder[1:], nil
-	default:
-		return tokens, ErrNoMatch
-	}
-}
+var PipeOp = expectFunc(tok.TokOpPipe)
 
 // partial_application = [ "," ] "*" .
 
@@ -212,13 +176,8 @@ func PartialApplication(tokens []tok.Token) (remainder []tok.Token, err error) {
 
 // pow_op = "^" .
 
-func PowOp(tokens []tok.Token) (remainder []tok.Token, err error) {
-	remainder = skipComments(tokens)
+var PowOp = expectFunc(tok.TokOpPow)
 
-	switch peek(remainder).Type {
-	case tok.TokOpPow:
-		return remainder[1:], nil
-	default:
-		return tokens, ErrNoMatch
-	}
-}
+// spread_op = "..." .
+
+var SpreadOp = expectFunc(tok.TokOpRest)

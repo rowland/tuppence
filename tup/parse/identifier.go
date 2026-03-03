@@ -9,6 +9,7 @@ import (
 // identifier = ( lowercase_letter | "_" ) { letter | decimal_digit | "_" } .
 
 func Identifier(tokens []tok.Token) (item *ast.Identifier, remainder []tok.Token, err error) {
+	// fmt.Println("Identifier", tokens)
 	remainder = skipComments(tokens)
 	if peek(remainder).Type != tok.TokID {
 		return nil, tokens, ErrNoMatch
@@ -87,6 +88,7 @@ func RenameType(tokens []tok.Token) (item *ast.RenameType, remainder []tok.Token
 // type_reference = [ identifier { "." identifier } "." ] type_identifier .
 
 func TypeReference(tokens []tok.Token) (item *ast.TypeReference, remainder []tok.Token, err error) {
+	// fmt.Println("TypeReference", tokens)
 	remainder = skipComments(tokens)
 
 	var identifiers []*ast.Identifier

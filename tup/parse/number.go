@@ -8,6 +8,7 @@ import (
 // number = float_literal | integer_literal .
 
 func Number(tokens []tok.Token) (item ast.Number, remainder []tok.Token, err error) {
+	// fmt.Println("Number", tokens)
 	var errors []error
 	floatLit, remainder, err := FloatLiteral(tokens)
 	if err == nil {

@@ -102,10 +102,10 @@
     - [ ] function_arguments
         - [ ] labeled_arguments
             - [ ] labeled_argument
-        - [ ] arguments
-            - [ ] argument
-                - [ ] expression
-                - [ ] spread_argument
+        - [x] arguments
+            - [x] argument
+                - [.] expression
+                - [x] spread_argument
         - [x] partial_application
     - [ ] function_block
         - [ ] block_parameters

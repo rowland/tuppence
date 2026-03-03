@@ -13,6 +13,7 @@ import (
 // string_literal = '"' { escape_sequence | byte_escape_sequence | unicode_escape_sequence | character - '"' - eol } '"' .
 
 func StringLiteral(tokens []tok.Token) (item *ast.StringLiteral, remainder []tok.Token, err error) {
+	// fmt.Println("StringLiteral", tokens)
 	remainder = skipComments(tokens)
 
 	if peek(remainder).Type != tok.TokStrLit {

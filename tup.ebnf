@@ -12,7 +12,10 @@ annotation_value = string_literal | ["-"] number | boolean_literal | type_refere
 
 argument = ( expression | spread_argument ) .
 
-arguments = argument { "," argument } [ "," ] .
+arguments = argument { "," argument } .
+
+arguments_body = labeled_arguments
+               | arguments [ "," labeled_arguments ]
 
 array_function_call = "array" "(" type_identifier "," expression ")" .
 
@@ -169,15 +172,16 @@ for_in_header = ( initializer ";" assignment_lhs "in" iterable [ ";" step_expres
 
 iterable = expression .
 
-function_arguments = ( labeled_arguments
-                     | arguments [ "," labeled_arguments ] 
-                     ) [ partial_application ] .
+function_arguments = ( arguments_body [ partial_application ]
+                     | "*"
+                     )
+                     [ "," ] .
 
 function_block = "{" [ block_parameters ] block_body "}" .
 
 function_call = function_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
 
-function_call_context = function_identifier [ "(" ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ")" ] .
+function_call_context = function_identifier [ "(" function_arguments ")" ] .
 
 function_declaration = annotations function_declaration_lhs "=" function_declaration_type block .
 
@@ -243,9 +247,9 @@ iterable = expression .
 
 iterable_header = assignment_lhs "in" iterable .
 
-labeled_argument = ( identifier ":" expression | spread_argument ) .
+labeled_argument = ( identifier ":" argument ) .
 
-labeled_arguments = labeled_argument { "," ( labeled_argument ) } [ "," ] .
+labeled_arguments = labeled_argument { "," ( labeled_argument ) } .
 
 labeled_assignment_lhs = ( rename_identifier | rename_type ) { "," ( rename_identifier | rename_type ) } .
 
@@ -261,7 +265,7 @@ labeled_pattern = "(" identifier ":" pattern { "," identifier ":" pattern } ")" 
 
 labeled_rest_parameter = annotations identifier ":" rest_parameter .
 
-labeled_tuple = "(" labeled_arguments ")" .
+labeled_tuple = "(" labeled_arguments [ "," ] ")" .
 
 labeled_tuple_member = identifier ":" tuple_member .
 
@@ -366,7 +370,7 @@ parameter = annotations ( nilable_type
 
 parameters = ( parameter | rest_parameter ) { "," ( parameter | rest_parameter ) } [ "," ] .
 
-partial_application = [ "," ] "*" .
+partial_application = "," "*" .
 
 pattern = labeled_pattern
         | tuple_pattern
@@ -453,7 +457,9 @@ simple_annotation = "@" identifier eol .
 
 size = integer_literal | identifier .
 
-spread_argument = "..." expression .
+spread_argument = spread_op expression .
+
+spread_op = "..." .
 
 statement = ( type_qualified_function_declaration
             | type_qualified_declaration

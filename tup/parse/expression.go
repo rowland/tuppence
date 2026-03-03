@@ -22,6 +22,7 @@ func Expression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token,
 		return nil, remainder, err
 	}
 
+	// fmt.Println("UnaryExpression", tokens)
 	if unaryExpr, remainder, err := UnaryExpression(tokens); err == nil {
 		return unaryExpr, remainder, nil
 	} else if err != ErrNoMatch {
@@ -36,6 +37,7 @@ func Expression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token,
 //                | "try_break" expression .
 
 func TryExpression(tokens []tok.Token) (expr *ast.TryExpression, remainder []tok.Token, err error) {
+	// fmt.Println("TryExpression", tokens)
 	remainder = skipComments(tokens)
 
 	var variant ast.TryVariant
@@ -63,12 +65,14 @@ func TryExpression(tokens []tok.Token) (expr *ast.TryExpression, remainder []tok
 // binary_expression = chained_expression .
 
 func BinaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	// fmt.Println("BinaryExpression", tokens)
 	return ChainedExpression(tokens)
 }
 
 // chained_expression = logical_or_expression { "|>" function_call } .
 
 func ChainedExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	// fmt.Println("ChainedExpression", tokens)
 	remainder = skipComments(tokens)
 
 	initial, remainder, err := LogicalOrExpression(remainder)
@@ -106,7 +110,8 @@ func ChainedExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok
 // logical_or_expression = logical_and_expression { logical_or_op logical_and_expression } .
 
 func LogicalOrExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	initial, remainder, err := LogicalAndExpression(remainder)
+	// fmt.Println("LogicalOrExpression", tokens)
+	initial, remainder, err := LogicalAndExpression(tokens)
 	if err == ErrNoMatch {
 		return nil, tokens, err
 	} else if err != nil {
@@ -141,7 +146,8 @@ func LogicalOrExpression(tokens []tok.Token) (expr ast.Expression, remainder []t
 // logical_and_expression = comparison_expression { logical_and_op comparison_expression } .
 
 func LogicalAndExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	initial, remainder, err := ComparisonExpression(remainder)
+	// fmt.Println("LogicalAndExpression", tokens)
+	initial, remainder, err := ComparisonExpression(tokens)
 	if err == ErrNoMatch {
 		return nil, tokens, err
 	} else if err != nil {
@@ -176,7 +182,8 @@ func LogicalAndExpression(tokens []tok.Token) (expr ast.Expression, remainder []
 // comparison_expression = add_sub_expression [ type_comparison_tail | relational_comparison_tail ] .
 
 func ComparisonExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	left, remainder, err := AddSubExpression(remainder)
+	// fmt.Println("ComparisonExpression", tokens)
+	left, remainder, err := AddSubExpression(tokens)
 	if err == ErrNoMatch {
 		return nil, tokens, err
 	} else if err != nil {
@@ -203,6 +210,7 @@ func ComparisonExpression(tokens []tok.Token) (expr ast.Expression, remainder []
 // add_sub_expression = mul_div_expression { add_sub_op mul_div_expression } .
 
 func AddSubExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	// fmt.Println("AddSubExpression", tokens)
 	left, remainder, err := MulDivExpression(tokens)
 	if err == ErrNoMatch {
 		return nil, tokens, err
@@ -234,7 +242,8 @@ func AddSubExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.
 // mul_div_expression = pow_expression { mul_div_op pow_expression } .
 
 func MulDivExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	left, remainder, err := PowExpression(remainder)
+	// fmt.Println("MulDivExpression", tokens)
+	left, remainder, err := PowExpression(tokens)
 	if err == ErrNoMatch {
 		return nil, tokens, err
 	} else if err != nil {
@@ -265,7 +274,8 @@ func MulDivExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.
 // pow_expression = unary_expression { "^" unary_expression } .
 
 func PowExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	left, remainder, err := UnaryExpression(remainder)
+	// fmt.Println("PowExpression", tokens)
+	left, remainder, err := UnaryExpression(tokens)
 	if err == ErrNoMatch {
 		return nil, tokens, err
 	} else if err != nil {
@@ -307,22 +317,23 @@ func UnaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.T
 	if unaryExpression, remainder, err := PrefixedUnaryExpression(remainder); err == nil {
 		return unaryExpression, remainder, nil
 	} else if err != ErrNoMatch {
-		return nil, tokens, err
+		return nil, remainder, err
 	}
 
 	if primaryExpression, remainder, err := PrimaryExpression(remainder); err == nil {
 		return primaryExpression, remainder, nil
 	} else if err != ErrNoMatch {
-		return nil, tokens, err
+		return nil, remainder, err
 	}
 
-	return nil, tokens, errorExpecting("unary expression", tokens)
+	return nil, tokens, ErrNoMatch
 }
 
 // prefixed_unary_expression = unary_op negatable_expression .
 
 func PrefixedUnaryExpression(tokens []tok.Token) (expr *ast.UnaryExpression, remainder []tok.Token, err error) {
-	operator, remainder, err := UnaryOp(remainder)
+	// fmt.Println("PrefixedUnaryExpression", tokens)
+	operator, remainder, err := UnaryOp(tokens)
 	if err != nil {
 		return nil, tokens, err
 	}
@@ -346,6 +357,7 @@ func PrefixedUnaryExpression(tokens []tok.Token) (expr *ast.UnaryExpression, rem
 //                      | literal .
 
 func NegatableExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	// fmt.Println("NegatableExpression", tokens)
 	remainder = skipComments(tokens)
 
 	if expression, remainder, err := parenthesizedExpression(remainder); err == nil {
@@ -364,13 +376,13 @@ func NegatableExpression(tokens []tok.Token) (expr ast.Expression, remainder []t
 	if identifier, remainder, err := Identifier(remainder); err == nil {
 		return ast.NewIdentifier(identifier.Name, identifier.Source, identifier.StartOffset, identifier.Length), remainder, nil
 	} else if err != ErrNoMatch {
-		return nil, tokens, err
+		return nil, remainder, err
 	}
 
 	if literal, remainder, err := Literal(remainder); err == nil {
 		return literal, remainder, nil
 	} else if err != ErrNoMatch {
-		return nil, tokens, err
+		return nil, remainder, err
 	}
 
 	return nil, tokens, ErrNoMatch
@@ -398,10 +410,11 @@ func NegatableExpression(tokens []tok.Token) (expr ast.Expression, remainder []t
 //                    | literal .
 
 func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	if expression, remainder, err := parenthesizedExpression(remainder); err == nil {
+	// fmt.Println("PrimaryExpression", tokens)
+	if expression, remainder, err := parenthesizedExpression(tokens); err == nil {
 		return expression, remainder, nil
 	} else if err != ErrNoMatch {
-		return nil, tokens, err
+		return nil, remainder, err
 	}
 
 	// block
@@ -421,16 +434,16 @@ func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok
 	// safe_indexed_access
 	// indexed_access
 
-	if identifier, remainder, err := Identifier(remainder); err == nil {
+	if identifier, remainder, err := Identifier(tokens); err == nil {
 		return ast.NewIdentifier(identifier.Name, identifier.Source, identifier.StartOffset, identifier.Length), remainder, nil
 	} else if err != ErrNoMatch {
-		return nil, tokens, err
+		return nil, remainder, err
 	}
 
-	if literal, remainder, err := Literal(remainder); err == nil {
+	if literal, remainder, err := Literal(tokens); err == nil {
 		return literal, remainder, nil
 	} else if err != ErrNoMatch {
-		return nil, tokens, err
+		return nil, remainder, err
 	}
 
 	return nil, tokens, ErrNoMatch
@@ -439,11 +452,12 @@ func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok
 // parenthesized_expression = "(" expression ")" .
 
 func parenthesizedExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	// fmt.Println("ParenthesizedExpression", tokens)
 	remainder = skipComments(tokens)
 
 	remainder, err = OpenParen(remainder)
 	if err != nil {
-		return nil, tokens, err
+		return nil, remainder, err
 	}
 
 	expression, remainder, err := Expression(remainder)
@@ -462,12 +476,14 @@ func parenthesizedExpression(tokens []tok.Token) (expr ast.Expression, remainder
 // function_call = function_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
 
 func FunctionCall(tokens []tok.Token) (expr *ast.FunctionCall, remainder []tok.Token, err error) {
+	// fmt.Println("FunctionCall", tokens)
 	return nil, nil, ErrNoMatch // TODO: Implement
 }
 
 // type_comparison_tail = is_op type_predicate .
 
 func TypeComparisonTail(left ast.Expression, tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	// fmt.Println("TypeComparisonTail", tokens)
 	remainder, err = IsOp(tokens)
 	if err == ErrNoMatch {
 		return nil, tokens, err
@@ -488,12 +504,14 @@ func TypeComparisonTail(left ast.Expression, tokens []tok.Token) (expr ast.Expre
 // type_predicate = type_reference | inline_union .
 
 func TypePredicate(tokens []tok.Token) (expr ast.TypePredicate, remainder []tok.Token, err error) {
+	// fmt.Println("TypePredicate", tokens)
 	return nil, nil, ErrNoMatch // TODO: Implement
 }
 
 // relational_comparison_tail = rel_op add_sub_expression .
 
 func RelationalComparisonTail(left ast.Expression, tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	// fmt.Println("RelationalComparisonTail", tokens)
 	operator, remainder, err := RelOp(tokens)
 	if err == ErrNoMatch {
 		return nil, tokens, err
