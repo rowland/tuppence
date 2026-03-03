@@ -148,3 +148,123 @@ func TestArguments(t *testing.T) {
 		})
 	}
 }
+
+func TestLabeledArgument(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.LabeledArgument
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			input:   "",
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name:  "labeled argument",
+			input: "x: y",
+			want: ast.NewLabeledArgument(
+				ast.NewIdentifier("x", nil, 0, 1),
+				ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), false),
+			),
+			wantErr: false,
+		},
+		{
+			name:  "labeled argument with number",
+			input: "x: 1",
+			want: ast.NewLabeledArgument(
+				ast.NewIdentifier("x", nil, 0, 1),
+				ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 1), false),
+			),
+			wantErr: false,
+		},
+		{
+			name:  "labeled argument with spread operator",
+			input: "x: ...y",
+			want: ast.NewLabeledArgument(
+				ast.NewIdentifier("x", nil, 0, 1),
+				ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), true),
+			),
+			wantErr: false,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			source := source.NewSource([]byte(test.input), "test.tup")
+			tokens, err := tok.Tokenize(source.Contents, source.Filename)
+			if err != nil {
+				t.Errorf("Tokenize(%q) = %v", test.input, err)
+				return
+			}
+			arg, _, err := LabeledArgument(tokens)
+			if test.wantErr {
+				if err == nil {
+					t.Fatalf("LabeledArgument(): err == nil, want error")
+				}
+				return
+			}
+			if !test.wantErr && err != nil {
+				t.Fatalf("LabeledArgument(): err == %v, want nil", err)
+			}
+			if arg.Identifier.String() != test.want.Identifier.String() {
+				t.Errorf("LabeledArgument().Identifier = %v, want %v", arg.Identifier, test.want.Identifier)
+			}
+			if arg.Argument.Expr.String() != test.want.Argument.Expr.String() {
+				t.Errorf("LabeledArgument().Argument.Expr = %v, want %v", arg.Argument.Expr, test.want.Argument.Expr)
+			}
+		})
+	}
+}
+
+func TestLabeledArguments(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.LabeledArguments
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			input:   "",
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name:    "single labeled argument",
+			input:   "x: y",
+			want:    ast.NewLabeledArguments([]*ast.LabeledArgument{ast.NewLabeledArgument(ast.NewIdentifier("x", nil, 0, 1), ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), false))}),
+			wantErr: false,
+		},
+		{
+			name:    "labeled arguments",
+			input:   "x: y, z: w",
+			want:    ast.NewLabeledArguments([]*ast.LabeledArgument{ast.NewLabeledArgument(ast.NewIdentifier("x", nil, 0, 1), ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), false)), ast.NewLabeledArgument(ast.NewIdentifier("z", nil, 0, 1), ast.NewArgument(ast.NewIdentifier("w", nil, 0, 1), false))}),
+			wantErr: false,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			source := source.NewSource([]byte(test.input), "test.tup")
+			tokens, err := tok.Tokenize(source.Contents, source.Filename)
+			if err != nil {
+				t.Errorf("Tokenize(%q) = %v", test.input, err)
+				return
+			}
+			args, _, err := LabeledArguments(tokens)
+			if test.wantErr {
+				if err == nil {
+					t.Fatalf("LabeledArguments() = nil, want error")
+				}
+				return
+			}
+			if !test.wantErr && err != nil {
+				t.Fatalf("LabeledArguments() error = %v, want nil", err)
+			}
+			if args.String() != test.want.String() {
+				t.Errorf("LabeledArguments() = %v, want %v", args, test.want)
+			}
+		})
+	}
+}

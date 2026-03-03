@@ -124,46 +124,6 @@ func (f *FunctionArguments) String() string {
 	return result
 }
 
-// labeled_argument = ( identifier ":" argument ) .
-
-type LabeledArgument struct {
-	BaseNode
-	Label *Identifier // The argument label
-	Value Node        // The argument value
-}
-
-func NewLabeledArgument(label *Identifier, value Node) *LabeledArgument {
-	return &LabeledArgument{
-		BaseNode: BaseNode{Type: NodeLabeledArgument},
-		Label:    label,
-		Value:    value,
-	}
-}
-
-func (l *LabeledArgument) String() string {
-	return l.Label.String() + ": " + l.Value.String()
-}
-
-// partial_application = [ "," ] "*" .
-
-type PartialApplication struct {
-	BaseNode
-	Function  Node               // The function being partially applied
-	Arguments *FunctionArguments // The arguments with placeholders
-}
-
-func NewPartialApplication(function Node, arguments *FunctionArguments) *PartialApplication {
-	return &PartialApplication{
-		BaseNode:  BaseNode{Type: NodePartialApplication},
-		Function:  function,
-		Arguments: arguments,
-	}
-}
-
-func (p *PartialApplication) String() string {
-	return p.Function.String() + p.Arguments.String()
-}
-
 // initializer = assignment .
 
 type Initializer struct {

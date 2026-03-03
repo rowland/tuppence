@@ -100,8 +100,8 @@
         - [x] local_type_reference
             - [x] identifier
     - [ ] function_arguments
-        - [ ] labeled_arguments
-            - [ ] labeled_argument
+        - [x] labeled_arguments
+            - [x] labeled_argument
         - [x] arguments
             - [x] argument
                 - [.] expression

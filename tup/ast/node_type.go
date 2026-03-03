@@ -151,6 +151,7 @@ const (
 	NodeInitializer
 	NodeIterable
 	NodeLabeledArgument
+	NodeLabeledArguments
 	NodePartialApplication
 	NodePrimaryExpression
 	NodeSpreadArgument
@@ -333,6 +334,7 @@ var NodeTypes = map[NodeType]string{
 	NodeInitializer:         "Initializer",
 	NodeIterable:            "Iterable",
 	NodeLabeledArgument:     "LabeledArgument",
+	NodeLabeledArguments:    "LabeledArguments",
 	NodePartialApplication:  "PartialApplication",
 	NodePrimaryExpression:   "PrimaryExpression",
 	NodeSpreadArgument:      "SpreadArgument",
