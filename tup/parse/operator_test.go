@@ -586,3 +586,30 @@ func TestPowOp(t *testing.T) {
 		})
 	}
 }
+
+func TestPartialApplication(t *testing.T) {
+	tests := []struct {
+		input   string
+		wantErr bool
+	}{
+		{input: ",*", wantErr: false}, // sees partial application
+		{input: ",x", wantErr: true},  // sees partial application followed by identifier
+		{input: "x,*", wantErr: true}, // sees identifier followed by partial application
+	}
+	for _, test := range tests {
+		t.Run(test.input, func(t *testing.T) {
+			source := source.NewSource([]byte(test.input), "test.tup")
+			tokens, err := tok.Tokenize(source.Contents, source.Filename)
+			if err != nil {
+				t.Errorf("Tokenize(%q) = %v", test.input, err)
+			}
+			_, err = PartialApplication(tokens)
+			if test.wantErr && err == nil {
+				t.Errorf("PartialApplication(%q) = %v, want error", test.input, err)
+			}
+			if !test.wantErr && err != nil {
+				t.Fatalf("PartialApplication(%q) = %v, want nil", test.input, err)
+			}
+		})
+	}
+}
