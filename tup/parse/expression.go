@@ -214,11 +214,9 @@ func AddSubExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.
 
 	// Parse { add_sub_op mul_div_expression }
 	for {
-		op, remainder2, err := AddSubOp(remainder)
-		if err == ErrNoMatch {
+		op, remainder2, match := AddSubOp(remainder)
+		if !match {
 			return left, remainder, nil // no tail => done
-		} else if err != nil {
-			return nil, remainder2, err
 		}
 
 		var right ast.Expression
@@ -246,11 +244,9 @@ func MulDivExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.
 
 	// Parse { mul_div_op pow_expression }
 	for {
-		op, remainder2, err := MulDivOp(remainder)
-		if err == ErrNoMatch {
+		op, remainder2, match := MulDivOp(remainder)
+		if !match {
 			return left, remainder, nil // no tail => done
-		} else if err != nil {
-			return nil, remainder2, err
 		}
 
 		var right ast.Expression
@@ -325,9 +321,9 @@ func UnaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.T
 
 func PrefixedUnaryExpression(tokens []tok.Token) (expr *ast.UnaryExpression, remainder []tok.Token, err error) {
 	// fmt.Println("PrefixedUnaryExpression", tokens)
-	operator, remainder, err := UnaryOp(tokens)
-	if err != nil {
-		return nil, tokens, err
+	operator, remainder, match := UnaryOp(tokens)
+	if !match {
+		return nil, tokens, ErrNoMatch
 	}
 
 	expression, remainder, err := NegatableExpression(remainder)
@@ -501,11 +497,9 @@ func TypePredicate(tokens []tok.Token) (expr ast.TypePredicate, remainder []tok.
 
 func RelationalComparisonTail(left ast.Expression, tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
 	// fmt.Println("RelationalComparisonTail", tokens)
-	operator, remainder, err := RelOp(tokens)
-	if err == ErrNoMatch {
-		return nil, tokens, err
-	} else if err != nil {
-		return nil, remainder, err
+	operator, remainder, match := RelOp(tokens)
+	if !match {
+		return nil, tokens, ErrNoMatch
 	}
 
 	right, remainder, err := AddSubExpression(remainder)

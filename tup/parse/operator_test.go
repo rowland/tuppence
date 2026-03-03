@@ -59,12 +59,12 @@ func TestAddSubOp(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 			}
-			op, remainder, err := AddSubOp(tokens)
-			if test.wantErr && err == nil {
-				t.Fatalf("AddSubOp(%q) = %v, want error", test.input, err)
+			op, remainder, match := AddSubOp(tokens)
+			if test.wantErr && match {
+				t.Fatalf("AddSubOp(%q): match == true, want false", test.input)
 			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("AddSubOp(%q) = %v, want nil", test.input, err)
+			if !test.wantErr && !match {
+				t.Fatalf("AddSubOp(%q): match == false, want true", test.input)
 			}
 			if op != test.want {
 				t.Errorf("AddSubOp(%q) = %v, want %v", test.input, op, test.want)
@@ -151,12 +151,12 @@ func TestMulDivOp(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 			}
-			op, remainder, err := MulDivOp(tokens)
-			if test.wantErr && err == nil {
-				t.Fatalf("MulDivOp(%q) = %v, want error", test.input, err)
+			op, remainder, match := MulDivOp(tokens)
+			if test.wantErr && match {
+				t.Fatalf("MulDivOp(%q): match == true, want false", test.input)
 			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("MulDivOp(%q) = %v, want nil", test.input, err)
+			if !test.wantErr && !match {
+				t.Fatalf("MulDivOp(%q): match == false, want true", test.input)
 			}
 			if op != test.want {
 				t.Errorf("MulDivOp(%q) = %v, want %v", test.input, op, test.want)
@@ -237,12 +237,12 @@ func TestRelOp(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 			}
-			op, remainder, err := RelOp(tokens)
-			if test.wantErr && err == nil {
-				t.Fatalf("RelOp(%q) = %v, want error", test.input, err)
+			op, remainder, match := RelOp(tokens)
+			if test.wantErr && match {
+				t.Fatalf("RelOp(%q): match == true, want false", test.input)
 			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("RelOp(%q) = %v, want nil", test.input, err)
+			if !test.wantErr && !match {
+				t.Fatalf("RelOp(%q): match == false, want true", test.input)
 			}
 			if op != test.want {
 				t.Errorf("RelOp(%q) = %v, want %v", test.input, op, test.want)
@@ -317,12 +317,12 @@ func TestCompoundAssignmentOp(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 			}
-			op, remainder, err := CompoundAssignmentOp(tokens)
-			if test.wantErr && err == nil {
-				t.Fatalf("CompoundAssignmentOp(%q) = %v, want error", test.input, err)
+			op, remainder, match := CompoundAssignmentOp(tokens)
+			if test.wantErr && match {
+				t.Fatalf("CompoundAssignmentOp(%q): match == true, want false", test.input)
 			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("CompoundAssignmentOp(%q) = %v, want nil", test.input, err)
+			if !test.wantErr && !match {
+				t.Fatalf("CompoundAssignmentOp(%q): match == false, want true", test.input)
 			}
 			if op != test.want {
 				t.Errorf("CompoundAssignmentOp(%q) = %v, want %v", test.input, op, test.want)
@@ -379,12 +379,12 @@ func TestUnaryOp(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 			}
-			op, remainder, err := UnaryOp(tokens)
-			if test.wantErr && err == nil {
-				t.Fatalf("UnaryOp(%q) = %v, want error", test.input, err)
+			op, remainder, match := UnaryOp(tokens)
+			if test.wantErr && match {
+				t.Fatalf("UnaryOp(%q): match == true, want false", test.input)
 			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("UnaryOp(%q) = %v, want nil", test.input, err)
+			if !test.wantErr && !match {
+				t.Fatalf("UnaryOp(%q): match == false, want true", test.input)
 			}
 			if op != test.want {
 				t.Errorf("UnaryOp(%q) = %v, want %v", test.input, op, test.want)
