@@ -8,7 +8,7 @@ import (
 
 // identifier = ( lowercase_letter | "_" ) { letter | decimal_digit | "_" } .
 
-func Identifier(tokens []tok.Token) (item *ast.Identifier, remainder []tok.Token, err error) {
+func Identifier(tokens []tok.Token) (ident *ast.Identifier, remainder []tok.Token, err error) {
 	// fmt.Println("Identifier", tokens)
 	remainder = skipComments(tokens)
 	if peek(remainder).Type != tok.TokID {
@@ -19,7 +19,7 @@ func Identifier(tokens []tok.Token) (item *ast.Identifier, remainder []tok.Token
 
 // type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
 
-func TypeIdentifier(tokens []tok.Token) (item *ast.TypeIdentifier, remainder []tok.Token, err error) {
+func TypeIdentifier(tokens []tok.Token) (typeIdent *ast.TypeIdentifier, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
 	if peek(remainder).Type != tok.TokTypeID {
@@ -33,7 +33,7 @@ func TypeIdentifier(tokens []tok.Token) (item *ast.TypeIdentifier, remainder []t
 
 // rename_identifier = identifier [ ":" identifier ] .
 
-func RenameIdentifier(tokens []tok.Token) (item *ast.RenameIdentifier, remainder []tok.Token, err error) {
+func RenameIdentifier(tokens []tok.Token) (ident *ast.RenameIdentifier, remainder []tok.Token, err error) {
 	identifier, remainder, err := Identifier(tokens)
 	if err == ErrNoMatch {
 		return nil, tokens, ErrNoMatch
@@ -60,7 +60,7 @@ func RenameIdentifier(tokens []tok.Token) (item *ast.RenameIdentifier, remainder
 
 // rename_type = type_identifier [ ":" type_identifier ] .
 
-func RenameType(tokens []tok.Token) (item *ast.RenameType, remainder []tok.Token, err error) {
+func RenameType(tokens []tok.Token) (typeIdent *ast.RenameType, remainder []tok.Token, err error) {
 	typeIdentifier, remainder, err := TypeIdentifier(tokens)
 	if err == ErrNoMatch {
 		return nil, tokens, ErrNoMatch
@@ -87,7 +87,7 @@ func RenameType(tokens []tok.Token) (item *ast.RenameType, remainder []tok.Token
 
 // type_reference = [ identifier { "." identifier } "." ] type_identifier .
 
-func TypeReference(tokens []tok.Token) (item *ast.TypeReference, remainder []tok.Token, err error) {
+func TypeReference(tokens []tok.Token) (typeRef *ast.TypeReference, remainder []tok.Token, err error) {
 	// fmt.Println("TypeReference", tokens)
 	remainder = skipComments(tokens)
 
@@ -136,7 +136,7 @@ func TypeReference(tokens []tok.Token) (item *ast.TypeReference, remainder []tok
 
 // function_identifier = lowercase_letter { letter | decimal_digit | "_" } [ "?" | "!" ] .
 
-func FunctionIdentifier(tokens []tok.Token) (item *ast.FunctionIdentifier, remainder []tok.Token, err error) {
+func FunctionIdentifier(tokens []tok.Token) (fundIdent *ast.FunctionIdentifier, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
 	if peek(remainder).Type != tok.TokFuncID && peek(remainder).Type != tok.TokID {

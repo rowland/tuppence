@@ -26,7 +26,7 @@ func Size(tokens []tok.Token) (size ast.Size, remainder []tok.Token, err error) 
 // array_literal = "[" [ array_members | array_literal ] "]"
 //               | type_identifier "[" [ array_members | array_literal ] "]" .
 
-func ArrayLiteral(tokens []tok.Token) (item *ast.ArrayLiteral, remainder []tok.Token, err error) {
+func ArrayLiteral(tokens []tok.Token) (arr *ast.ArrayLiteral, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
 	remainder, err = OpenBracket(remainder)
@@ -44,8 +44,8 @@ func ArrayLiteral(tokens []tok.Token) (item *ast.ArrayLiteral, remainder []tok.T
 		return nil, nil, err
 	}
 
-	item = ast.NewArrayLiteral(arrayMembers, nil)
-	return item, remainder, nil
+	arr = ast.NewArrayLiteral(arrayMembers, nil)
+	return arr, remainder, nil
 }
 
 // array_members = expression { "," expression } [ "," ] .

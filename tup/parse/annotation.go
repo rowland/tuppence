@@ -9,7 +9,7 @@ import (
 
 // annotation = namespaced_annotation | simple_annotation .
 
-func Annotation(tokens []tok.Token) (item ast.Annotation, remainder []tok.Token, err error) {
+func Annotation(tokens []tok.Token) (annot ast.Annotation, remainder []tok.Token, err error) {
 	namespacedAnnotation, remainder, err := NamespacedAnnotation(tokens)
 	if err == nil {
 		return namespacedAnnotation, remainder, nil
@@ -29,7 +29,7 @@ func Annotation(tokens []tok.Token) (item ast.Annotation, remainder []tok.Token,
 
 // namespaced_annotation = "@" namespace ":" identifier annotation_value eol .
 
-func NamespacedAnnotation(tokens []tok.Token) (item *ast.NamespacedAnnotation, remainder []tok.Token, err error) {
+func NamespacedAnnotation(tokens []tok.Token) (annot *ast.NamespacedAnnotation, remainder []tok.Token, err error) {
 	remainder, err = At(tokens)
 	if err == ErrNoMatch {
 		return nil, tokens, ErrNoMatch
@@ -73,7 +73,7 @@ func NamespacedAnnotation(tokens []tok.Token) (item *ast.NamespacedAnnotation, r
 
 // simple_annotation = "@" identifier eol .
 
-func SimpleAnnotation(tokens []tok.Token) (item *ast.SimpleAnnotation, remainder []tok.Token, err error) {
+func SimpleAnnotation(tokens []tok.Token) (annot *ast.SimpleAnnotation, remainder []tok.Token, err error) {
 	remainder, err = At(tokens)
 	if err == ErrNoMatch {
 		return nil, tokens, ErrNoMatch
@@ -114,7 +114,7 @@ func Namespace(tokens []tok.Token) (namespace string, remainder []tok.Token, err
 
 // annotation_value = string_literal | ["-"] number | boolean_literal | type_reference .
 
-func AnnotationValue(tokens []tok.Token) (item ast.AnnotationValue, remainder []tok.Token, err error) {
+func AnnotationValue(tokens []tok.Token) (value ast.AnnotationValue, remainder []tok.Token, err error) {
 	stringLiteral, remainder, err := StringLiteral(tokens)
 	if err == nil {
 		return stringLiteral, remainder, nil

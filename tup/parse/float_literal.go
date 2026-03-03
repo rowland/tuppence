@@ -7,7 +7,7 @@ import (
 	"github.com/rowland/tuppence/tup/tok"
 )
 
-func FloatLiteral(tokens []tok.Token) (item *ast.FloatLiteral, remainder []tok.Token, err error) {
+func FloatLiteral(tokens []tok.Token) (lit *ast.FloatLiteral, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
 	if peek(remainder).Type != tok.TokFloatLit {

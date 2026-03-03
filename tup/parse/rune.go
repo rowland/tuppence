@@ -11,7 +11,7 @@ import (
 
 // rune_literal = "'" ( byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - eol ) "'" .
 
-func RuneLiteral(tokens []tok.Token) (item *ast.RuneLiteral, remainder []tok.Token, err error) {
+func RuneLiteral(tokens []tok.Token) (lit *ast.RuneLiteral, remainder []tok.Token, err error) {
 	// fmt.Println("RuneLiteral", tokens)
 	remainder = skipComments(tokens)
 	if peek(remainder).Type != tok.TokRuneLit {

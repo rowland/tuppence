@@ -11,7 +11,7 @@ import (
 // octal_literal = "0o" octal_digit { octal_digit } .
 // octal_digit = "0"-"7" .
 
-func OctalLiteral(tokens []tok.Token) (item *ast.IntegerLiteral, remainder []tok.Token, err error) {
+func OctalLiteral(tokens []tok.Token) (lit *ast.IntegerLiteral, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
 	if peek(remainder).Type != tok.TokOctLit {

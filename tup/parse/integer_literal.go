@@ -10,7 +10,7 @@ import (
 //                 | octal_literal
 //                 | decimal_literal .
 
-func IntegerLiteral(tokens []tok.Token) (item *ast.IntegerLiteral, remainder []tok.Token, err error) {
+func IntegerLiteral(tokens []tok.Token) (lit *ast.IntegerLiteral, remainder []tok.Token, err error) {
 	binaryLit, remainder, err := BinaryLiteral(tokens)
 	if err == nil {
 		return binaryLit, remainder, nil

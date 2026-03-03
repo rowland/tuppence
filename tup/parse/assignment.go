@@ -56,7 +56,7 @@ func AssignmentLHS(tokens []tok.Token) (item ast.AssignmentLHS, remainder []tok.
 
 // ordinal_assignment_lhs = identifier { "," identifier } [ "," rest_operator ] .
 
-func ordinalAssignmentLHS(tokens []tok.Token) (item *ast.OrdinalAssignmentLHS, remainder []tok.Token, err error) {
+func ordinalAssignmentLHS(tokens []tok.Token) (lhs *ast.OrdinalAssignmentLHS, remainder []tok.Token, err error) {
 	var identifiers []*ast.Identifier
 
 	identifier, remainder, err := Identifier(tokens)
@@ -81,7 +81,7 @@ func ordinalAssignmentLHS(tokens []tok.Token) (item *ast.OrdinalAssignmentLHS, r
 	return ast.NewOrdinalAssignmentLHS(identifiers, restOperator), remainder, nil
 }
 
-func commaIdentifier(tokens []tok.Token) (item *ast.Identifier, remainder []tok.Token, err error) {
+func commaIdentifier(tokens []tok.Token) (ident *ast.Identifier, remainder []tok.Token, err error) {
 	if peek(tokens).Type != tok.TokComma {
 		return nil, nil, errorExpecting(",", tokens)
 	}
@@ -95,7 +95,7 @@ func commaIdentifier(tokens []tok.Token) (item *ast.Identifier, remainder []tok.
 
 // "," rest_operator
 
-func commaRestOperator(tokens []tok.Token) (item *ast.RestOperator, remainder []tok.Token, err error) {
+func commaRestOperator(tokens []tok.Token) (op *ast.RestOperator, remainder []tok.Token, err error) {
 	if peek(tokens).Type != tok.TokComma {
 		return nil, nil, errorExpecting(",", tokens)
 	}
@@ -109,7 +109,7 @@ func commaRestOperator(tokens []tok.Token) (item *ast.RestOperator, remainder []
 
 // rest_operator = "..." [ identifier ] .
 
-func RestOperator(tokens []tok.Token) (item *ast.RestOperator, remainder []tok.Token, err error) {
+func RestOperator(tokens []tok.Token) (op *ast.RestOperator, remainder []tok.Token, err error) {
 	if peek(tokens).Type != tok.TokOpRest {
 		return nil, nil, errorExpecting("...", tokens)
 	}
@@ -123,7 +123,7 @@ func RestOperator(tokens []tok.Token) (item *ast.RestOperator, remainder []tok.T
 
 // labeled_assignment_lhs = ( rename_identifier | rename_type ) { "," ( rename_identifier | rename_type ) } .
 
-func labeledAssignmentLHS(tokens []tok.Token) (item *ast.LabeledAssignmentLHS, remainder []tok.Token, err error) {
+func labeledAssignmentLHS(tokens []tok.Token) (lhs *ast.LabeledAssignmentLHS, remainder []tok.Token, err error) {
 	var renames []ast.Rename
 
 	rename, remainder, err := Rename(tokens)
@@ -144,7 +144,7 @@ func labeledAssignmentLHS(tokens []tok.Token) (item *ast.LabeledAssignmentLHS, r
 
 // rename_identifier | rename_type
 
-func Rename(tokens []tok.Token) (item ast.Rename, remainder []tok.Token, err error) {
+func Rename(tokens []tok.Token) (ren ast.Rename, remainder []tok.Token, err error) {
 	var errors []error
 
 	id, remainder, err := RenameIdentifier(tokens)
@@ -166,7 +166,7 @@ func Rename(tokens []tok.Token) (item ast.Rename, remainder []tok.Token, err err
 
 // "," ( rename_identifier | rename_type )
 
-func commaRename(tokens []tok.Token) (item ast.Rename, remainder []tok.Token, err error) {
+func commaRename(tokens []tok.Token) (ren ast.Rename, remainder []tok.Token, err error) {
 	if peek(tokens).Type != tok.TokComma {
 		return nil, nil, errorExpecting(",", tokens)
 	}

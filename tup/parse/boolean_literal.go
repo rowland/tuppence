@@ -7,7 +7,7 @@ import (
 
 // boolean_literal = "true" | "false" .
 
-func BooleanLiteral(tokens []tok.Token) (item *ast.BooleanLiteral, remainder []tok.Token, err error) {
+func BooleanLiteral(tokens []tok.Token) (lit *ast.BooleanLiteral, remainder []tok.Token, err error) {
 	// fmt.Println("BooleanLiteral", tokens)
 	remainder = skipComments(tokens)
 
