@@ -10,3 +10,12 @@ import (
 func FunctionDeclaration(tokens []tok.Token) (*ast.FunctionDeclaration, []tok.Token, error) {
 	return nil, nil, nil
 }
+
+// function_declaration_lhs = function_identifier [ function_parameter_types ] .
+
+// function_declaration_type = ( "fn" "(" [ labeled_parameters | parameters ] ")" ( return_type | "_" ) )
+//                           | ( "fx" "(" [ labeled_parameters | parameters ] ")" [ return_type | "_" ] ) .
+
+// block = "{" block_body "}" .
+
+// block_body = { statement } expression .

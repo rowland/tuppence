@@ -460,13 +460,6 @@ func parenthesizedExpression(tokens []tok.Token) (expr ast.Expression, remainder
 	return expression, remainder, nil
 }
 
-// function_call = function_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
-
-func FunctionCall(tokens []tok.Token) (expr *ast.FunctionCall, remainder []tok.Token, err error) {
-	// fmt.Println("FunctionCall", tokens)
-	return nil, nil, ErrNoMatch // TODO: Implement
-}
-
 // type_comparison_tail = is_op type_predicate .
 
 func TypeComparisonTail(left ast.Expression, tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
