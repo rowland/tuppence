@@ -95,11 +95,11 @@
 - [.] try_expression
 - [.] type_reference
 - [.] unary_expression
-- [ ] function_call
-    - [ ] function_parameter_types
+- [.] function_call
+    - [x] function_parameter_types
         - [x] local_type_reference
             - [x] identifier
-    - [ ] function_arguments
+    - [.] function_arguments
         - [x] labeled_arguments
             - [x] labeled_argument
         - [x] arguments
@@ -107,10 +107,10 @@
                 - [.] expression
                 - [x] spread_argument
         - [x] partial_application
-    - [ ] function_block
+    - [.] function_block
         - [ ] block_parameters
             - [ ] assignment_lhs
-        - [ ] block_body
+        - [.] block_body
             - [ ] statement
                 - [ ] type_qualified_function_declaration
                     - [ ] annotations

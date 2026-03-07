@@ -41,16 +41,16 @@ func (f *FunctionDeclarationType) String() string {
 	return result.String()
 }
 
-// function_parameter_types = "[" [ local_type_reference { "," local_type_reference } ] "]" .
+// function_parameter_types = "[" local_type_reference { "," local_type_reference } "]" .
 
 // FunctionParameterTypes represents the parameter types in a function declaration
 type FunctionParameterTypes struct {
 	BaseNode
-	Parameters []Node // The function parameter types
+	Parameters []LocalTypeReference // The function parameter types
 }
 
 // NewFunctionParameterTypes creates a new FunctionParameterTypes node
-func NewFunctionParameterTypes(parameters []Node) *FunctionParameterTypes {
+func NewFunctionParameterTypes(parameters []LocalTypeReference) *FunctionParameterTypes {
 	return &FunctionParameterTypes{
 		BaseNode:   BaseNode{Type: NodeFunctionParameterTypes},
 		Parameters: parameters,
@@ -59,15 +59,18 @@ func NewFunctionParameterTypes(parameters []Node) *FunctionParameterTypes {
 
 // String returns a textual representation of the function parameter types
 func (f *FunctionParameterTypes) String() string {
+	if len(f.Parameters) == 0 {
+		return ""
+	}
 	var result strings.Builder
-	result.WriteString("(")
+	result.WriteString("[")
 	for i, param := range f.Parameters {
 		if i > 0 {
 			result.WriteString(", ")
 		}
 		result.WriteString(param.String())
 	}
-	result.WriteString(")")
+	result.WriteString("]")
 	return result.String()
 }
 
@@ -114,21 +117,21 @@ func (f *FunctionTypeDeclaration) String() string {
 
 // function_call = function_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
 
-// FunctionCall represents a function call expression
 type FunctionCall struct {
 	BaseNode
-	Function      Node   // The function being called (can be Identifier, MemberAccess, etc.)
-	Arguments     []Node // The arguments passed to the function
-	FunctionBlock Node   // Optional function block (for higher-order functions, may be nil)
+	Function       Node                    // The function being called (can be Identifier, MemberAccess, etc.)
+	ParameterTypes *FunctionParameterTypes // The parameter types of the function (may be nil)
+	Arguments      *FunctionArguments      // The arguments passed to the function
+	FunctionBlock  *FunctionBlock          // Optional function block (for higher-order functions, may be nil)
 }
 
-// NewFunctionCall creates a new FunctionCall node
-func NewFunctionCall(function Node, arguments []Node, functionBlock Node) *FunctionCall {
+func NewFunctionCall(function Node, parameterTypes *FunctionParameterTypes, arguments *FunctionArguments, functionBlock *FunctionBlock) *FunctionCall {
 	return &FunctionCall{
-		BaseNode:      BaseNode{Type: NodeFunctionCall},
-		Function:      function,
-		Arguments:     arguments,
-		FunctionBlock: functionBlock,
+		BaseNode:       BaseNode{Type: NodeFunctionCall},
+		Function:       function,
+		ParameterTypes: parameterTypes,
+		Arguments:      arguments,
+		FunctionBlock:  functionBlock,
 	}
 }
 
@@ -136,16 +139,14 @@ func NewFunctionCall(function Node, arguments []Node, functionBlock Node) *Funct
 func (f *FunctionCall) String() string {
 	var builder strings.Builder
 	builder.WriteString(f.Function.String())
-	builder.WriteString("(")
 
-	for i, arg := range f.Arguments {
-		if i > 0 {
-			builder.WriteString(", ")
-		}
-		builder.WriteString(arg.String())
+	if f.ParameterTypes != nil {
+		builder.WriteString(f.ParameterTypes.String())
 	}
 
-	builder.WriteString(")")
+	if f.Arguments != nil {
+		builder.WriteString(f.Arguments.String())
+	}
 
 	if f.FunctionBlock != nil {
 		builder.WriteString(" ")
@@ -251,24 +252,37 @@ func (f *FunctionCallContext) String() string {
 
 type FunctionArguments struct {
 	BaseNode
-	Arguments []Node // List of arguments
+	Args               *Arguments
+	LabeledArgs        *LabeledArguments
+	PartialApplication bool // True if the function arguments are a partial application
 }
 
-func NewFunctionArguments(arguments []Node) *FunctionArguments {
+func NewFunctionArguments(args *Arguments, labeledArgs *LabeledArguments, partialApplication bool) *FunctionArguments {
 	return &FunctionArguments{
-		BaseNode:  BaseNode{Type: NodeFunctionArguments},
-		Arguments: arguments,
+		BaseNode:           BaseNode{Type: NodeFunctionArguments},
+		Args:               args,
+		LabeledArgs:        labeledArgs,
+		PartialApplication: partialApplication,
 	}
 }
 
 func (f *FunctionArguments) String() string {
 	var result strings.Builder
 	result.WriteString("(")
-	for i, arg := range f.Arguments {
-		if i > 0 {
+	if f.Args != nil {
+		result.WriteString(f.Args.String())
+	}
+	if f.LabeledArgs != nil {
+		if f.Args != nil {
 			result.WriteString(", ")
 		}
-		result.WriteString(arg.String())
+		result.WriteString(f.LabeledArgs.String())
+	}
+	if f.PartialApplication {
+		if f.Args != nil || f.LabeledArgs != nil {
+			result.WriteString(", ")
+		}
+		result.WriteString("*")
 	}
 	result.WriteString(")")
 	return result.String()

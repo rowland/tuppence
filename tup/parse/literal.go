@@ -1,8 +1,6 @@
 package parse
 
 import (
-	"fmt"
-
 	"github.com/rowland/tuppence/tup/ast"
 	"github.com/rowland/tuppence/tup/tok"
 )
@@ -20,7 +18,7 @@ import (
 //         | fixed_size_array_literal .
 
 func Literal(tokens []tok.Token) (item ast.Literal, remainder []tok.Token, err error) {
-	fmt.Println("Literal", tokens)
+	// fmt.Println("Literal", tokens)
 	remainder = skipComments(tokens)
 
 	if number, remainder, err := Number(remainder); err == nil {

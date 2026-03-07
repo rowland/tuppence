@@ -42,6 +42,14 @@ var EOL = expectFunc(tok.TokEOL)
 
 var Star = expectFunc(tok.TokOpMul)
 
+// open_brace = "{" .
+
+var OpenBrace = expectFunc(tok.TokOpenBrace)
+
+// close_brace = "}" .
+
+var CloseBrace = expectFunc(tok.TokCloseBrace)
+
 // open_bracket = "[" .
 
 var OpenBracket = expectFunc(tok.TokOpenBracket)

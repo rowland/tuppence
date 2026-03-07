@@ -131,6 +131,7 @@ func TypeReference(tokens []tok.Token) (typeRef *ast.TypeReference, remainder []
 // function_identifier = lowercase_letter { letter | decimal_digit | "_" } [ "?" | "!" ] .
 
 func FunctionIdentifier(tokens []tok.Token) (fundIdent *ast.FunctionIdentifier, remainder []tok.Token, err error) {
+	// fmt.Println("FunctionIdentifier", tok.Types(tokens))
 	remainder = skipComments(tokens)
 
 	if peek(remainder).Type != tok.TokFuncID && peek(remainder).Type != tok.TokID {

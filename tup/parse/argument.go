@@ -24,7 +24,7 @@ func Argument(tokens []tok.Token) (arg *ast.Argument, remainder []tok.Token, err
 // arguments = argument { "," argument } .
 
 func Arguments(tokens []tok.Token) (args *ast.Arguments, remainder []tok.Token, err error) {
-	// fmt.Println("Arguments", tokens)
+	// fmt.Println("Arguments", tok.Types(tokens))
 	remainder = tokens
 
 	var argsList []*ast.Argument
@@ -43,6 +43,9 @@ func Arguments(tokens []tok.Token) (args *ast.Arguments, remainder []tok.Token, 
 		}
 		if _, _, err = ArgumentLabel(remainder2); err == nil {
 			break // argument label found, so we're done
+		}
+		if _, _, err = Argument(remainder2); err != nil {
+			break
 		}
 		remainder = remainder2
 	}
@@ -82,7 +85,7 @@ func LabeledArgument(tokens []tok.Token) (arg *ast.LabeledArgument, remainder []
 // labeled_arguments = labeled_argument { "," ( labeled_argument ) } .
 
 func LabeledArguments(tokens []tok.Token) (args *ast.LabeledArguments, remainder []tok.Token, err error) {
-	// fmt.Println("LabeledArguments", tokens)
+	// fmt.Println("LabeledArguments", tok.Types(tokens))
 	remainder = tokens
 
 	var argsList []*ast.LabeledArgument
@@ -95,8 +98,12 @@ func LabeledArguments(tokens []tok.Token) (args *ast.LabeledArguments, remainder
 			return nil, remainder, err
 		}
 		argsList = append(argsList, arg)
-		var found bool
-		if remainder, found = Comma(remainder); !found {
+
+		remainder2, found := Comma(remainder)
+		if !found {
+			break
+		}
+		if _, _, err = LabeledArgument(remainder2); err != nil {
 			break
 		}
 	}
@@ -110,7 +117,7 @@ func LabeledArguments(tokens []tok.Token) (args *ast.LabeledArguments, remainder
 //                | arguments [ "," labeled_arguments ]
 
 func ArgumentsBody(tokens []tok.Token) (args *ast.Arguments, labeledArgs *ast.LabeledArguments, remainder []tok.Token, err error) {
-	// fmt.Println("ArgumentsBody", tokens)
+	// fmt.Println("ArgumentsBody", tok.Types(tokens))
 
 	labeledArgs, remainder, err = LabeledArguments(tokens)
 	if err == nil {

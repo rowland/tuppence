@@ -155,6 +155,7 @@ var PipeOp = expectFunc(tok.TokOpPipe)
 // partial_application = ","  "*" .
 
 func PartialApplication(tokens []tok.Token) (remainder []tok.Token, found bool) {
+	// fmt.Println("PartialApplication", tokens)
 	remainder = skipComments(tokens)
 
 	if remainder, found = Comma(remainder); !found {

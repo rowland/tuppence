@@ -56,6 +56,10 @@ func NewFloatLiteral(value string, floatValue float64, source *source.Source, st
 	}
 }
 
+func (f *FloatLiteral) String() string {
+	return f.Value
+}
+
 // integer_literal = binary_literal
 //                 | hexadecimal_literal
 //                 | octal_literal
@@ -66,6 +70,10 @@ type IntegerLiteral struct {
 	Value        string // Original text representation
 	IntegerValue int64
 	Base         int // 2, 8, 10, 16
+}
+
+func (i *IntegerLiteral) String() string {
+	return i.Value
 }
 
 // binary_literal = "0b" ( "0" | "1" ) { "0" | "1" | "_" } .
@@ -133,6 +141,10 @@ func NewBooleanLiteral(value string, booleanValue bool, source *source.Source, s
 	}
 }
 
+func (b *BooleanLiteral) String() string {
+	return b.Value
+}
+
 // string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' - eol } '"' .
 
 // StringLiteral represents a string literal in the code
@@ -151,6 +163,10 @@ func NewStringLiteral(value string, stringValue string, source *source.Source, s
 	}
 }
 
+func (s *StringLiteral) String() string {
+	return s.Value
+}
+
 // raw_string_literal = "`" { "``" | character - "`" } "`" .
 
 // RawStringLiteral represents a raw string literal enclosed in backticks
@@ -167,6 +183,10 @@ func NewRawStringLiteral(value string, stringValue string, source *source.Source
 		Value:       value,
 		StringValue: stringValue,
 	}
+}
+
+func (r *RawStringLiteral) String() string {
+	return r.Value
 }
 
 // interpolation = "\\(" expression ")" .
@@ -276,6 +296,10 @@ func NewRuneLiteral(value string, runeValue rune, source *source.Source, startOf
 	}
 }
 
+func (r *RuneLiteral) String() string {
+	return r.Value
+}
+
 // symbol_literal = ":" identifier .
 
 // SymbolLiteral represents a symbol literal in the code (e.g., :name)
@@ -290,6 +314,10 @@ func NewSymbolLiteral(value string, source *source.Source, startOffset int32, le
 		BaseNode: BaseNode{Type: NodeSymbolLiteral, Source: source, StartOffset: startOffset, Length: length},
 		Value:    value,
 	}
+}
+
+func (s *SymbolLiteral) String() string {
+	return s.Value
 }
 
 // tuple_member = expression .

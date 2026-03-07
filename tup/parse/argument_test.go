@@ -276,6 +276,7 @@ func TestArgumentsBody(t *testing.T) {
 		wantArgs        *ast.Arguments
 		wantLabeledArgs *ast.LabeledArguments
 		wantErr         bool
+		tokensRemaining int
 	}{
 		{
 			name:            "empty",
@@ -283,6 +284,7 @@ func TestArgumentsBody(t *testing.T) {
 			wantArgs:        nil,
 			wantLabeledArgs: nil,
 			wantErr:         true,
+			tokensRemaining: 1, // EOF token
 		},
 		{
 			name:     "labeled arguments",
@@ -296,7 +298,8 @@ func TestArgumentsBody(t *testing.T) {
 					ast.NewArgument(ast.NewIdentifier("w", nil, 0, 1), false),
 				),
 			}),
-			wantErr: false,
+			wantErr:         false,
+			tokensRemaining: 1, // EOF token
 		},
 		{
 			name:  "positional arguments and labeled arguments",
@@ -310,7 +313,8 @@ func TestArgumentsBody(t *testing.T) {
 					ast.NewArgument(ast.NewIdentifier("z", nil, 0, 1), false),
 				),
 			}),
-			wantErr: false,
+			wantErr:         false,
+			tokensRemaining: 1, // EOF token
 		},
 		{
 			name:  "positional arguments only",
@@ -321,6 +325,18 @@ func TestArgumentsBody(t *testing.T) {
 			}),
 			wantLabeledArgs: nil,
 			wantErr:         false,
+			tokensRemaining: 1, // EOF token
+		},
+		{
+			name:  "positional arguments with trailing comma",
+			input: "x, y,",
+			wantArgs: ast.NewArguments([]*ast.Argument{
+				ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false),
+				ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), false),
+			}),
+			wantLabeledArgs: nil,
+			wantErr:         false,
+			tokensRemaining: 2, // trailing comma token, then EOF token
 		},
 	}
 	for _, test := range tests {
@@ -331,7 +347,7 @@ func TestArgumentsBody(t *testing.T) {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
 				return
 			}
-			args, labeledArgs, _, err := ArgumentsBody(tokens)
+			args, labeledArgs, remainder, err := ArgumentsBody(tokens)
 			if test.wantErr {
 				if err == nil {
 					t.Fatalf("ArgumentsBody(): err == nil, want error")
@@ -346,6 +362,9 @@ func TestArgumentsBody(t *testing.T) {
 			}
 			if test.wantLabeledArgs != nil && labeledArgs.String() != test.wantLabeledArgs.String() {
 				t.Errorf("ArgumentsBody() = %v, want %v", labeledArgs, test.wantLabeledArgs)
+			}
+			if len(remainder) != test.tokensRemaining {
+				t.Errorf("ArgumentsBody(): tokensRemaining = %v, want %v (%v)", len(remainder), test.tokensRemaining, tok.Types(remainder))
 			}
 		})
 	}
