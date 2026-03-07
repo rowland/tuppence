@@ -82,31 +82,6 @@ func (s *StepExpression) String() string {
 	return s.Expression.String()
 }
 
-// statement = ( type_qualified_function_declaration
-// 	           | type_qualified_declaration
-// 	           | type_declaration
-// 	           | function_declaration
-// 	           | compound_assignment
-// 	           | assignment
-// 	           | expression
-// 	           ) .
-
-type Statement struct {
-	BaseNode
-	Expression Node // The statement expression
-}
-
-func NewStatement(expression Node) *Statement {
-	return &Statement{
-		BaseNode:   BaseNode{Type: NodeStatement},
-		Expression: expression,
-	}
-}
-
-func (s *Statement) String() string {
-	return s.Expression.String() + ";"
-}
-
 // iterable = expression .
 
 // Iterable represents an iterable expression used in for-in loops

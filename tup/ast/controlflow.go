@@ -78,12 +78,11 @@ func (b *BlockParameters) String() string {
 // BlockBody represents the body of a block
 type BlockBody struct {
 	BaseNode
-	Statements []Node // The statements in the block body
-	Expression Node   // The final expression (may be nil)
+	Statements []Statement // The statements in the block body
+	Expression Expression  // The final expression (may be nil)
 }
 
-// NewBlockBody creates a new BlockBody node
-func NewBlockBody(statements []Node, expression Node) *BlockBody {
+func NewBlockBody(statements []Statement, expression Expression) *BlockBody {
 	return &BlockBody{
 		BaseNode:   BaseNode{Type: NodeBlockBody},
 		Statements: statements,
@@ -91,7 +90,6 @@ func NewBlockBody(statements []Node, expression Node) *BlockBody {
 	}
 }
 
-// String returns a textual representation of the block body
 func (b *BlockBody) String() string {
 	var builder strings.Builder
 
