@@ -11,10 +11,11 @@ import (
 func Identifier(tokens []tok.Token) (ident *ast.Identifier, remainder []tok.Token, err error) {
 	// fmt.Println("Identifier", tokens)
 	remainder = skipComments(tokens)
-	if peek(remainder).Type != tok.TokID {
+	t := peek(remainder)
+	if t.Type != tok.TokID && t.Type != tok.TokKwIt {
 		return nil, tokens, ErrNoMatch
 	}
-	return ast.NewIdentifier(remainder[0].Value(), remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
+	return ast.NewIdentifier(t.Value(), t.File, t.Offset, t.Length), remainder[1:], nil
 }
 
 // type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
@@ -22,13 +23,14 @@ func Identifier(tokens []tok.Token) (ident *ast.Identifier, remainder []tok.Toke
 func TypeIdentifier(tokens []tok.Token) (typeIdent *ast.TypeIdentifier, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
-	if peek(remainder).Type != tok.TokTypeID {
+	t := peek(remainder)
+	if t.Type != tok.TokTypeID {
 		return nil, tokens, ErrNoMatch
-	} else if peek(remainder).Invalid {
-		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokTypeID], remainder)
+	} else if t.Invalid {
+		return nil, remainder, errorExpectingTokenType(tok.TokTypeID, remainder)
 	}
 
-	return ast.NewTypeIdentifier(remainder[0].Value(), remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
+	return ast.NewTypeIdentifier(t.Value(), t.File, t.Offset, t.Length), remainder[1:], nil
 }
 
 // rename_identifier = identifier [ ":" identifier ] .
@@ -134,17 +136,12 @@ func FunctionIdentifier(tokens []tok.Token) (fundIdent *ast.FunctionIdentifier, 
 	// fmt.Println("FunctionIdentifier", tok.Types(tokens))
 	remainder = skipComments(tokens)
 
-	if peek(remainder).Type != tok.TokFuncID && peek(remainder).Type != tok.TokID {
+	t := peek(remainder)
+	if t.Type != tok.TokFuncID && t.Type != tok.TokID {
 		return nil, tokens, ErrNoMatch
-	} else if peek(remainder).Invalid {
-		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokFuncID], remainder)
+	} else if t.Invalid {
+		return nil, remainder, errorExpectingTokenType(tok.TokFuncID, remainder)
 	}
 
-	return ast.NewFunctionIdentifier(
-			remainder[0].Value(),
-			remainder[0].File,
-			remainder[0].Offset,
-			remainder[0].Length),
-		remainder[1:],
-		nil
+	return ast.NewFunctionIdentifier(t.Value(), t.File, t.Offset, t.Length), remainder[1:], nil
 }
