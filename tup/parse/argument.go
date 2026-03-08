@@ -106,6 +106,7 @@ func LabeledArguments(tokens []tok.Token) (args *ast.LabeledArguments, remainder
 		if _, _, err = LabeledArgument(remainder2); err != nil {
 			break
 		}
+		remainder = remainder2
 	}
 	if len(argsList) > 0 {
 		return ast.NewLabeledArguments(argsList), remainder, nil

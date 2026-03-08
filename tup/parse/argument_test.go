@@ -232,15 +232,33 @@ func TestLabeledArguments(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "single labeled argument",
-			input:   "x: y",
-			want:    ast.NewLabeledArguments([]*ast.LabeledArgument{ast.NewLabeledArgument(ast.NewIdentifier("x", nil, 0, 1), ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), false))}),
+			name:  "single labeled argument",
+			input: "x: y",
+			want: ast.NewLabeledArguments(
+				[]*ast.LabeledArgument{
+					ast.NewLabeledArgument(
+						ast.NewIdentifier("x", nil, 0, 1),
+						ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), false),
+					),
+				},
+			),
 			wantErr: false,
 		},
 		{
-			name:    "labeled arguments",
-			input:   "x: y, z: w",
-			want:    ast.NewLabeledArguments([]*ast.LabeledArgument{ast.NewLabeledArgument(ast.NewIdentifier("x", nil, 0, 1), ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), false)), ast.NewLabeledArgument(ast.NewIdentifier("z", nil, 0, 1), ast.NewArgument(ast.NewIdentifier("w", nil, 0, 1), false))}),
+			name:  "labeled arguments",
+			input: "x: y, z: w",
+			want: ast.NewLabeledArguments(
+				[]*ast.LabeledArgument{
+					ast.NewLabeledArgument(
+						ast.NewIdentifier("x", nil, 0, 1),
+						ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), false),
+					),
+					ast.NewLabeledArgument(
+						ast.NewIdentifier("z", nil, 0, 1),
+						ast.NewArgument(ast.NewIdentifier("w", nil, 0, 1), false),
+					),
+				},
+			),
 			wantErr: false,
 		},
 	}
