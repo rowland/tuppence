@@ -10,15 +10,15 @@ import (
 // annotation = namespaced_annotation | simple_annotation .
 
 func Annotation(tokens []tok.Token) (annot ast.Annotation, remainder []tok.Token, err error) {
-	namespacedAnnotation, remainder, err := NamespacedAnnotation(tokens)
-	if err == nil {
+	var namespacedAnnotation *ast.NamespacedAnnotation
+	if namespacedAnnotation, remainder, err = NamespacedAnnotation(tokens); err == nil {
 		return namespacedAnnotation, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
-	simpleAnnotation, remainder, err := SimpleAnnotation(tokens)
-	if err == nil {
+	var simpleAnnotation *ast.SimpleAnnotation
+	if simpleAnnotation, remainder, err = SimpleAnnotation(tokens); err == nil {
 		return simpleAnnotation, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
@@ -35,8 +35,8 @@ func NamespacedAnnotation(tokens []tok.Token) (annot *ast.NamespacedAnnotation, 
 		return nil, tokens, ErrNoMatch
 	}
 
-	namespace, remainder, err := Namespace(remainder)
-	if err == ErrNoMatch {
+	var namespace string
+	if namespace, remainder, err = Namespace(remainder); err == ErrNoMatch {
 		return nil, tokens, ErrNoMatch
 	} else if err != nil {
 		return nil, remainder, err
@@ -46,15 +46,15 @@ func NamespacedAnnotation(tokens []tok.Token) (annot *ast.NamespacedAnnotation, 
 		return nil, tokens, ErrNoMatch
 	}
 
-	identifier, remainder, err := Identifier(remainder)
-	if err == ErrNoMatch {
+	var identifier *ast.Identifier
+	if identifier, remainder, err = Identifier(remainder); err == ErrNoMatch {
 		return nil, tokens, errorExpecting("identifier", remainder)
 	} else if err != nil {
 		return nil, remainder, err
 	}
 
-	annotationValue, remainder, err := AnnotationValue(remainder)
-	if err != nil {
+	var annotationValue ast.AnnotationValue
+	if annotationValue, remainder, err = AnnotationValue(remainder); err != nil {
 		return nil, remainder, errorExpecting("annotation_value", remainder)
 	}
 
@@ -73,8 +73,8 @@ func SimpleAnnotation(tokens []tok.Token) (annot *ast.SimpleAnnotation, remainde
 		return nil, tokens, ErrNoMatch
 	}
 
-	identifier, remainder, err := Identifier(remainder)
-	if err == ErrNoMatch {
+	var identifier *ast.Identifier
+	if identifier, remainder, err = Identifier(remainder); err == ErrNoMatch {
 		return nil, tokens, ErrNoMatch
 	} else if err != nil {
 		return nil, remainder, err
@@ -91,8 +91,8 @@ func SimpleAnnotation(tokens []tok.Token) (annot *ast.SimpleAnnotation, remainde
 
 func Namespace(tokens []tok.Token) (namespace string, remainder []tok.Token, err error) {
 	// identifier = ( lowercase_letter | "_" ) { letter | decimal_digit | "_" } .
-	identifier, remainder, err := Identifier(tokens)
-	if err == ErrNoMatch {
+	var identifier *ast.Identifier
+	if identifier, remainder, err = Identifier(tokens); err == ErrNoMatch {
 		return "", tokens, ErrNoMatch
 	} else if err != nil {
 		return "", remainder, err
@@ -106,36 +106,36 @@ func Namespace(tokens []tok.Token) (namespace string, remainder []tok.Token, err
 // annotation_value = string_literal | ["-"] number | boolean_literal | type_reference .
 
 func AnnotationValue(tokens []tok.Token) (value ast.AnnotationValue, remainder []tok.Token, err error) {
-	stringLiteral, remainder, err := StringLiteral(tokens)
-	if err == nil {
+	var stringLiteral *ast.StringLiteral
+	if stringLiteral, remainder, err = StringLiteral(tokens); err == nil {
 		return stringLiteral, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
-	integerLiteral, remainder, err := IntegerLiteral(tokens)
-	if err == nil {
+	var integerLiteral *ast.IntegerLiteral
+	if integerLiteral, remainder, err = IntegerLiteral(tokens); err == nil {
 		return integerLiteral, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
-	floatLiteral, remainder, err := FloatLiteral(tokens)
-	if err == nil {
+	var floatLiteral *ast.FloatLiteral
+	if floatLiteral, remainder, err = FloatLiteral(tokens); err == nil {
 		return floatLiteral, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
-	booleanLiteral, remainder, err := BooleanLiteral(tokens)
-	if err == nil {
+	var booleanLiteral *ast.BooleanLiteral
+	if booleanLiteral, remainder, err = BooleanLiteral(tokens); err == nil {
 		return booleanLiteral, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
-	typeReference, remainder, err := TypeReference(tokens)
-	if err == nil {
+	var typeReference *ast.TypeReference
+	if typeReference, remainder, err = TypeReference(tokens); err == nil {
 		return typeReference, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err

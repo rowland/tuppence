@@ -16,48 +16,42 @@ import (
 func TopLevelItem(tokens []tok.Token) (item ast.TopLevelItem, remainder []tok.Token, err error) {
 	var errors []error
 	var tqfd *ast.TypeQualifiedFunctionDeclaration
-	tqfd, remainder, err = TypeQualifiedFunctionDeclaration(tokens)
-	if err != nil {
+	if tqfd, remainder, err = TypeQualifiedFunctionDeclaration(tokens); err != nil {
 		errors = append(errors, err)
 	} else if tqfd != nil {
 		return tqfd, remainder, nil
 	}
 
 	var tqd *ast.TypeQualifiedDeclaration
-	tqd, remainder, err = TypeQualifiedDeclaration(tokens)
-	if err != nil {
+	if tqd, remainder, err = TypeQualifiedDeclaration(tokens); err != nil {
 		errors = append(errors, err)
 	} else if tqd != nil {
 		return tqd, remainder, nil
 	}
 
 	var td *ast.TypeDeclaration
-	td, remainder, err = TypeDeclaration(tokens)
-	if err != nil {
+	if td, remainder, err = TypeDeclaration(tokens); err != nil {
 		errors = append(errors, err)
 	} else if td != nil {
 		return td, remainder, nil
 	}
 
 	var fd *ast.FunctionDeclaration
-	fd, remainder, err = FunctionDeclaration(tokens)
-	if err != nil {
+	if fd, remainder, err = FunctionDeclaration(tokens); err != nil {
 		errors = append(errors, err)
 	} else if fd != nil {
 		return fd, remainder, nil
 	}
 
 	var a *ast.Assignment
-	a, remainder, err = Assignment(tokens)
-	if err != nil {
+	if a, remainder, err = Assignment(tokens); err != nil {
 		errors = append(errors, err)
 	} else if a != nil {
 		return a, remainder, nil
 	}
 
 	var ed ast.TopLevelItem
-	ed, remainder, err = ExportDeclaration(tokens)
-	if err != nil {
+	if ed, remainder, err = ExportDeclaration(tokens); err != nil {
 		errors = append(errors, err)
 	} else if ed != nil {
 		return ed, remainder, nil

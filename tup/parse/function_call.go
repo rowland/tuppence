@@ -10,14 +10,12 @@ import (
 func FunctionCall(tokens []tok.Token) (expr *ast.FunctionCall, remainder []tok.Token, err error) {
 	// fmt.Println("FunctionCall", tok.Types(tokens))
 	var functionIdentifier *ast.FunctionIdentifier
-	functionIdentifier, remainder, err = FunctionIdentifier(tokens)
-	if err != nil {
+	if functionIdentifier, remainder, err = FunctionIdentifier(tokens); err != nil {
 		return nil, remainder, err
 	}
 
 	var functionParameterTypes *ast.FunctionParameterTypes
-	functionParameterTypes, remainder, err = FunctionParameterTypes(remainder)
-	if err != nil && err != ErrNoMatch {
+	if functionParameterTypes, remainder, err = FunctionParameterTypes(remainder); err != nil && err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
@@ -27,8 +25,7 @@ func FunctionCall(tokens []tok.Token) (expr *ast.FunctionCall, remainder []tok.T
 	}
 
 	var arguments *ast.FunctionArguments
-	arguments, remainder, err = FunctionArguments(remainder)
-	if err != nil && err != ErrNoMatch {
+	if arguments, remainder, err = FunctionArguments(remainder); err != nil && err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
@@ -37,9 +34,7 @@ func FunctionCall(tokens []tok.Token) (expr *ast.FunctionCall, remainder []tok.T
 	}
 
 	var functionBlock *ast.FunctionBlock
-	functionBlock, remainder, err = FunctionBlock(remainder)
-	// fmt.Println("FunctionBlock", functionBlock, err, tok.Types(remainder))
-	if err != nil && err != ErrNoMatch {
+	if functionBlock, remainder, err = FunctionBlock(remainder); err != nil && err != ErrNoMatch {
 		return nil, remainder, err
 	}
 

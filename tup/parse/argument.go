@@ -69,13 +69,13 @@ func ArgumentLabel(tokens []tok.Token) (ident *ast.Identifier, remainder []tok.T
 func LabeledArgument(tokens []tok.Token) (arg *ast.LabeledArgument, remainder []tok.Token, err error) {
 	// fmt.Println("LabeledArgument", tokens)
 
-	identifier, remainder, err := ArgumentLabel(tokens)
-	if err != nil {
+	var identifier *ast.Identifier
+	if identifier, remainder, err = ArgumentLabel(tokens); err != nil {
 		return nil, remainder, err
 	}
 
-	argument, remainder, err := Argument(remainder)
-	if err != nil {
+	var argument *ast.Argument
+	if argument, remainder, err = Argument(remainder); err != nil {
 		return nil, remainder, err
 	}
 
@@ -91,8 +91,7 @@ func LabeledArguments(tokens []tok.Token) (args *ast.LabeledArguments, remainder
 	var argsList []*ast.LabeledArgument
 	for {
 		var arg *ast.LabeledArgument
-		arg, remainder, err = LabeledArgument(remainder)
-		if err == ErrNoMatch {
+		if arg, remainder, err = LabeledArgument(remainder); err == ErrNoMatch {
 			break
 		} else if err != nil {
 			return nil, remainder, err

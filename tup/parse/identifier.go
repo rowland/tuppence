@@ -36,8 +36,8 @@ func TypeIdentifier(tokens []tok.Token) (typeIdent *ast.TypeIdentifier, remainde
 // rename_identifier = identifier [ ":" identifier ] .
 
 func RenameIdentifier(tokens []tok.Token) (ident *ast.RenameIdentifier, remainder []tok.Token, err error) {
-	identifier, remainder, err := Identifier(tokens)
-	if err == ErrNoMatch {
+	var identifier *ast.Identifier
+	if identifier, remainder, err = Identifier(tokens); err == ErrNoMatch {
 		return nil, tokens, ErrNoMatch
 	} else if err != nil {
 		return nil, remainder, err
@@ -61,8 +61,8 @@ func RenameIdentifier(tokens []tok.Token) (ident *ast.RenameIdentifier, remainde
 // rename_type = type_identifier [ ":" type_identifier ] .
 
 func RenameType(tokens []tok.Token) (typeIdent *ast.RenameType, remainder []tok.Token, err error) {
-	typeIdentifier, remainder, err := TypeIdentifier(tokens)
-	if err == ErrNoMatch {
+	var typeIdentifier *ast.TypeIdentifier
+	if typeIdentifier, remainder, err = TypeIdentifier(tokens); err == ErrNoMatch {
 		return nil, tokens, ErrNoMatch
 	} else if err != nil {
 		return nil, remainder, err
@@ -109,8 +109,8 @@ func TypeReference(tokens []tok.Token) (typeRef *ast.TypeReference, remainder []
 		}
 	}
 
-	typeIdentifier, remainder, err := TypeIdentifier(remainder)
-	if err == ErrNoMatch {
+	var typeIdentifier *ast.TypeIdentifier
+	if typeIdentifier, remainder, err = TypeIdentifier(remainder); err == ErrNoMatch {
 		return nil, tokens, ErrNoMatch
 	} else if err != nil {
 		return nil, nil, err
