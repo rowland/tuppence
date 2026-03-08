@@ -7,16 +7,14 @@ import (
 // Block represents a code block enclosed in braces
 type Block struct {
 	BaseNode
-	Body       *BlockBody       // The block's body
-	Parameters *BlockParameters // Optional block parameters (may be nil)
+	Body *BlockBody
 }
 
 // NewBlock creates a new Block node
-func NewBlock(body *BlockBody, parameters *BlockParameters) *Block {
+func NewBlock(body *BlockBody) *Block {
 	return &Block{
-		BaseNode:   BaseNode{Type: NodeBlock},
-		Body:       body,
-		Parameters: parameters,
+		BaseNode: BaseNode{Type: NodeBlock},
+		Body:     body,
 	}
 }
 
@@ -25,19 +23,8 @@ func (b *Block) String() string {
 	var builder strings.Builder
 	builder.WriteString("{")
 
-	if b.Parameters != nil {
-		builder.WriteString(" ")
-		builder.WriteString(b.Parameters.String())
-		builder.WriteString(" ")
-	}
-
 	if b.Body != nil {
-		if b.Parameters != nil {
-			builder.WriteString("\n")
-		} else {
-			builder.WriteString(" ")
-		}
-
+		builder.WriteString(" ")
 		builder.WriteString(b.Body.String())
 	}
 

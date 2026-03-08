@@ -211,18 +211,15 @@ func NewFunctionBlock(parameters *BlockParameters, body *BlockBody) *FunctionBlo
 
 func (f *FunctionBlock) String() string {
 	var result strings.Builder
-	result.WriteString("{")
+	result.WriteString("{ ")
+
 	if f.Parameters != nil {
-		result.WriteString(" ")
 		result.WriteString(f.Parameters.String())
 		result.WriteString(" ")
 	}
+	result.WriteString(f.Body.String())
 
-	if f.Body != nil {
-		result.WriteString(f.Body.String())
-	}
-
-	result.WriteString("}")
+	result.WriteString(" }")
 	return result.String()
 }
 

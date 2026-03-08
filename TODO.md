@@ -99,7 +99,7 @@
     - [x] function_parameter_types
         - [x] local_type_reference
             - [x] identifier
-    - [.] function_arguments
+    - [x] function_arguments
         - [x] labeled_arguments
             - [x] labeled_argument
         - [x] arguments
@@ -107,7 +107,7 @@
                 - [.] expression
                 - [x] spread_argument
         - [x] partial_application
-    - [.] function_block
+    - [x] function_block
         - [ ] block_parameters
             - [ ] assignment_lhs
         - [.] block_body
@@ -147,7 +147,7 @@
                         - [ ] return_type
                             - [ ] union_with_error
                             - [ ] union_declaration_with_error
-                    - [ ] block
+                    - [x] block
                 - [ ] type_qualified_declaration
                 - [ ] type_declaration
                     - [ ] type_declaration_lhs

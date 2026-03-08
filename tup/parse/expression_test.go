@@ -14,6 +14,12 @@ func TestExpression(t *testing.T) {
 		want    ast.Expression
 		wantErr bool
 	}{
+		{
+			name:    "empty expression",
+			input:   "",
+			want:    nil,
+			wantErr: true,
+		},
 		// boolean
 		{
 			name:    "true",
@@ -149,6 +155,12 @@ func TestExpression(t *testing.T) {
 			}),
 			wantErr: false,
 		},
+		{
+			name:    "invalid expression",
+			input:   "1 +",
+			want:    nil,
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -158,14 +170,17 @@ func TestExpression(t *testing.T) {
 				t.Errorf("Tokenize(%q) = %v", tt.input, err)
 			}
 			expression, _, err := Expression(tokens)
-			if err != nil && !tt.wantErr {
-				t.Fatalf("Expression(%q) = %v, want nil", tt.input, err)
+			if tt.wantErr {
+				if err == nil {
+					t.Fatalf("Expression(%q): want error, got nil", tt.input)
+				}
+				return
 			}
-			if err == nil && tt.wantErr {
-				t.Fatalf("Expression(%q) = nil, want error", tt.input)
+			if !tt.wantErr && err != nil {
+				t.Fatalf("Expression(%q): got error %v, want nil", tt.input, err)
 			}
 			if expression == nil {
-				t.Errorf("Expression(%q) = nil, want not nil", tt.input)
+				t.Fatalf("Expression(%q) = nil, want not nil", tt.input)
 			}
 			switch want := tt.want.(type) {
 			case *ast.IntegerLiteral:

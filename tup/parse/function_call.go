@@ -33,11 +33,12 @@ func FunctionCall(tokens []tok.Token) (expr *ast.FunctionCall, remainder []tok.T
 	}
 
 	if remainder, found = CloseParen(remainder); !found {
-		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokCloseParen], remainder)
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseParen, remainder)
 	}
 
 	var functionBlock *ast.FunctionBlock
 	functionBlock, remainder, err = FunctionBlock(remainder)
+	// fmt.Println("FunctionBlock", functionBlock, err, tok.Types(remainder))
 	if err != nil && err != ErrNoMatch {
 		return nil, remainder, err
 	}
@@ -60,7 +61,7 @@ func FunctionParameterTypes(tokens []tok.Token) (expr *ast.FunctionParameterType
 	}
 
 	if remainder, found = CloseBracket(remainder); !found {
-		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokCloseBracket], remainder)
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseBracket, remainder)
 	}
 
 	return ast.NewFunctionParameterTypes(parameters), remainder, nil
@@ -120,18 +121,21 @@ func FunctionBlock(tokens []tok.Token) (expr *ast.FunctionBlock, remainder []tok
 	}
 
 	var parameters *ast.BlockParameters
-	if parameters, remainder, err = BlockParameters(tokens); err != nil && err != ErrNoMatch {
+	if parameters, remainder, err = BlockParameters(remainder); err != nil && err != ErrNoMatch {
 		return nil, remainder, err
 	}
+	// fmt.Println("FunctionBlock parameters", parameters, tok.Types(remainder))
 
 	var body *ast.BlockBody
-	if body, remainder, err = BlockBody(remainder); err != nil && err != ErrNoMatch {
+	if body, remainder, err = BlockBody(remainder); err != nil {
 		return nil, remainder, err
 	}
+	// fmt.Println("FunctionBlock body", body, tok.Types(remainder))
 
 	if remainder, found = CloseBrace(remainder); !found {
-		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokCloseBrace], remainder)
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseBrace, remainder)
 	}
+	// fmt.Println("FunctionBlock close brace", tok.Types(remainder))
 
 	return ast.NewFunctionBlock(parameters, body), remainder, nil
 }
@@ -140,22 +144,5 @@ func FunctionBlock(tokens []tok.Token) (expr *ast.FunctionBlock, remainder []tok
 
 func BlockParameters(tokens []tok.Token) (expr *ast.BlockParameters, remainder []tok.Token, err error) {
 	// fmt.Println("BlockParameters", tok.Types(tokens))
-	return nil, nil, ErrNoMatch // TODO: Implement
-}
-
-// block_body = { statement } expression .
-
-func BlockBody(tokens []tok.Token) (expr *ast.BlockBody, remainder []tok.Token, err error) {
-	// fmt.Println("BlockBody", tok.Types(tokens))
-	var statements []ast.Statement
-	if statements, remainder, err = Statements(tokens); err != nil && err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	var expression ast.Expression
-	if expression, remainder, err = Expression(remainder); err != nil && err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	return ast.NewBlockBody(statements, expression), remainder, nil
+	return nil, tokens, ErrNoMatch // TODO: Implement
 }
