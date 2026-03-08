@@ -16,13 +16,14 @@ func StringLiteral(tokens []tok.Token) (lit *ast.StringLiteral, remainder []tok.
 	// fmt.Println("StringLiteral", tokens)
 	remainder = skipComments(tokens)
 
-	if peek(remainder).Type != tok.TokStrLit {
+	t := peek(remainder)
+	if t.Type != tok.TokStrLit {
 		return nil, tokens, ErrNoMatch
-	} else if peek(remainder).Invalid {
-		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokStrLit], remainder)
+	} else if t.Invalid {
+		return nil, remainder, errorExpectingTokenType(tok.TokStrLit, remainder)
 	}
 
-	value := remainder[0].Value()
+	value := t.Value()
 
 	var sb strings.Builder
 	for i := 1; i < len(value)-1; {
@@ -51,7 +52,7 @@ func StringLiteral(tokens []tok.Token) (lit *ast.StringLiteral, remainder []tok.
 		}
 	}
 	stringValue := sb.String()
-	return ast.NewStringLiteral(value, stringValue, remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
+	return ast.NewStringLiteral(value, stringValue, t.File, t.Offset, t.Length), remainder[1:], nil
 }
 
 // escape_sequence = ( "\\n" | "\\t" | "\\\"" | "\\'" | "\\\\" | "\\r" | "\\b" | "\\f" | "\\v" | "\\0" | "\\`" ) .

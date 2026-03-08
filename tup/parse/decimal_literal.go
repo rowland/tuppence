@@ -14,13 +14,14 @@ import (
 func DecimalLiteral(tokens []tok.Token) (lit *ast.IntegerLiteral, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
-	if peek(remainder).Type != tok.TokDecLit {
+	t := peek(remainder)
+	if t.Type != tok.TokDecLit {
 		return nil, tokens, ErrNoMatch
-	} else if peek(remainder).Invalid {
-		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokDecLit], remainder)
+	} else if t.Invalid {
+		return nil, remainder, errorExpectingTokenType(tok.TokDecLit, remainder)
 	}
 
-	value := remainder[0].Value()
+	value := t.Value()
 	integerValue, _ := strconv.ParseInt(strings.ReplaceAll(value, "_", ""), 10, 64)
-	return ast.NewDecimalLiteral(value, integerValue, remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
+	return ast.NewDecimalLiteral(value, integerValue, t.File, t.Offset, t.Length), remainder[1:], nil
 }

@@ -46,6 +46,18 @@ func errorExpectingOneOf(expecting string, tokens []tok.Token, errors []error) *
 	}
 }
 
+func errorExpectingTokenType(tokenType tok.TokenType, tokens []tok.Token) *Error {
+	got, line, column := errorGot(tokens)
+	return &Error{
+		Expecting: tok.TokenTypes[tokenType],
+		Got:       got,
+		Line:      line,
+		Column:    column,
+		// Fatal:     true,
+		SubErrors: []error{},
+	}
+}
+
 func errorGot(tokens []tok.Token) (got string, line int, column int) {
 	if len(tokens) > 0 {
 		got = tokens[0].Value()

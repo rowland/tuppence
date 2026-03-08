@@ -13,13 +13,14 @@ import (
 func BinaryLiteral(tokens []tok.Token) (lit *ast.IntegerLiteral, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
-	if peek(remainder).Type != tok.TokBinLit {
+	t := peek(remainder)
+	if t.Type != tok.TokBinLit {
 		return nil, tokens, ErrNoMatch
-	} else if peek(remainder).Invalid {
-		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokBinLit], remainder)
+	} else if t.Invalid {
+		return nil, remainder, errorExpectingTokenType(tok.TokBinLit, remainder)
 	}
 
-	value := remainder[0].Value()
+	value := t.Value()
 	integerValue, _ := strconv.ParseInt(strings.ReplaceAll(value, "_", ""), 0, 64)
-	return ast.NewBinaryLiteral(value, integerValue, remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
+	return ast.NewBinaryLiteral(value, integerValue, t.File, t.Offset, t.Length), remainder[1:], nil
 }

@@ -13,14 +13,15 @@ func RawStringLiteral(tokens []tok.Token) (lit *ast.RawStringLiteral, remainder 
 	// fmt.Println("RawStringLiteral", tokens)
 	remainder = skipComments(tokens)
 
-	if peek(remainder).Type != tok.TokRawStrLit {
+	t := peek(remainder)
+	if t.Type != tok.TokRawStrLit {
 		return nil, nil, ErrNoMatch
-	} else if peek(remainder).Invalid {
-		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokRawStrLit], remainder)
+	} else if t.Invalid {
+		return nil, remainder, errorExpectingTokenType(tok.TokRawStrLit, remainder)
 	}
 
-	value := remainder[0].Value()
-	stringValue := value[1 : len(remainder[0].Value())-1]
+	value := t.Value()
+	stringValue := value[1 : len(value)-1]
 	stringValue = strings.ReplaceAll(stringValue, "``", "`")
-	return ast.NewRawStringLiteral(value, stringValue, remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
+	return ast.NewRawStringLiteral(value, stringValue, t.File, t.Offset, t.Length), remainder[1:], nil
 }

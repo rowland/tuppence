@@ -11,18 +11,12 @@ func BooleanLiteral(tokens []tok.Token) (lit *ast.BooleanLiteral, remainder []to
 	// fmt.Println("BooleanLiteral", tokens)
 	remainder = skipComments(tokens)
 
-	if peek(remainder).Type != tok.TokBoolLit {
+	t := peek(remainder)
+	if t.Type != tok.TokBoolLit {
 		return nil, tokens, ErrNoMatch
-	} else if peek(remainder).Invalid {
-		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokBoolLit], remainder)
+	} else if t.Invalid {
+		return nil, remainder, errorExpectingTokenType(tok.TokBoolLit, remainder)
 	}
 
-	return ast.NewBooleanLiteral(
-			remainder[0].Value(),
-			remainder[0].Value() == "true",
-			remainder[0].File,
-			remainder[0].Offset,
-			remainder[0].Length),
-		remainder[1:],
-		nil
+	return ast.NewBooleanLiteral(t.Value(), t.Value() == "true", t.File, t.Offset, t.Length), remainder[1:], nil
 }

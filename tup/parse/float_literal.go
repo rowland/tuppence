@@ -10,13 +10,14 @@ import (
 func FloatLiteral(tokens []tok.Token) (lit *ast.FloatLiteral, remainder []tok.Token, err error) {
 	remainder = skipComments(tokens)
 
-	if peek(remainder).Type != tok.TokFloatLit {
+	t := peek(remainder)
+	if t.Type != tok.TokFloatLit {
 		return nil, tokens, ErrNoMatch
-	} else if peek(remainder).Invalid {
-		return nil, nil, errorExpecting(tok.TokenTypes[tok.TokFloatLit], remainder)
+	} else if t.Invalid {
+		return nil, nil, errorExpectingTokenType(tok.TokFloatLit, remainder)
 	}
 
-	value := remainder[0].Value()
+	value := t.Value()
 	floatValue, _ := strconv.ParseFloat(value, 64)
-	return ast.NewFloatLiteral(value, floatValue, remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
+	return ast.NewFloatLiteral(value, floatValue, t.File, t.Offset, t.Length), remainder[1:], nil
 }

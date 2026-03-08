@@ -14,12 +14,13 @@ import (
 func RuneLiteral(tokens []tok.Token) (lit *ast.RuneLiteral, remainder []tok.Token, err error) {
 	// fmt.Println("RuneLiteral", tokens)
 	remainder = skipComments(tokens)
-	if peek(remainder).Type != tok.TokRuneLit {
+	t := peek(remainder)
+	if t.Type != tok.TokRuneLit {
 		return nil, tokens, ErrNoMatch
-	} else if peek(remainder).Invalid {
-		return nil, remainder, errorExpecting(tok.TokenTypes[tok.TokRuneLit], remainder)
+	} else if t.Invalid {
+		return nil, remainder, errorExpectingTokenType(tok.TokRuneLit, remainder)
 	}
-	value := remainder[0].Value()
+	value := t.Value()
 
 	var buf bytes.Buffer
 	for i := 1; i < len(value)-1; {
@@ -54,5 +55,5 @@ func RuneLiteral(tokens []tok.Token) (lit *ast.RuneLiteral, remainder []tok.Toke
 	if size != buf.Len() {
 		return nil, nil, fmt.Errorf("rune literal contains multiple code points: %s", buf.String())
 	}
-	return ast.NewRuneLiteral(value, runeValue, remainder[0].File, remainder[0].Offset, remainder[0].Length), remainder[1:], nil
+	return ast.NewRuneLiteral(value, runeValue, t.File, t.Offset, t.Length), remainder[1:], nil
 }
