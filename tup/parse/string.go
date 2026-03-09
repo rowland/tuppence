@@ -58,30 +58,35 @@ func StringLiteral(tokens []tok.Token) (lit *ast.StringLiteral, remainder []tok.
 // escape_sequence = ( "\\n" | "\\t" | "\\\"" | "\\'" | "\\\\" | "\\r" | "\\b" | "\\f" | "\\v" | "\\0" | "\\`" ) .
 
 func EscapeSequence(value string) (bytes []byte, length int, matched bool) {
-	if value[0] == '\\' && value[1] == 'n' {
-		return []byte{'\n'}, 2, true
-	} else if value[0] == '\\' && value[1] == 't' {
-		return []byte{'\t'}, 2, true
-	} else if value[0] == '\\' && value[1] == '"' {
-		return []byte{'"'}, 2, true
-	} else if value[0] == '\\' && value[1] == '\'' {
-		return []byte{'\''}, 2, true
-	} else if value[0] == '\\' && value[1] == '\\' {
-		return []byte{'\\'}, 2, true
-	} else if value[0] == '\\' && value[1] == 'r' {
-		return []byte{'\r'}, 2, true
-	} else if value[0] == '\\' && value[1] == 'b' {
-		return []byte{'\b'}, 2, true
-	} else if value[0] == '\\' && value[1] == 'f' {
-		return []byte{'\f'}, 2, true
-	} else if value[0] == '\\' && value[1] == 'v' {
-		return []byte{'\v'}, 2, true
-	} else if value[0] == '\\' && value[1] == '0' {
-		return []byte{0}, 2, true
-	} else if value[0] == '\\' && value[1] == '`' {
-		return []byte{'`'}, 2, true
+	if len(value) < 2 || value[0] != '\\' {
+		return nil, 0, false
 	}
-	return nil, 0, false
+	switch value[1] {
+	case 'n':
+		return []byte{'\n'}, 2, true
+	case 't':
+		return []byte{'\t'}, 2, true
+	case '"':
+		return []byte{'"'}, 2, true
+	case '\'':
+		return []byte{'\''}, 2, true
+	case '\\':
+		return []byte{'\\'}, 2, true
+	case 'r':
+		return []byte{'\r'}, 2, true
+	case 'b':
+		return []byte{'\b'}, 2, true
+	case 'f':
+		return []byte{'\f'}, 2, true
+	case 'v':
+		return []byte{'\v'}, 2, true
+	case '0':
+		return []byte{0}, 2, true
+	case '`':
+		return []byte{'`'}, 2, true
+	default:
+		return nil, 0, false
+	}
 }
 
 // byte_escape_sequence = "\\" "x" hex_digit hex_digit .
