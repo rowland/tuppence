@@ -151,3 +151,83 @@ func TestAnnotation(t *testing.T) {
 		})
 	}
 }
+
+func TestAnnotations(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.Annotations
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			input:   "",
+			want:    ast.NewAnnotations([]ast.Annotation{}),
+			wantErr: false,
+		},
+		{
+			name:    "single annotation",
+			input:   "@x\n",
+			want:    ast.NewAnnotations([]ast.Annotation{ast.NewSimpleAnnotation("x")}),
+			wantErr: false,
+		},
+		{
+			name:    "multiple annotations",
+			input:   "@x\n@y\n",
+			want:    ast.NewAnnotations([]ast.Annotation{ast.NewSimpleAnnotation("x"), ast.NewSimpleAnnotation("y")}),
+			wantErr: false,
+		},
+		{
+			name: "namespaced annotations",
+			input: "@ns:str \"abc\"\n" +
+				"@ns:int 1\n" +
+				"@ns:float 1.0\n" +
+				"@ns:bool true\n" +
+				"@ns:typ Foo\n",
+			want: ast.NewAnnotations(
+				[]ast.Annotation{
+					ast.NewNamespacedAnnotation("ns", "str", ast.NewStringLiteral(`"abc"`, "abc", nil, 0, 4)),
+					ast.NewNamespacedAnnotation("ns", "int", ast.NewDecimalLiteral("1", 1, nil, 0, 1)),
+					ast.NewNamespacedAnnotation("ns", "float", ast.NewFloatLiteral("1.0", 1.0, nil, 0, 4)),
+					ast.NewNamespacedAnnotation("ns", "bool", ast.NewBooleanLiteral("true", true, nil, 0, 4)),
+					ast.NewNamespacedAnnotation("ns", "typ", ast.NewTypeReference(
+						nil,
+						ast.NewTypeIdentifier("Foo", nil, 0, 3),
+						nil, 0, 3)),
+				}),
+			wantErr: false,
+		},
+		{
+			name: "one good, one bad",
+			input: "@x\n" +
+				"@y:z\n",
+			want: ast.NewAnnotations([]ast.Annotation{
+				ast.NewSimpleAnnotation("x"),
+				ast.NewNamespacedAnnotation("y", "z", nil),
+			}),
+			wantErr: true,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			source := source.NewSource([]byte(test.input), "test.tup")
+			tokens, err := tok.Tokenize(source.Contents, source.Filename)
+			if err != nil {
+				t.Errorf("Tokenize(%q) = %v", test.input, err)
+			}
+			got, _, err := Annotations(tokens)
+			if test.wantErr {
+				if err == nil {
+					t.Errorf("Annotations(%q) = %v, want error", test.input, err)
+				}
+				return
+			}
+			if !test.wantErr && err != nil {
+				t.Fatalf("Annotations(%q) = %v, want nil", test.input, err)
+			}
+			if got.String() != test.want.String() {
+				t.Errorf("Annotations(%q) = %v, want %v", test.input, got.String(), test.want.String())
+			}
+		})
+	}
+}

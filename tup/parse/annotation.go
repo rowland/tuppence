@@ -1,11 +1,32 @@
 package parse
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/rowland/tuppence/tup/ast"
 	"github.com/rowland/tuppence/tup/tok"
 )
+
+// annotations = [ annotation { annotation } ] .
+
+func Annotations(tokens []tok.Token) (annots *ast.Annotations, remainder []tok.Token, err error) {
+	remainder = tokens
+	var annotations []ast.Annotation
+	for {
+		var annotation ast.Annotation
+		if annotation, remainder, err = Annotation(remainder); err == ErrNoMatch {
+			fmt.Println("No match")
+			break
+		} else if err != nil {
+			fmt.Println("Error", err)
+			return nil, remainder, err
+		}
+		annotations = append(annotations, annotation)
+	}
+
+	return ast.NewAnnotations(annotations), remainder, nil
+}
 
 // annotation = namespaced_annotation | simple_annotation .
 

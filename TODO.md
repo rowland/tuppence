@@ -113,8 +113,8 @@
         - [.] block_body
             - [ ] statement
                 - [ ] type_qualified_function_declaration
-                    - [ ] annotations
-                    - [ ] type_identifier
+                    - [x] annotations
+                    - [x] type_identifier
                     - [ ] function_declaration_lhs
                     - [ ] function_declaration_type
                         - [ ] labeled_parameters
