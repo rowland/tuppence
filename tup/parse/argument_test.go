@@ -43,24 +43,7 @@ func TestArgument(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
-			if err != nil {
-				t.Errorf("Tokenize(%q) = %v", test.input, err)
-			}
-			arg, _, err := Argument(tokens)
-			if test.wantErr {
-				if err == nil {
-					t.Fatalf("Argument() = nil, want error")
-				}
-				return
-			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("Argument() error = %v, want nil", err)
-			}
-			if arg.Expr.String() != test.want.Expr.String() {
-				t.Errorf("Argument() = %v, want %v", arg, test.want)
-			}
+			RunParseTest(t, test.input, test.want, test.wantErr, Argument)
 		})
 	}
 }
@@ -126,25 +109,7 @@ func TestArguments(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
-			if err != nil {
-				t.Errorf("Tokenize(%q) = %v", test.input, err)
-				return
-			}
-			args, _, err := Arguments(tokens)
-			if test.wantErr {
-				if err == nil {
-					t.Fatalf("Arguments() = nil, want error")
-				}
-				return
-			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("Arguments() error = %v, want nil", err)
-			}
-			if args.String() != test.want.String() {
-				t.Errorf("Arguments() = %v, want %v", args, test.want)
-			}
+			RunParseTest(t, test.input, test.want, test.wantErr, Arguments)
 		})
 	}
 }
@@ -192,28 +157,7 @@ func TestLabeledArgument(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
-			if err != nil {
-				t.Errorf("Tokenize(%q) = %v", test.input, err)
-				return
-			}
-			arg, _, err := LabeledArgument(tokens)
-			if test.wantErr {
-				if err == nil {
-					t.Fatalf("LabeledArgument(): err == nil, want error")
-				}
-				return
-			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("LabeledArgument(): err == %v, want nil", err)
-			}
-			if arg.Identifier.String() != test.want.Identifier.String() {
-				t.Errorf("LabeledArgument().Identifier = %v, want %v", arg.Identifier, test.want.Identifier)
-			}
-			if arg.Argument.Expr.String() != test.want.Argument.Expr.String() {
-				t.Errorf("LabeledArgument().Argument.Expr = %v, want %v", arg.Argument.Expr, test.want.Argument.Expr)
-			}
+			RunParseTest(t, test.input, test.want, test.wantErr, LabeledArgument)
 		})
 	}
 }
@@ -264,25 +208,7 @@ func TestLabeledArguments(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
-			if err != nil {
-				t.Errorf("Tokenize(%q) = %v", test.input, err)
-				return
-			}
-			args, _, err := LabeledArguments(tokens)
-			if test.wantErr {
-				if err == nil {
-					t.Fatalf("LabeledArguments() = nil, want error")
-				}
-				return
-			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("LabeledArguments() error = %v, want nil", err)
-			}
-			if args.String() != test.want.String() {
-				t.Errorf("LabeledArguments() = %v, want %v", args, test.want)
-			}
+			RunParseTest(t, test.input, test.want, test.wantErr, LabeledArguments)
 		})
 	}
 }

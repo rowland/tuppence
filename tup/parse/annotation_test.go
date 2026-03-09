@@ -210,24 +210,7 @@ func TestAnnotations(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
-			if err != nil {
-				t.Errorf("Tokenize(%q) = %v", test.input, err)
-			}
-			got, _, err := Annotations(tokens)
-			if test.wantErr {
-				if err == nil {
-					t.Errorf("Annotations(%q) = %v, want error", test.input, err)
-				}
-				return
-			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("Annotations(%q) = %v, want nil", test.input, err)
-			}
-			if got.String() != test.want.String() {
-				t.Errorf("Annotations(%q) = %v, want %v", test.input, got.String(), test.want.String())
-			}
+			RunParseTest(t, test.input, test.want, test.wantErr, Annotations)
 		})
 	}
 }

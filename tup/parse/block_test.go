@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	"github.com/rowland/tuppence/tup/ast"
-	"github.com/rowland/tuppence/tup/source"
-	"github.com/rowland/tuppence/tup/tok"
 )
 
 func TestBlock(t *testing.T) {
@@ -86,27 +84,7 @@ func TestBlock(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
-			if err != nil {
-				t.Errorf("Tokenize(%q) = %v", test.input, err)
-			}
-			got, _, err := Block(tokens)
-			if test.wantErr {
-				if err == nil {
-					t.Errorf("Block(%q): want error", test.input)
-				}
-				return
-			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("Block(%q): got error %v, want nil", test.input, err)
-			}
-			if got == nil {
-				t.Fatalf("Block(%q): got nil, want %v", test.input, test.want)
-			}
-			if got.String() != test.want.String() {
-				t.Errorf("Block(%q) = %v, want %v", test.input, got.String(), test.want.String())
-			}
+			RunParseTest(t, test.input, test.want, test.wantErr, Block)
 		})
 	}
 }

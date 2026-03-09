@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	"github.com/rowland/tuppence/tup/ast"
-	"github.com/rowland/tuppence/tup/source"
-	"github.com/rowland/tuppence/tup/tok"
 )
 
 // function_call = function_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
@@ -234,27 +232,7 @@ func TestFunctionCall(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
-			if err != nil {
-				t.Errorf("Tokenize(%q) = %v", test.input, err)
-			}
-			got, _, err := FunctionCall(tokens)
-			if test.wantErr {
-				if err == nil {
-					t.Errorf("FunctionCall(%q): want error", test.input)
-				}
-				return
-			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("FunctionCall(%q): got error %v, want nil", test.input, err)
-			}
-			if got == nil {
-				t.Fatalf("FunctionCall(%q): got nil, want %v", test.input, test.want)
-			}
-			if got.String() != test.want.String() {
-				t.Errorf("FunctionCall(%q) = %v, want %v", test.input, got.String(), test.want.String())
-			}
+			RunParseTest(t, test.input, test.want, test.wantErr, FunctionCall)
 		})
 	}
 }
@@ -298,27 +276,7 @@ func TestFunctionParameterTypes(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
-			if err != nil {
-				t.Errorf("Tokenize(%q) = %v", test.input, err)
-			}
-			got, _, err := FunctionParameterTypes(tokens)
-			if test.wantErr {
-				if err == nil {
-					t.Errorf("FunctionParameterTypes(%q): want error", test.input)
-				}
-				return
-			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("FunctionParameterTypes(%q): got error %v, want nil", test.input, err)
-			}
-			if got == nil {
-				t.Fatalf("FunctionParameterTypes(%q): got nil, want %v", test.input, test.want)
-			}
-			if got.String() != test.want.String() {
-				t.Errorf("FunctionParameterTypes(%q) = %v, want %v", test.input, got.String(), test.want.String())
-			}
+			RunParseTest(t, test.input, test.want, test.wantErr, FunctionParameterTypes)
 		})
 	}
 }
@@ -397,27 +355,7 @@ func TestFunctionArguments(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
-			if err != nil {
-				t.Errorf("Tokenize(%q) = %v", test.input, err)
-			}
-			got, _, err := FunctionArguments(tokens)
-			if test.wantErr {
-				if err == nil {
-					t.Errorf("FunctionArguments(%q): want error", test.input)
-				}
-				return
-			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("FunctionArguments(%q): got error %v, want nil", test.input, err)
-			}
-			if got == nil {
-				t.Fatalf("FunctionArguments(%q): got nil, want %v", test.input, test.want)
-			}
-			if got.String() != test.want.String() {
-				t.Errorf("FunctionArguments(%q) = %v, want %v", test.input, got.String(), test.want.String())
-			}
+			RunParseTest(t, test.input, test.want, test.wantErr, FunctionArguments)
 		})
 	}
 }
@@ -520,27 +458,7 @@ func TestFunctionBlock(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
-			if err != nil {
-				t.Errorf("Tokenize(%q) = %v", test.input, err)
-			}
-			got, _, err := FunctionBlock(tokens)
-			if test.wantErr {
-				if err == nil {
-					t.Errorf("FunctionBlock(%q): want error", test.input)
-				}
-				return
-			}
-			if !test.wantErr && err != nil {
-				t.Fatalf("FunctionBlock(%q): got error %v, want nil", test.input, err)
-			}
-			if got == nil {
-				t.Fatalf("FunctionBlock(%q): got nil, want %v", test.input, test.want)
-			}
-			if got.String() != test.want.String() {
-				t.Errorf("FunctionBlock(%q) = %v, want %v", test.input, got.String(), test.want.String())
-			}
+			RunParseTest(t, test.input, test.want, test.wantErr, FunctionBlock)
 		})
 	}
 }
