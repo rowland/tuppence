@@ -232,7 +232,8 @@ func TestFunctionCall(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			RunParseTest(t, test.input, test.want, test.wantErr, FunctionCall)
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"FunctionCall", FunctionCall, StringerCheck[*ast.FunctionCall])
 		})
 	}
 }
@@ -276,7 +277,8 @@ func TestFunctionParameterTypes(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			RunParseTest(t, test.input, test.want, test.wantErr, FunctionParameterTypes)
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"FunctionParameterTypes", FunctionParameterTypes, StringerCheck[*ast.FunctionParameterTypes])
 		})
 	}
 }
@@ -355,7 +357,8 @@ func TestFunctionArguments(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			RunParseTest(t, test.input, test.want, test.wantErr, FunctionArguments)
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"FunctionArguments", FunctionArguments, StringerCheck[*ast.FunctionArguments])
 		})
 	}
 }
@@ -458,7 +461,8 @@ func TestFunctionBlock(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			RunParseTest(t, test.input, test.want, test.wantErr, FunctionBlock)
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"FunctionBlock", FunctionBlock, StringerCheck[*ast.FunctionBlock])
 		})
 	}
 }

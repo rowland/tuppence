@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	"github.com/rowland/tuppence/tup/ast"
-	"github.com/rowland/tuppence/tup/source"
-	"github.com/rowland/tuppence/tup/tok"
 )
 
 func TestRuneLiteral(t *testing.T) {
@@ -74,33 +72,21 @@ func TestRuneLiteral(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
-			if err != nil {
-				t.Errorf("Tokenize(%q) = %v", test.input, err)
-			}
-			got, _, err := RuneLiteral(tokens)
-			if test.wantErr {
-				if err == nil {
-					t.Errorf("RuneLiteral(%q) = %v, want error", test.input, got)
-				}
-				return
-			}
-			if err != nil {
-				t.Fatalf("RuneLiteral(%q) = %v", test.input, err)
-			}
-			if got.Value != test.want.Value {
-				t.Errorf("RuneLiteral(%q).Value = %v, want %v", test.input, got.Value, test.want.Value)
-			}
-			if got.RuneValue != test.want.RuneValue {
-				t.Errorf("RuneLiteral(%q).RuneValue = %v, want %v", test.input, got.RuneValue, test.want.RuneValue)
-			}
-			if got.StartOffset != test.want.StartOffset {
-				t.Errorf("RuneLiteral(%q).StartOffset = %v, want %v", test.input, got.StartOffset, test.want.StartOffset)
-			}
-			if got.Length != test.want.Length {
-				t.Errorf("RuneLiteral(%q).Length = %v, want %v", test.input, got.Length, test.want.Length)
-			}
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr, "RuneLiteral", RuneLiteral,
+				func(t *testing.T, input, parserName string, got, want *ast.RuneLiteral) {
+					if got.Value != want.Value {
+						t.Errorf("%s(%q).Value = %v, want %v", parserName, input, got.Value, want.Value)
+					}
+					if got.RuneValue != want.RuneValue {
+						t.Errorf("%s(%q).RuneValue = %v, want %v", parserName, input, got.RuneValue, want.RuneValue)
+					}
+					if got.StartOffset != want.StartOffset {
+						t.Errorf("%s(%q).StartOffset = %v, want %v", parserName, input, got.StartOffset, want.StartOffset)
+					}
+					if got.Length != want.Length {
+						t.Errorf("%s(%q).Length = %v, want %v", parserName, input, got.Length, want.Length)
+					}
+				})
 		})
 	}
 }

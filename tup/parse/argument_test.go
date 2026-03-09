@@ -43,7 +43,7 @@ func TestArgument(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			RunParseTest(t, test.input, test.want, test.wantErr, Argument)
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr, "Argument", Argument, StringerCheck[*ast.Argument])
 		})
 	}
 }
@@ -109,7 +109,8 @@ func TestArguments(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			RunParseTest(t, test.input, test.want, test.wantErr, Arguments)
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"Arguments", Arguments, StringerCheck[*ast.Arguments])
 		})
 	}
 }
@@ -157,7 +158,7 @@ func TestLabeledArgument(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			RunParseTest(t, test.input, test.want, test.wantErr, LabeledArgument)
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr, "LabeledArgument", LabeledArgument, StringerCheck[*ast.LabeledArgument])
 		})
 	}
 }
@@ -208,7 +209,8 @@ func TestLabeledArguments(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			RunParseTest(t, test.input, test.want, test.wantErr, LabeledArguments)
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"LabeledArguments", LabeledArguments, StringerCheck[*ast.LabeledArguments])
 		})
 	}
 }

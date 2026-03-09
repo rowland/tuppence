@@ -25,32 +25,8 @@ func TestIdentifier(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.input, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
-			if err != nil {
-				t.Errorf("Tokenize(%q) = %v", test.input, err)
-			}
-
-			got, _, err := Identifier(tokens)
-
-			if test.wantErr {
-				if err == nil {
-					t.Errorf("Identifier(%q): want error", test.input)
-				}
-				return
-			}
-
-			if !test.wantErr && err != nil {
-				t.Fatalf("Identifier(%q): got error %v, want nil", test.input, err)
-			}
-
-			if got == nil {
-				t.Fatalf("Identifier(%q) = nil, want %v", test.input, test.want)
-			}
-
-			if got.Name != test.want.Name {
-				t.Errorf("Identifier(%q) = %v, want %v", test.input, got, test.want)
-			}
+			RunParseTest(t, test.input, test.input, test.want, test.wantErr,
+				"Identifier", Identifier, StringerCheck[*ast.Identifier])
 		})
 	}
 }
@@ -77,32 +53,8 @@ func TestTypeIdentifier(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.input, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
-			if err != nil {
-				t.Errorf("Tokenize(%q) = %v", test.input, err)
-			}
-
-			got, _, err := TypeIdentifier(tokens)
-
-			if test.wantErr {
-				if err == nil {
-					t.Errorf("TypeIdentifier(%q): want error", test.input)
-				}
-				return
-			}
-
-			if !test.wantErr && err != nil {
-				t.Fatalf("TypeIdentifier(%q): got error %v, want nil", test.input, err)
-			}
-
-			if got == nil {
-				t.Fatalf("TypeIdentifier(%q): got nil, want %v", test.input, test.want)
-			}
-
-			if got.Name != test.want.Name {
-				t.Errorf("TypeIdentifier(%q).Name: got %v, want %v", test.input, got.Name, test.want.Name)
-			}
+			RunParseTest(t, test.input, test.input, test.want, test.wantErr,
+				"TypeIdentifier", TypeIdentifier, StringerCheck[*ast.TypeIdentifier])
 		})
 	}
 }
@@ -397,36 +349,18 @@ func TestFunctionIdentifier(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.input, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
+			t.Helper()
+			src := source.NewSource([]byte(test.input), "test.tup")
+			tokens, err := tok.Tokenize(src.Contents, src.Filename)
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", test.input, err)
+				return
 			}
-
 			if !slices.Equal(tok.Types(tokens), test.tokenTypes) {
 				t.Fatalf("tokenTypes: %v, want %v", tok.Types(tokens), test.tokenTypes)
 			}
-
-			got, _, err := FunctionIdentifier(tokens)
-
-			if test.wantErr {
-				if err == nil {
-					t.Errorf("FunctionIdentifier(%q): want error", test.input)
-				}
-				return
-			}
-
-			if !test.wantErr && err != nil {
-				t.Fatalf("FunctionIdentifier(%q): got error %v, want nil", test.input, err)
-			}
-
-			if got == nil {
-				t.Fatalf("FunctionIdentifier(%q): got nil, want %v", test.input, test.want)
-			}
-
-			if got.Name != test.want.Name {
-				t.Errorf("FunctionIdentifier(%q).Name: got %v, want %v", test.input, got.Name, test.want.Name)
-			}
+			RunParseTest(t, test.input, test.input, test.want, test.wantErr,
+				"FunctionIdentifier", FunctionIdentifier, StringerCheck[*ast.FunctionIdentifier])
 		})
 	}
 }

@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	"github.com/rowland/tuppence/tup/ast"
-	"github.com/rowland/tuppence/tup/source"
-	"github.com/rowland/tuppence/tup/tok"
 )
 
 func TestOctalLiteral(t *testing.T) {
@@ -63,36 +61,21 @@ func TestOctalLiteral(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.input, func(t *testing.T) {
-			source := source.NewSource([]byte(test.input), "test.tup")
-			tokens, err := tok.Tokenize(source.Contents, source.Filename)
-			if err != nil {
-				t.Errorf("Tokenize(%q) = %v", test.input, err)
-			}
-			got, _, err := OctalLiteral(tokens)
-			if test.wantErr {
-				if err == nil {
-					t.Errorf("OctalLiteral(%q) = %v, want error", test.input, got)
-				}
-				if test.want == nil && got != nil {
-					t.Errorf("OctalLiteral(%q) = %v, want nil", test.input, got)
-				}
-				return
-			}
-			if err != nil {
-				t.Fatalf("OctalLiteral(%q) = %v", test.input, err)
-			}
-			if got.Value != test.want.Value {
-				t.Errorf("OctalLiteral(%q).Value = %v, want %v", test.input, got.Value, test.want.Value)
-			}
-			if got.IntegerValue != test.want.IntegerValue {
-				t.Errorf("OctalLiteral(%q).IntegerValue = %v, want %v", test.input, got.IntegerValue, test.want.IntegerValue)
-			}
-			if got.StartOffset != test.want.StartOffset {
-				t.Errorf("OctalLiteral(%q).StartOffset = %v, want %v", test.input, got.StartOffset, test.want.StartOffset)
-			}
-			if got.Length != test.want.Length {
-				t.Errorf("OctalLiteral(%q).Length = %v, want %v", test.input, got.Length, test.want.Length)
-			}
+			RunParseTest(t, test.input, test.input, test.want, test.wantErr, "OctalLiteral", OctalLiteral,
+				func(t *testing.T, input, parserName string, got, want *ast.IntegerLiteral) {
+					if got.Value != want.Value {
+						t.Errorf("%s(%q).Value = %v, want %v", parserName, input, got.Value, want.Value)
+					}
+					if got.IntegerValue != want.IntegerValue {
+						t.Errorf("%s(%q).IntegerValue = %v, want %v", parserName, input, got.IntegerValue, want.IntegerValue)
+					}
+					if got.StartOffset != want.StartOffset {
+						t.Errorf("%s(%q).StartOffset = %v, want %v", parserName, input, got.StartOffset, want.StartOffset)
+					}
+					if got.Length != want.Length {
+						t.Errorf("%s(%q).Length = %v, want %v", parserName, input, got.Length, want.Length)
+					}
+				})
 		})
 	}
 }

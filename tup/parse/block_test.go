@@ -84,7 +84,8 @@ func TestBlock(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			RunParseTest(t, test.input, test.want, test.wantErr, Block)
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"Block", Block, StringerCheck[*ast.Block])
 		})
 	}
 }

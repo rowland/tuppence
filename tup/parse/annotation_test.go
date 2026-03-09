@@ -210,7 +210,8 @@ func TestAnnotations(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			RunParseTest(t, test.input, test.want, test.wantErr, Annotations)
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"Annotations", Annotations, StringerCheck[*ast.Annotations])
 		})
 	}
 }
