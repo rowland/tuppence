@@ -1,10 +1,13 @@
 package parse
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/rowland/tuppence/tup/tok"
 )
+
+var ErrNoMatch = errors.New("no match")
 
 type Error struct {
 	Expecting string
