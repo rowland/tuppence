@@ -8,5 +8,5 @@ import (
 // type_declaration = type_declaration_lhs "=" type_declaration_rhs .
 
 func TypeDeclaration(tokens []tok.Token) (*ast.TypeDeclaration, []tok.Token, error) {
-	return nil, nil, nil
+	return nil, tokens, ErrNoMatch // TODO: Implement
 }

@@ -8,5 +8,5 @@ import (
 // type_qualified_declaration = type_identifier "." identifier "=" expression .
 
 func TypeQualifiedDeclaration(tokens []tok.Token) (*ast.TypeQualifiedDeclaration, []tok.Token, error) {
-	return nil, nil, nil
+	return nil, tokens, ErrNoMatch // TODO: Implement
 }

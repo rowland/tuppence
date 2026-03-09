@@ -8,5 +8,5 @@ import (
 // export_type_qualified_function_declaration = annotations type_identifier "." function_declaration_lhs ":" function_declaration_type block .
 
 func TypeQualifiedFunctionDeclaration(tokens []tok.Token) (*ast.TypeQualifiedFunctionDeclaration, []tok.Token, error) {
-	return nil, nil, nil
+	return nil, tokens, ErrNoMatch // TODO: Implement
 }
