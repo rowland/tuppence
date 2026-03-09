@@ -7,20 +7,18 @@ import (
 
 // number = float_literal | integer_literal .
 
-func Number(tokens []tok.Token) (item ast.Number, remainder []tok.Token, err error) {
+func Number(tokens []tok.Token) (number ast.Number, remainder []tok.Token, err error) {
 	// fmt.Println("Number", tokens)
-	var errors []error
-	floatLit, remainder, err := FloatLiteral(tokens)
-	if err == nil {
+
+	var floatLit *ast.FloatLiteral
+	if floatLit, remainder, err = FloatLiteral(tokens); err == nil {
 		return floatLit, remainder, nil
 	}
-	errors = append(errors, err)
 
-	integerLit, remainder, err := IntegerLiteral(tokens)
-	if err == nil {
+	var integerLit *ast.IntegerLiteral
+	if integerLit, remainder, err = IntegerLiteral(tokens); err == nil {
 		return integerLit, remainder, nil
 	}
-	errors = append(errors, err)
 
 	return nil, nil, ErrNoMatch
 }

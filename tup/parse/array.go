@@ -34,8 +34,8 @@ func ArrayLiteral(tokens []tok.Token) (arr *ast.ArrayLiteral, remainder []tok.To
 		return nil, nil, ErrNoMatch
 	}
 
-	arrayMembers, remainder, err := ArrayMembers(remainder)
-	if err != nil {
+	var arrayMembers []ast.Expression
+	if arrayMembers, remainder, err = ArrayMembers(remainder); err != nil {
 		return nil, nil, err
 	}
 
@@ -53,8 +53,9 @@ func ArrayMembers(tokens []tok.Token) (members []ast.Expression, remainder []tok
 	remainder = skipComments(tokens)
 
 	for {
-		expression, remainder2, err := Expression(remainder)
-		if err != nil {
+		var expression ast.Expression
+		var remainder2 []tok.Token
+		if expression, remainder2, err = Expression(remainder); err != nil {
 			break
 		}
 		members = append(members, expression)

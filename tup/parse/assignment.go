@@ -7,9 +7,9 @@ import (
 
 // assignment = assignment_lhs "=" [ "mut" ] expression .
 
-func Assignment(tokens []tok.Token) (*ast.Assignment, []tok.Token, error) {
-	left, remainder, err := AssignmentLHS(tokens)
-	if err != nil {
+func Assignment(tokens []tok.Token) (assignment *ast.Assignment, remainder []tok.Token, err error) {
+	var left ast.AssignmentLHS
+	if left, remainder, err = AssignmentLHS(tokens); err != nil {
 		return nil, nil, err
 	}
 
@@ -24,8 +24,8 @@ func Assignment(tokens []tok.Token) (*ast.Assignment, []tok.Token, error) {
 		remainder = remainder[1:]
 	}
 
-	right, remainder, err := Expression(remainder)
-	if err != nil {
+	var right ast.Expression
+	if right, remainder, err = Expression(remainder); err != nil {
 		return nil, nil, err
 	}
 
@@ -35,17 +35,17 @@ func Assignment(tokens []tok.Token) (*ast.Assignment, []tok.Token, error) {
 // assignment_lhs = ordinal_assignment_lhs
 //                | "(" labeled_assignment_lhs ")" .
 
-func AssignmentLHS(tokens []tok.Token) (item ast.AssignmentLHS, remainder []tok.Token, err error) {
+func AssignmentLHS(tokens []tok.Token) (lhs ast.AssignmentLHS, remainder []tok.Token, err error) {
 	var errors []error
-	ordinalLHS, remainder, err := ordinalAssignmentLHS(tokens)
-	if err != nil {
+	var ordinalLHS *ast.OrdinalAssignmentLHS
+	if ordinalLHS, remainder, err = ordinalAssignmentLHS(tokens); err != nil {
 		errors = append(errors, err)
 	} else if ordinalLHS != nil {
 		return ordinalLHS, remainder, nil
 	}
 
-	labeledLHS, remainder, err := labeledAssignmentLHS(tokens)
-	if err != nil {
+	var labeledLHS *ast.LabeledAssignmentLHS
+	if labeledLHS, remainder, err = labeledAssignmentLHS(tokens); err != nil {
 		errors = append(errors, err)
 	} else if labeledLHS != nil {
 		return labeledLHS, remainder, nil

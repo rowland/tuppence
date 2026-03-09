@@ -8,21 +8,20 @@ import (
 
 // module = { top_level_item } .
 
-func Module(source *source.Source, module *ast.Module) (*ast.Module, error) {
-	tokens, err := tok.Tokenize(source.Contents, source.Filename)
-	if err != nil {
+func Module(source *source.Source, module *ast.Module) (mod *ast.Module, err error) {
+	var tokens []tok.Token
+	if tokens, err = tok.Tokenize(source.Contents, source.Filename); err != nil {
 		return nil, err
 	}
+	remainder := tokens
 	for {
-		item, remainder, err := TopLevelItem(tokens)
-		if err != nil {
+		var item ast.TopLevelItem
+		if item, remainder, err = TopLevelItem(remainder); err != nil {
 			return nil, err
-		}
-		if item == nil {
+		} else if item == nil {
 			break
 		}
 		module.AddTopLevelItem(item)
-		tokens = remainder
 	}
 	return module, nil
 }
