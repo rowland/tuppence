@@ -125,7 +125,12 @@ type FunctionCall struct {
 	FunctionBlock  *FunctionBlock          // Optional function block (for higher-order functions, may be nil)
 }
 
-func NewFunctionCall(function Node, parameterTypes *FunctionParameterTypes, arguments *FunctionArguments, functionBlock *FunctionBlock) *FunctionCall {
+func NewFunctionCall(
+	function Node,
+	parameterTypes *FunctionParameterTypes,
+	arguments *FunctionArguments,
+	functionBlock *FunctionBlock,
+) *FunctionCall {
 	return &FunctionCall{
 		BaseNode:       BaseNode{Type: NodeFunctionCall},
 		Function:       function,

@@ -135,9 +135,24 @@ func FunctionBlock(tokens []tok.Token) (expr *ast.FunctionBlock, remainder []tok
 	return ast.NewFunctionBlock(parameters, body), remainder, nil
 }
 
-// block_parameters = "|" [ assignment_lhs { "," assignment_lhs } ] "|" .
+// block_parameters = "|" assignment_lhs "|" .
 
 func BlockParameters(tokens []tok.Token) (expr *ast.BlockParameters, remainder []tok.Token, err error) {
 	// fmt.Println("BlockParameters", tok.Types(tokens))
-	return nil, tokens, ErrNoMatch // TODO: Implement
+
+	var found bool
+	if remainder, found = Pipe(tokens); !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	var parameters ast.AssignmentLHS
+	if parameters, remainder, err = AssignmentLHS(remainder); err != nil {
+		return nil, remainder, err
+	}
+
+	if remainder, found = Pipe(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokOpPipe, remainder)
+	}
+
+	return ast.NewBlockParameters(parameters), remainder, nil
 }

@@ -42,6 +42,14 @@ var Dot = expectFunc(tok.TokDot)
 
 var EOL = expectFunc(tok.TokEOL)
 
+// pipe = "|" .
+
+var Pipe = expectFunc(tok.TokOpBitOr)
+
+// pipe_forward = "|>" .
+
+var PipeForward = expectFunc(tok.TokOpPipe)
+
 // rest_op = "..." .
 
 var RestOp = expectFunc(tok.TokOpRest)

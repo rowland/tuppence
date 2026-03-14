@@ -35,11 +35,11 @@ func (b *Block) String() string {
 // BlockParameters represents the parameters of a block (e.g., |x, y|)
 type BlockParameters struct {
 	BaseNode
-	Parameters []Node // The block parameters (identifiers)
+	Parameters AssignmentLHS // The block parameters (identifiers)
 }
 
 // NewBlockParameters creates a new BlockParameters node
-func NewBlockParameters(parameters []Node) *BlockParameters {
+func NewBlockParameters(parameters AssignmentLHS) *BlockParameters {
 	return &BlockParameters{
 		BaseNode:   BaseNode{Type: NodeBlockParameters},
 		Parameters: parameters,
@@ -51,12 +51,7 @@ func (b *BlockParameters) String() string {
 	var builder strings.Builder
 	builder.WriteString("|")
 
-	for i, param := range b.Parameters {
-		if i > 0 {
-			builder.WriteString(", ")
-		}
-		builder.WriteString(param.String())
-	}
+	builder.WriteString(b.Parameters.String())
 
 	builder.WriteString("|")
 	return builder.String()

@@ -32,12 +32,28 @@ func TestFunctionCall(t *testing.T) {
 				// arguments
 				ast.NewFunctionArguments(
 					// args
-					ast.NewArguments(
-						// args
-						[]*ast.Argument{
-							ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 1), false),
-						},
-					),
+					ast.NewArguments([]*ast.Argument{ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 1), false)}),
+					// labeledArgs
+					nil,
+					// partialApplication
+					false,
+				),
+				// functionBlock
+				nil,
+			),
+		},
+		{
+			name:  "single variable parameter",
+			input: "foo(x)",
+			want: ast.NewFunctionCall(
+				// function
+				ast.NewFunctionIdentifier("foo", nil, 0, 3),
+				// parameterTypes
+				nil,
+				// arguments
+				ast.NewFunctionArguments(
+					// args
+					ast.NewArguments([]*ast.Argument{ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false)}),
 					// labeledArgs
 					nil,
 					// partialApplication
@@ -57,13 +73,10 @@ func TestFunctionCall(t *testing.T) {
 				// arguments
 				ast.NewFunctionArguments(
 					// args
-					ast.NewArguments(
-						// args
-						[]*ast.Argument{
-							ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 1), false),
-							ast.NewArgument(ast.NewDecimalLiteral("2", 2, nil, 0, 1), false),
-						},
-					),
+					ast.NewArguments([]*ast.Argument{
+						ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 1), false),
+						ast.NewArgument(ast.NewDecimalLiteral("2", 2, nil, 0, 1), false),
+					}),
 					// labeledArgs
 					nil,
 					// partialApplication
@@ -436,28 +449,91 @@ func TestFunctionBlock(t *testing.T) {
 			),
 			wantErr: false,
 		},
-		// {
-		// 	name:  "one parameter and block body",
-		// 	input: "{ |x| x + 1 }",
-		// 	want: ast.NewFunctionBlock(
-		// 		// parameters
-		// 		ast.NewBlockParameters([]ast.Node{
-		// 			ast.NewIdentifier("x", nil, 0, 1),
-		// 		}),
-		// 		// body
-		// 		ast.NewBlockBody(
-		// 			// statements
-		// 			[]ast.Statement{},
-		// 			// expression
-		// 			ast.NewAddSubExpression(
-		// 				ast.NewIdentifier("x", nil, 0, 1),
-		// 				ast.OpAdd,
-		// 				ast.NewDecimalLiteral("1", 1, nil, 0, 1),
-		// 			),
-		// 		),
-		// 	),
-		// 	wantErr: false,
-		// },
+		{
+			name:  "one parameter and block body",
+			input: "{ |x| x + 1 }",
+			want: ast.NewFunctionBlock(
+				// parameters
+				ast.NewBlockParameters(ast.NewOrdinalAssignmentLHS([]*ast.Identifier{
+					ast.NewIdentifier("x", nil, 0, 1),
+				}, nil)),
+				// body
+				ast.NewBlockBody(
+					// statements
+					[]ast.Statement{},
+					// expression
+					ast.NewAddSubExpression(
+						ast.NewIdentifier("x", nil, 0, 1),
+						ast.OpAdd,
+						ast.NewDecimalLiteral("1", 1, nil, 0, 1),
+					),
+				),
+			),
+		},
+		{
+			name:  "two parameters and block body",
+			input: "{ |x, y| x + y }",
+			want: ast.NewFunctionBlock(
+				// parameters
+				ast.NewBlockParameters(ast.NewOrdinalAssignmentLHS([]*ast.Identifier{
+					ast.NewIdentifier("x", nil, 0, 1),
+					ast.NewIdentifier("y", nil, 0, 1),
+				}, nil)),
+				// body
+				ast.NewBlockBody(
+					// statements
+					[]ast.Statement{},
+					// expression
+					ast.NewAddSubExpression(
+						ast.NewIdentifier("x", nil, 0, 1),
+						ast.OpAdd,
+						ast.NewIdentifier("y", nil, 0, 1),
+					),
+				),
+			),
+			wantErr: false,
+		},
+		{
+			name:  "two parameters and block body with rest binding",
+			input: "{ |x, ...rest| x + sum(rest) }",
+			want: ast.NewFunctionBlock(
+				// parameters
+				ast.NewBlockParameters(
+					ast.NewOrdinalAssignmentLHS(
+						[]*ast.Identifier{ast.NewIdentifier("x", nil, 0, 1)},
+						ast.NewRestOperator(ast.NewIdentifier("rest", nil, 0, 4)),
+					),
+				),
+				// body
+				ast.NewBlockBody(
+					// statements
+					[]ast.Statement{},
+					// expression
+					ast.NewAddSubExpression(
+						ast.NewIdentifier("x", nil, 0, 1),
+						ast.OpAdd,
+						ast.NewFunctionCall(
+							// function
+							ast.NewFunctionIdentifier("sum", nil, 0, 4),
+							// parameterTypes
+							nil,
+							// arguments
+							ast.NewFunctionArguments(
+								// args
+								ast.NewArguments([]*ast.Argument{ast.NewArgument(ast.NewIdentifier("rest", nil, 0, 4), false)}),
+								// labeledArgs
+								nil,
+								// partialApplication
+								false,
+							),
+							// functionBlock
+							nil,
+						),
+					),
+				),
+			),
+			wantErr: false,
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
