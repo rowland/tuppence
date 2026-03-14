@@ -28,7 +28,6 @@ func TestBlock(t *testing.T) {
 					ast.NewIdentifier("x", nil, 0, 1),
 				),
 			),
-			wantErr: false,
 		},
 		{
 			name:  "block with it expression",
@@ -39,7 +38,6 @@ func TestBlock(t *testing.T) {
 					ast.NewIdentifier("it", nil, 0, 2),
 				),
 			),
-			wantErr: false,
 		},
 		// {
 		// 	name:  "block with assignment",
@@ -56,7 +54,6 @@ func TestBlock(t *testing.T) {
 		// 			ast.NewAddSubExpression(ast.NewIdentifier("x", nil, 0, 1), ast.OpAdd, ast.NewDecimalLiteral("1", 1, nil, 0, 1)),
 		// 		),
 		// 	),
-		// 	wantErr: false,
 		// },
 		// {
 		// 	name:  "block with multiple assignments",
@@ -78,7 +75,6 @@ func TestBlock(t *testing.T) {
 		// 			ast.NewAddSubExpression(ast.NewIdentifier("y", nil, 0, 1), ast.OpAdd, ast.NewDecimalLiteral("1", 1, nil, 0, 1)),
 		// 		),
 		// 	),
-		// 	wantErr: false,
 		// },
 	}
 

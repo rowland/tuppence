@@ -81,21 +81,18 @@ func TestRenameIdentifier(t *testing.T) {
 			input:      "x",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokEOF},
 			want:       ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), nil),
-			wantErr:    false,
 		},
 		{
 			name:       "simple",
 			input:      "x: y",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokColon, tok.TokID, tok.TokEOF},
 			want:       ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), ast.NewIdentifier("y", nil, 0, 1)),
-			wantErr:    false,
 		},
 		{
 			name:       "no space",
 			input:      "x:y",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokColonNoSpace, tok.TokID, tok.TokEOF},
 			want:       ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), ast.NewIdentifier("y", nil, 0, 1)),
-			wantErr:    false,
 		},
 		{
 			name:       "invalid type identifier",
@@ -184,21 +181,18 @@ func TestRenameType(t *testing.T) {
 			input:      "Foo",
 			tokenTypes: []tok.TokenType{tok.TokTypeID, tok.TokEOF},
 			want:       ast.NewRenameType(ast.NewTypeIdentifier("Foo", nil, 0, 3), nil),
-			wantErr:    false,
 		},
 		{
 			name:       "simple",
 			input:      "Foo: Bar",
 			tokenTypes: []tok.TokenType{tok.TokTypeID, tok.TokColon, tok.TokTypeID, tok.TokEOF},
 			want:       ast.NewRenameType(ast.NewTypeIdentifier("Foo", nil, 0, 3), ast.NewTypeIdentifier("Bar", nil, 0, 3)),
-			wantErr:    false,
 		},
 		{
 			name:       "no space",
 			input:      "Foo:Bar",
 			tokenTypes: []tok.TokenType{tok.TokTypeID, tok.TokColonNoSpace, tok.TokTypeID, tok.TokEOF},
 			want:       ast.NewRenameType(ast.NewTypeIdentifier("Foo", nil, 0, 3), ast.NewTypeIdentifier("Bar", nil, 0, 3)),
-			wantErr:    false,
 		},
 		{
 			name:       "invalid identifier",
@@ -275,7 +269,6 @@ func TestTypeReference(t *testing.T) {
 				nil, ast.NewTypeIdentifier("Foo", nil, 0, 3),
 				nil, 0, 3,
 			),
-			wantErr: false,
 		},
 		{
 			input:      "foo.bar.Baz",
@@ -288,7 +281,6 @@ func TestTypeReference(t *testing.T) {
 				ast.NewTypeIdentifier("Baz", nil, 0, 3),
 				nil, 0, 0,
 			),
-			wantErr: false,
 		},
 		{
 			input:      "Foo.Bar.Baz",
@@ -298,13 +290,11 @@ func TestTypeReference(t *testing.T) {
 				ast.NewTypeIdentifier("Foo", nil, 0, 3),
 				nil, 0, 3,
 			),
-			wantErr: false,
 		},
 		{
 			input:      "Foo.Bar.y",
 			tokenTypes: []tok.TokenType{tok.TokTypeID, tok.TokDot, tok.TokTypeID, tok.TokDot, tok.TokID, tok.TokEOF},
 			want:       ast.NewTypeReference(nil, ast.NewTypeIdentifier("Foo", nil, 0, 3), nil, 0, 0),
-			wantErr:    false,
 		},
 	}
 	for _, test := range tests {
@@ -367,19 +357,16 @@ func TestFunctionIdentifier(t *testing.T) {
 			input:      "foo",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokEOF},
 			want:       ast.NewFunctionIdentifier("foo", nil, 0, 3),
-			wantErr:    false,
 		},
 		{
 			input:      "foo?",
 			tokenTypes: []tok.TokenType{tok.TokFuncID, tok.TokEOF},
 			want:       ast.NewFunctionIdentifier("foo?", nil, 0, 4),
-			wantErr:    false,
 		},
 		{
 			input:      "foo!",
 			tokenTypes: []tok.TokenType{tok.TokFuncID, tok.TokEOF},
 			want:       ast.NewFunctionIdentifier("foo!", nil, 0, 4),
-			wantErr:    false,
 		},
 		{
 			input:      "Foo",

@@ -22,22 +22,19 @@ func TestArgument(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "expression",
-			input:   "x",
-			want:    ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false),
-			wantErr: false,
+			name:  "expression",
+			input: "x",
+			want:  ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false),
 		},
 		{
-			name:    "spread expression",
-			input:   "...x",
-			want:    ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), true),
-			wantErr: false,
+			name:  "spread expression",
+			input: "...x",
+			want:  ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), true),
 		},
 		{
-			name:    "addition expression",
-			input:   "x + y",
-			want:    ast.NewArgument(ast.NewAddSubExpression(ast.NewIdentifier("x", nil, 0, 1), ast.OpAdd, ast.NewIdentifier("y", nil, 0, 1)), false),
-			wantErr: false,
+			name:  "addition expression",
+			input: "x + y",
+			want:  ast.NewArgument(ast.NewAddSubExpression(ast.NewIdentifier("x", nil, 0, 1), ast.OpAdd, ast.NewIdentifier("y", nil, 0, 1)), false),
 		},
 	}
 
@@ -62,10 +59,9 @@ func TestArguments(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "single argument",
-			input:   "x",
-			want:    ast.NewArguments([]*ast.Argument{ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false)}),
-			wantErr: false,
+			name:  "single argument",
+			input: "x",
+			want:  ast.NewArguments([]*ast.Argument{ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false)}),
 		},
 		{
 			name:  "multiple arguments",
@@ -74,13 +70,11 @@ func TestArguments(t *testing.T) {
 				ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false),
 				ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), false),
 			}),
-			wantErr: false,
 		},
 		{
-			name:    "spread operator with expression",
-			input:   "...x",
-			want:    ast.NewArguments([]*ast.Argument{ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), true)}),
-			wantErr: false,
+			name:  "spread operator with expression",
+			input: "...x",
+			want:  ast.NewArguments([]*ast.Argument{ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), true)}),
 		},
 		{
 			name:  "mixed arguments",
@@ -89,7 +83,6 @@ func TestArguments(t *testing.T) {
 				ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false),
 				ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), true),
 			}),
-			wantErr: false,
 		},
 		{
 			name:  "multiple arguments with spread operator",
@@ -98,13 +91,11 @@ func TestArguments(t *testing.T) {
 				ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false),
 				ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), true),
 			}),
-			wantErr: false,
 		},
 		{
-			name:    "multiple arguments with spread operator missing expression quits after first argument",
-			input:   "x, ...",
-			want:    ast.NewArguments([]*ast.Argument{ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false)}),
-			wantErr: false,
+			name:  "multiple arguments with spread operator missing expression quits after first argument",
+			input: "x, ...",
+			want:  ast.NewArguments([]*ast.Argument{ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false)}),
 		},
 	}
 	for _, test := range tests {
@@ -135,7 +126,6 @@ func TestLabeledArgument(t *testing.T) {
 				ast.NewIdentifier("x", nil, 0, 1),
 				ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), false),
 			),
-			wantErr: false,
 		},
 		{
 			name:  "labeled argument with number",
@@ -144,7 +134,6 @@ func TestLabeledArgument(t *testing.T) {
 				ast.NewIdentifier("x", nil, 0, 1),
 				ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 1), false),
 			),
-			wantErr: false,
 		},
 		{
 			name:  "labeled argument with spread operator",
@@ -153,7 +142,6 @@ func TestLabeledArgument(t *testing.T) {
 				ast.NewIdentifier("x", nil, 0, 1),
 				ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), true),
 			),
-			wantErr: false,
 		},
 	}
 	for _, test := range tests {
@@ -187,7 +175,6 @@ func TestLabeledArguments(t *testing.T) {
 					),
 				},
 			),
-			wantErr: false,
 		},
 		{
 			name:  "labeled arguments",
@@ -204,7 +191,6 @@ func TestLabeledArguments(t *testing.T) {
 					),
 				},
 			),
-			wantErr: false,
 		},
 	}
 	for _, test := range tests {
@@ -244,7 +230,6 @@ func TestArgumentsBody(t *testing.T) {
 					ast.NewArgument(ast.NewIdentifier("w", nil, 0, 1), false),
 				),
 			}),
-			wantErr:         false,
 			tokensRemaining: 1, // EOF token
 		},
 		{
@@ -259,7 +244,6 @@ func TestArgumentsBody(t *testing.T) {
 					ast.NewArgument(ast.NewIdentifier("z", nil, 0, 1), false),
 				),
 			}),
-			wantErr:         false,
 			tokensRemaining: 1, // EOF token
 		},
 		{
@@ -270,7 +254,6 @@ func TestArgumentsBody(t *testing.T) {
 				ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), false),
 			}),
 			wantLabeledArgs: nil,
-			wantErr:         false,
 			tokensRemaining: 1, // EOF token
 		},
 		{
@@ -281,7 +264,6 @@ func TestArgumentsBody(t *testing.T) {
 				ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), false),
 			}),
 			wantLabeledArgs: nil,
-			wantErr:         false,
 			tokensRemaining: 2, // trailing comma token, then EOF token
 		},
 	}

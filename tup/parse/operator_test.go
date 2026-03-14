@@ -16,34 +16,29 @@ func TestAddSubOp(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "plus",
-			input:   "+",
-			want:    ast.OpAdd,
-			wantErr: false,
+			name:  "plus",
+			input: "+",
+			want:  ast.OpAdd,
 		},
 		{
-			name:    "checked_add",
-			input:   "?+",
-			want:    ast.OpCheckedAdd,
-			wantErr: false,
+			name:  "checked_add",
+			input: "?+",
+			want:  ast.OpCheckedAdd,
 		},
 		{
-			name:    "minus",
-			input:   "-",
-			want:    ast.OpSub,
-			wantErr: false,
+			name:  "minus",
+			input: "-",
+			want:  ast.OpSub,
 		},
 		{
-			name:    "checked_sub",
-			input:   "?-",
-			want:    ast.OpCheckedSub,
-			wantErr: false,
+			name:  "checked_sub",
+			input: "?-",
+			want:  ast.OpCheckedSub,
 		},
 		{
-			name:    "bit_or",
-			input:   "|",
-			want:    ast.OpBitOr,
-			wantErr: false,
+			name:  "bit_or",
+			input: "|",
+			want:  ast.OpBitOr,
 		},
 		{
 			name:    "mul not allowed",
@@ -84,58 +79,49 @@ func TestMulDivOp(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "mul",
-			input:   "*",
-			want:    ast.OpMul,
-			wantErr: false,
+			name:  "mul",
+			input: "*",
+			want:  ast.OpMul,
 		},
 		{
-			name:    "checked_mul",
-			input:   "?*",
-			want:    ast.OpCheckedMul,
-			wantErr: false,
+			name:  "checked_mul",
+			input: "?*",
+			want:  ast.OpCheckedMul,
 		},
 		{
-			name:    "div",
-			input:   "/",
-			want:    ast.OpDiv,
-			wantErr: false,
+			name:  "div",
+			input: "/",
+			want:  ast.OpDiv,
 		},
 		{
-			name:    "checked_div",
-			input:   "?/",
-			want:    ast.OpCheckedDiv,
-			wantErr: false,
+			name:  "checked_div",
+			input: "?/",
+			want:  ast.OpCheckedDiv,
 		},
 		{
-			name:    "mod",
-			input:   "%",
-			want:    ast.OpMod,
-			wantErr: false,
+			name:  "mod",
+			input: "%",
+			want:  ast.OpMod,
 		},
 		{
-			name:    "checked_mod",
-			input:   "?%",
-			want:    ast.OpCheckedMod,
-			wantErr: false,
+			name:  "checked_mod",
+			input: "?%",
+			want:  ast.OpCheckedMod,
 		},
 		{
-			name:    "bit_and",
-			input:   "&",
-			want:    ast.OpBitAnd,
-			wantErr: false,
+			name:  "bit_and",
+			input: "&",
+			want:  ast.OpBitAnd,
 		},
 		{
-			name:    "shift_left",
-			input:   "<<",
-			want:    ast.OpShiftLeft,
-			wantErr: false,
+			name:  "shift_left",
+			input: "<<",
+			want:  ast.OpShiftLeft,
 		},
 		{
-			name:    "shift_right",
-			input:   ">>",
-			want:    ast.OpShiftRight,
-			wantErr: false,
+			name:  "shift_right",
+			input: ">>",
+			want:  ast.OpShiftRight,
 		},
 		{
 			name:    "plus not allowed",
@@ -176,52 +162,44 @@ func TestRelOp(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "eq",
-			input:   "==",
-			want:    ast.OpEq,
-			wantErr: false,
+			name:  "eq",
+			input: "==",
+			want:  ast.OpEq,
 		},
 		{
-			name:    "neq",
-			input:   "!=",
-			want:    ast.OpNeq,
-			wantErr: false,
+			name:  "neq",
+			input: "!=",
+			want:  ast.OpNeq,
 		},
 		{
-			name:    "lt",
-			input:   "<",
-			want:    ast.OpLt,
-			wantErr: false,
+			name:  "lt",
+			input: "<",
+			want:  ast.OpLt,
 		},
 		{
-			name:    "lte",
-			input:   "<=",
-			want:    ast.OpLte,
-			wantErr: false,
+			name:  "lte",
+			input: "<=",
+			want:  ast.OpLte,
 		},
 		{
-			name:    "gt",
-			input:   ">",
-			want:    ast.OpGt,
-			wantErr: false,
+			name:  "gt",
+			input: ">",
+			want:  ast.OpGt,
 		},
 		{
-			name:    "gte",
-			input:   ">=",
-			want:    ast.OpGte,
-			wantErr: false,
+			name:  "gte",
+			input: ">=",
+			want:  ast.OpGte,
 		},
 		{
-			name:    "match",
-			input:   "=~",
-			want:    ast.OpMatch,
-			wantErr: false,
+			name:  "match",
+			input: "=~",
+			want:  ast.OpMatch,
 		},
 		{
-			name:    "compare",
-			input:   "<=>",
-			want:    ast.OpCompare,
-			wantErr: false,
+			name:  "compare",
+			input: "<=>",
+			want:  ast.OpCompare,
 		},
 		{
 			name:    "plus not allowed",
@@ -262,46 +240,39 @@ func TestCompoundAssignmentOp(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "plus_eq",
-			input:   "+=",
-			want:    ast.OpPlusEq,
-			wantErr: false,
+			name:  "plus_eq",
+			input: "+=",
+			want:  ast.OpPlusEq,
 		},
 		{
-			name:    "minus_eq",
-			input:   "-=",
-			want:    ast.OpMinusEq,
-			wantErr: false,
+			name:  "minus_eq",
+			input: "-=",
+			want:  ast.OpMinusEq,
 		},
 		{
-			name:    "mul_eq",
-			input:   "*=",
-			want:    ast.OpMulEq,
-			wantErr: false,
+			name:  "mul_eq",
+			input: "*=",
+			want:  ast.OpMulEq,
 		},
 		{
-			name:    "div_eq",
-			input:   "/=",
-			want:    ast.OpDivEq,
-			wantErr: false,
+			name:  "div_eq",
+			input: "/=",
+			want:  ast.OpDivEq,
 		},
 		{
-			name:    "pow_eq",
-			input:   "^=",
-			want:    ast.OpPowEq,
-			wantErr: false,
+			name:  "pow_eq",
+			input: "^=",
+			want:  ast.OpPowEq,
 		},
 		{
-			name:    "shift_left_eq",
-			input:   "<<=",
-			want:    ast.OpShiftLeftEq,
-			wantErr: false,
+			name:  "shift_left_eq",
+			input: "<<=",
+			want:  ast.OpShiftLeftEq,
 		},
 		{
-			name:    "shift_right_eq",
-			input:   ">>=",
-			want:    ast.OpShiftRightEq,
-			wantErr: false,
+			name:  "shift_right_eq",
+			input: ">>=",
+			want:  ast.OpShiftRightEq,
 		},
 		{
 			name:    "plus not allowed",
@@ -342,28 +313,24 @@ func TestUnaryOp(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "positive",
-			input:   "+",
-			want:    ast.OpPosSign,
-			wantErr: false,
+			name:  "positive",
+			input: "+",
+			want:  ast.OpPosSign,
 		},
 		{
-			name:    "negative",
-			input:   "-",
-			want:    ast.OpNegSign,
-			wantErr: false,
+			name:  "negative",
+			input: "-",
+			want:  ast.OpNegSign,
 		},
 		{
-			name:    "logical not",
-			input:   "!",
-			want:    ast.OpLogicalNot,
-			wantErr: false,
+			name:  "logical not",
+			input: "!",
+			want:  ast.OpLogicalNot,
 		},
 		{
-			name:    "bit not",
-			input:   "~",
-			want:    ast.OpBitNot,
-			wantErr: false,
+			name:  "bit not",
+			input: "~",
+			want:  ast.OpBitNot,
 		},
 		{
 			name:    "mul not allowed",
@@ -403,9 +370,8 @@ func TestLogicalOrOp(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "logical or",
-			input:   "||",
-			wantErr: false,
+			name:  "logical or",
+			input: "||",
 		},
 		{
 			name:    "plus not allowed",
@@ -442,9 +408,8 @@ func TestLogicalAndOp(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "logical and",
-			input:   "&&",
-			wantErr: false,
+			name:  "logical and",
+			input: "&&",
 		},
 		{
 			name:    "plus not allowed",
@@ -480,9 +445,8 @@ func TestIsOp(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "is",
-			input:   "is",
-			wantErr: false,
+			name:  "is",
+			input: "is",
 		},
 		{
 			name:    "plus not allowed",
@@ -518,9 +482,8 @@ func TestPipeOp(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "pipe operator",
-			input:   "|>",
-			wantErr: false,
+			name:  "pipe operator",
+			input: "|>",
 		},
 		{
 			name:    "plus not allowed",
@@ -556,9 +519,8 @@ func TestPowOp(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "pow operator",
-			input:   "^",
-			wantErr: false,
+			name:  "pow operator",
+			input: "^",
 		},
 		{
 			name:    "plus not allowed",
@@ -592,7 +554,7 @@ func TestPartialApplication(t *testing.T) {
 		input   string
 		wantErr bool
 	}{
-		{input: ",*", wantErr: false}, // sees partial application
+		{input: ",*"},                 // sees partial application
 		{input: ",x", wantErr: true},  // sees partial application followed by identifier
 		{input: "x,*", wantErr: true}, // sees identifier followed by partial application
 	}

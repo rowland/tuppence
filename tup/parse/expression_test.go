@@ -22,71 +22,61 @@ func TestExpression(t *testing.T) {
 		},
 		// boolean
 		{
-			name:    "true",
-			input:   "true",
-			want:    &ast.BooleanLiteral{BooleanValue: true},
-			wantErr: false,
+			name:  "true",
+			input: "true",
+			want:  &ast.BooleanLiteral{BooleanValue: true},
 		},
 		{
-			name:    "false",
-			input:   "false",
-			want:    &ast.BooleanLiteral{BooleanValue: false},
-			wantErr: false,
+			name:  "false",
+			input: "false",
+			want:  &ast.BooleanLiteral{BooleanValue: false},
 		},
 		// binary
 		{
-			name:    "0b1010",
-			input:   "0b1010",
-			want:    &ast.IntegerLiteral{IntegerValue: 10, Base: 2},
-			wantErr: false,
+			name:  "0b1010",
+			input: "0b1010",
+			want:  &ast.IntegerLiteral{IntegerValue: 10, Base: 2},
 		},
 		// octal
 		{
-			name:    "0o12",
-			input:   "0o12",
-			want:    &ast.IntegerLiteral{IntegerValue: 10, Base: 8},
-			wantErr: false,
+			name:  "0o12",
+			input: "0o12",
+			want:  &ast.IntegerLiteral{IntegerValue: 10, Base: 8},
 		},
 		// decimal
 		{
-			name:    "123",
-			input:   "123",
-			want:    &ast.IntegerLiteral{IntegerValue: 123},
-			wantErr: false,
+			name:  "123",
+			input: "123",
+			want:  &ast.IntegerLiteral{IntegerValue: 123},
 		},
 		// hexadecimal
 		{
-			name:    "0x1A",
-			input:   "0x1A",
-			want:    &ast.IntegerLiteral{IntegerValue: 26, Base: 16},
-			wantErr: false,
+			name:  "0x1A",
+			input: "0x1A",
+			want:  &ast.IntegerLiteral{IntegerValue: 26, Base: 16},
 		},
 		// float
 		{
-			name:    "1.0",
-			input:   "1.0",
-			want:    &ast.FloatLiteral{FloatValue: 1.0},
-			wantErr: false,
+			name:  "1.0",
+			input: "1.0",
+			want:  &ast.FloatLiteral{FloatValue: 1.0},
 		},
 		{
-			name:    "1.0e10",
-			input:   "1.0e10",
-			want:    &ast.FloatLiteral{FloatValue: 1.0e10},
-			wantErr: false,
+			name:  "1.0e10",
+			input: "1.0e10",
+			want:  &ast.FloatLiteral{FloatValue: 1.0e10},
 		},
 		// string
 		{
-			name:    "\"hello\"",
-			input:   "\"hello\"",
-			want:    &ast.StringLiteral{StringValue: "hello"},
-			wantErr: false,
+			name:  "\"hello\"",
+			input: "\"hello\"",
+			want:  &ast.StringLiteral{StringValue: "hello"},
 		},
 		// raw string
 		{
-			name:    "`hello`",
-			input:   "`hello`",
-			want:    &ast.RawStringLiteral{StringValue: "hello"},
-			wantErr: false,
+			name:  "`hello`",
+			input: "`hello`",
+			want:  &ast.RawStringLiteral{StringValue: "hello"},
 		},
 		// logical or
 		{
@@ -96,7 +86,6 @@ func TestExpression(t *testing.T) {
 				ast.NewBooleanLiteral("true", true, nil, 0, 0),
 				ast.NewBooleanLiteral("false", false, nil, 0, 0),
 			}),
-			wantErr: false,
 		},
 		{
 			name:  "false || true",
@@ -105,7 +94,6 @@ func TestExpression(t *testing.T) {
 				ast.NewBooleanLiteral("false", false, nil, 0, 0),
 				ast.NewBooleanLiteral("true", true, nil, 0, 0),
 			}),
-			wantErr: false,
 		},
 		// // add sub
 		{
@@ -115,7 +103,6 @@ func TestExpression(t *testing.T) {
 				ast.NewDecimalLiteral("1", 1, nil, 0, 0),
 				ast.OpAdd,
 				ast.NewDecimalLiteral("2", 2, nil, 0, 0)),
-			wantErr: false,
 		},
 		{
 			name:  "2 - 1",
@@ -124,7 +111,6 @@ func TestExpression(t *testing.T) {
 				ast.NewDecimalLiteral("2", 2, nil, 0, 0),
 				ast.OpSub,
 				ast.NewDecimalLiteral("1", 1, nil, 0, 0)),
-			wantErr: false,
 		},
 		{
 			name:  "1 | 2",
@@ -133,7 +119,6 @@ func TestExpression(t *testing.T) {
 				ast.NewDecimalLiteral("1", 1, nil, 0, 0),
 				ast.OpBitOr,
 				ast.NewDecimalLiteral("2", 2, nil, 0, 0)),
-			wantErr: false,
 		},
 		// mul div
 		{
@@ -143,7 +128,6 @@ func TestExpression(t *testing.T) {
 				ast.NewDecimalLiteral("2", 2, nil, 0, 0),
 				ast.OpMul,
 				ast.NewDecimalLiteral("3", 3, nil, 0, 0)),
-			wantErr: false,
 		},
 		// pow
 		{
@@ -153,7 +137,6 @@ func TestExpression(t *testing.T) {
 				ast.NewDecimalLiteral("3", 3, nil, 0, 0),
 				ast.NewDecimalLiteral("4", 4, nil, 0, 0),
 			}),
-			wantErr: false,
 		},
 		{
 			name:    "invalid expression",
@@ -168,7 +151,6 @@ func TestExpression(t *testing.T) {
 				ast.NewTupleMember(nil, ast.NewDecimalLiteral("1", 1, nil, 0, 0)),
 				ast.NewTupleMember(nil, ast.NewDecimalLiteral("2", 2, nil, 0, 0)),
 			}),
-			wantErr: false,
 		},
 		{
 			name:  "function call",
@@ -189,7 +171,6 @@ func TestExpression(t *testing.T) {
 				),
 				nil,
 			),
-			wantErr: false,
 		},
 	}
 

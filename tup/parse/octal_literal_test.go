@@ -40,11 +40,11 @@ func TestOctalLiteral(t *testing.T) {
 		{input: "0o0_1_2_3_4_5_6_7", want: ast.NewOctalLiteral("0o0_1_2_3_4_5_6_7", 342391, nil, 0, 17)}, // max_underscores
 
 		// Invalid underscore positions
-		{input: "0o_", want: nil, wantErr: true},                                             // invalid_leading_underscore
-		{input: "0o_0", want: nil, wantErr: true},                                            // invalid_underscore_after_prefix
-		{input: "0o1_", want: ast.NewOctalLiteral("0o1_", 1, nil, 0, 4), wantErr: false},     // valid_trailing_underscore
-		{input: "0o0__1", want: ast.NewOctalLiteral("0o0__1", 1, nil, 0, 6), wantErr: false}, // valid_double_underscore
-		{input: "0o0_1_", want: ast.NewOctalLiteral("0o0_1_", 1, nil, 0, 6), wantErr: false}, // valid_middle_underscore
+		{input: "0o_", want: nil, wantErr: true},                             // invalid_leading_underscore
+		{input: "0o_0", want: nil, wantErr: true},                            // invalid_underscore_after_prefix
+		{input: "0o1_", want: ast.NewOctalLiteral("0o1_", 1, nil, 0, 4)},     // valid_trailing_underscore
+		{input: "0o0__1", want: ast.NewOctalLiteral("0o0__1", 1, nil, 0, 6)}, // valid_double_underscore
+		{input: "0o0_1_", want: ast.NewOctalLiteral("0o0_1_", 1, nil, 0, 6)}, // valid_middle_underscore
 
 		// Invalid prefix cases
 		{input: "0O0", want: nil, wantErr: true}, // invalid_uppercase_prefix

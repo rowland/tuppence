@@ -319,7 +319,6 @@ func TestFunctionArguments(t *testing.T) {
 				// partialApplication
 				false,
 			),
-			wantErr: false,
 		},
 		{
 			name:  "one positional argument",
@@ -411,7 +410,6 @@ func TestFunctionBlock(t *testing.T) {
 					ast.NewDecimalLiteral("1", 1, nil, 2, 1),
 				),
 			),
-			wantErr: false,
 		},
 		{
 			name:  "identifier expression",
@@ -427,7 +425,6 @@ func TestFunctionBlock(t *testing.T) {
 					ast.NewIdentifier("x", nil, 2, 1),
 				),
 			),
-			wantErr: false,
 		},
 		{
 			name:  "add expression",
@@ -447,7 +444,6 @@ func TestFunctionBlock(t *testing.T) {
 					),
 				),
 			),
-			wantErr: false,
 		},
 		{
 			name:  "one parameter and block body",
@@ -491,7 +487,6 @@ func TestFunctionBlock(t *testing.T) {
 					),
 				),
 			),
-			wantErr: false,
 		},
 		{
 			name:  "two parameters and block body with rest binding",
@@ -532,7 +527,6 @@ func TestFunctionBlock(t *testing.T) {
 					),
 				),
 			),
-			wantErr: false,
 		},
 	}
 	for _, test := range tests {

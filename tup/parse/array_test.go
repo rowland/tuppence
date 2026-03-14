@@ -22,14 +22,12 @@ func TestSize(t *testing.T) {
 			input:      "1",
 			tokenTypes: []tok.TokenType{tok.TokDecLit, tok.TokEOF},
 			want:       ast.NewDecimalLiteral("1", 1, nil, 0, 1),
-			wantErr:    false,
 		},
 		{
 			name:       "identifier",
 			input:      "x",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokEOF},
 			want:       ast.NewIdentifier("x", nil, 0, 1),
-			wantErr:    false,
 		},
 	}
 	for _, test := range tests {

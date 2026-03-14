@@ -22,7 +22,6 @@ func TestAnnotation(t *testing.T) {
 			input:      "@x\n",
 			tokenTypes: []tok.TokenType{tok.TokAt, tok.TokID, tok.TokEOL, tok.TokEOF},
 			want:       ast.NewSimpleAnnotation("x"),
-			wantErr:    false,
 		},
 		{
 			name:       "namespaced with no value",
@@ -36,49 +35,42 @@ func TestAnnotation(t *testing.T) {
 			input:      "@x:y \"z\"\n",
 			tokenTypes: []tok.TokenType{tok.TokAt, tok.TokID, tok.TokColonNoSpace, tok.TokID, tok.TokStrLit, tok.TokEOL, tok.TokEOF},
 			want:       ast.NewNamespacedAnnotation("x", "y", ast.NewStringLiteral(`"z"`, "z", nil, 0, 4)),
-			wantErr:    false,
 		},
 		{
 			name:       "namespaced with integer value",
 			input:      "@x:y 1\n",
 			tokenTypes: []tok.TokenType{tok.TokAt, tok.TokID, tok.TokColonNoSpace, tok.TokID, tok.TokDecLit, tok.TokEOL, tok.TokEOF},
 			want:       ast.NewNamespacedAnnotation("x", "y", ast.NewDecimalLiteral("1", 1, nil, 0, 1)),
-			wantErr:    false,
 		},
 		// {
 		// 	name:       "namespaced with negative integer value",
 		// 	input:      "@x:y -1\n",
 		// 	tokenTypes: []tok.TokenType{tok.TokAt, tok.TokID, tok.TokColonNoSpace, tok.TokID, tok.TokDecLit, tok.TokEOL, tok.TokEOF},
 		// 	want:       ast.NewNamespacedAnnotation("x", "y", ast.NewDecimalLiteral("1", 1, nil, 0, 1)),
-		// 	wantErr:    false,
 		// },
 		{
 			name:       "namespaced with float value",
 			input:      "@x:y 1.0\n",
 			tokenTypes: []tok.TokenType{tok.TokAt, tok.TokID, tok.TokColonNoSpace, tok.TokID, tok.TokFloatLit, tok.TokEOL, tok.TokEOF},
 			want:       ast.NewNamespacedAnnotation("x", "y", ast.NewFloatLiteral("1.0", 1.0, nil, 0, 4)),
-			wantErr:    false,
 		},
 		{
 			name:       "namespaced with true value",
 			input:      "@x:y true\n",
 			tokenTypes: []tok.TokenType{tok.TokAt, tok.TokID, tok.TokColonNoSpace, tok.TokID, tok.TokBoolLit, tok.TokEOL, tok.TokEOF},
 			want:       ast.NewNamespacedAnnotation("x", "y", ast.NewBooleanLiteral("true", true, nil, 0, 4)),
-			wantErr:    false,
 		},
 		{
 			name:       "namespaced with false value",
 			input:      "@x:y false\n",
 			tokenTypes: []tok.TokenType{tok.TokAt, tok.TokID, tok.TokColonNoSpace, tok.TokID, tok.TokBoolLit, tok.TokEOL, tok.TokEOF},
 			want:       ast.NewNamespacedAnnotation("x", "y", ast.NewBooleanLiteral("false", false, nil, 0, 5)),
-			wantErr:    false,
 		},
 		{
 			name:       "namespaced with unqualified type reference value",
 			input:      "@x:y Foo\n",
 			tokenTypes: []tok.TokenType{tok.TokAt, tok.TokID, tok.TokColonNoSpace, tok.TokID, tok.TokTypeID, tok.TokEOL, tok.TokEOF},
 			want:       ast.NewNamespacedAnnotation("x", "y", ast.NewTypeReference(nil, ast.NewTypeIdentifier("Foo", nil, 0, 3), nil, 0, 3)),
-			wantErr:    false,
 		},
 		{
 			name:       "namespaced with qualified type reference value",
@@ -88,7 +80,6 @@ func TestAnnotation(t *testing.T) {
 				[]*ast.Identifier{ast.NewIdentifier("foo", nil, 0, 3)},
 				ast.NewTypeIdentifier("Bar", nil, 0, 3),
 				nil, 0, 0)),
-			wantErr: false,
 		},
 	}
 	for _, test := range tests {
@@ -160,22 +151,19 @@ func TestAnnotations(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "empty",
-			input:   "",
-			want:    ast.NewAnnotations([]ast.Annotation{}),
-			wantErr: false,
+			name:  "empty",
+			input: "",
+			want:  ast.NewAnnotations([]ast.Annotation{}),
 		},
 		{
-			name:    "single annotation",
-			input:   "@x\n",
-			want:    ast.NewAnnotations([]ast.Annotation{ast.NewSimpleAnnotation("x")}),
-			wantErr: false,
+			name:  "single annotation",
+			input: "@x\n",
+			want:  ast.NewAnnotations([]ast.Annotation{ast.NewSimpleAnnotation("x")}),
 		},
 		{
-			name:    "multiple annotations",
-			input:   "@x\n@y\n",
-			want:    ast.NewAnnotations([]ast.Annotation{ast.NewSimpleAnnotation("x"), ast.NewSimpleAnnotation("y")}),
-			wantErr: false,
+			name:  "multiple annotations",
+			input: "@x\n@y\n",
+			want:  ast.NewAnnotations([]ast.Annotation{ast.NewSimpleAnnotation("x"), ast.NewSimpleAnnotation("y")}),
 		},
 		{
 			name: "namespaced annotations",
@@ -195,7 +183,6 @@ func TestAnnotations(t *testing.T) {
 						ast.NewTypeIdentifier("Foo", nil, 0, 3),
 						nil, 0, 3)),
 				}),
-			wantErr: false,
 		},
 		{
 			name: "one good, one bad",

@@ -24,7 +24,6 @@ func TestAssignment(t *testing.T) {
 				ast.Immutable,
 				ast.NewDecimalLiteral("1", 1, nil, 0, 1),
 			),
-			wantErr: false,
 		},
 		{
 			name:       "simple mut assignment",
@@ -35,7 +34,6 @@ func TestAssignment(t *testing.T) {
 				ast.Mutable,
 				ast.NewDecimalLiteral("1", 1, nil, 0, 1),
 			),
-			wantErr: false,
 		},
 		{
 			name:       "tuple assignment",
@@ -49,7 +47,6 @@ func TestAssignment(t *testing.T) {
 					ast.NewTupleMember(nil, ast.NewDecimalLiteral("2", 2, nil, 0, 1)),
 				}),
 			),
-			wantErr: false,
 		},
 		{
 			name:       "ordinal assignment",
@@ -67,7 +64,6 @@ func TestAssignment(t *testing.T) {
 				},
 				),
 			),
-			wantErr: false,
 		},
 		{
 			name:       "ordinal mut assignment",
@@ -85,7 +81,6 @@ func TestAssignment(t *testing.T) {
 				},
 				),
 			),
-			wantErr: false,
 		},
 		{
 			name:       "ordinal assignment with rest binding",
@@ -100,7 +95,6 @@ func TestAssignment(t *testing.T) {
 					ast.NewTupleMember(nil, ast.NewDecimalLiteral("3", 3, nil, 0, 1)),
 				}),
 			),
-			wantErr: false,
 		},
 		{
 			name:       "ordinal assignment with (ignored) rest binding",
@@ -119,7 +113,6 @@ func TestAssignment(t *testing.T) {
 				},
 				),
 			),
-			wantErr: false,
 		},
 		{
 			name:       "ordinal assignment with multiple (ignored) rest bindings (invalid)",
@@ -146,7 +139,6 @@ func TestAssignment(t *testing.T) {
 				},
 				),
 			),
-			wantErr: false,
 		},
 		{
 			name:  "labeled mut assignment",
@@ -170,7 +162,6 @@ func TestAssignment(t *testing.T) {
 				},
 				),
 			),
-			wantErr: false,
 		},
 		{
 			name:  "labeled assignment with rest operator (invalid)",
@@ -212,28 +203,24 @@ func TestOrdinalAssignmentLHS(t *testing.T) {
 			input:      "x",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokEOF},
 			want:       ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("x", nil, 0, 1)}, nil),
-			wantErr:    false,
 		},
 		{
 			name:       "two identifiers",
 			input:      "x, y",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokComma, tok.TokID, tok.TokEOF},
 			want:       ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("x", nil, 0, 1), ast.NewIdentifier("y", nil, 0, 1)}, nil),
-			wantErr:    false,
 		},
 		{
 			name:       "with rest binding",
 			input:      "x, ...rest",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokComma, tok.TokOpRest, tok.TokID, tok.TokEOF},
 			want:       ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("x", nil, 0, 1)}, ast.NewRestOperator(ast.NewIdentifier("...", nil, 0, 3))),
-			wantErr:    false,
 		},
 		{
 			name:       "with ignored rest binding",
 			input:      "x, y, ... = (1, 2, 3)",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokComma, tok.TokID, tok.TokComma, tok.TokOpRest, tok.TokOpAssign, tok.TokOpenParen, tok.TokDecLit, tok.TokComma, tok.TokDecLit, tok.TokComma, tok.TokDecLit, tok.TokCloseParen, tok.TokEOF},
 			want:       ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("x", nil, 0, 1), ast.NewIdentifier("y", nil, 0, 1)}, ast.NewRestOperator(ast.NewIdentifier("...", nil, 0, 3))),
-			wantErr:    false,
 		},
 		{
 			name:       "with multiple rest bindings (invalid)",
@@ -275,7 +262,6 @@ func TestLabeledAssignmentLHS(t *testing.T) {
 				[]ast.Rename{
 					ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), nil),
 				}),
-			wantErr: false,
 		},
 		{
 			name:       "two",
@@ -286,7 +272,6 @@ func TestLabeledAssignmentLHS(t *testing.T) {
 					ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), nil),
 					ast.NewRenameIdentifier(ast.NewIdentifier("y", nil, 0, 1), nil),
 				}),
-			wantErr: false,
 		},
 		{
 			name:       "with rest operator (invalid)",
@@ -304,7 +289,6 @@ func TestLabeledAssignmentLHS(t *testing.T) {
 					ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), ast.NewIdentifier("foo", nil, 0, 3)),
 					ast.NewRenameIdentifier(ast.NewIdentifier("y", nil, 0, 1), ast.NewIdentifier("bar", nil, 0, 3)),
 				}),
-			wantErr: false,
 		},
 		{
 			name:       "mixed rename and identifier",
@@ -315,7 +299,6 @@ func TestLabeledAssignmentLHS(t *testing.T) {
 					ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), ast.NewIdentifier("foo", nil, 0, 3)),
 					ast.NewRenameIdentifier(ast.NewIdentifier("y", nil, 0, 1), nil),
 				}),
-			wantErr: false,
 		},
 		{
 			name:       "mixed rename and type identifier",
@@ -326,7 +309,6 @@ func TestLabeledAssignmentLHS(t *testing.T) {
 					ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), ast.NewIdentifier("foo", nil, 0, 3)),
 					ast.NewRenameType(ast.NewTypeIdentifier("Y", nil, 0, 1), ast.NewTypeIdentifier("Bar", nil, 0, 3)),
 				}),
-			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
@@ -358,14 +340,12 @@ func TestRename(t *testing.T) {
 			input:      "x",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokEOF},
 			want:       ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), nil),
-			wantErr:    false,
 		},
 		{
 			name:       "not renamed type",
 			input:      "Foo",
 			tokenTypes: []tok.TokenType{tok.TokTypeID, tok.TokEOF},
 			want:       ast.NewRenameType(ast.NewTypeIdentifier("Foo", nil, 0, 3), nil),
-			wantErr:    false,
 		},
 		{
 			name:       "renamed identifier",
@@ -375,7 +355,6 @@ func TestRename(t *testing.T) {
 				ast.NewIdentifier("x", nil, 0, 1),
 				ast.NewIdentifier("y", nil, 0, 1),
 			),
-			wantErr: false,
 		},
 		{
 			name:       "renamed type",
@@ -385,7 +364,6 @@ func TestRename(t *testing.T) {
 				ast.NewTypeIdentifier("Foo", nil, 0, 3),
 				ast.NewTypeIdentifier("Bar", nil, 0, 3),
 			),
-			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
@@ -417,7 +395,6 @@ func TestCommaRename(t *testing.T) {
 			input:      ", x",
 			tokenTypes: []tok.TokenType{tok.TokComma, tok.TokID, tok.TokEOF},
 			want:       ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), nil),
-			wantErr:    false,
 		},
 		{
 			name:       "comma renamed identifier",
@@ -427,14 +404,12 @@ func TestCommaRename(t *testing.T) {
 				ast.NewIdentifier("x", nil, 0, 1),
 				ast.NewIdentifier("y", nil, 0, 1),
 			),
-			wantErr: false,
 		},
 		{
 			name:       "comma renamed type identifier",
 			input:      ", Foo: Bar",
 			tokenTypes: []tok.TokenType{tok.TokComma, tok.TokTypeID, tok.TokColon, tok.TokTypeID, tok.TokEOF},
 			want:       ast.NewRenameType(ast.NewTypeIdentifier("Foo", nil, 0, 3), ast.NewTypeIdentifier("Bar", nil, 0, 3)),
-			wantErr:    false,
 		},
 	}
 	for _, tt := range tests {

@@ -12,9 +12,9 @@ func TestAt(t *testing.T) {
 		input   string
 		wantErr bool
 	}{
-		{input: "@", wantErr: false},  // sees at
-		{input: "@x", wantErr: false}, // sees at followed by identifier
-		{input: "x@", wantErr: true},  // sees identifier followed by at
+		{input: "@"},                 // sees at
+		{input: "@x"},                // sees at followed by identifier
+		{input: "x@", wantErr: true}, // sees identifier followed by at
 	}
 	for _, test := range tests {
 		t.Run(test.input, func(t *testing.T) {
@@ -39,13 +39,13 @@ func TestColon(t *testing.T) {
 		input   string
 		wantErr bool
 	}{
-		{input: ":", wantErr: false},   // sees colon
-		{input: ": ", wantErr: false},  // sees colon
-		{input: ":\t", wantErr: false}, // sees colon
-		{input: ":\r", wantErr: false}, // sees colon
-		{input: ":\n", wantErr: false}, // sees colon
-		{input: ":x", wantErr: false},  // sees colon followed by identifier
-		{input: "x:", wantErr: true},   // sees identifier followed by colon
+		{input: ":"},                 // sees colon
+		{input: ": "},                // sees colon
+		{input: ":\t"},               // sees colon
+		{input: ":\r"},               // sees colon
+		{input: ":\n"},               // sees colon
+		{input: ":x"},                // sees colon followed by identifier
+		{input: "x:", wantErr: true}, // sees identifier followed by colon
 	}
 	for _, test := range tests {
 		t.Run(test.input, func(t *testing.T) {
@@ -70,9 +70,9 @@ func TestDot(t *testing.T) {
 		input   string
 		wantErr bool
 	}{
-		{input: ".", wantErr: false},  // sees dot
-		{input: ".x", wantErr: false}, // sees dot followed by identifier
-		{input: "x.", wantErr: true},  // sees identifier followed by dot
+		{input: "."},                 // sees dot
+		{input: ".x"},                // sees dot followed by identifier
+		{input: "x.", wantErr: true}, // sees identifier followed by dot
 	}
 
 	for _, test := range tests {

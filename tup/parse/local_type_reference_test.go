@@ -16,16 +16,14 @@ func TestLocalTypeReference(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "identifier",
-			input:   "x",
-			want:    ast.NewIdentifier("x", nil, 0, 1),
-			wantErr: false,
+			name:  "identifier",
+			input: "x",
+			want:  ast.NewIdentifier("x", nil, 0, 1),
 		},
 		{
-			name:    "type_reference",
-			input:   "Foo",
-			want:    ast.NewTypeReference(nil, ast.NewTypeIdentifier("Foo", nil, 0, 3), nil, 0, 3),
-			wantErr: false,
+			name:  "type_reference",
+			input: "Foo",
+			want:  ast.NewTypeReference(nil, ast.NewTypeIdentifier("Foo", nil, 0, 3), nil, 0, 3),
 		},
 		{
 			name:  "qualified type_reference",
@@ -35,7 +33,6 @@ func TestLocalTypeReference(t *testing.T) {
 				ast.NewTypeIdentifier("Foo", nil, 0, 3),
 				nil, 0, 0,
 			),
-			wantErr: false,
 		},
 		{
 			name:    "number literal",
