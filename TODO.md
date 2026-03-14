@@ -83,8 +83,8 @@
 - [x] pipe_op
 - [x] annotation
 - [x] annotation_value
-- [.] chained_expression
-- [.] binary_expression
+- [x] chained_expression
+- [x] binary_expression
 - [.] prec1_expression -> logical_or_expression
 - [.] prec2_expression -> logical_and_expression
 - [.] prec3_expression -> comparison_expression
@@ -95,7 +95,7 @@
 - [.] try_expression
 - [.] type_reference
 - [.] unary_expression
-- [.] function_call
+- [x] function_call
     - [x] function_parameter_types
         - [x] local_type_reference
             - [x] identifier
@@ -108,7 +108,7 @@
                 - [x] spread_argument
         - [x] partial_application
     - [x] function_block
-        - [ ] block_parameters
+        - [x] block_parameters
             - [x] assignment_lhs
                 - [x] ordinal_assignment_lhs
                 - [x] labeled_assignment_lhs
@@ -166,18 +166,18 @@
 - [ ] break_expression
 - [ ] case_block
 - [ ] character
-- [ ] comment
+- [x] comment
 - [ ] condition
 - [ ] constant
 - [ ] content_line
 - [ ] continue_expression
-- [ ] decimal_digit
+- [x] decimal_digit
 - [ ] structured_match
 - [ ] else_block
 - [ ] enum_declaration
 - [ ] enum_members
 - [ ] enum_member_declaration
-- [ ] exponent
+- [x] exponent
 - [ ] export_assignment
 - [ ] export_declaration
 - [ ] export_function_declaration
@@ -185,7 +185,7 @@
 - [ ] export_type_declaration
 - [ ] export_type_qualified_declaration
 - [ ] export_type_qualified_function_declaration
-- [ ] eol
+- [x] eol
 - [ ] for_block
 - [ ] for_expression
 - [ ] for_header
@@ -195,7 +195,7 @@
 - [ ] function_type_declaration
 - [ ] function_type_declaration_lhs
 - [ ] function_type_identifier
-- [ ] hex_digit
+- [x] hex_digit
 - [ ] if_expression
 - [ ] import_expression
 - [ ] indented_closing
@@ -240,8 +240,8 @@
 - [ ] step_expression
 - [ ] switch_statement
 - [ ] top_level_item
-- [ ] tuple_member
-- [ ] tuple_members
+- [x] tuple_member
+- [x] tuple_members
 - [ ] tuple_pattern
 - [ ] tuple_type_member
 - [ ] tuple_type_members
@@ -251,5 +251,5 @@
 - [ ] type_constructor_call
 - [ ] type_parameter
 - [ ] type_parameters
-- [ ] uppercase_letter
+- [x] uppercase_letter
 - [ ] negatable_expression

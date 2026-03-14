@@ -340,7 +340,7 @@ It could even be represented by an array of bytes.
 
 It is only at the point of use where there is sufficient information to determine
 which variant is called for. If there is ambiguity, such as in the cases of overloaded
-and generic functions, it will default to type`Int`, unless it is out of range,
+and generic functions, it will default to type `Int`, unless it is out of range,
 in which case it will default to type `Float`.
 
 The literal `-1` cannot be represented by the unsigned internal types, so it canot be

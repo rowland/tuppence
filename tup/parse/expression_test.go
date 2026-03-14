@@ -170,6 +170,27 @@ func TestExpression(t *testing.T) {
 			}),
 			wantErr: false,
 		},
+		{
+			name:  "function call",
+			input: "foo(1, 2)",
+			want: ast.NewFunctionCall(
+				ast.NewFunctionIdentifier("foo", nil, 0, 3),
+				nil,
+				ast.NewFunctionArguments(
+					// args
+					ast.NewArguments([]*ast.Argument{
+						ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 0), false),
+						ast.NewArgument(ast.NewDecimalLiteral("2", 2, nil, 0, 0), false),
+					}),
+					// labeledArgs
+					nil,
+					// partialApplication
+					false,
+				),
+				nil,
+			),
+			wantErr: false,
+		},
 	}
 
 	for _, tt := range tests {
