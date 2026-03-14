@@ -8,7 +8,7 @@ import (
 // function_declaration = annotations function_declaration_lhs "=" function_declaration_type block .
 
 func FunctionDeclaration(tokens []tok.Token) (*ast.FunctionDeclaration, []tok.Token, error) {
-	return nil, nil, nil
+	return nil, tokens, ErrNoMatch // TODO: Implement
 }
 
 // function_declaration_lhs = function_identifier [ function_parameter_types ] .

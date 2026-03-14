@@ -19,7 +19,7 @@ import (
 
 func Literal(tokens []tok.Token) (item ast.Literal, remainder []tok.Token, err error) {
 	// fmt.Println("Literal", tok.Types(tokens))
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	if number, remainder, err := Number(remainder); err == nil {
 		return number, remainder, nil

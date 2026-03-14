@@ -187,7 +187,7 @@ func TestExpression(t *testing.T) {
 				}
 				return
 			}
-			if !tt.wantErr && err != nil {
+			if err != nil {
 				t.Fatalf("Expression(%q): got error %v, want nil", tt.input, err)
 			}
 			if expression == nil {

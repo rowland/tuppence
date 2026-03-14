@@ -8,13 +8,13 @@ import (
 )
 
 func FloatLiteral(tokens []tok.Token) (lit *ast.FloatLiteral, remainder []tok.Token, err error) {
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	t := peek(remainder)
 	if t.Type != tok.TokFloatLit {
 		return nil, tokens, ErrNoMatch
 	} else if t.Invalid {
-		return nil, nil, errorExpectingTokenType(tok.TokFloatLit, remainder)
+		return nil, remainder, errorExpectingTokenType(tok.TokFloatLit, remainder)
 	}
 
 	value := t.Value()

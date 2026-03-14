@@ -12,7 +12,7 @@ import (
 // decimal_digit = "0"-"9" .
 
 func DecimalLiteral(tokens []tok.Token) (lit *ast.IntegerLiteral, remainder []tok.Token, err error) {
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	t := peek(remainder)
 	if t.Type != tok.TokDecLit {

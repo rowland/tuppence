@@ -39,7 +39,7 @@ func Expression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token,
 
 func TryExpression(tokens []tok.Token) (expr *ast.TryExpression, remainder []tok.Token, err error) {
 	// fmt.Println("TryExpression", tokens)
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	var variant ast.TryVariant
 	tokenType := peek(remainder).Type
@@ -74,7 +74,7 @@ func BinaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.
 
 func ChainedExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
 	// fmt.Println("ChainedExpression", tokens)
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	var initial ast.Expression
 	if initial, remainder, err = LogicalOrExpression(remainder); err == ErrNoMatch {
@@ -295,7 +295,7 @@ func PowExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Tok
 //                  | primary_expression .
 
 func UnaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	if unaryExpression, remainder, err := PrefixedUnaryExpression(remainder); err == nil {
 		return unaryExpression, remainder, nil
@@ -341,7 +341,7 @@ func PrefixedUnaryExpression(tokens []tok.Token) (expr *ast.UnaryExpression, rem
 
 func NegatableExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
 	// fmt.Println("NegatableExpression", tokens)
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	if expression, remainder, err := parenthesizedExpression(remainder); err == nil {
 		return expression, remainder, nil
@@ -442,7 +442,7 @@ func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok
 
 func parenthesizedExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
 	// fmt.Println("ParenthesizedExpression", tokens)
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	var found bool
 	if remainder, found = OpenParen(remainder); !found {

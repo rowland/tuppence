@@ -11,7 +11,7 @@ import (
 
 func RawStringLiteral(tokens []tok.Token) (lit *ast.RawStringLiteral, remainder []tok.Token, err error) {
 	// fmt.Println("RawStringLiteral", tokens)
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	t := peek(remainder)
 	if t.Type != tok.TokRawStrLit {

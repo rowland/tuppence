@@ -8,7 +8,7 @@ import (
 // add_sub_op = add_op | checked_add_op | sub_op | checked_sub_op | bit_or_op .
 
 func AddSubOp(tokens []tok.Token) (op ast.AddSubOp, remainder []tok.Token, match bool) {
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	switch peek(remainder).Type {
 	case tok.TokOpPlus:
@@ -31,7 +31,7 @@ func AddSubOp(tokens []tok.Token) (op ast.AddSubOp, remainder []tok.Token, match
 // mul_div_op = mul_op | checked_mul_op | div_op | checked_div_op | mod_op | checked_mod_op | bit_and_op | shift_left_op | shift_right_op .
 
 func MulDivOp(tokens []tok.Token) (op ast.MulDivOp, remainder []tok.Token, match bool) {
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	switch peek(remainder).Type {
 	case tok.TokOpMul:
@@ -62,7 +62,7 @@ func MulDivOp(tokens []tok.Token) (op ast.MulDivOp, remainder []tok.Token, match
 // rel_op = eq_op | neq_op | lt_op | lte_op | gt_op | gte_op | match_op | compare_op.
 
 func RelOp(tokens []tok.Token) (op ast.RelOp, remainder []tok.Token, match bool) {
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	switch peek(remainder).Type {
 	case tok.TokOpEQ:
@@ -91,7 +91,7 @@ func RelOp(tokens []tok.Token) (op ast.RelOp, remainder []tok.Token, match bool)
 // compound_assignment_op = plus_eq_op | minus_eq_op | mul_eq_op | div_eq_op | shift_left_eq_op | shift_right_eq_op .
 
 func CompoundAssignmentOp(tokens []tok.Token) (op ast.CompoundAssignmentOp, remainder []tok.Token, match bool) {
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	switch peek(remainder).Type {
 	case tok.TokOpPlusEQ:
@@ -118,7 +118,7 @@ func CompoundAssignmentOp(tokens []tok.Token) (op ast.CompoundAssignmentOp, rema
 // unary_op = add_op | sub_op | logical_not_op | bit_not_op .
 
 func UnaryOp(tokens []tok.Token) (op ast.UnaryOp, remainder []tok.Token, match bool) {
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	switch peek(remainder).Type {
 	case tok.TokOpPlus:
@@ -156,7 +156,7 @@ var PipeOp = expectFunc(tok.TokOpPipe)
 
 func PartialApplication(tokens []tok.Token) (remainder []tok.Token, found bool) {
 	// fmt.Println("PartialApplication", tokens)
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	if remainder, found = Comma(remainder); !found {
 		return remainder, false

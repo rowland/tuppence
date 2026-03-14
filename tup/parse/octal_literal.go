@@ -12,7 +12,7 @@ import (
 // octal_digit = "0"-"7" .
 
 func OctalLiteral(tokens []tok.Token) (lit *ast.IntegerLiteral, remainder []tok.Token, err error) {
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	t := peek(remainder)
 	if t.Type != tok.TokOctLit {

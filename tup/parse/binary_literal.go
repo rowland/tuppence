@@ -11,7 +11,7 @@ import (
 // binary_literal = "0b" ( "0" | "1" ) { "0" | "1" | "_" } .
 
 func BinaryLiteral(tokens []tok.Token) (lit *ast.IntegerLiteral, remainder []tok.Token, err error) {
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	t := peek(remainder)
 	if t.Type != tok.TokBinLit {

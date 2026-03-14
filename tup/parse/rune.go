@@ -13,7 +13,7 @@ import (
 
 func RuneLiteral(tokens []tok.Token) (lit *ast.RuneLiteral, remainder []tok.Token, err error) {
 	// fmt.Println("RuneLiteral", tokens)
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 	t := peek(remainder)
 	if t.Type != tok.TokRuneLit {
 		return nil, tokens, ErrNoMatch

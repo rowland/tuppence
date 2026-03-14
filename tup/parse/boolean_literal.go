@@ -9,7 +9,7 @@ import (
 
 func BooleanLiteral(tokens []tok.Token) (lit *ast.BooleanLiteral, remainder []tok.Token, err error) {
 	// fmt.Println("BooleanLiteral", tokens)
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	t := peek(remainder)
 	if t.Type != tok.TokBoolLit {

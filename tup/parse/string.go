@@ -14,7 +14,7 @@ import (
 
 func StringLiteral(tokens []tok.Token) (lit *ast.StringLiteral, remainder []tok.Token, err error) {
 	// fmt.Println("StringLiteral", tokens)
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	t := peek(remainder)
 	if t.Type != tok.TokStrLit {

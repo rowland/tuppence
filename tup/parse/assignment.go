@@ -9,6 +9,7 @@ import (
 
 func Assignment(tokens []tok.Token) (assignment *ast.Assignment, remainder []tok.Token, err error) {
 	// fmt.Println("Assignment", tok.Types(tokens))
+
 	var left ast.AssignmentLHS
 	if left, remainder, err = AssignmentLHS(tokens); err != nil {
 		return nil, remainder, err
@@ -16,7 +17,7 @@ func Assignment(tokens []tok.Token) (assignment *ast.Assignment, remainder []tok
 
 	var found bool
 	if remainder, found = AssignOp(remainder); !found {
-		return nil, remainder, errorExpecting("=", remainder)
+		return nil, tokens, ErrNoMatch
 	}
 
 	mut := ast.Immutable

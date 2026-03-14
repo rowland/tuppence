@@ -10,7 +10,7 @@ import (
 
 func Identifier(tokens []tok.Token) (ident *ast.Identifier, remainder []tok.Token, err error) {
 	// fmt.Println("Identifier", tokens)
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 	t := peek(remainder)
 	if t.Type != tok.TokID && t.Type != tok.TokKwIt {
 		return nil, tokens, ErrNoMatch
@@ -21,7 +21,7 @@ func Identifier(tokens []tok.Token) (ident *ast.Identifier, remainder []tok.Toke
 // type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
 
 func TypeIdentifier(tokens []tok.Token) (typeIdent *ast.TypeIdentifier, remainder []tok.Token, err error) {
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	t := peek(remainder)
 	if t.Type != tok.TokTypeID {
@@ -87,7 +87,7 @@ func RenameType(tokens []tok.Token) (typeIdent *ast.RenameType, remainder []tok.
 
 func TypeReference(tokens []tok.Token) (typeRef *ast.TypeReference, remainder []tok.Token, err error) {
 	// fmt.Println("TypeReference", tokens)
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	var identifiers []*ast.Identifier
 	for {
@@ -134,7 +134,7 @@ func TypeReference(tokens []tok.Token) (typeRef *ast.TypeReference, remainder []
 
 func FunctionIdentifier(tokens []tok.Token) (fundIdent *ast.FunctionIdentifier, remainder []tok.Token, err error) {
 	// fmt.Println("FunctionIdentifier", tok.Types(tokens))
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	t := peek(remainder)
 	if t.Type != tok.TokFuncID && t.Type != tok.TokID {

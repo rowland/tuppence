@@ -8,7 +8,7 @@ import (
 // size = decimal_literal | identifier .
 
 func Size(tokens []tok.Token) (size ast.Size, remainder []tok.Token, err error) {
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	integerLit, remainder2, err := IntegerLiteral(remainder)
 	if err == nil {
@@ -27,7 +27,7 @@ func Size(tokens []tok.Token) (size ast.Size, remainder []tok.Token, err error) 
 //               | type_identifier "[" [ array_members | array_literal ] "]" .
 
 func ArrayLiteral(tokens []tok.Token) (arr *ast.ArrayLiteral, remainder []tok.Token, err error) {
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	var found bool
 	if remainder, found = OpenBracket(remainder); !found {
@@ -50,7 +50,7 @@ func ArrayLiteral(tokens []tok.Token) (arr *ast.ArrayLiteral, remainder []tok.To
 // array_members = expression { "," expression } [ "," ] .
 
 func ArrayMembers(tokens []tok.Token) (members []ast.Expression, remainder []tok.Token, err error) {
-	remainder = skipComments(tokens)
+	remainder = skipTrivia(tokens)
 
 	for {
 		var expression ast.Expression
