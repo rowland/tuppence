@@ -1,7 +1,6 @@
 package parse
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/rowland/tuppence/tup/ast"
@@ -16,10 +15,8 @@ func Annotations(tokens []tok.Token) (annots *ast.Annotations, remainder []tok.T
 	for {
 		var annotation ast.Annotation
 		if annotation, remainder, err = Annotation(remainder); err == ErrNoMatch {
-			fmt.Println("No match")
 			break
 		} else if err != nil {
-			fmt.Println("Error", err)
 			return nil, remainder, err
 		}
 		annotations = append(annotations, annotation)
