@@ -161,6 +161,15 @@ func TestExpression(t *testing.T) {
 			want:    nil,
 			wantErr: true,
 		},
+		{
+			name:  "tuple expression",
+			input: "(1, 2)",
+			want: ast.NewTupleLiteral(false, []*ast.TupleMember{
+				ast.NewTupleMember(nil, ast.NewDecimalLiteral("1", 1, nil, 0, 0)),
+				ast.NewTupleMember(nil, ast.NewDecimalLiteral("2", 2, nil, 0, 0)),
+			}),
+			wantErr: false,
+		},
 	}
 
 	for _, tt := range tests {

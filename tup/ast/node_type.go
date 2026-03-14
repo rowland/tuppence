@@ -106,6 +106,7 @@ const (
 	NodeStringLiteral
 	NodeSymbolLiteral
 	NodeTupleLiteral
+	NodeTupleMember
 
 	// Miscellaneous node types
 	NodeComment
@@ -290,6 +291,7 @@ var NodeTypes = map[NodeType]string{
 	NodeStringLiteral:             "StringLiteral",
 	NodeSymbolLiteral:             "SymbolLiteral",
 	NodeTupleLiteral:              "TupleLiteral",
+	NodeTupleMember:               "TupleMember",
 
 	// Miscellaneous node types
 	NodeComment:    "Comment",

@@ -6,6 +6,11 @@ import (
 	"github.com/rowland/tuppence/tup/source"
 )
 
+const (
+	Immutable = false
+	Mutable   = true
+)
+
 // assignment = assignment_lhs "=" [ "mut" ] expression .
 
 type Assignment struct {
@@ -37,13 +42,16 @@ func (a *Assignment) String() string {
 	return builder.String()
 }
 
-// assignment_lhs = ordinal_assignment_lhs
-//                | "(" labeled_assignment_lhs ")" .
+// assignment_lhs = labeled_assignment_lhs
+//                | ordinal_assignment_lhs  .
 
 type AssignmentLHS interface {
 	Node
 	assignmentLHSNode()
 }
+
+func (o *OrdinalAssignmentLHS) assignmentLHSNode() {}
+func (l *LabeledAssignmentLHS) assignmentLHSNode() {}
 
 // ordinal_assignment_lhs = identifier { "," identifier } [ "," rest_operator ] .
 
@@ -85,9 +93,7 @@ func (o *OrdinalAssignmentLHS) String() string {
 	return builder.String()
 }
 
-func (o *OrdinalAssignmentLHS) assignmentLHSNode() {}
-
-// labeled_assignment_lhs = ( rename_identifier | rename_type ) { "," ( rename_identifier | rename_type ) } .
+// labeled_assignment_lhs = "(" ( rename_identifier | rename_type ) { "," ( rename_identifier | rename_type ) } ")" .
 
 type LabeledAssignmentLHS struct {
 	BaseNode
@@ -136,16 +142,16 @@ func NewLabeledAssignmentLHS(renames []Rename) *LabeledAssignmentLHS {
 
 func (l *LabeledAssignmentLHS) String() string {
 	var builder strings.Builder
+	builder.WriteString("(")
 	for i, rename := range l.Renames {
 		if i > 0 {
 			builder.WriteString(", ")
 		}
 		builder.WriteString(rename.Name())
 	}
+	builder.WriteString(")")
 	return builder.String()
 }
-
-func (l *LabeledAssignmentLHS) assignmentLHSNode() {}
 
 // CompoundAssignment represents a compound assignment (e.g., x += y)
 type CompoundAssignment struct {

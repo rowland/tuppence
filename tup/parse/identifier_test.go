@@ -59,32 +59,53 @@ func TestTypeIdentifier(t *testing.T) {
 	}
 }
 
+// rename_identifier = identifier [ ":" identifier ] .
+
 func TestRenameIdentifier(t *testing.T) {
 	tests := []struct {
+		name       string
 		input      string
 		tokenTypes []tok.TokenType
 		want       *ast.RenameIdentifier
 		wantErr    bool
 	}{
 		{
+			name:       "empty",
+			input:      "",
+			tokenTypes: []tok.TokenType{tok.TokEOF},
+			want:       nil,
+			wantErr:    true,
+		},
+		{
+			name:       "not renamed",
+			input:      "x",
+			tokenTypes: []tok.TokenType{tok.TokID, tok.TokEOF},
+			want:       ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), nil),
+			wantErr:    false,
+		},
+		{
+			name:       "simple",
 			input:      "x: y",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokColon, tok.TokID, tok.TokEOF},
 			want:       ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), ast.NewIdentifier("y", nil, 0, 1)),
 			wantErr:    false,
 		},
 		{
+			name:       "no space",
 			input:      "x:y",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokColonNoSpace, tok.TokID, tok.TokEOF},
 			want:       ast.NewRenameIdentifier(ast.NewIdentifier("x", nil, 0, 1), ast.NewIdentifier("y", nil, 0, 1)),
 			wantErr:    false,
 		},
 		{
+			name:       "invalid type identifier",
 			input:      "x: Y",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokColon, tok.TokTypeID, tok.TokEOF},
 			want:       nil,
 			wantErr:    true,
 		},
 		{
+			name:       "invalid type identifier (no space)",
 			input:      "x:Y",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokColonNoSpace, tok.TokTypeID, tok.TokEOF},
 			want:       nil,
@@ -92,7 +113,7 @@ func TestRenameIdentifier(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		t.Run(test.input, func(t *testing.T) {
+		t.Run(test.name, func(t *testing.T) {
 			source := source.NewSource([]byte(test.input), "test.tup")
 			tokens, err := tok.Tokenize(source.Contents, source.Filename)
 			if err != nil {
@@ -141,26 +162,46 @@ func TestRenameIdentifier(t *testing.T) {
 	}
 }
 
+// rename_type = type_identifier [ ":" type_identifier ] .
+
 func TestRenameType(t *testing.T) {
 	tests := []struct {
+		name       string
 		input      string
 		tokenTypes []tok.TokenType
 		want       *ast.RenameType
 		wantErr    bool
 	}{
 		{
+			name:       "empty",
+			input:      "",
+			tokenTypes: []tok.TokenType{tok.TokEOF},
+			want:       nil,
+			wantErr:    true,
+		},
+		{
+			name:       "not renamed",
+			input:      "Foo",
+			tokenTypes: []tok.TokenType{tok.TokTypeID, tok.TokEOF},
+			want:       ast.NewRenameType(ast.NewTypeIdentifier("Foo", nil, 0, 3), nil),
+			wantErr:    false,
+		},
+		{
+			name:       "simple",
 			input:      "Foo: Bar",
 			tokenTypes: []tok.TokenType{tok.TokTypeID, tok.TokColon, tok.TokTypeID, tok.TokEOF},
 			want:       ast.NewRenameType(ast.NewTypeIdentifier("Foo", nil, 0, 3), ast.NewTypeIdentifier("Bar", nil, 0, 3)),
 			wantErr:    false,
 		},
 		{
+			name:       "no space",
 			input:      "Foo:Bar",
 			tokenTypes: []tok.TokenType{tok.TokTypeID, tok.TokColonNoSpace, tok.TokTypeID, tok.TokEOF},
 			want:       ast.NewRenameType(ast.NewTypeIdentifier("Foo", nil, 0, 3), ast.NewTypeIdentifier("Bar", nil, 0, 3)),
 			wantErr:    false,
 		},
 		{
+			name:       "invalid identifier",
 			input:      "Foo: y",
 			tokenTypes: []tok.TokenType{tok.TokTypeID, tok.TokColon, tok.TokID, tok.TokEOF},
 			want:       nil,
@@ -168,7 +209,7 @@ func TestRenameType(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		t.Run(test.input, func(t *testing.T) {
+		t.Run(test.name, func(t *testing.T) {
 			source := source.NewSource([]byte(test.input), "test.tup")
 			tokens, err := tok.Tokenize(source.Contents, source.Filename)
 			if err != nil {
@@ -359,8 +400,8 @@ func TestFunctionIdentifier(t *testing.T) {
 			if !slices.Equal(tok.Types(tokens), test.tokenTypes) {
 				t.Fatalf("tokenTypes: %v, want %v", tok.Types(tokens), test.tokenTypes)
 			}
-			RunParseTest(t, test.input, test.input, test.want, test.wantErr,
-				"FunctionIdentifier", FunctionIdentifier, StringerCheck[*ast.FunctionIdentifier])
+			RunParseTestExt(t, test.input, test.input, test.want, test.wantErr,
+				"FunctionIdentifier", FunctionIdentifier, StringerCheck[*ast.FunctionIdentifier], test.tokenTypes)
 		})
 	}
 }

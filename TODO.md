@@ -31,7 +31,7 @@
     - [ ] interpolated_string_literal
     - [x] raw_string_literal
     - [ ] multi_line_string_literal
-    - [ ] tuple_literal
+    - [x] tuple_literal
     - [ ] array_literal
     - [ ] symbol_literal
     - [x] rune_literal
@@ -109,7 +109,11 @@
         - [x] partial_application
     - [x] function_block
         - [ ] block_parameters
-            - [ ] assignment_lhs
+            - [x] assignment_lhs
+                - [x] ordinal_assignment_lhs
+                - [x] labeled_assignment_lhs
+                    - [x] rename_identifier
+                    - [x] rename_type
         - [.] block_body
             - [ ] statement
                 - [ ] type_qualified_function_declaration
@@ -154,7 +158,7 @@
                     - [ ] type_declaration_rhs
                 - [ ] function_declaration
                 - [ ] compound_assignment
-                - [ ] assignment
+                - [x] assignment
 
 - [ ] array_function_call
 - [ ] array_members
@@ -203,7 +207,6 @@
 - [ ] interpolation
 - [ ] iterable
 - [ ] iterable_header
-- [ ] labeled_assignment_lhs
 - [ ] labeled_parameter
 - [ ] labeled_pattern
 - [ ] labeled_rest_parameter
@@ -224,15 +227,12 @@
 - [ ] nonzero_digit
 - [ ] not_eol
 - [ ] octal_digit
-- [ ] ordinal_assignment_lhs
 - [ ] pattern
 - [ ] pattern_match
 - [ ] range
 - [ ] range_bound
 - [ ] relational_comparison
-- [ ] rename_identifier
-- [ ] rename_type
-- [ ] rest_operator
+- [x] rest_operator
 - [ ] rest_parameter
 - [ ] return_expression
 - [ ] safe_indexed_access

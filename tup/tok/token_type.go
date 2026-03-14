@@ -59,8 +59,8 @@ const (
 	TokOpPipe // |>
 
 	// Range and Rest Operators
-	TokOpRange
-	TokOpRest
+	TokOpRange // ..
+	TokOpRest  // ...
 
 	// Assignment
 	TokOpBitAndEQ // &=

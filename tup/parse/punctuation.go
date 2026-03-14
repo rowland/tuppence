@@ -18,6 +18,10 @@ func expectFunc(tokenTypes ...tok.TokenType) func([]tok.Token) (remainder []tok.
 	}
 }
 
+// assign_op = "=" .
+
+var AssignOp = expectFunc(tok.TokOpAssign)
+
 // at = "@" .
 
 var At = expectFunc(tok.TokAt)
@@ -37,6 +41,10 @@ var Dot = expectFunc(tok.TokDot)
 // eol = "\r\n" | "\r" | "\n" .
 
 var EOL = expectFunc(tok.TokEOL)
+
+// rest_op = "..." .
+
+var RestOp = expectFunc(tok.TokOpRest)
 
 // star = "*" .
 

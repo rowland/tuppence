@@ -66,10 +66,13 @@ func (f *FunctionIdentifier) String() string {
 }
 
 type Rename interface {
-	// Node
+	Node
 	renameNode()
 	Name() string
 }
+
+func (r *RenameIdentifier) renameNode() {}
+func (r *RenameType) renameNode()       {}
 
 // rename_identifier = identifier [ ":" identifier ] .
 
@@ -88,8 +91,6 @@ func NewRenameIdentifier(identifier *Identifier, original *Identifier) *RenameId
 		Original:   original,
 	}
 }
-
-func (r *RenameIdentifier) renameNode() {}
 
 func (r *RenameIdentifier) Name() string {
 	return r.Identifier.Name
@@ -120,8 +121,6 @@ func NewRenameType(identifier *TypeIdentifier, original *TypeIdentifier) *Rename
 		Original:   original,
 	}
 }
-
-func (r *RenameType) renameNode() {}
 
 func (r *RenameType) Name() string {
 	return r.Identifier.Name

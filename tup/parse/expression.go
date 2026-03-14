@@ -10,6 +10,7 @@ import (
 //            | unary_expression .
 
 func Expression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	// fmt.Println("Expression", tok.Types(tokens))
 	if tryExpr, remainder, err := TryExpression(tokens); err == nil {
 		return tryExpr, remainder, nil
 	} else if err != ErrNoMatch {

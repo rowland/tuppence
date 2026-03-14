@@ -30,8 +30,8 @@ array_type = fixed_size_array | dynamic_array .
 
 assignment = assignment_lhs "=" [ "mut" ] expression .
 
-assignment_lhs = ordinal_assignment_lhs 
-               | "(" labeled_assignment_lhs ")" .
+assignment_lhs = labeled_assignment_lhs
+               | ordinal_assignment_lhs  .
 
 binary_expression = chained_expression .
 
@@ -115,6 +115,8 @@ div_op = "/" .
 dynamic_array = "[" "]" (type_reference | array_type) .
 
 else_block = "else" block .
+
+empty_tuple = "(" ")" .
 
 enum_declaration = "enum" "(" eol enum_members ")" .
 
@@ -251,7 +253,7 @@ labeled_argument = ( identifier ":" argument ) .
 
 labeled_arguments = labeled_argument { "," ( labeled_argument ) } .
 
-labeled_assignment_lhs = ( rename_identifier | rename_type ) { "," ( rename_identifier | rename_type ) } .
+labeled_assignment_lhs = "(" ( rename_identifier | rename_type ) { "," ( rename_identifier | rename_type ) } ")" .
 
 labeled_parameter = annotations identifier ":" ( nilable_type
                                                | type
@@ -269,7 +271,7 @@ labeled_tuple = "(" labeled_arguments [ "," ] ")" .
 
 labeled_tuple_member = identifier ":" tuple_member .
 
-labeled_tuple_members = labeled_tuple_member { "," labeled_tuple_member } [ "," ] .
+labeled_tuple_members = "(" labeled_tuple_member { "," labeled_tuple_member } [ "," ] ")" .
 
 labeled_tuple_type_member = annotations identifier ":" tuple_type_member .
 
@@ -496,11 +498,11 @@ try_expression = "try" expression
                | "try_continue" expression
                | "try_break" expression .
 
-tuple_literal = "(" [ labeled_tuple_members | tuple_members ] ")" .
+tuple_literal = empty_tuple | labeled_tuple_members | tuple_members .
 
 tuple_member = expression .
 
-tuple_members = tuple_member "," { tuple_member "," } [ tuple_member ] .
+tuple_members = "(" tuple_member "," { tuple_member "," } [ tuple_member ] ")" .
 
 tuple_pattern = "(" pattern { "," pattern } ")" .
 

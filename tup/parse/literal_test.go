@@ -36,7 +36,11 @@ func TestLiteral(t *testing.T) {
 		// {"multi line string literal", "`hello\nworld`", ast.NodeMultiLineStringLiteral, false},
 
 		// tuple
-		// {"tuple literal", "(1, 2, 3)", ast.NodeTupleLiteral, false},
+		{"tuple literal", "(1, 2, 3)", ast.NodeTupleLiteral, false},
+		{"labeled tuple literal", "(a: 1, b: 2, c: 3)", ast.NodeTupleLiteral, false},
+		{"labeled tuple literal with trailing comma", "(a: 1, b: 2, c: 3,)", ast.NodeTupleLiteral, false},
+		{"labeled tuple literal with missing colon", "(a 1, b: 2, c: 3)", ast.NodeTupleLiteral, true},
+		{"labeled tuple literal with missing value", "(a: 1, b: 2, c)", ast.NodeTupleLiteral, true},
 
 		// array
 		// {"array literal", "[1, 2, 3]", ast.NodeArrayLiteral, false},

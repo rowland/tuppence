@@ -321,30 +321,42 @@ func (s *SymbolLiteral) String() string {
 }
 
 // tuple_member = expression .
-
-// TupleMember represents a member of a tuple
-type TupleMember = Expression
-
 // labeled_tuple_member = identifier ":" tuple_member .
 
-// LabeledTupleMember represents a labeled member of a tuple
-type LabeledTupleMember struct {
+type TupleMember struct {
 	BaseNode
-	Label *Identifier // The label
-	Value TupleMember // The value expression
+	Label *Identifier // optional label
+	Value Expression
 }
 
-// tuple_literal = "(" [ labeled_tuple_members | tuple_members ] ")" .
+func NewTupleMember(label *Identifier, value Expression) *TupleMember {
+	return &TupleMember{
+		BaseNode: BaseNode{Type: NodeTupleMember},
+		Label:    label,
+		Value:    value,
+	}
+}
 
-// TupleLiteral represents a tuple literal in the code
+func (t *TupleMember) String() string {
+	var builder strings.Builder
+	if t.Label != nil {
+		builder.WriteString(t.Label.String())
+		builder.WriteString(": ")
+	}
+	builder.WriteString(t.Value.String())
+	return builder.String()
+}
+
+// tuple_literal = empty_tuple | labeled_tuple_members | tuple_members .
+
 type TupleLiteral struct {
 	BaseNode
-	Labeled bool   // Whether the tuple is labeled
-	Members []Node // Mix of TupleMember and LabeledTupleMember nodes
+	Labeled bool // Whether the tuple is labeled
+	Members []*TupleMember
 }
 
 // NewTupleLiteral creates a new TupleLiteral node
-func NewTupleLiteral(labeled bool, members []Node) *TupleLiteral {
+func NewTupleLiteral(labeled bool, members []*TupleMember) *TupleLiteral {
 	return &TupleLiteral{
 		BaseNode: BaseNode{Type: NodeTupleLiteral},
 		Labeled:  labeled,

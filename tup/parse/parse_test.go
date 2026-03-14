@@ -3,6 +3,7 @@ package parse
 import (
 	"fmt"
 	"reflect"
+	"slices"
 	"testing"
 
 	"github.com/rowland/tuppence/tup/source"
@@ -53,11 +54,29 @@ func RunParseTest[T any](
 	check func(t *testing.T, input, parserName string, got, want T),
 ) {
 	t.Helper()
+	RunParseTestExt(t, subtestName, input, want, wantErr, parserName, parse, check, nil)
+}
+
+func RunParseTestExt[T any](
+	t *testing.T,
+	subtestName string,
+	input string,
+	want T,
+	wantErr bool,
+	parserName string,
+	parse func([]tok.Token) (T, []tok.Token, error),
+	check func(t *testing.T, input, parserName string, got, want T),
+	tokenTypes []tok.TokenType,
+) {
+	t.Helper()
 	src := source.NewSource([]byte(input), "test.tup")
 	tokens, err := tok.Tokenize(src.Contents, src.Filename)
 	if err != nil {
 		t.Errorf("Tokenize(%q) = %v", input, err)
 		return
+	}
+	if tokenTypes != nil && !slices.Equal(tok.Types(tokens), tokenTypes) {
+		t.Fatalf("Tokens: %v, want %v", tok.Types(tokens), tokenTypes)
 	}
 	got, _, err := parse(tokens)
 	if wantErr {

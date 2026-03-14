@@ -61,6 +61,16 @@ func errorExpectingTokenType(tokenType tok.TokenType, tokens []tok.Token) *Error
 	}
 }
 
+func errorNotExpecting(tokens []tok.Token) *Error {
+	got, line, column := errorGot(tokens)
+	return &Error{
+		Expecting: "not " + got,
+		Got:       got,
+		Line:      line,
+		Column:    column,
+	}
+}
+
 func errorGot(tokens []tok.Token) (got string, line int, column int) {
 	if len(tokens) > 0 {
 		got = tokens[0].Value()
