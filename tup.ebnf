@@ -17,7 +17,7 @@ arguments = argument { "," argument } .
 arguments_body = labeled_arguments
                | arguments [ "," labeled_arguments ]
 
-array_function_call = "array" "(" type_identifier "," expression ")" .
+array_function_call = "array" "(" type_identifier [ "," expression ] ")" .
 
 array_literal = "[" [ array_members | array_literal ] "]"
               | type_identifier "[" [ array_members | array_literal ] "]" .
