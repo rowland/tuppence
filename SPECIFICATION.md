@@ -262,6 +262,37 @@ Tuppence uses `#` to introduce comments, which continue until the end of the lin
       a * x^2 + b * x + c
     }
 
+## Annotations
+
+Annotations attach metadata to declarations and declaration members.
+
+Tuppence supports two annotation forms:
+
+    @simple
+    @name:spaced 123
+
+Simple annotations consist only of an identifier. Namespaced annotations include a namespace, an
+identifier, and a value.
+
+Built-in simple annotations include:
+
+    @error
+    @false
+    @true
+    @bool
+    @cstruct
+
+Annotation values may be strings, numbers, booleans, or type references:
+
+    @deprecated:reason "Use the newer function instead."
+    @tested:version "1.2.3"
+    @card:rank 10
+    @bool:true true
+    @type:implements core.Numeric
+
+Annotations may appear before declarations and before tuple, union, enum, and contract members where
+the grammar permits them.
+
 ## Assignments
 
 Named types, functions and values are always introduced through assignment.
