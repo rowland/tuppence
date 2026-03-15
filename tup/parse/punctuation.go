@@ -34,6 +34,10 @@ var Colon = expectFunc(tok.TokColon, tok.TokColonNoSpace)
 
 var Comma = expectFunc(tok.TokComma)
 
+// dollar = "$" .
+
+var Dollar = expectFunc(tok.TokDollar)
+
 // dot = "." .
 
 var Dot = expectFunc(tok.TokDot)

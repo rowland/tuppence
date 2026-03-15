@@ -274,6 +274,12 @@ func TestAssignment(t *testing.T) {
 	})
 }
 
+func TestDollarSymbol(t *testing.T) {
+	testTokenizeSeq(t, "$", []TokenType{
+		TokDollar,
+	})
+}
+
 func TestIdentifiers(t *testing.T) {
 	testTokenizeSeq(t, "abc foo? foo! Def", []TokenType{
 		TokID,

@@ -416,6 +416,12 @@ func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok
 	// import_expression
 	// typeof_expression
 
+	if metaExpression, remainder, err := MetaExpression(tokens); err == nil {
+		return metaExpression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
 	if functionCall, remainder, err := FunctionCall(tokens); err == nil {
 		return functionCall, remainder, nil
 	} else if err != ErrNoMatch {

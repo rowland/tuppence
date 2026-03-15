@@ -158,6 +158,9 @@ outer:
 			case ',':
 				tokenType = TokComma
 				done = true
+			case '$':
+				tokenType = TokDollar
+				done = true
 			case '.':
 				// Check 3-character operators first
 				if t.peek(3) == "..." {

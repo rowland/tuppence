@@ -188,6 +188,13 @@ func TestExpression(t *testing.T) {
 				ast.NewDecimalLiteral("10", 10, nil, 0, 2),
 			),
 		},
+		{
+			name:  "meta expression",
+			input: `$(file: "config.json")`,
+			want: ast.NewMetaExpression(map[string]ast.Node{
+				"file": ast.NewArgument(ast.NewStringLiteral(`"config.json"`, "config.json", nil, 0, 13), false),
+			}),
+		},
 	}
 
 	for _, tt := range tests {
@@ -305,6 +312,27 @@ func TestExpression(t *testing.T) {
 				if got.String() != want.String() {
 					t.Errorf("Expression(%q) = %v, want %v", tt.input, got, want)
 					return
+				}
+			case *ast.MetaExpression:
+				got, ok := expression.(*ast.MetaExpression)
+				if !ok {
+					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
+					return
+				}
+				if len(got.KeyValues) != len(want.KeyValues) {
+					t.Errorf("Expression(%q) key count = %d, want %d", tt.input, len(got.KeyValues), len(want.KeyValues))
+					return
+				}
+				for key, wantValue := range want.KeyValues {
+					gotValue, ok := got.KeyValues[key]
+					if !ok {
+						t.Errorf("Expression(%q) missing key %q", tt.input, key)
+						return
+					}
+					if gotValue.String() != wantValue.String() {
+						t.Errorf("Expression(%q) key %q = %v, want %v", tt.input, key, gotValue, wantValue)
+						return
+					}
 				}
 			}
 		})

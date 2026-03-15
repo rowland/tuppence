@@ -12,6 +12,7 @@ const (
 	TokColon                         // :
 	TokColonNoSpace                  // : (no space after)
 	TokComma                         // ,
+	TokDollar                        // $
 	TokDot                           // .
 	TokOpenBrace                     // {
 	TokOpenBracket                   // [
@@ -143,6 +144,7 @@ var TokenTypes = map[TokenType]string{
 	TokColon:        ":",
 	TokColonNoSpace: ":",
 	TokComma:        ",",
+	TokDollar:       "$",
 	TokDot:          ".",
 	TokOpenBrace:    "{",
 	TokOpenBracket:  "[",
