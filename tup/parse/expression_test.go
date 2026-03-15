@@ -172,6 +172,22 @@ func TestExpression(t *testing.T) {
 				nil,
 			),
 		},
+		{
+			name:  "array function call with type only",
+			input: "array(Int)",
+			want: ast.NewArrayFunctionCall(
+				ast.NewTypeIdentifier("Int", nil, 0, 3),
+				nil,
+			),
+		},
+		{
+			name:  "array function call with size",
+			input: "array(Int, 10)",
+			want: ast.NewArrayFunctionCall(
+				ast.NewTypeIdentifier("Int", nil, 0, 3),
+				ast.NewDecimalLiteral("10", 10, nil, 0, 2),
+			),
+		},
 	}
 
 	for _, tt := range tests {
@@ -272,6 +288,16 @@ func TestExpression(t *testing.T) {
 				}
 			case *ast.PowExpression:
 				got, ok := expression.(*ast.PowExpression)
+				if !ok {
+					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Expression(%q) = %v, want %v", tt.input, got, want)
+					return
+				}
+			case *ast.ArrayFunctionCall:
+				got, ok := expression.(*ast.ArrayFunctionCall)
 				if !ok {
 					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
 					return

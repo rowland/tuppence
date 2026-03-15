@@ -404,9 +404,14 @@ func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok
 	// if_expression
 	// for_expression
 	// inline_for_expression
-	// array_function_call
 	// import_expression
 	// typeof_expression
+
+	if arrayFunctionCall, remainder, err := ArrayFunctionCall(tokens); err == nil {
+		return arrayFunctionCall, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
 
 	if functionCall, remainder, err := FunctionCall(tokens); err == nil {
 		return functionCall, remainder, nil
