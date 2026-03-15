@@ -431,12 +431,12 @@ func (a *ArrayLiteral) LiteralValue() any {
 // FixedSizeArrayLiteral represents a fixed-size array literal in the code
 type FixedSizeArrayLiteral struct {
 	BaseNode
-	ArrayType *ArrayType // The array type
-	Elements  []Node     // The array elements
+	ArrayType *ArrayType   // The array type
+	Elements  []Expression // The array elements
 }
 
 // NewFixedSizeArrayLiteral creates a new FixedSizeArrayLiteral node
-func NewFixedSizeArrayLiteral(arrayType *ArrayType, elements []Node) *FixedSizeArrayLiteral {
+func NewFixedSizeArrayLiteral(arrayType *ArrayType, elements []Expression) *FixedSizeArrayLiteral {
 	return &FixedSizeArrayLiteral{
 		BaseNode:  BaseNode{Type: NodeFixedSizeArrayLiteral},
 		ArrayType: arrayType,

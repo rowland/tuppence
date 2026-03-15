@@ -32,10 +32,10 @@
     - [x] raw_string_literal
     - [ ] multi_line_string_literal
     - [x] tuple_literal
+    - [ ] fixed_size_array_literal
     - [ ] array_literal
     - [ ] symbol_literal
     - [x] rune_literal
-    - [ ] fixed_size_array_literal
 - [x] namespace
 - [x] namespaced_annotation
 - [x] function_identifier
