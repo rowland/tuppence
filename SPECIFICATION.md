@@ -269,7 +269,7 @@ Annotations attach metadata to declarations and declaration members.
 Tuppence supports two annotation forms:
 
     @simple
-    @name:spaced Numeric
+    @name:spaced 123
 
 Simple annotations consist only of an identifier. Namespaced annotations include a namespace, an
 identifier, and a value.
