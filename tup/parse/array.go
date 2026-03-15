@@ -23,8 +23,8 @@ func Size(tokens []tok.Token) (size ast.Size, remainder []tok.Token, err error) 
 	return nil, tokens, ErrNoMatch
 }
 
-// array_literal = "[" [ array_members | array_literal ] "]"
-//               | type_identifier "[" [ array_members | array_literal ] "]" .
+// array_literal = "[" [ array_members ] "]"
+//               | type_identifier "[" [ array_members ] "]" .
 
 func ArrayLiteral(tokens []tok.Token) (arr *ast.ArrayLiteral, remainder []tok.Token, err error) {
 	remainder = skipTrivia(tokens)
