@@ -32,6 +32,7 @@ func (n *IfExpression) expressionNode()          {}
 func (n *ForExpression) expressionNode()         {}
 func (n *InlineForExpression) expressionNode()   {}
 func (n *ArrayFunctionCall) expressionNode()     {}
+func (n *ImportExpression) expressionNode()      {}
 func (n *TypeofExpression) expressionNode()      {}
 func (n *MetaExpression) expressionNode()        {}
 func (n *FunctionCall) expressionNode()          {}
@@ -442,6 +443,27 @@ func NewTypeofExpression(expression Node) *TypeofExpression {
 // String returns a textual representation of the typeof expression
 func (t *TypeofExpression) String() string {
 	return "typeof(" + t.Expression.String() + ")"
+}
+
+// import_expression = "import" "(" string_literal ")" .
+
+// ImportExpression represents an import expression
+type ImportExpression struct {
+	BaseNode
+	Path *StringLiteral
+}
+
+// NewImportExpression creates a new ImportExpression node
+func NewImportExpression(path *StringLiteral) *ImportExpression {
+	return &ImportExpression{
+		BaseNode: BaseNode{Type: NodeImportExpression},
+		Path:     path,
+	}
+}
+
+// String returns a textual representation of the import expression
+func (i *ImportExpression) String() string {
+	return "import(" + i.Path.String() + ")"
 }
 
 // binary_expression = chained_expression .

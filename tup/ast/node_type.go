@@ -64,6 +64,7 @@ const (
 	NodeConstant
 	NodeContinueExpression
 	NodeFunctionCall
+	NodeImportExpression
 	NodeIndexedAccess
 	NodeMemberAccess
 	NodeMetaExpression
@@ -249,6 +250,7 @@ var NodeTypes = map[NodeType]string{
 	NodeConstant:                "NodeConstant",
 	NodeContinueExpression:      "ContinueExpression",
 	NodeFunctionCall:            "FunctionCall",
+	NodeImportExpression:        "ImportExpression",
 	NodeIndexedAccess:           "IndexedAccess",
 	NodeMemberAccess:            "MemberAccess",
 	NodeMetaExpression:          "MetaExpression",

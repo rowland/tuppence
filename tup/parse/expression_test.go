@@ -209,6 +209,13 @@ func TestExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "import expression",
+			input: `import("io")`,
+			want: ast.NewImportExpression(
+				ast.NewStringLiteral(`"io"`, "io", nil, 0, 4),
+			),
+		},
+		{
 			name:  "meta expression",
 			input: `$(file: "config.json")`,
 			want: ast.NewMetaExpression(map[string]ast.Node{
@@ -325,6 +332,16 @@ func TestExpression(t *testing.T) {
 				}
 			case *ast.ArrayFunctionCall:
 				got, ok := expression.(*ast.ArrayFunctionCall)
+				if !ok {
+					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Expression(%q) = %v, want %v", tt.input, got, want)
+					return
+				}
+			case *ast.ImportExpression:
+				got, ok := expression.(*ast.ImportExpression)
 				if !ok {
 					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
 					return

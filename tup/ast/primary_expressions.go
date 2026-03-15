@@ -32,6 +32,7 @@ func (n *IfExpression) primaryExpressionNode()          {}
 func (n *ForExpression) primaryExpressionNode()         {}
 func (n *InlineForExpression) primaryExpressionNode()   {}
 func (n *ArrayFunctionCall) primaryExpressionNode()     {}
+func (n *ImportExpression) primaryExpressionNode()      {}
 func (n *TypeofExpression) primaryExpressionNode()      {}
 func (n *MetaExpression) primaryExpressionNode()        {}
 func (n *FunctionCall) primaryExpressionNode()          {}
@@ -45,8 +46,6 @@ func (n *SafeIndexedAccess) primaryExpressionNode()     {}
 func (n *IndexedAccess) primaryExpressionNode()         {}
 func (n *Range) primaryExpressionNode()                 {}
 func (n *Identifier) primaryExpressionNode()            {}
-
-// func (n *ImportExpression) primaryExpressionNode()      {}
 
 // initializer = assignment .
 
