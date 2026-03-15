@@ -872,6 +872,55 @@ You can define additional constructors for a type within its namespace by declar
 The default constructors will always provide a concrete instance of the type.
 Additional constructors may elect to return unions with other types, such as `error` or `Nil`.
 
+## Enum Declarations
+
+An `enum` declares a closed set of named integer constants:
+
+    Fruit = enum(
+        apple
+        banana
+        cantaloupe
+    )
+
+Members may optionally specify explicit integer values. Unspecified members continue counting from the
+previous value.
+
+## Union Declarations
+
+Unions describe values that may belong to one of several types:
+
+    Result = []Byte | HttpError
+
+The multi-line declaration form may also introduce named members:
+
+    Result[a] = union(
+        Ok(a)
+        Err(String)
+    )
+
+Union members may include existing types, arrays, generic types, and newly introduced named tuple members.
+
+## Contract Declarations
+
+A `contract` declares a required interface for types that satisfy it:
+
+    Stringer[a] = contract (
+        string[a] = fn(a) String
+    )
+
+Contracts may require functions:
+
+    Numeric[a] = contract (
+        add[a] = fn(a, a) a
+        sub[a] = fn(a, a) a
+    )
+
+and fields:
+
+    HasIntID = contract (
+        id: Int
+    )
+
 ## For Loops
 
 A `for` loop may be a little unusual in a functional language, but consider this: In a functional language with tail call optimization, the recursive calls are transformed into a loop under the hood. The functional semantics of immutable values are preserved without creating a dangerous number of stack frames.
