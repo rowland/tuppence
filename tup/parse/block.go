@@ -34,15 +34,15 @@ func BlockBody(tokens []tok.Token) (expr *ast.BlockBody, remainder []tok.Token, 
 	if statements, remainder, err = Statements(tokens); err != nil && err != ErrNoMatch {
 		return nil, remainder, err
 	}
-	// fmt.Println("BlockBody statements", statements, tok.Types(remainder))
 
-	var expression ast.Expression
-	if expression, remainder, err = Expression(remainder); err != nil {
-		// fmt.Println("BlockBody expression error", err, tok.Types(remainder))
-		return nil, remainder, err
+	if len(statements) == 0 {
+		return nil, remainder, errorExpecting("expression", remainder)
 	}
-	// fmt.Println("BlockBody expression", expression, tok.Types(remainder))
 
-	// fmt.Println("BlockBody return", expression, tok.Types(remainder))
-	return ast.NewBlockBody(statements, expression), remainder, nil
+	expression, ok := statements[len(statements)-1].(ast.Expression)
+	if !ok {
+		return nil, remainder, errorExpecting("expression", remainder)
+	}
+
+	return ast.NewBlockBody(statements[:len(statements)-1], expression), remainder, nil
 }

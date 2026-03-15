@@ -59,12 +59,16 @@ func Statement(tokens []tok.Token) (stmt ast.Statement, remainder []tok.Token, e
 		return nil, remainder, err
 	}
 
-	// var expression ast.Expression
-	// if expression, remainder, err = Expression(tokens); err == nil {
-	// 	return expression, remainder, nil
-	// } else if err != ErrNoMatch {
-	// 	return nil, remainder, err
-	// }
+	var expression ast.Expression
+	if expression, remainder, err = Expression(tokens); err == nil {
+		statement, ok := expression.(ast.Statement)
+		if !ok {
+			return nil, remainder, errorExpecting("statement", remainder)
+		}
+		return statement, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
 
 	return nil, tokens, ErrNoMatch
 }

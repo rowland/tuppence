@@ -76,6 +76,86 @@ func TestBlock(t *testing.T) {
 				),
 			),
 		},
+		{
+			name:    "block ending with assignment",
+			input:   "{ x = 1 }",
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name:    "block ending with multiple assignments",
+			input:   "{ x = 1; y = 2 }",
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name:  "block with expression statement before final expression",
+			input: "{ foo(1); bar(2) }",
+			want: ast.NewBlock(
+				ast.NewBlockBody(
+					[]ast.Statement{
+						ast.NewFunctionCall(
+							ast.NewFunctionIdentifier("foo", nil, 0, 3),
+							nil,
+							ast.NewFunctionArguments(
+								ast.NewArguments([]*ast.Argument{
+									ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 1), false),
+								}),
+								nil,
+								false,
+							),
+							nil,
+						),
+					},
+					ast.NewFunctionCall(
+						ast.NewFunctionIdentifier("bar", nil, 0, 3),
+						nil,
+						ast.NewFunctionArguments(
+							ast.NewArguments([]*ast.Argument{
+								ast.NewArgument(ast.NewDecimalLiteral("2", 2, nil, 0, 1), false),
+							}),
+							nil,
+							false,
+						),
+						nil,
+					),
+				),
+			),
+		},
+		{
+			name:  "block with expression statement separated by newline",
+			input: "{\n  foo(1)\n  bar(2)\n}",
+			want: ast.NewBlock(
+				ast.NewBlockBody(
+					[]ast.Statement{
+						ast.NewFunctionCall(
+							ast.NewFunctionIdentifier("foo", nil, 0, 3),
+							nil,
+							ast.NewFunctionArguments(
+								ast.NewArguments([]*ast.Argument{
+									ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 1), false),
+								}),
+								nil,
+								false,
+							),
+							nil,
+						),
+					},
+					ast.NewFunctionCall(
+						ast.NewFunctionIdentifier("bar", nil, 0, 3),
+						nil,
+						ast.NewFunctionArguments(
+							ast.NewArguments([]*ast.Argument{
+								ast.NewArgument(ast.NewDecimalLiteral("2", 2, nil, 0, 1), false),
+							}),
+							nil,
+							false,
+						),
+						nil,
+					),
+				),
+			),
+		},
 	}
 
 	for _, test := range tests {

@@ -60,6 +60,22 @@ func TestStatement(t *testing.T) {
 				ast.NewDecimalLiteral("1", 1, nil, 0, 1),
 			),
 		},
+		{
+			name:  "function call expression statement",
+			input: "foo(1)",
+			want: ast.NewFunctionCall(
+				ast.NewFunctionIdentifier("foo", nil, 0, 3),
+				nil,
+				ast.NewFunctionArguments(
+					ast.NewArguments([]*ast.Argument{
+						ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 1), false),
+					}),
+					nil,
+					false,
+				),
+				nil,
+			),
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -83,6 +99,15 @@ func TestStatement(t *testing.T) {
 			switch want := test.want.(type) {
 			case *ast.Assignment:
 				got, ok := stmt.(*ast.Assignment)
+				if !ok {
+					t.Errorf("Statement(%q) = %T, want %T", test.input, stmt, test.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Statement(%q) = %v, want %v", test.input, got.String(), want.String())
+				}
+			case *ast.FunctionCall:
+				got, ok := stmt.(*ast.FunctionCall)
 				if !ok {
 					t.Errorf("Statement(%q) = %T, want %T", test.input, stmt, test.want)
 					return
