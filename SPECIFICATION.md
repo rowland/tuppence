@@ -757,18 +757,24 @@ If the return type has only one non-error member, the shorthand `!T` may be used
 
 ##### Optional Parentheses for Clarity
 
-Parentheses are *optional but allowed* around unions in return types for readability:
+Parentheses are allowed around return-type unions for readability:
 
     bar = fn() (String | Int) { ... }  # parentheses allowed
 
-While parentheses *do not change behavior*, they can help visually distinguish unions in complex type signatures.
+While parentheses do not change behavior, they can help visually distinguish unions in complex type signatures.
 
-##### Example With Multiple Types
+##### Examples With Multiple Types
 
     baz = fn() []Byte | Ok(Int) | Err(String) | error { ... }  # allowed
     qux = fn() ([]Byte | Ok(Int) | Err(String) | error) { ... }  # parentheses optional
+    quux = fn() union(
+      []Byte
+      Ok(Int)
+      Err(String)
+      error
+    ) { ... }  # equivalent verbose form
 
-Both function signatures above are valid and equivalent.
+All three function signatures above are valid and equivalent.
 
 ##### Verbose Union Return Type
 
