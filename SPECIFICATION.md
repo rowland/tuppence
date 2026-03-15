@@ -706,18 +706,22 @@ This means foo can return either a String or an Int.
 
 ##### Optional Parentheses for Clarity
 
-Parentheses are *optional but allowed* around unions in return types for readability:
+Parentheses are allowed around plain unions in return types for readability:
 
     bar = fn() (String | Int) { ... }  # parentheses allowed
 
-While parentheses *do not change behavior*, they can help visually distinguish unions in complex type signatures.
+While parentheses do not change behavior, they can help visually distinguish unions in complex type signatures.
+In the current grammar this parenthesized form applies to unions of value types, not to `... | error`.
 
 ##### Example With Multiple Types
 
     baz = fn() []Byte | Ok(Int) | Err(String) | error { ... }  # allowed
-    qux = fn() ([]Byte | Ok(Int) | Err(String) | error) { ... }  # parentheses optional
-
-Both function signatures above are valid and equivalent.
+    qux = fn() union(
+      []Byte
+      Ok(Int)
+      Err(String)
+      error
+    ) { ... }  # equivalent verbose form
 
 ## Function Invocation
 
