@@ -1398,9 +1398,11 @@ def == (d: 2, e: "Hello World", f: 10.0)
 - Compile-time tuple field validation or filtering
 - Extracting metadata or generating derived values
 
-## Tuppence Meta Functions and Use Cases
+## Proposed Meta Functions and Use Cases
 
-Tuppence introduces `$()` as a compile-time meta-function mechanism, allowing key-value pairs in labeled tuple syntax. The compiler resolves these expressions at compile-time, embedding values or executing safe operations. The parsing phase treats `$()` as a labeled tuple, while the semantic phase determines validity and execution.
+The notation `$()` is a proposed compile-time meta-function mechanism for labeled key-value input.
+It is described here as a possible extension, but it is not currently part of the reachable expression
+grammar in `tup.ebnf`.
 
 ### General Syntax
 
