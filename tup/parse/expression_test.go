@@ -153,6 +153,26 @@ func TestExpression(t *testing.T) {
 			}),
 		},
 		{
+			name:  "block expression",
+			input: "{ x = 1; x + 1 }",
+			want: ast.NewBlock(
+				ast.NewBlockBody(
+					[]ast.Statement{
+						ast.NewAssignment(
+							ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("x", nil, 0, 1)}, nil),
+							false,
+							ast.NewDecimalLiteral("1", 1, nil, 0, 1),
+						),
+					},
+					ast.NewAddSubExpression(
+						ast.NewIdentifier("x", nil, 0, 1),
+						ast.OpAdd,
+						ast.NewDecimalLiteral("1", 1, nil, 0, 1),
+					),
+				),
+			),
+		},
+		{
 			name:  "function call",
 			input: "foo(1, 2)",
 			want: ast.NewFunctionCall(
@@ -305,6 +325,16 @@ func TestExpression(t *testing.T) {
 				}
 			case *ast.ArrayFunctionCall:
 				got, ok := expression.(*ast.ArrayFunctionCall)
+				if !ok {
+					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Expression(%q) = %v, want %v", tt.input, got, want)
+					return
+				}
+			case *ast.Block:
+				got, ok := expression.(*ast.Block)
 				if !ok {
 					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
 					return

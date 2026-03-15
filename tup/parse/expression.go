@@ -402,7 +402,13 @@ func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok
 		return nil, remainder, err
 	}
 
-	// block
+	if block, remainder, err := Block(tokens); err == nil {
+		return block, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	// if_expression
 	// if_expression
 	// for_expression
 	// inline_for_expression
