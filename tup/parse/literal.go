@@ -12,10 +12,10 @@ import (
 //         | raw_string_literal
 //         | multi_line_string_literal
 //         | tuple_literal
+//         | fixed_size_array_literal
 //         | array_literal
 //         | symbol_literal
-//         | rune_literal
-//         | fixed_size_array_literal .
+//         | rune_literal .
 
 func Literal(tokens []tok.Token) (item ast.Literal, remainder []tok.Token, err error) {
 	// fmt.Println("Literal", tok.Types(tokens))
