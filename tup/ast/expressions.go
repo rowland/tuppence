@@ -687,17 +687,17 @@ func (c *Constant) String() string {
 	return c.Identifier.String()
 }
 
-// tuple_update_expression = expression "." tuple_literal .
+// tuple_update_expression = expression "." labeled_tuple_members .
 
 // TupleUpdateExpression represents a tuple update expression (e.g., obj.(field: value))
 type TupleUpdateExpression struct {
 	BaseNode
-	Object Node // The object being updated
-	Update Node // The tuple literal with updated fields
+	Object Expression   // The expression being updated
+	Update *TupleLiteral // The labeled tuple literal with updated fields
 }
 
 // NewTupleUpdateExpression creates a new TupleUpdateExpression node
-func NewTupleUpdateExpression(object Node, update Node) *TupleUpdateExpression {
+func NewTupleUpdateExpression(object Expression, update *TupleLiteral) *TupleUpdateExpression {
 	return &TupleUpdateExpression{
 		BaseNode: BaseNode{Type: NodeTupleUpdateExpression},
 		Object:   object,

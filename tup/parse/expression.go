@@ -362,7 +362,13 @@ func NegatableExpression(tokens []tok.Token) (expr ast.Expression, remainder []t
 	}
 
 	// member_access
-	// tuple_update_expression
+
+	if tupleUpdateExpression, remainder, err := TupleUpdateExpression(remainder); err == nil {
+		return tupleUpdateExpression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
 	// safe_indexed_access
 	// indexed_access
 
@@ -458,7 +464,13 @@ func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok
 	// break_expression
 	// continue_expression
 	// member_access
-	// tuple_update_expression
+
+	if tupleUpdateExpression, remainder, err := TupleUpdateExpression(tokens); err == nil {
+		return tupleUpdateExpression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
 	// safe_indexed_access
 	// indexed_access
 	// range

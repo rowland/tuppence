@@ -297,6 +297,19 @@ func TestExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "tuple update expression",
+			input: `user.(name: "Brent")`,
+			want: ast.NewTupleUpdateExpression(
+				ast.NewIdentifier("user", nil, 0, 4),
+				ast.NewTupleLiteral(true, []*ast.TupleMember{
+					ast.NewTupleMember(
+						ast.NewIdentifier("name", nil, 0, 4),
+						ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7),
+					),
+				}),
+			),
+		},
+		{
 			name:  "meta expression",
 			input: `$(file: "config.json")`,
 			want: ast.NewMetaExpression(map[string]ast.Node{
@@ -463,6 +476,16 @@ func TestExpression(t *testing.T) {
 				}
 			case *ast.TypeofExpression:
 				got, ok := expression.(*ast.TypeofExpression)
+				if !ok {
+					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Expression(%q) = %v, want %v", tt.input, got, want)
+					return
+				}
+			case *ast.TupleUpdateExpression:
+				got, ok := expression.(*ast.TupleUpdateExpression)
 				if !ok {
 					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
 					return
