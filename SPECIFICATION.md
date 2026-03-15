@@ -447,7 +447,7 @@ The most basic syntax for a string is enclosed between double quotes and allows 
     hex_digit = decimal_digit | "a"-"f" | "A"-"F" .
     decimal_digit = "0"-"9" .
     unicode_escape_sequence = "\\" "u" hex_digit hex_digit hex_digit hex_digit
-                            | "\\" "U" hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit .
+                            | "\\" "U" hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit .
     escape_sequence = ( "\\n" | "\\t" | "\\\"" | "\\'" | "\\\\" | "\\r" | "\\b" | "\\f" | "\\v" | "\\0" | "\\`" ) .
     eol = ( "\r\n" | "\r" | "\n" ) .
 
