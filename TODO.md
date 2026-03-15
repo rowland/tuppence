@@ -33,7 +33,7 @@
     - [ ] multi_line_string_literal
     - [x] tuple_literal
     - [ ] fixed_size_array_literal
-    - [ ] array_literal
+    - [x] array_literal
     - [ ] symbol_literal
     - [x] rune_literal
 - [x] namespace
@@ -160,8 +160,8 @@
                 - [ ] compound_assignment
                 - [x] assignment
 
-- [ ] array_function_call
-- [ ] array_members
+- [x] array_function_call
+- [x] array_members
 - [ ] array_pattern
 - [ ] break_expression
 - [ ] case_block
@@ -218,7 +218,7 @@
 - [ ] leading_whitespace
 - [x] letter
 - [ ] list_match
-- [ ] lowercase_letter
+- [x] lowercase_letter
 - [ ] match_condition
 - [ ] match_element
 - [ ] member_access
@@ -252,4 +252,4 @@
 - [ ] type_parameter
 - [ ] type_parameters
 - [x] uppercase_letter
-- [ ] negatable_expression
+- [.] negatable_expression
