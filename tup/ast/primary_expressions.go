@@ -8,6 +8,7 @@ package ast
 //	                  | array_function_call
 //	                  | import_expression
 //	                  | typeof_expression
+//	                  | meta_expression
 //	                  | function_call
 //	                  | type_constructor_call
 //	                  | return_expression
@@ -32,6 +33,7 @@ func (n *ForExpression) primaryExpressionNode()         {}
 func (n *InlineForExpression) primaryExpressionNode()   {}
 func (n *ArrayFunctionCall) primaryExpressionNode()     {}
 func (n *TypeofExpression) primaryExpressionNode()      {}
+func (n *MetaExpression) primaryExpressionNode()        {}
 func (n *FunctionCall) primaryExpressionNode()          {}
 func (n *TypeConstructorCall) primaryExpressionNode()   {}
 func (n *ReturnExpression) primaryExpressionNode()      {}

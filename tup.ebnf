@@ -400,6 +400,7 @@ primary_expression = "(" expression ")"
                    | array_function_call
                    | import_expression
                    | typeof_expression
+                   | meta_expression
                    | function_call
                    | type_constructor_call
                    | return_expression

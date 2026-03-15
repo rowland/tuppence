@@ -379,6 +379,7 @@ func NegatableExpression(tokens []tok.Token) (expr ast.Expression, remainder []t
 //                    | array_function_call
 //                    | import_expression
 //                    | typeof_expression
+//                    | meta_expression
 //                    | function_call
 //                    | type_constructor_call
 //                    | return_expression

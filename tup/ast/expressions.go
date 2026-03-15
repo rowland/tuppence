@@ -33,6 +33,7 @@ func (n *ForExpression) expressionNode()         {}
 func (n *InlineForExpression) expressionNode()   {}
 func (n *ArrayFunctionCall) expressionNode()     {}
 func (n *TypeofExpression) expressionNode()      {}
+func (n *MetaExpression) expressionNode()        {}
 func (n *FunctionCall) expressionNode()          {}
 func (n *TypeConstructorCall) expressionNode()   {}
 func (n *MemberAccess) expressionNode()          {}
