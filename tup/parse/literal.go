@@ -164,6 +164,7 @@ func labeledTupleMembers(tokens []tok.Token) (tupleMembers []*ast.TupleMember, r
 		}
 	}
 
+	remainder = skipTrivia(remainder)
 	if remainder, found = CloseParen(remainder); !found && len(tupleMembers) > 0 {
 		return nil, remainder, errorExpectingTokenType(tok.TokCloseParen, remainder)
 	}
@@ -224,6 +225,7 @@ func tupleMembers(tokens []tok.Token) (tupleMembers []*ast.TupleMember, remainde
 		}
 	}
 
+	remainder = skipTrivia(remainder)
 	if remainder, found = CloseParen(remainder); !found && len(tupleMembers) > 0 {
 		return nil, remainder, errorExpectingTokenType(tok.TokCloseParen, remainder)
 	}

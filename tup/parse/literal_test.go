@@ -37,8 +37,9 @@ func TestLiteral(t *testing.T) {
 
 		// tuple
 		{"tuple literal", "(1, 2, 3)", ast.NodeTupleLiteral, false},
+		{"tuple literal with trailing comma", "(1,\n2,\n3,\n)", ast.NodeTupleLiteral, false},
 		{"labeled tuple literal", "(a: 1, b: 2, c: 3)", ast.NodeTupleLiteral, false},
-		{"labeled tuple literal with trailing comma", "(a: 1, b: 2, c: 3,)", ast.NodeTupleLiteral, false},
+		{"labeled tuple literal with trailing comma", "(a: 1,\nb: 2,\nc: 3,\n)", ast.NodeTupleLiteral, false},
 		{"labeled tuple literal with missing colon", "(a 1, b: 2, c: 3)", ast.NodeTupleLiteral, true},
 		{"labeled tuple literal with missing value", "(a: 1, b: 2, c)", ast.NodeTupleLiteral, true},
 
