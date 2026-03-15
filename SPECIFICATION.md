@@ -1026,6 +1026,36 @@ Similarly, an index can be managed alongside iteration:
 
 If no initializer is present, the loop evaluates to `nil`.
 
+## Switch and Pattern Matching
+
+`switch` evaluates an expression and compares it against one or more case patterns:
+
+    switch value {
+        1 { "one" }
+        2, 3, 4 { "small" }
+        5..9 { "medium" }
+        else { "large" }
+    }
+
+Cases may match:
+
+- constants
+- comma-separated lists of constants and ranges
+- type names
+- tuple patterns
+- labeled tuple patterns
+- array patterns
+
+Patterns may destructure the matched value through block parameters:
+
+    switch value {
+        Point(x: 0, y: 0) { "origin" }
+        Point { |x, y| "(\(x), \(y))" }
+        [head, ...] { |first, ...rest| "\(first): \(rest)" }
+    }
+
+When the handled cases exhaust all members of a union, an `else` block is not required.
+
 ## Operator Details
 
 Operators in Tuppence are syntactic sugar for function calls, allowing overloading and customization.
