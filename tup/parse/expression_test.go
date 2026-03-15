@@ -72,6 +72,11 @@ func TestExpression(t *testing.T) {
 			input: "\"hello\"",
 			want:  &ast.StringLiteral{StringValue: "hello"},
 		},
+		{
+			name:  "symbol literal",
+			input: ":hello",
+			want:  ast.NewSymbolLiteral(":hello", nil, 0, 6),
+		},
 		// raw string
 		{
 			name:  "`hello`",
@@ -200,6 +205,22 @@ func TestExpression(t *testing.T) {
 				ast.NewDecimalLiteral("1", 1, nil, 0, 0),
 				ast.NewDecimalLiteral("2", 2, nil, 0, 0),
 			}, ast.NewTypeIdentifier("Int", nil, 0, 3)),
+		},
+		{
+			name:  "labeled tuple expression with symbol values",
+			input: "(a: :x, b: :y)",
+			want: ast.NewTupleLiteral(true, []*ast.TupleMember{
+				ast.NewTupleMember(ast.NewIdentifier("a", nil, 0, 1), ast.NewSymbolLiteral(":x", nil, 0, 2)),
+				ast.NewTupleMember(ast.NewIdentifier("b", nil, 0, 1), ast.NewSymbolLiteral(":y", nil, 0, 2)),
+			}),
+		},
+		{
+			name:  "ugly labeled tuple expression with symbol values not separated by a space",
+			input: "(a::x, b::y)",
+			want: ast.NewTupleLiteral(true, []*ast.TupleMember{
+				ast.NewTupleMember(ast.NewIdentifier("a", nil, 0, 1), ast.NewSymbolLiteral(":x", nil, 0, 2)),
+				ast.NewTupleMember(ast.NewIdentifier("b", nil, 0, 1), ast.NewSymbolLiteral(":y", nil, 0, 2)),
+			}),
 		},
 		{
 			name:  "block expression",
@@ -391,6 +412,16 @@ func TestExpression(t *testing.T) {
 				}
 			case *ast.ArrayLiteral:
 				got, ok := expression.(*ast.ArrayLiteral)
+				if !ok {
+					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Expression(%q) = %v, want %v", tt.input, got, want)
+					return
+				}
+			case *ast.SymbolLiteral:
+				got, ok := expression.(*ast.SymbolLiteral)
 				if !ok {
 					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
 					return

@@ -139,6 +139,22 @@ func TestArrayLiteral(t *testing.T) {
 			input: "String[]",
 			want:  ast.NewArrayLiteral(nil, ast.NewTypeIdentifier("String", nil, 0, 6)),
 		},
+		{
+			name:  "array with symbol members",
+			input: "[:a, :b]",
+			want: ast.NewArrayLiteral([]ast.Expression{
+				ast.NewSymbolLiteral(":a", nil, 0, 2),
+				ast.NewSymbolLiteral(":b", nil, 0, 2),
+			}, nil),
+		},
+		{
+			name:  "typed array with symbol members",
+			input: "Any[:a, :b]",
+			want: ast.NewArrayLiteral([]ast.Expression{
+				ast.NewSymbolLiteral(":a", nil, 0, 2),
+				ast.NewSymbolLiteral(":b", nil, 0, 2),
+			}, ast.NewTypeIdentifier("Any", nil, 0, 3)),
+		},
 	}
 
 	for _, test := range tests {

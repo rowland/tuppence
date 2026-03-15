@@ -34,7 +34,7 @@
     - [x] tuple_literal
     - [ ] fixed_size_array_literal
     - [x] array_literal
-    - [ ] symbol_literal
+    - [x] symbol_literal
     - [x] rune_literal
 - [x] namespace
 - [x] namespaced_annotation
@@ -165,7 +165,7 @@
 - [ ] array_pattern
 - [ ] break_expression
 - [ ] case_block
-- [ ] character
+- [x] character
 - [x] comment
 - [ ] condition
 - [ ] constant

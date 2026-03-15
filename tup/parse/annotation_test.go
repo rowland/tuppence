@@ -81,6 +81,13 @@ func TestAnnotation(t *testing.T) {
 				ast.NewTypeIdentifier("Bar", nil, 0, 3),
 				nil, 0, 0)),
 		},
+		{
+			name:       "namespaced with symbol value",
+			input:      "@x:y :z\n",
+			tokenTypes: []tok.TokenType{tok.TokAt, tok.TokID, tok.TokColonNoSpace, tok.TokID, tok.TokColonNoSpace, tok.TokID, tok.TokEOL, tok.TokEOF},
+			want:       nil,
+			wantErr:    true,
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

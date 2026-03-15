@@ -36,6 +36,11 @@ func TestArgument(t *testing.T) {
 			input: "x + y",
 			want:  ast.NewArgument(ast.NewAddSubExpression(ast.NewIdentifier("x", nil, 0, 1), ast.OpAdd, ast.NewIdentifier("y", nil, 0, 1)), false),
 		},
+		{
+			name:  "symbol expression",
+			input: ":ok",
+			want:  ast.NewArgument(ast.NewSymbolLiteral(":ok", nil, 0, 3), false),
+		},
 	}
 
 	for _, test := range tests {
@@ -143,6 +148,14 @@ func TestLabeledArgument(t *testing.T) {
 				ast.NewArgument(ast.NewIdentifier("y", nil, 0, 1), true),
 			),
 		},
+		{
+			name:  "labeled argument with symbol value",
+			input: "x: :ok",
+			want: ast.NewLabeledArgument(
+				ast.NewIdentifier("x", nil, 0, 1),
+				ast.NewArgument(ast.NewSymbolLiteral(":ok", nil, 0, 3), false),
+			),
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -188,6 +201,22 @@ func TestLabeledArguments(t *testing.T) {
 					ast.NewLabeledArgument(
 						ast.NewIdentifier("z", nil, 0, 1),
 						ast.NewArgument(ast.NewIdentifier("w", nil, 0, 1), false),
+					),
+				},
+			),
+		},
+		{
+			name:  "labeled arguments with symbol values",
+			input: "x: :ok, z: :err",
+			want: ast.NewLabeledArguments(
+				[]*ast.LabeledArgument{
+					ast.NewLabeledArgument(
+						ast.NewIdentifier("x", nil, 0, 1),
+						ast.NewArgument(ast.NewSymbolLiteral(":ok", nil, 0, 3), false),
+					),
+					ast.NewLabeledArgument(
+						ast.NewIdentifier("z", nil, 0, 1),
+						ast.NewArgument(ast.NewSymbolLiteral(":err", nil, 0, 4), false),
 					),
 				},
 			),

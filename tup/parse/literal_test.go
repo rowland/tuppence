@@ -37,17 +37,24 @@ func TestLiteral(t *testing.T) {
 
 		// tuple
 		{"tuple literal", "(1, 2, 3)", ast.NodeTupleLiteral, false},
+		{"tuple literal with symbol members", "(:a, :b)", ast.NodeTupleLiteral, false},
 		{"tuple literal with trailing comma", "(1,\n2,\n3,\n)", ast.NodeTupleLiteral, false},
 		{"labeled tuple literal", "(a: 1, b: 2, c: 3)", ast.NodeTupleLiteral, false},
+		{"labeled tuple literal with symbol values", "(a: :x, b: :y)", ast.NodeTupleLiteral, false},
 		{"labeled tuple literal with trailing comma", "(a: 1,\nb: 2,\nc: 3,\n)", ast.NodeTupleLiteral, false},
 		{"labeled tuple literal with missing colon", "(a 1, b: 2, c: 3)", ast.NodeTupleLiteral, true},
 		{"labeled tuple literal with missing value", "(a: 1, b: 2, c)", ast.NodeTupleLiteral, true},
 
 		// array
-		// {"array literal", "[1, 2, 3]", ast.NodeArrayLiteral, false},
+		{"array literal", "[1, 2, 3]", ast.NodeArrayLiteral, false},
+		{"array literal with symbol members", "[:a, :b]", ast.NodeArrayLiteral, false},
+		{"array literal with trailing comma", "[1,\n2,\n3,\n]", ast.NodeArrayLiteral, false},
+		{"typed array literal", "Int[1, 2, 3]", ast.NodeArrayLiteral, false},
+		{"typed array literal with trailing comma", "Int[1,\n2,\n3,\n]", ast.NodeArrayLiteral, false},
+		{"typed array literal with symbol members", "Any[:a, :b]", ast.NodeArrayLiteral, false},
 
 		// symbol
-		// {"symbol literal", ":hello", ast.NodeSymbolLiteral, false},
+		{"symbol literal", ":hello", ast.NodeSymbolLiteral, false},
 
 		// rune
 		{"rune literal", "'a'", ast.NodeRuneLiteral, false},

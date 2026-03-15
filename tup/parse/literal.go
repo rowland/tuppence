@@ -73,12 +73,12 @@ func Literal(tokens []tok.Token) (item ast.Literal, remainder []tok.Token, err e
 		return nil, tokens, err
 	}
 
-	// symbolLiteral, remainder, err := SymbolLiteral(remainder)
-	// if err == nil {
-	// 	return symbolLiteral, remainder, nil
-	// } else if err != ErrNoMatch {
-	// 	return nil, tokens, err
-	// }
+	symbolLiteral, remainder, err := SymbolLiteral(remainder)
+	if err == nil {
+		return symbolLiteral, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, tokens, err
+	}
 
 	if runeLiteral, remainder, err := RuneLiteral(remainder); err == nil {
 		return runeLiteral, remainder, nil
@@ -250,4 +250,29 @@ func tupleMember(tokens []tok.Token) (tupleMember *ast.TupleMember, remainder []
 	}
 
 	return nil, remainder, ErrNoMatch
+}
+
+// symbol_literal = ":" identifier .
+
+func SymbolLiteral(tokens []tok.Token) (symbolLiteral *ast.SymbolLiteral, remainder []tok.Token, err error) {
+	remainder = skipTrivia(tokens)
+
+	if peek(remainder).Type != tok.TokColonNoSpace {
+		return nil, tokens, ErrNoMatch
+	}
+
+	var identifier *ast.Identifier
+	if identifier, remainder, err = Identifier(remainder[1:]); err != nil {
+		if err == ErrNoMatch {
+			return nil, tokens, ErrNoMatch
+		}
+		return nil, remainder, err
+	}
+
+	return ast.NewSymbolLiteral(
+		":"+identifier.String(),
+		identifier.Source,
+		identifier.StartOffset-1,
+		identifier.Length+1,
+	), remainder, nil
 }

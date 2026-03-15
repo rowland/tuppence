@@ -366,6 +366,22 @@ func TestFunctionArguments(t *testing.T) {
 				true,
 			),
 		},
+		{
+			name:  "one positional symbol argument and one labeled symbol argument",
+			input: ":ok, x: :err",
+			want: ast.NewFunctionArguments(
+				ast.NewArguments([]*ast.Argument{
+					ast.NewArgument(ast.NewSymbolLiteral(":ok", nil, 0, 3), false),
+				}),
+				ast.NewLabeledArguments([]*ast.LabeledArgument{
+					ast.NewLabeledArgument(
+						ast.NewIdentifier("x", nil, 0, 1),
+						ast.NewArgument(ast.NewSymbolLiteral(":err", nil, 0, 4), false),
+					),
+				}),
+				false,
+			),
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
