@@ -712,6 +712,18 @@ A function can return a value of one of multiple types using the | operator:
 
 This means foo can return either a String or an Int.
 
+##### Error Shorthand
+
+Appending `error` to a return-type union indicates that the function may also fail:
+
+    get_value = fn() Int | String | error { ... }
+
+If the return type has only one non-error member, the shorthand `!T` may be used:
+
+    get_value = fn() !Int { ... }
+
+`!Int` lowers to `Int | error`.
+
 ##### Optional Parentheses for Clarity
 
 Parentheses are *optional but allowed* around unions in return types for readability:
@@ -726,6 +738,20 @@ While parentheses *do not change behavior*, they can help visually distinguish u
     qux = fn() ([]Byte | Ok(Int) | Err(String) | error) { ... }  # parentheses optional
 
 Both function signatures above are valid and equivalent.
+
+##### Verbose Union Return Type
+
+The multi-line `union(...)` form may also be used in function return types:
+
+    get_value = fn() union(
+      Int
+      String
+    ) {
+      ...
+    }
+
+This form is especially useful when the return type has many members or when the members carry
+annotations.
 
 ## Function Invocation
 
