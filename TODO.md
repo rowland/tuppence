@@ -197,7 +197,7 @@
 - [ ] function_type_identifier
 - [x] hex_digit
 - [ ] if_expression
-- [ ] import_expression
+- [x] import_expression
 - [ ] indented_closing
 - [ ] indented_line
 - [ ] index
@@ -210,23 +210,23 @@
 - [ ] labeled_parameter
 - [ ] labeled_pattern
 - [ ] labeled_rest_parameter
-- [ ] labeled_tuple
-- [ ] labeled_tuple_member
-- [ ] labeled_tuple_members
+- [x] labeled_tuple
+- [x] labeled_tuple_member
+- [x] labeled_tuple_members
 - [ ] labeled_tuple_type_member
 - [ ] labeled_tuple_type_members
 - [ ] leading_whitespace
-- [ ] letter
+- [x] letter
 - [ ] list_match
 - [ ] lowercase_letter
 - [ ] match_condition
 - [ ] match_element
 - [ ] member_access
-- [ ] meta_expression
+- [x] meta_expression
 - [ ] module
-- [ ] nonzero_digit
+- [x] nonzero_digit
 - [ ] not_eol
-- [ ] octal_digit
+- [x] octal_digit
 - [ ] pattern
 - [ ] pattern_match
 - [ ] range
@@ -236,7 +236,7 @@
 - [ ] rest_parameter
 - [ ] return_expression
 - [ ] safe_indexed_access
-- [ ] simple_annotation
+- [x] simple_annotation
 - [ ] step_expression
 - [ ] switch_statement
 - [ ] top_level_item
