@@ -139,6 +139,38 @@ func TestExpression(t *testing.T) {
 			}),
 		},
 		{
+			name:  "unary not with block",
+			input: "!{ true }",
+			want: ast.NewUnaryExpression(
+				ast.OpLogicalNot,
+				ast.NewBlock(
+					ast.NewBlockBody(
+						[]ast.Statement{},
+						ast.NewBooleanLiteral("true", true, nil, 0, 0),
+					),
+				),
+			),
+		},
+		{
+			name:  "unary minus with function call",
+			input: "-foo(1)",
+			want: ast.NewUnaryExpression(
+				ast.OpNegSign,
+				ast.NewFunctionCall(
+					ast.NewFunctionIdentifier("foo", nil, 0, 3),
+					nil,
+					ast.NewFunctionArguments(
+						ast.NewArguments([]*ast.Argument{
+							ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 0), false),
+						}),
+						nil,
+						false,
+					),
+					nil,
+				),
+			),
+		},
+		{
 			name:    "invalid expression",
 			input:   "1 +",
 			want:    nil,
@@ -332,6 +364,16 @@ func TestExpression(t *testing.T) {
 				}
 			case *ast.ArrayFunctionCall:
 				got, ok := expression.(*ast.ArrayFunctionCall)
+				if !ok {
+					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Expression(%q) = %v, want %v", tt.input, got, want)
+					return
+				}
+			case *ast.UnaryExpression:
+				got, ok := expression.(*ast.UnaryExpression)
 				if !ok {
 					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
 					return

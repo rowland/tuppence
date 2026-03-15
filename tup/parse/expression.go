@@ -349,8 +349,18 @@ func NegatableExpression(tokens []tok.Token) (expr ast.Expression, remainder []t
 		return nil, tokens, err
 	}
 
-	// block
-	// function_call
+	if block, remainder, err := Block(remainder); err == nil {
+		return block, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if functionCall, remainder, err := FunctionCall(remainder); err == nil {
+		return functionCall, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
 	// member_access
 	// tuple_update_expression
 	// safe_indexed_access
