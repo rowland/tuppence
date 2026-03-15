@@ -712,7 +712,7 @@ Parentheses are allowed around return-type unions for readability:
 
 While parentheses do not change behavior, they can help visually distinguish unions in complex type signatures.
 
-##### Example With Multiple Types
+##### Examples With Multiple Types
 
     baz = fn() []Byte | Ok(Int) | Err(String) | error { ... }  # allowed
     qux = fn() ([]Byte | Ok(Int) | Err(String) | error) { ... }  # parentheses optional
