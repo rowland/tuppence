@@ -1056,6 +1056,24 @@ Patterns may destructure the matched value through block parameters:
 
 When the handled cases exhaust all members of a union, an `else` block is not required.
 
+## Try Expressions
+
+Tuppence provides three related forms for propagating error-like return values:
+
+    value = try read_value()
+    sum = for acc = 0; item in items { acc + try_break validate(item) }
+    total = for acc = 0; item in items { acc + try_continue maybe_value(item) }
+
+`try expression` evaluates the expression and returns early from the current function when the result is
+an `error` member. Otherwise it yields the non-error value.
+
+`try_break expression` behaves similarly inside a loop, but breaks out of the loop instead of returning
+from the current function.
+
+`try_continue expression` skips the current loop iteration when the expression yields an `error` member.
+
+These forms also distribute through chained expressions such as member access and `|>` pipelines.
+
 ## Operator Details
 
 Operators in Tuppence are syntactic sugar for function calls, allowing overloading and customization.
