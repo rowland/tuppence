@@ -1146,7 +1146,7 @@ Tuppence allows creating dynamic arrays with a specified capacity. This ensures 
     arr = array(Int, 10)  # Creates a dynamic array of Int with capacity 10
 
   - The first argument is the type of elements.
-  - The second argument is the initial capacity (optional, defaults to 0 if omitted).
+  - The second argument is the initial capacity.
 
 The built-in function `array` is joined by `cap` and `len`.
 
@@ -1158,7 +1158,7 @@ The built-in function `array` is joined by `cap` and `len`.
 ## Fixed-Size Array Initialization
 
 Fixed-size arrays are preallocated with a specific size and do not grow dynamically.
-The initialization block determines how values are assigned.
+They are initialized with bracketed element lists.
 
 ### Examples
 
@@ -1180,16 +1180,7 @@ Provide explicit values.
 
 Must match exactly the array's size.
 
-3. Index-Based Initialization
-
-Initialize using the index.
-
-    Indices = [8]Int
-    idx = Indices { it }  # [0, 1, 2, 3, 4, 5, 6, 7]
-
-Each element gets its index value.
-
-4. Multi-dimensional Arrays
+3. Nested Fixed-Size Arrays
 
 The fixed-size array type is recursive, allowing direct declaration of multi-dimensional arrays:
 
