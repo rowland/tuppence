@@ -716,8 +716,14 @@ While parentheses do not change behavior, they can help visually distinguish uni
 
     baz = fn() []Byte | Ok(Int) | Err(String) | error { ... }  # allowed
     qux = fn() ([]Byte | Ok(Int) | Err(String) | error) { ... }  # parentheses optional
+    quux = fn() union(
+      []Byte
+      Ok(Int)
+      Err(String)
+      error
+    ) { ... }  # equivalent verbose form
 
-Both function signatures above are valid and equivalent.
+All three function signatures above are valid and equivalent.
 
 ## Function Invocation
 
