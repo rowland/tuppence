@@ -268,11 +268,19 @@ Annotations attach metadata to declarations and declaration members.
 
 Tuppence supports two annotation forms:
 
-    @deprecated
-    @type:implements Numeric
+    @simple
+    @name:spaced Numeric
 
 Simple annotations consist only of an identifier. Namespaced annotations include a namespace, an
 identifier, and a value.
+
+Built-in simple annotations include:
+
+    @error
+    @false
+    @true
+    @bool
+    @cstruct
 
 Annotation values may be strings, numbers, booleans, or type references:
 
