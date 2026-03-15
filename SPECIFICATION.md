@@ -301,6 +301,9 @@ The "rest" operator without an identifier can be used to ignore zero to many par
 
     e, f, ... = (6, 7, 8, 9) # e == 6, f == 7
 
+The "rest" operator is only valid in ordinal destructuring. It may appear at most once and must be the
+final element on the left side.
+
 Tuples with named fields can be destructured by name, rather than by ordinal position,
 by enclosing the identifiers on the left side in parenthesis:
 
@@ -312,6 +315,11 @@ It would be an error if an identifier on the left did not match a named part of 
 However, named parts may be bound to new identifiers by specifying both new and old names:
 
     (a: age, n: name) = p # a == 18, n == "John"
+
+Labeled destructuring does not support the "rest" operator.
+
+Destructuring is shallow. Nested tuple or array patterns are not valid in assignments or block parameter
+lists.
 
 ## Literals
 
