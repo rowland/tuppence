@@ -87,3 +87,64 @@ func TestSize(t *testing.T) {
 		})
 	}
 }
+
+func TestArrayLiteral(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.ArrayLiteral
+		wantErr bool
+	}{
+		{
+			name:  "empty array",
+			input: "[]",
+			want:  ast.NewArrayLiteral(nil, nil),
+		},
+		{
+			name:  "untyped array",
+			input: "[1, 2, 3]",
+			want: ast.NewArrayLiteral([]ast.Expression{
+				ast.NewDecimalLiteral("1", 1, nil, 0, 1),
+				ast.NewDecimalLiteral("2", 2, nil, 0, 1),
+				ast.NewDecimalLiteral("3", 3, nil, 0, 1),
+			}, nil),
+		},
+		{
+			name:  "untyped array with trailing comma",
+			input: "[1,\n2,\n3,\n]",
+			want: ast.NewArrayLiteral([]ast.Expression{
+				ast.NewDecimalLiteral("1", 1, nil, 0, 1),
+				ast.NewDecimalLiteral("2", 2, nil, 0, 1),
+				ast.NewDecimalLiteral("3", 3, nil, 0, 1),
+			}, nil),
+		},
+		{
+			name:  "typed array",
+			input: "Int[1, 2]",
+			want: ast.NewArrayLiteral([]ast.Expression{
+				ast.NewDecimalLiteral("1", 1, nil, 0, 1),
+				ast.NewDecimalLiteral("2", 2, nil, 0, 1),
+			}, ast.NewTypeIdentifier("Int", nil, 0, 3)),
+		},
+		{
+			name:  "typed array with trailing comma",
+			input: "Int[1,\n2,\n]",
+			want: ast.NewArrayLiteral([]ast.Expression{
+				ast.NewDecimalLiteral("1", 1, nil, 0, 1),
+				ast.NewDecimalLiteral("2", 2, nil, 0, 1),
+			}, ast.NewTypeIdentifier("Int", nil, 0, 3)),
+		},
+		{
+			name:  "typed empty array",
+			input: "String[]",
+			want:  ast.NewArrayLiteral(nil, ast.NewTypeIdentifier("String", nil, 0, 6)),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"ArrayLiteral", ArrayLiteral, StringerCheck[*ast.ArrayLiteral])
+		})
+	}
+}

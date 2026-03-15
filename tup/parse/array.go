@@ -23,27 +23,39 @@ func Size(tokens []tok.Token) (size ast.Size, remainder []tok.Token, err error) 
 	return nil, tokens, ErrNoMatch
 }
 
-// array_literal = "[" [ array_members ] "]"
-//               | type_identifier "[" [ array_members ] "]" .
+// array_literal = type_identifier "[" [ array_members ] "]"
+//               | "[" [ array_members ] "]" .
 
 func ArrayLiteral(tokens []tok.Token) (arr *ast.ArrayLiteral, remainder []tok.Token, err error) {
 	remainder = skipTrivia(tokens)
 
-	var found bool
-	if remainder, found = OpenBracket(remainder); !found {
-		return nil, nil, ErrNoMatch
+	var typeSpecifier *ast.TypeIdentifier
+	if typeIdentifier, remainder2, typeErr := TypeIdentifier(remainder); typeErr == nil {
+		var found bool
+		if remainder2, found = OpenBracket(remainder2); !found {
+			return nil, tokens, ErrNoMatch
+		}
+		typeSpecifier = typeIdentifier
+		remainder = remainder2
+	} else {
+		var found bool
+		if remainder, found = OpenBracket(remainder); !found {
+			return nil, tokens, ErrNoMatch
+		}
 	}
 
 	var arrayMembers []ast.Expression
 	if arrayMembers, remainder, err = ArrayMembers(remainder); err != nil {
-		return nil, nil, err
+		return nil, remainder, err
 	}
 
+	remainder = skipTrivia(remainder)
+	var found bool
 	if remainder, found = CloseBracket(remainder); !found {
-		return nil, nil, ErrNoMatch
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseBracket, remainder)
 	}
 
-	arr = ast.NewArrayLiteral(arrayMembers, nil)
+	arr = ast.NewArrayLiteral(arrayMembers, typeSpecifier)
 	return arr, remainder, nil
 }
 
@@ -54,22 +66,18 @@ func ArrayMembers(tokens []tok.Token) (members []ast.Expression, remainder []tok
 
 	for {
 		var expression ast.Expression
-		var remainder2 []tok.Token
-		if expression, remainder2, err = Expression(remainder); err != nil {
+		if expression, remainder, err = Expression(remainder); err != nil {
 			break
 		}
 		members = append(members, expression)
-		if peek(remainder2).Type == tok.TokComma {
-			remainder = remainder2[1:]
-		} else {
-			remainder = remainder2
+
+		var found bool
+		if remainder, found = Comma(remainder); !found {
 			break
 		}
 	}
 
-	if peek(remainder).Type == tok.TokComma {
-		remainder = remainder[1:]
-	}
+	remainder, _ = Comma(remainder)
 
 	return members, remainder, nil
 }

@@ -66,12 +66,12 @@ func Literal(tokens []tok.Token) (item ast.Literal, remainder []tok.Token, err e
 		return nil, tokens, err
 	}
 
-	// arrayLiteral, remainder, err := ArrayLiteral(remainder)
-	// if err == nil {
-	// 	return arrayLiteral, remainder, nil
-	// } else if err != ErrNoMatch {
-	// 	return nil, tokens, err
-	// }
+	arrayLiteral, remainder, err := ArrayLiteral(remainder)
+	if err == nil {
+		return arrayLiteral, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, tokens, err
+	}
 
 	// symbolLiteral, remainder, err := SymbolLiteral(remainder)
 	// if err == nil {

@@ -384,8 +384,8 @@ func (t *TupleLiteral) LiteralValue() any {
 	return t.String()
 }
 
-// array_literal = "[" [ array_members ] "]"
-//               | type_identifier "[" [ array_members ] "]" .
+// array_literal = type_identifier "[" [ array_members ] "]"
+//               | "[" [ array_members ] "]" .
 
 // ArrayLiteral represents an array literal in the code
 type ArrayLiteral struct {

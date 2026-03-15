@@ -19,8 +19,8 @@ arguments_body = labeled_arguments
 
 array_function_call = "array" "(" type_identifier [ "," expression ] ")" .
 
-array_literal = "[" [ array_members ] "]"
-              | type_identifier "[" [ array_members ] "]" .
+array_literal = type_identifier "[" [ array_members ] "]"
+              | "[" [ array_members ] "]" .
 
 array_members = expression { "," expression } [ "," ] .
 

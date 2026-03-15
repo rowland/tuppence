@@ -185,6 +185,23 @@ func TestExpression(t *testing.T) {
 			}),
 		},
 		{
+			name:  "array expression",
+			input: "[1, 2, 3]",
+			want: ast.NewArrayLiteral([]ast.Expression{
+				ast.NewDecimalLiteral("1", 1, nil, 0, 0),
+				ast.NewDecimalLiteral("2", 2, nil, 0, 0),
+				ast.NewDecimalLiteral("3", 3, nil, 0, 0),
+			}, nil),
+		},
+		{
+			name:  "typed array expression",
+			input: "Int[1, 2]",
+			want: ast.NewArrayLiteral([]ast.Expression{
+				ast.NewDecimalLiteral("1", 1, nil, 0, 0),
+				ast.NewDecimalLiteral("2", 2, nil, 0, 0),
+			}, ast.NewTypeIdentifier("Int", nil, 0, 3)),
+		},
+		{
 			name:  "block expression",
 			input: "{ x = 1; x + 1 }",
 			want: ast.NewBlock(
@@ -364,6 +381,16 @@ func TestExpression(t *testing.T) {
 				}
 			case *ast.ArrayFunctionCall:
 				got, ok := expression.(*ast.ArrayFunctionCall)
+				if !ok {
+					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Expression(%q) = %v, want %v", tt.input, got, want)
+					return
+				}
+			case *ast.ArrayLiteral:
+				got, ok := expression.(*ast.ArrayLiteral)
 				if !ok {
 					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
 					return
