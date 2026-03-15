@@ -429,11 +429,11 @@ func (s *SafeIndexedAccess) String() string {
 // TypeofExpression represents a typeof expression
 type TypeofExpression struct {
 	BaseNode
-	Expression Node // The expression to get the type of
+	Expression Expression // The expression to get the type of
 }
 
 // NewTypeofExpression creates a new TypeofExpression node
-func NewTypeofExpression(expression Node) *TypeofExpression {
+func NewTypeofExpression(expression Expression) *TypeofExpression {
 	return &TypeofExpression{
 		BaseNode:   BaseNode{Type: NodeTypeofExpression},
 		Expression: expression,

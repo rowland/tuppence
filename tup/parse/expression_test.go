@@ -286,6 +286,17 @@ func TestExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "typeof expression",
+			input: `typeof(x + 1)`,
+			want: ast.NewTypeofExpression(
+				ast.NewAddSubExpression(
+					ast.NewIdentifier("x", nil, 0, 1),
+					ast.OpAdd,
+					ast.NewDecimalLiteral("1", 1, nil, 0, 0),
+				),
+			),
+		},
+		{
 			name:  "meta expression",
 			input: `$(file: "config.json")`,
 			want: ast.NewMetaExpression(map[string]ast.Node{
@@ -442,6 +453,16 @@ func TestExpression(t *testing.T) {
 				}
 			case *ast.ImportExpression:
 				got, ok := expression.(*ast.ImportExpression)
+				if !ok {
+					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Expression(%q) = %v, want %v", tt.input, got, want)
+					return
+				}
+			case *ast.TypeofExpression:
+				got, ok := expression.(*ast.TypeofExpression)
 				if !ok {
 					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
 					return
