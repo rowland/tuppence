@@ -101,6 +101,25 @@ Functions parameters may have default values:
     hello_world = hello() # "Hello, World!"
     hello_john = hello("John") # "Hello, John!"
 
+Functions may also declare a rest parameter:
+
+    process_args = fn(args: ...Int, transform: fn(Int) Int) {
+      for acc = 0; v in args {
+        acc + transform(v)
+      }
+    }
+
+A function may have at most one rest parameter. Ordinarily it must be the last parameter, but it may be
+followed by a single callable parameter, since that final argument may be supplied either explicitly or
+via trailing block syntax:
+
+    times_two = fn(x: Int) { x * 2 }
+    process_args(1, 2, 3, 4, times_two)
+    process_args(1, 2, 3, 4) { |x| x * 2 }
+
+This is a semantic constraint. The formal grammar may accept more parameter-list shapes than the type
+checker ultimately permits.
+
 ### Tuple Types
 
 A tuple type is a heterogenous collection of values, addressable by ordinal position and, optionally, by name.
