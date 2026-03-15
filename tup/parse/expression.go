@@ -394,6 +394,7 @@ func NegatableExpression(tokens []tok.Token) (expr ast.Expression, remainder []t
 
 func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
 	// fmt.Println("PrimaryExpression", tokens)
+
 	if expression, remainder, err := parenthesizedExpression(tokens); err == nil {
 		return expression, remainder, nil
 	} else if err != ErrNoMatch {
@@ -404,14 +405,15 @@ func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok
 	// if_expression
 	// for_expression
 	// inline_for_expression
-	// import_expression
-	// typeof_expression
 
 	if arrayFunctionCall, remainder, err := ArrayFunctionCall(tokens); err == nil {
 		return arrayFunctionCall, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
+
+	// import_expression
+	// typeof_expression
 
 	if functionCall, remainder, err := FunctionCall(tokens); err == nil {
 		return functionCall, remainder, nil
@@ -427,6 +429,7 @@ func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok
 	// tuple_update_expression
 	// safe_indexed_access
 	// indexed_access
+	// range
 
 	if identifier, remainder, err := Identifier(tokens); err == nil {
 		return ast.NewIdentifier(identifier.Name, identifier.Source, identifier.StartOffset, identifier.Length), remainder, nil
