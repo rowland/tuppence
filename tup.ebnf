@@ -604,7 +604,8 @@ union_member_no_annotations = type_reference
                             | fixed_size_array .
 
 union_with_error = ( "!" union_member ) 
-                 | ( union_member { "|" union_member } [ "|" "error" ] ) .
+                 | ( union_member { "|" union_member } [ "|" "error" ] )
+                 | ( "(" union_member { "|" union_member } [ "|" "error" ] ")" ) .
 
 uppercase_letter = "A"-"Z" .
 
