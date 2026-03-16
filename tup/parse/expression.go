@@ -332,34 +332,34 @@ func PrefixedUnaryExpression(tokens []tok.Token) (expr *ast.UnaryExpression, rem
 // negatable_expression = negatable_postfix_expression .
 
 func NegatableExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	if tupleUpdateExpression, remainder, err := TupleUpdateExpression(remainder); err == nil {
-		return tupleUpdateExpression, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
 	return postfixExpression(tokens, negatablePostfixBaseExpression, true)
 }
 
 // primary_expression = postfix_expression .
 
 func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	if tupleUpdateExpression, remainder, err := TupleUpdateExpression(tokens); err == nil {
-		return tupleUpdateExpression, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	return postfixExpression(tokens, primaryPostfixBaseExpression, true)
+	return postfixExpression(tokens, postfixBaseExpression, true)
 }
 
 // postfix_expression = postfix_base_expression { postfix_tail }
 //                    | type_identifier member_access_tail { postfix_tail } .
+//
+// The current expression is folded left-to-right through each matched tail, so
+// `a.b[0](x)` becomes a chain of AST nodes rooted in the most recently matched tail.
 
 func postfixExpression(tokens []tok.Token, base func([]tok.Token) (ast.Expression, []tok.Token, error), allowTypeMemberAccess bool) (expr ast.Expression, remainder []tok.Token, err error) {
+	return postfixExpressionWithTails(tokens, base, allowTypeMemberAccess, postfixTail)
+}
+
+func postfixExpressionWithTails(
+	tokens []tok.Token,
+	base func([]tok.Token) (ast.Expression, []tok.Token, error),
+	allowTypeMemberAccess bool,
+	nextTail func(ast.Expression, []tok.Token) (ast.Expression, []tok.Token, error),
+) (expr ast.Expression, remainder []tok.Token, err error) {
 	if allowTypeMemberAccess {
 		if expr, remainder, err = typeMemberAccessExpression(tokens); err == nil {
-			return continuePostfixExpression(expr, remainder)
+			return continuePostfixExpression(expr, remainder, nextTail)
 		} else if err != ErrNoMatch {
 			return nil, remainder, err
 		}
@@ -369,41 +369,23 @@ func postfixExpression(tokens []tok.Token, base func([]tok.Token) (ast.Expressio
 		return nil, remainder, err
 	}
 
-	return continuePostfixExpression(expr, remainder)
+	return continuePostfixExpression(expr, remainder, nextTail)
 }
 
-// { postfix_tail } .
+// postfix_expression = postfix_base_expression { postfix_tail } .
+// continuePostfixExpression parses the repeated postfix_tail portion by
+// wrapping the current expression in each matched tail node, left-to-right.
 
-func continuePostfixExpression(expr ast.Expression, tokens []tok.Token) (ast.Expression, []tok.Token, error) {
+func continuePostfixExpression(
+	expr ast.Expression,
+	tokens []tok.Token,
+	nextTail func(ast.Expression, []tok.Token) (ast.Expression, []tok.Token, error),
+) (ast.Expression, []tok.Token, error) {
 	remainder := tokens
 
 	for {
-		if functionCall, remainder2, err := functionCallTail(expr, remainder); err == nil {
-			expr = functionCall
-			remainder = remainder2
-			continue
-		} else if err != ErrNoMatch {
-			return nil, remainder2, err
-		}
-
-		if memberAccess, remainder2, err := memberAccessTail(expr, remainder); err == nil {
-			expr = memberAccess
-			remainder = remainder2
-			continue
-		} else if err != ErrNoMatch {
-			return nil, remainder2, err
-		}
-
-		if safeIndexedAccess, remainder2, err := safeIndexedAccessTail(expr, remainder); err == nil {
-			expr = safeIndexedAccess
-			remainder = remainder2
-			continue
-		} else if err != ErrNoMatch {
-			return nil, remainder2, err
-		}
-
-		if indexedAccess, remainder2, err := indexedAccessTail(expr, remainder); err == nil {
-			expr = indexedAccess
+		if nextExpr, remainder2, err := nextTail(expr, remainder); err == nil {
+			expr = nextExpr
 			remainder = remainder2
 			continue
 		} else if err != ErrNoMatch {
@@ -416,42 +398,74 @@ func continuePostfixExpression(expr ast.Expression, tokens []tok.Token) (ast.Exp
 	return expr, remainder, nil
 }
 
-// { member_access_tail | safe_indexed_access_tail | indexed_access_tail } .
-// This helper intentionally excludes function_call_tail so FunctionCall(...) can
-// parse the first call itself instead of consuming it while discovering the receiver.
+// postfix_tail = function_call_tail
+//              | member_access_tail
+//              | tuple_update_tail
+//              | safe_indexed_access_tail
+//              | indexed_access_tail .
 
-func continuePostfixReceiver(expr ast.Expression, tokens []tok.Token) (ast.Expression, []tok.Token, error) {
-	remainder := tokens
+func postfixTail(expr ast.Expression, tokens []tok.Token) (ast.Expression, []tok.Token, error) {
+	return matchPostfixTail(expr, tokens, true, true)
+}
 
-	for {
-		if memberAccess, remainder2, err := memberAccessTail(expr, remainder); err == nil {
-			expr = memberAccess
-			remainder = remainder2
-			continue
+// function_call_tail
+// | member_access_tail
+// | safe_indexed_access_tail
+// | indexed_access_tail .
+//
+// This subset is used while parsing the receiver of tuple_update_expression.
+
+func postfixTailWithoutTupleUpdate(expr ast.Expression, tokens []tok.Token) (ast.Expression, []tok.Token, error) {
+	return matchPostfixTail(expr, tokens, true, false)
+}
+
+// member_access_tail
+// | safe_indexed_access_tail
+// | indexed_access_tail .
+//
+// This subset is used while discovering a function-call receiver, so the first
+// function_call_tail is left for FunctionCall(...) itself to consume.
+
+func callableReceiverTail(expr ast.Expression, tokens []tok.Token) (ast.Expression, []tok.Token, error) {
+	return matchPostfixTail(expr, tokens, false, false)
+}
+
+func matchPostfixTail(expr ast.Expression, tokens []tok.Token, includeFunctionCall bool, includeTupleUpdate bool) (ast.Expression, []tok.Token, error) {
+	if includeFunctionCall {
+		if functionCall, remainder2, err := functionCallTail(expr, tokens); err == nil {
+			return functionCall, remainder2, nil
 		} else if err != ErrNoMatch {
 			return nil, remainder2, err
 		}
-
-		if safeIndexedAccess, remainder2, err := safeIndexedAccessTail(expr, remainder); err == nil {
-			expr = safeIndexedAccess
-			remainder = remainder2
-			continue
-		} else if err != ErrNoMatch {
-			return nil, remainder2, err
-		}
-
-		if indexedAccess, remainder2, err := indexedAccessTail(expr, remainder); err == nil {
-			expr = indexedAccess
-			remainder = remainder2
-			continue
-		} else if err != ErrNoMatch {
-			return nil, remainder2, err
-		}
-
-		break
 	}
 
-	return expr, remainder, nil
+	if memberAccess, remainder2, err := memberAccessTail(expr, tokens); err == nil {
+		return memberAccess, remainder2, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder2, err
+	}
+
+	if safeIndexedAccess, remainder2, err := safeIndexedAccessTail(expr, tokens); err == nil {
+		return safeIndexedAccess, remainder2, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder2, err
+	}
+
+	if indexedAccess, remainder2, err := indexedAccessTail(expr, tokens); err == nil {
+		return indexedAccess, remainder2, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder2, err
+	}
+
+	if includeTupleUpdate {
+		if tupleUpdateExpression, remainder2, err := tupleUpdateTail(expr, tokens); err == nil {
+			return tupleUpdateExpression, remainder2, nil
+		} else if err != ErrNoMatch {
+			return nil, remainder2, err
+		}
+	}
+
+	return nil, tokens, ErrNoMatch
 }
 
 // postfix_base_expression = "(" expression ")"
@@ -475,7 +489,7 @@ func continuePostfixReceiver(expr ast.Expression, tokens []tok.Token) (ast.Expre
 // The parser currently implements the forms listed below and leaves the others
 // as explicit follow-up work in the stacked postfix refactor.
 
-func primaryPostfixBaseExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+func postfixBaseExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
 	if expression, remainder, err := parenthesizedExpression(tokens); err == nil {
 		return expression, remainder, nil
 	} else if err != ErrNoMatch {

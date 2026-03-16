@@ -64,28 +64,7 @@ func functionCallTail(function ast.Expression, tokens []tok.Token) (expr *ast.Fu
 // postfix_base_expression but restricted to forms that may be followed by function_call_tail.
 
 func callableExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	if expr, remainder, err = typeMemberAccessReceiver(tokens); err == nil {
-		return continuePostfixReceiver(expr, remainder)
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if expr, remainder, err = callableBaseExpression(tokens); err != nil {
-		return nil, remainder, err
-	}
-
-	return continuePostfixReceiver(expr, remainder)
-}
-
-// type_identifier member_access_tail { postfix_tail } .
-
-func typeMemberAccessReceiver(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	var typeIdentifier *ast.TypeIdentifier
-	if typeIdentifier, remainder, err = TypeIdentifier(tokens); err != nil {
-		return nil, remainder, err
-	}
-
-	return memberAccessTail(typeIdentifier, remainder)
+	return postfixExpressionWithTails(tokens, callableBaseExpression, true, callableReceiverTail)
 }
 
 // callable_base_expression is a parser helper for the subset of postfix_base_expression
