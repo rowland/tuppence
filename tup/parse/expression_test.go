@@ -394,6 +394,38 @@ func TestExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "tuple update followed by member access",
+			input: `user.(name: "Brent").name`,
+			want: ast.NewMemberAccess(
+				ast.NewTupleUpdateExpression(
+					ast.NewIdentifier("user", nil, 0, 4),
+					ast.NewTupleLiteral(true, []*ast.TupleMember{
+						ast.NewTupleMember(
+							ast.NewIdentifier("name", nil, 0, 4),
+							ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7),
+						),
+					}),
+				),
+				ast.NewIdentifier("name", nil, 0, 4),
+			),
+		},
+		{
+			name:  "tuple update on indexed receiver",
+			input: `users[0].(name: "Brent")`,
+			want: ast.NewTupleUpdateExpression(
+				ast.NewIndexedAccess(
+					ast.NewIdentifier("users", nil, 0, 5),
+					ast.NewDecimalLiteral("0", 0, nil, 0, 0),
+				),
+				ast.NewTupleLiteral(true, []*ast.TupleMember{
+					ast.NewTupleMember(
+						ast.NewIdentifier("name", nil, 0, 4),
+						ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7),
+					),
+				}),
+			),
+		},
+		{
 			name:  "meta expression",
 			input: `$(file: "config.json")`,
 			want: ast.NewMetaExpression(map[string]ast.Node{

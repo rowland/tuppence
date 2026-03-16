@@ -49,6 +49,22 @@ func TestTupleUpdateExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "indexed receiver",
+			input: "users[0].(name: \"Brent\")",
+			want: ast.NewTupleUpdateExpression(
+				ast.NewIndexedAccess(
+					ast.NewIdentifier("users", nil, 0, 5),
+					ast.NewDecimalLiteral("0", 0, nil, 0, 0),
+				),
+				ast.NewTupleLiteral(true, []*ast.TupleMember{
+					ast.NewTupleMember(
+						ast.NewIdentifier("name", nil, 0, 4),
+						ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7),
+					),
+				}),
+			),
+		},
+		{
 			name:    "unlabeled tuple update is rejected",
 			input:   "user.(1, 2)",
 			want:    nil,
