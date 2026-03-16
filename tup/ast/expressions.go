@@ -27,6 +27,7 @@ func (n *TypeComparison) expressionNode()       {}
 func (n *RelationalComparison) expressionNode() {}
 
 func (n *Identifier) expressionNode()            {}
+func (n *FunctionIdentifier) expressionNode()    {}
 func (n *Block) expressionNode()                 {}
 func (n *IfExpression) expressionNode()          {}
 func (n *ForExpression) expressionNode()         {}
@@ -249,13 +250,13 @@ func (r *RelationalComparison) String() string {
 // TypeConstructorCall represents a type constructor call
 type TypeConstructorCall struct {
 	BaseNode
-	TypeReference Node   // The type being constructed
-	Arguments     []Node // The constructor arguments
-	FunctionBlock Node   // Optional function block (may be nil)
+	TypeReference *TypeReference     // The type being constructed
+	Arguments     *FunctionArguments // The constructor arguments
+	FunctionBlock *FunctionBlock     // Optional function block (may be nil)
 }
 
 // NewTypeConstructorCall creates a new TypeConstructorCall node
-func NewTypeConstructorCall(typeRef Node, arguments []Node, functionBlock Node) *TypeConstructorCall {
+func NewTypeConstructorCall(typeRef *TypeReference, arguments *FunctionArguments, functionBlock *FunctionBlock) *TypeConstructorCall {
 	return &TypeConstructorCall{
 		BaseNode:      BaseNode{Type: NodeTypeConstructorCall},
 		TypeReference: typeRef,
@@ -268,16 +269,11 @@ func NewTypeConstructorCall(typeRef Node, arguments []Node, functionBlock Node) 
 func (t *TypeConstructorCall) String() string {
 	var builder strings.Builder
 	builder.WriteString(t.TypeReference.String())
-	builder.WriteString("(")
-
-	for i, arg := range t.Arguments {
-		if i > 0 {
-			builder.WriteString(", ")
-		}
-		builder.WriteString(arg.String())
+	if t.Arguments != nil {
+		builder.WriteString(t.Arguments.String())
+	} else {
+		builder.WriteString("()")
 	}
-
-	builder.WriteString(")")
 
 	if t.FunctionBlock != nil {
 		builder.WriteString(" ")
@@ -353,19 +349,25 @@ func (a *ArrayFunctionCall) String() string {
 	return builder.String()
 }
 
-// member_access = ( expression | type_identifier ) "." ( decimal_literal
-// 	                                                 | identifier
-// 	                                                 | function_call ) .
+// member_access_tail = "." ( decimal_literal | identifier ) .
+
+type MemberAccessMember interface {
+	Node
+	memberAccessMemberNode()
+}
+
+func (n *Identifier) memberAccessMemberNode()     {}
+func (n *IntegerLiteral) memberAccessMemberNode() {}
 
 // MemberAccess represents a member access expression (e.g., obj.field)
 type MemberAccess struct {
 	BaseNode
-	Object Node // The object being accessed
-	Member Node // The member being accessed (can be Identifier, FunctionCall, etc.)
+	Object Node               // The receiver expression or type identifier
+	Member MemberAccessMember // The selected member
 }
 
 // NewMemberAccess creates a new MemberAccess node
-func NewMemberAccess(object Node, member Node) *MemberAccess {
+func NewMemberAccess(object Node, member MemberAccessMember) *MemberAccess {
 	return &MemberAccess{
 		BaseNode: BaseNode{Type: NodeMemberAccess},
 		Object:   object,
@@ -378,17 +380,17 @@ func (m *MemberAccess) String() string {
 	return fmt.Sprintf("%s.%s", m.Object, m.Member)
 }
 
-// indexed_access = expression "[" index "]" .
+// indexed_access_tail = "[" index "]" .
 
 // IndexedAccess represents an indexed access expression (e.g., arr[idx])
 type IndexedAccess struct {
 	BaseNode
-	Object Node // The object being indexed
-	Index  Node // The index expression
+	Object Expression // The object being indexed
+	Index  Expression // The index expression
 }
 
 // NewIndexedAccess creates a new IndexedAccess node
-func NewIndexedAccess(object Node, index Node) *IndexedAccess {
+func NewIndexedAccess(object Expression, index Expression) *IndexedAccess {
 	return &IndexedAccess{
 		BaseNode: BaseNode{Type: NodeIndexedAccess},
 		Object:   object,
@@ -401,17 +403,17 @@ func (i *IndexedAccess) String() string {
 	return i.Object.String() + "[" + i.Index.String() + "]"
 }
 
-// safe_indexed_access = expression "[" index "]" "!" .
+// safe_indexed_access_tail = "[" index "]" "!" .
 
 // SafeIndexedAccess represents a safe indexed access expression (e.g., arr[idx]!)
 type SafeIndexedAccess struct {
 	BaseNode
-	Object Node // The object being indexed
-	Index  Node // The index expression
+	Object Expression // The object being indexed
+	Index  Expression // The index expression
 }
 
 // NewSafeIndexedAccess creates a new SafeIndexedAccess node
-func NewSafeIndexedAccess(object Node, index Node) *SafeIndexedAccess {
+func NewSafeIndexedAccess(object Expression, index Expression) *SafeIndexedAccess {
 	return &SafeIndexedAccess{
 		BaseNode: BaseNode{Type: NodeSafeIndexedAccess},
 		Object:   object,

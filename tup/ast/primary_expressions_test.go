@@ -12,6 +12,7 @@ var _ PrimaryExpression = &MemberAccess{}
 var _ PrimaryExpression = &TupleUpdateExpression{}
 var _ PrimaryExpression = &SafeIndexedAccess{}
 var _ PrimaryExpression = &IndexedAccess{}
+var _ PrimaryExpression = &FunctionIdentifier{}
 var _ PrimaryExpression = &Identifier{}
 
 // var _ PrimaryExpression = &ImportExpression{}
