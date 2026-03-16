@@ -5,23 +5,43 @@ import (
 	"github.com/rowland/tuppence/tup/tok"
 )
 
-// function_call = function_identifier [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
+// function_call_tail = [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
 
 func FunctionCall(tokens []tok.Token) (expr *ast.FunctionCall, remainder []tok.Token, err error) {
-	// fmt.Println("FunctionCall", tok.Types(tokens))
-	var functionIdentifier *ast.FunctionIdentifier
-	if functionIdentifier, remainder, err = FunctionIdentifier(tokens); err != nil {
+	var function ast.Expression
+	if function, remainder, err = callableExpression(tokens); err != nil {
 		return nil, remainder, err
 	}
 
+	if expr, remainder, err = functionCallTail(function, remainder); err != nil {
+		return nil, remainder, err
+	}
+
+	for {
+		var next *ast.FunctionCall
+		if next, remainder, err = functionCallTail(expr, remainder); err == ErrNoMatch {
+			break
+		} else if err != nil {
+			return nil, remainder, err
+		}
+		expr = next
+	}
+
+	return expr, remainder, nil
+}
+
+// function_call_tail = [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
+
+func functionCallTail(function ast.Expression, tokens []tok.Token) (expr *ast.FunctionCall, remainder []tok.Token, err error) {
 	var functionParameterTypes *ast.FunctionParameterTypes
+	remainder = tokens
 	if functionParameterTypes, remainder, err = FunctionParameterTypes(remainder); err != nil && err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
 	var found bool
 	if remainder, found = OpenParen(remainder); !found {
-		return nil, remainder, ErrNoMatch
+		return nil, tokens, ErrNoMatch
 	}
 
 	var arguments *ast.FunctionArguments
@@ -38,7 +58,101 @@ func FunctionCall(tokens []tok.Token) (expr *ast.FunctionCall, remainder []tok.T
 		return nil, remainder, err
 	}
 
-	return ast.NewFunctionCall(functionIdentifier, functionParameterTypes, arguments, functionBlock), remainder, nil
+	return ast.NewFunctionCall(function, functionParameterTypes, arguments, functionBlock), remainder, nil
+}
+
+// postfix_base_expression but restricted to forms that may be followed by function_call_tail.
+
+func callableExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	if expr, remainder, err = typeMemberAccessReceiver(tokens); err == nil {
+		return continuePostfixReceiver(expr, remainder)
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if expr, remainder, err = callableBaseExpression(tokens); err != nil {
+		return nil, remainder, err
+	}
+
+	return continuePostfixReceiver(expr, remainder)
+}
+
+// type_identifier member_access_tail { postfix_tail } .
+
+func typeMemberAccessReceiver(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	var typeIdentifier *ast.TypeIdentifier
+	if typeIdentifier, remainder, err = TypeIdentifier(tokens); err != nil {
+		return nil, remainder, err
+	}
+
+	return memberAccessTail(typeIdentifier, remainder)
+}
+
+// callable_base_expression is a parser helper for the subset of postfix_base_expression
+// that is currently supported as a function-call receiver.
+
+func callableBaseExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	if expression, remainder, err := parenthesizedExpression(tokens); err == nil {
+		return expression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if block, remainder, err := Block(tokens); err == nil {
+		return block, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if arrayFunctionCall, remainder, err := ArrayFunctionCall(tokens); err == nil {
+		return arrayFunctionCall, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if importExpression, remainder, err := ImportExpression(tokens); err == nil {
+		return importExpression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if typeofExpression, remainder, err := TypeofExpression(tokens); err == nil {
+		return typeofExpression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if metaExpression, remainder, err := MetaExpression(tokens); err == nil {
+		return metaExpression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	// type_constructor_call
+	// return_expression
+	// break_expression
+	// continue_expression
+	// range
+
+	if functionIdentifier, remainder, err := FunctionIdentifier(tokens); err == nil {
+		return functionIdentifier, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if identifier, remainder, err := Identifier(tokens); err == nil {
+		return ast.NewIdentifier(identifier.Name, identifier.Source, identifier.StartOffset, identifier.Length), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if literal, remainder, err := Literal(tokens); err == nil {
+		return literal, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
 }
 
 // function_parameter_types = "[" local_type_reference { "," local_type_reference } "]" .
