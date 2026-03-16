@@ -620,6 +620,12 @@ func memberAccessTail(object ast.Node, tokens []tok.Token) (expr *ast.MemberAcce
 
 	var member ast.MemberAccessMember
 	if member, remainder, err = memberAccessMember(remainder); err != nil {
+		if err == ErrNoMatch {
+			if peek(remainder).Type == tok.TokOpenParen {
+				return nil, tokens, ErrNoMatch
+			}
+			return nil, remainder, errorExpecting("member access member", remainder)
+		}
 		return nil, remainder, err
 	}
 

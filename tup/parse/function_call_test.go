@@ -316,6 +316,53 @@ func TestFunctionCall(t *testing.T) {
 				nil,
 			),
 		},
+		{
+			name:  "parenthesized callee",
+			input: "(factory())(x)",
+			want: ast.NewFunctionCall(
+				ast.NewFunctionCall(
+					ast.NewFunctionIdentifier("factory", nil, 0, 7),
+					nil,
+					ast.NewFunctionArguments(
+						ast.NewArguments([]*ast.Argument{}),
+						nil,
+						false,
+					),
+					nil,
+				),
+				nil,
+				ast.NewFunctionArguments(
+					ast.NewArguments([]*ast.Argument{
+						ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false),
+					}),
+					nil,
+					false,
+				),
+				nil,
+			),
+		},
+		{
+			name:  "member and indexed callee chain",
+			input: "callbacks.primary[0](x)",
+			want: ast.NewFunctionCall(
+				ast.NewIndexedAccess(
+					ast.NewMemberAccess(
+						ast.NewIdentifier("callbacks", nil, 0, 9),
+						ast.NewIdentifier("primary", nil, 0, 7),
+					),
+					ast.NewDecimalLiteral("0", 0, nil, 0, 0),
+				),
+				nil,
+				ast.NewFunctionArguments(
+					ast.NewArguments([]*ast.Argument{
+						ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false),
+					}),
+					nil,
+					false,
+				),
+				nil,
+			),
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

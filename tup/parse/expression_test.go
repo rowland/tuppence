@@ -349,6 +349,83 @@ func TestExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "parenthesized callee expression",
+			input: "(factory())(x)",
+			want: ast.NewFunctionCall(
+				ast.NewFunctionCall(
+					ast.NewFunctionIdentifier("factory", nil, 0, 7),
+					nil,
+					ast.NewFunctionArguments(
+						ast.NewArguments([]*ast.Argument{}),
+						nil,
+						false,
+					),
+					nil,
+				),
+				nil,
+				ast.NewFunctionArguments(
+					ast.NewArguments([]*ast.Argument{
+						ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false),
+					}),
+					nil,
+					false,
+				),
+				nil,
+			),
+		},
+		{
+			name:  "mixed postfix chain",
+			input: "handlers[0](x).result[1]!",
+			want: ast.NewSafeIndexedAccess(
+				ast.NewMemberAccess(
+					ast.NewFunctionCall(
+						ast.NewIndexedAccess(
+							ast.NewIdentifier("handlers", nil, 0, 8),
+							ast.NewDecimalLiteral("0", 0, nil, 0, 0),
+						),
+						nil,
+						ast.NewFunctionArguments(
+							ast.NewArguments([]*ast.Argument{
+								ast.NewArgument(ast.NewIdentifier("x", nil, 0, 1), false),
+							}),
+							nil,
+							false,
+						),
+						nil,
+					),
+					ast.NewIdentifier("result", nil, 0, 6),
+				),
+				ast.NewDecimalLiteral("1", 1, nil, 0, 0),
+			),
+		},
+		{
+			name:  "chained call result expression",
+			input: "foo(1)(2)",
+			want: ast.NewFunctionCall(
+				ast.NewFunctionCall(
+					ast.NewFunctionIdentifier("foo", nil, 0, 3),
+					nil,
+					ast.NewFunctionArguments(
+						ast.NewArguments([]*ast.Argument{
+							ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 0), false),
+						}),
+						nil,
+						false,
+					),
+					nil,
+				),
+				nil,
+				ast.NewFunctionArguments(
+					ast.NewArguments([]*ast.Argument{
+						ast.NewArgument(ast.NewDecimalLiteral("2", 2, nil, 0, 0), false),
+					}),
+					nil,
+					false,
+				),
+				nil,
+			),
+		},
+		{
 			name:  "unary not on member chain",
 			input: "!foo.bar.flag",
 			want: ast.NewUnaryExpression(
@@ -448,6 +525,12 @@ func TestExpression(t *testing.T) {
 				"file": ast.NewArgument(ast.NewStringLiteral(`"config.json"`, "config.json", nil, 0, 13), false),
 			}),
 		},
+		{
+			name:    "malformed member access tail",
+			input:   "user.",
+			want:    nil,
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -456,7 +539,7 @@ func TestExpression(t *testing.T) {
 			if err != nil {
 				t.Errorf("Tokenize(%q) = %v", tt.input, err)
 			}
-			expression, _, err := Expression(tokens)
+			expression, remainder, err := Expression(tokens)
 			if tt.wantErr {
 				if err == nil {
 					t.Fatalf("Expression(%q): want error, got nil", tt.input)
@@ -468,6 +551,13 @@ func TestExpression(t *testing.T) {
 			}
 			if expression == nil {
 				t.Fatalf("Expression(%q) = nil, want not nil", tt.input)
+			}
+			remainder = skipTrivia(remainder)
+			if len(remainder) == 1 && remainder[0].Type == tok.TokEOF {
+				remainder = nil
+			}
+			if len(remainder) != 0 {
+				t.Fatalf("Expression(%q) left trailing tokens: %v", tt.input, tok.Types(remainder))
 			}
 			switch want := tt.want.(type) {
 			case *ast.IntegerLiteral:
