@@ -344,7 +344,7 @@ func NegatableExpression(tokens []tok.Token) (expr ast.Expression, remainder []t
 // primary_expression = postfix_expression .
 
 func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	return postfixExpression(tokens, primaryPostfixBaseExpression, true)
+	return postfixExpression(tokens, postfixBaseExpression, true)
 }
 
 // postfix_expression = postfix_base_expression { postfix_tail }
@@ -495,7 +495,7 @@ func matchPostfixTail(expr ast.Expression, tokens []tok.Token, includeFunctionCa
 // The parser currently implements the forms listed below and leaves the others
 // as explicit follow-up work in the stacked postfix refactor.
 
-func primaryPostfixBaseExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+func postfixBaseExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
 	if expression, remainder, err := parenthesizedExpression(tokens); err == nil {
 		return expression, remainder, nil
 	} else if err != ErrNoMatch {

@@ -9,7 +9,7 @@ import (
 
 func TupleUpdateExpression(tokens []tok.Token) (expr *ast.TupleUpdateExpression, remainder []tok.Token, err error) {
 	var object ast.Expression
-	if object, remainder, err = postfixExpressionWithTails(tokens, primaryPostfixBaseExpression, true, postfixTailWithoutTupleUpdate); err != nil {
+	if object, remainder, err = postfixExpressionWithTails(tokens, postfixBaseExpression, true, postfixTailWithoutTupleUpdate); err != nil {
 		return nil, remainder, err
 	}
 
