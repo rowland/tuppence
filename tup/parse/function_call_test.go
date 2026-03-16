@@ -242,6 +242,80 @@ func TestFunctionCall(t *testing.T) {
 				),
 			),
 		},
+		{
+			name:  "indexed callee",
+			input: "some_funcs[5](x + 1)",
+			want: ast.NewFunctionCall(
+				ast.NewIndexedAccess(
+					ast.NewIdentifier("some_funcs", nil, 0, 10),
+					ast.NewDecimalLiteral("5", 5, nil, 0, 0),
+				),
+				nil,
+				ast.NewFunctionArguments(
+					ast.NewArguments(
+						[]*ast.Argument{
+							ast.NewArgument(
+								ast.NewAddSubExpression(
+									ast.NewIdentifier("x", nil, 0, 1),
+									ast.OpAdd,
+									ast.NewDecimalLiteral("1", 1, nil, 0, 0),
+								),
+								false,
+							),
+						},
+					),
+					nil,
+					false,
+				),
+				nil,
+			),
+		},
+		{
+			name:  "chained call result",
+			input: "foo(1)(2)",
+			want: ast.NewFunctionCall(
+				ast.NewFunctionCall(
+					ast.NewFunctionIdentifier("foo", nil, 0, 3),
+					nil,
+					ast.NewFunctionArguments(
+						ast.NewArguments([]*ast.Argument{
+							ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 0), false),
+						}),
+						nil,
+						false,
+					),
+					nil,
+				),
+				nil,
+				ast.NewFunctionArguments(
+					ast.NewArguments([]*ast.Argument{
+						ast.NewArgument(ast.NewDecimalLiteral("2", 2, nil, 0, 0), false),
+					}),
+					nil,
+					false,
+				),
+				nil,
+			),
+		},
+		{
+			name:  "type member callee",
+			input: "Parser.parse(1)",
+			want: ast.NewFunctionCall(
+				ast.NewMemberAccess(
+					ast.NewTypeIdentifier("Parser", nil, 0, 6),
+					ast.NewIdentifier("parse", nil, 0, 5),
+				),
+				nil,
+				ast.NewFunctionArguments(
+					ast.NewArguments([]*ast.Argument{
+						ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 0), false),
+					}),
+					nil,
+					false,
+				),
+				nil,
+			),
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

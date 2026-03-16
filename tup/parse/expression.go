@@ -329,89 +329,153 @@ func PrefixedUnaryExpression(tokens []tok.Token) (expr *ast.UnaryExpression, rem
 	return ast.NewUnaryExpression(operator, expression), remainder, nil
 }
 
-// negatable_expression = "(" expression ")"
-//                      | block
-//                      | function_call
-//                      | member_access
-//                      | tuple_update_expression
-//                      | safe_indexed_access
-//                      | indexed_access
-//                      | identifier
-//                      | literal .
+// negatable_expression = negatable_postfix_expression .
 
 func NegatableExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	// fmt.Println("NegatableExpression", tokens)
-	remainder = skipTrivia(tokens)
-
-	if expression, remainder, err := parenthesizedExpression(remainder); err == nil {
-		return expression, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, tokens, err
-	}
-
-	if block, remainder, err := Block(remainder); err == nil {
-		return block, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if functionCall, remainder, err := FunctionCall(remainder); err == nil {
-		return functionCall, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	// member_access
-
 	if tupleUpdateExpression, remainder, err := TupleUpdateExpression(remainder); err == nil {
 		return tupleUpdateExpression, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
-	// safe_indexed_access
-	// indexed_access
-
-	if identifier, remainder, err := Identifier(remainder); err == nil {
-		return ast.NewIdentifier(identifier.Name, identifier.Source, identifier.StartOffset, identifier.Length), remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if literal, remainder, err := Literal(remainder); err == nil {
-		return literal, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	return nil, tokens, ErrNoMatch
+	return postfixExpression(tokens, negatablePostfixBaseExpression, true)
 }
 
-// primary_expression = "(" expression ")"
-//                    | block
-//                    | if_expression
-//                    | for_expression
-//                    | inline_for_expression
-//                    | array_function_call
-//                    | import_expression
-//                    | typeof_expression
-//                    | meta_expression
-//                    | function_call
-//                    | type_constructor_call
-//                    | return_expression
-//                    | break_expression
-//                    | continue_expression
-//                    | member_access
-//                    | tuple_update_expression
-//                    | safe_indexed_access
-//                    | indexed_access
-//                    | range
-//                    | identifier
-//                    | literal .
+// primary_expression = postfix_expression .
 
 func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	// fmt.Println("PrimaryExpression", tokens)
+	if tupleUpdateExpression, remainder, err := TupleUpdateExpression(tokens); err == nil {
+		return tupleUpdateExpression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
 
+	return postfixExpression(tokens, primaryPostfixBaseExpression, true)
+}
+
+// postfix_expression = postfix_base_expression { postfix_tail }
+//                    | type_identifier member_access_tail { postfix_tail } .
+
+func postfixExpression(tokens []tok.Token, base func([]tok.Token) (ast.Expression, []tok.Token, error), allowTypeMemberAccess bool) (expr ast.Expression, remainder []tok.Token, err error) {
+	if allowTypeMemberAccess {
+		if expr, remainder, err = typeMemberAccessExpression(tokens); err == nil {
+			return continuePostfixExpression(expr, remainder)
+		} else if err != ErrNoMatch {
+			return nil, remainder, err
+		}
+	}
+
+	if expr, remainder, err = base(tokens); err != nil {
+		return nil, remainder, err
+	}
+
+	return continuePostfixExpression(expr, remainder)
+}
+
+// { postfix_tail } .
+
+func continuePostfixExpression(expr ast.Expression, tokens []tok.Token) (ast.Expression, []tok.Token, error) {
+	remainder := tokens
+
+	for {
+		if functionCall, remainder2, err := functionCallTail(expr, remainder); err == nil {
+			expr = functionCall
+			remainder = remainder2
+			continue
+		} else if err != ErrNoMatch {
+			return nil, remainder2, err
+		}
+
+		if memberAccess, remainder2, err := memberAccessTail(expr, remainder); err == nil {
+			expr = memberAccess
+			remainder = remainder2
+			continue
+		} else if err != ErrNoMatch {
+			return nil, remainder2, err
+		}
+
+		if safeIndexedAccess, remainder2, err := safeIndexedAccessTail(expr, remainder); err == nil {
+			expr = safeIndexedAccess
+			remainder = remainder2
+			continue
+		} else if err != ErrNoMatch {
+			return nil, remainder2, err
+		}
+
+		if indexedAccess, remainder2, err := indexedAccessTail(expr, remainder); err == nil {
+			expr = indexedAccess
+			remainder = remainder2
+			continue
+		} else if err != ErrNoMatch {
+			return nil, remainder2, err
+		}
+
+		break
+	}
+
+	return expr, remainder, nil
+}
+
+// { member_access_tail | safe_indexed_access_tail | indexed_access_tail } .
+// This helper intentionally excludes function_call_tail so FunctionCall(...) can
+// parse the first call itself instead of consuming it while discovering the receiver.
+
+func continuePostfixReceiver(expr ast.Expression, tokens []tok.Token) (ast.Expression, []tok.Token, error) {
+	remainder := tokens
+
+	for {
+		if memberAccess, remainder2, err := memberAccessTail(expr, remainder); err == nil {
+			expr = memberAccess
+			remainder = remainder2
+			continue
+		} else if err != ErrNoMatch {
+			return nil, remainder2, err
+		}
+
+		if safeIndexedAccess, remainder2, err := safeIndexedAccessTail(expr, remainder); err == nil {
+			expr = safeIndexedAccess
+			remainder = remainder2
+			continue
+		} else if err != ErrNoMatch {
+			return nil, remainder2, err
+		}
+
+		if indexedAccess, remainder2, err := indexedAccessTail(expr, remainder); err == nil {
+			expr = indexedAccess
+			remainder = remainder2
+			continue
+		} else if err != ErrNoMatch {
+			return nil, remainder2, err
+		}
+
+		break
+	}
+
+	return expr, remainder, nil
+}
+
+// postfix_base_expression = "(" expression ")"
+//                         | block
+//                         | if_expression
+//                         | for_expression
+//                         | inline_for_expression
+//                         | array_function_call
+//                         | import_expression
+//                         | typeof_expression
+//                         | meta_expression
+//                         | type_constructor_call
+//                         | return_expression
+//                         | break_expression
+//                         | continue_expression
+//                         | range
+//                         | function_identifier
+//                         | identifier
+//                         | literal .
+//
+// The parser currently implements the forms listed below and leaves the others
+// as explicit follow-up work in the stacked postfix refactor.
+
+func primaryPostfixBaseExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
 	if expression, remainder, err := parenthesizedExpression(tokens); err == nil {
 		return expression, remainder, nil
 	} else if err != ErrNoMatch {
@@ -424,7 +488,6 @@ func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok
 		return nil, remainder, err
 	}
 
-	// if_expression
 	// if_expression
 	// for_expression
 	// inline_for_expression
@@ -453,27 +516,17 @@ func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok
 		return nil, remainder, err
 	}
 
-	if functionCall, remainder, err := FunctionCall(tokens); err == nil {
-		return functionCall, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
 	// type_constructor_call
 	// return_expression
 	// break_expression
 	// continue_expression
-	// member_access
+	// range
 
-	if tupleUpdateExpression, remainder, err := TupleUpdateExpression(tokens); err == nil {
-		return tupleUpdateExpression, remainder, nil
+	if functionIdentifier, remainder, err := FunctionIdentifier(tokens); err == nil {
+		return functionIdentifier, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
-
-	// safe_indexed_access
-	// indexed_access
-	// range
 
 	if identifier, remainder, err := Identifier(tokens); err == nil {
 		return ast.NewIdentifier(identifier.Name, identifier.Source, identifier.StartOffset, identifier.Length), remainder, nil
@@ -488,6 +541,131 @@ func PrimaryExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok
 	}
 
 	return nil, tokens, ErrNoMatch
+}
+
+// negatable_postfix_base_expression = "(" expression ")"
+//                                   | block
+//                                   | function_identifier
+//                                   | identifier
+//                                   | literal .
+
+func negatablePostfixBaseExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	if expression, remainder, err := parenthesizedExpression(tokens); err == nil {
+		return expression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if block, remainder, err := Block(tokens); err == nil {
+		return block, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if functionIdentifier, remainder, err := FunctionIdentifier(tokens); err == nil {
+		return functionIdentifier, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if identifier, remainder, err := Identifier(tokens); err == nil {
+		return ast.NewIdentifier(identifier.Name, identifier.Source, identifier.StartOffset, identifier.Length), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if literal, remainder, err := Literal(tokens); err == nil {
+		return literal, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
+}
+
+// type_identifier member_access_tail .
+
+func typeMemberAccessExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	var typeIdentifier *ast.TypeIdentifier
+	if typeIdentifier, remainder, err = TypeIdentifier(tokens); err != nil {
+		return nil, remainder, err
+	}
+
+	return memberAccessTail(typeIdentifier, remainder)
+}
+
+// member_access_tail = "." ( decimal_literal | identifier ) .
+
+func memberAccessTail(object ast.Node, tokens []tok.Token) (expr *ast.MemberAccess, remainder []tok.Token, err error) {
+	remainder = skipTrivia(tokens)
+
+	var found bool
+	if remainder, found = Dot(remainder); !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	var member ast.MemberAccessMember
+	if member, remainder, err = memberAccessMember(remainder); err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewMemberAccess(object, member), remainder, nil
+}
+
+// member_access_member = decimal_literal | identifier .
+
+func memberAccessMember(tokens []tok.Token) (member ast.MemberAccessMember, remainder []tok.Token, err error) {
+	if decimalLiteral, remainder, err := DecimalLiteral(tokens); err == nil {
+		return decimalLiteral, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if identifier, remainder, err := Identifier(tokens); err == nil {
+		return identifier, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
+}
+
+// indexed_access_tail = "[" index "]" .
+
+func indexedAccessTail(object ast.Expression, tokens []tok.Token) (expr *ast.IndexedAccess, remainder []tok.Token, err error) {
+	remainder = skipTrivia(tokens)
+
+	var found bool
+	if remainder, found = OpenBracket(remainder); !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	var index ast.Expression
+	if index, remainder, err = Expression(remainder); err != nil {
+		return nil, remainder, err
+	}
+
+	if remainder, found = CloseBracket(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseBracket, remainder)
+	}
+
+	return ast.NewIndexedAccess(object, index), remainder, nil
+}
+
+// safe_indexed_access_tail = "[" index "]" "!" .
+
+func safeIndexedAccessTail(object ast.Expression, tokens []tok.Token) (expr *ast.SafeIndexedAccess, remainder []tok.Token, err error) {
+	var indexedAccess *ast.IndexedAccess
+	if indexedAccess, remainder, err = indexedAccessTail(object, tokens); err != nil {
+		return nil, remainder, err
+	}
+
+	var found bool
+	if remainder, found = expectFunc(tok.TokOpNot)(remainder); !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	return ast.NewSafeIndexedAccess(object, indexedAccess.Index), remainder, nil
 }
 
 // parenthesized_expression = "(" expression ")" .

@@ -223,6 +223,31 @@ func TestExpression(t *testing.T) {
 			}),
 		},
 		{
+			name:  "member access chain with indexing",
+			input: "a.b.c[5]",
+			want: ast.NewIndexedAccess(
+				ast.NewMemberAccess(
+					ast.NewMemberAccess(
+						ast.NewIdentifier("a", nil, 0, 1),
+						ast.NewIdentifier("b", nil, 0, 1),
+					),
+					ast.NewIdentifier("c", nil, 0, 1),
+				),
+				ast.NewDecimalLiteral("5", 5, nil, 0, 0),
+			),
+		},
+		{
+			name:  "safe indexed access on member chain",
+			input: "cache.entries[key]!",
+			want: ast.NewSafeIndexedAccess(
+				ast.NewMemberAccess(
+					ast.NewIdentifier("cache", nil, 0, 5),
+					ast.NewIdentifier("entries", nil, 0, 7),
+				),
+				ast.NewIdentifier("key", nil, 0, 3),
+			),
+		},
+		{
 			name:  "block expression",
 			input: "{ x = 1; x + 1 }",
 			want: ast.NewBlock(
@@ -260,6 +285,65 @@ func TestExpression(t *testing.T) {
 					false,
 				),
 				nil,
+			),
+		},
+		{
+			name:  "function call on indexed expression",
+			input: "some_funcs[5](x + 1)",
+			want: ast.NewFunctionCall(
+				ast.NewIndexedAccess(
+					ast.NewIdentifier("some_funcs", nil, 0, 10),
+					ast.NewDecimalLiteral("5", 5, nil, 0, 0),
+				),
+				nil,
+				ast.NewFunctionArguments(
+					ast.NewArguments([]*ast.Argument{
+						ast.NewArgument(
+							ast.NewAddSubExpression(
+								ast.NewIdentifier("x", nil, 0, 1),
+								ast.OpAdd,
+								ast.NewDecimalLiteral("1", 1, nil, 0, 0),
+							),
+							false,
+						),
+					}),
+					nil,
+					false,
+				),
+				nil,
+			),
+		},
+		{
+			name:  "function call on type member",
+			input: "Parser.parse(1)",
+			want: ast.NewFunctionCall(
+				ast.NewMemberAccess(
+					ast.NewTypeIdentifier("Parser", nil, 0, 6),
+					ast.NewIdentifier("parse", nil, 0, 5),
+				),
+				nil,
+				ast.NewFunctionArguments(
+					ast.NewArguments([]*ast.Argument{
+						ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 0), false),
+					}),
+					nil,
+					false,
+				),
+				nil,
+			),
+		},
+		{
+			name:  "unary not on member chain",
+			input: "!foo.bar.flag",
+			want: ast.NewUnaryExpression(
+				ast.OpLogicalNot,
+				ast.NewMemberAccess(
+					ast.NewMemberAccess(
+						ast.NewIdentifier("foo", nil, 0, 3),
+						ast.NewIdentifier("bar", nil, 0, 3),
+					),
+					ast.NewIdentifier("flag", nil, 0, 4),
+				),
 			),
 		},
 		{
@@ -436,6 +520,36 @@ func TestExpression(t *testing.T) {
 				}
 			case *ast.ArrayLiteral:
 				got, ok := expression.(*ast.ArrayLiteral)
+				if !ok {
+					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Expression(%q) = %v, want %v", tt.input, got, want)
+					return
+				}
+			case *ast.MemberAccess:
+				got, ok := expression.(*ast.MemberAccess)
+				if !ok {
+					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Expression(%q) = %v, want %v", tt.input, got, want)
+					return
+				}
+			case *ast.IndexedAccess:
+				got, ok := expression.(*ast.IndexedAccess)
+				if !ok {
+					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Expression(%q) = %v, want %v", tt.input, got, want)
+					return
+				}
+			case *ast.SafeIndexedAccess:
+				got, ok := expression.(*ast.SafeIndexedAccess)
 				if !ok {
 					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
 					return
