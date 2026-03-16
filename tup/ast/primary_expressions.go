@@ -9,7 +9,7 @@ package ast
 //	                  | import_expression
 //	                  | typeof_expression
 //	                  | meta_expression
-//	                  | function_call
+//	                  | function_identifier
 //	                  | type_constructor_call
 //	                  | return_expression
 //	                  | break_expression
@@ -45,6 +45,7 @@ func (n *TupleUpdateExpression) primaryExpressionNode() {}
 func (n *SafeIndexedAccess) primaryExpressionNode()     {}
 func (n *IndexedAccess) primaryExpressionNode()         {}
 func (n *Range) primaryExpressionNode()                 {}
+func (n *FunctionIdentifier) primaryExpressionNode()    {}
 func (n *Identifier) primaryExpressionNode()            {}
 
 // initializer = assignment .

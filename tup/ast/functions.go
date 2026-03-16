@@ -119,14 +119,14 @@ func (f *FunctionTypeDeclaration) String() string {
 
 type FunctionCall struct {
 	BaseNode
-	Function       Node                    // The function being called (can be Identifier, MemberAccess, etc.)
+	Function       Expression              // The function being called
 	ParameterTypes *FunctionParameterTypes // The parameter types of the function (may be nil)
 	Arguments      *FunctionArguments      // The arguments passed to the function
 	FunctionBlock  *FunctionBlock          // Optional function block (for higher-order functions, may be nil)
 }
 
 func NewFunctionCall(
-	function Node,
+	function Expression,
 	parameterTypes *FunctionParameterTypes,
 	arguments *FunctionArguments,
 	functionBlock *FunctionBlock,
