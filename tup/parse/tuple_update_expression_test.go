@@ -65,8 +65,33 @@ func TestTupleUpdateExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "member and indexed receiver chain",
+			input: "users.active[0].(name: \"Brent\")",
+			want: ast.NewTupleUpdateExpression(
+				ast.NewIndexedAccess(
+					ast.NewMemberAccess(
+						ast.NewIdentifier("users", nil, 0, 5),
+						ast.NewIdentifier("active", nil, 0, 6),
+					),
+					ast.NewDecimalLiteral("0", 0, nil, 0, 0),
+				),
+				ast.NewTupleLiteral(true, []*ast.TupleMember{
+					ast.NewTupleMember(
+						ast.NewIdentifier("name", nil, 0, 4),
+						ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7),
+					),
+				}),
+			),
+		},
+		{
 			name:    "unlabeled tuple update is rejected",
 			input:   "user.(1, 2)",
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name:    "missing labeled tuple update after dot",
+			input:   "user.",
 			want:    nil,
 			wantErr: true,
 		},
