@@ -332,12 +332,6 @@ func PrefixedUnaryExpression(tokens []tok.Token) (expr *ast.UnaryExpression, rem
 // negatable_expression = negatable_postfix_expression .
 
 func NegatableExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	if tupleUpdateExpression, remainder, err := TupleUpdateExpression(remainder); err == nil {
-		return tupleUpdateExpression, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
 	return postfixExpression(tokens, negatablePostfixBaseExpression, true)
 }
 

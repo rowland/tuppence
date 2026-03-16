@@ -67,17 +67,6 @@ func callableExpression(tokens []tok.Token) (expr ast.Expression, remainder []to
 	return postfixExpressionWithTails(tokens, callableBaseExpression, true, callableReceiverTail)
 }
 
-// type_identifier member_access_tail { postfix_tail } .
-
-func typeMemberAccessReceiver(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
-	var typeIdentifier *ast.TypeIdentifier
-	if typeIdentifier, remainder, err = TypeIdentifier(tokens); err != nil {
-		return nil, remainder, err
-	}
-
-	return memberAccessTail(typeIdentifier, remainder)
-}
-
 // callable_base_expression is a parser helper for the subset of postfix_base_expression
 // that is currently supported as a function-call receiver.
 

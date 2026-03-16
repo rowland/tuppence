@@ -176,6 +176,22 @@ func TestExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "unary not with tuple update expression",
+			input: `!user.(name: "Brent")`,
+			want: ast.NewUnaryExpression(
+				ast.OpLogicalNot,
+				ast.NewTupleUpdateExpression(
+					ast.NewIdentifier("user", nil, 0, 4),
+					ast.NewTupleLiteral(true, []*ast.TupleMember{
+						ast.NewTupleMember(
+							ast.NewIdentifier("name", nil, 0, 4),
+							ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7),
+						),
+					}),
+				),
+			),
+		},
+		{
 			name:    "invalid expression",
 			input:   "1 +",
 			want:    nil,
