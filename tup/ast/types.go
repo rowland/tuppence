@@ -14,7 +14,6 @@ type TypeReference struct {
 	TypeIdentifier *TypeIdentifier // The type identifier
 }
 
-// NewTypeReference creates a new TypeReference node
 func NewTypeReference(identifiers []*Identifier, typeIdentifier *TypeIdentifier, source *source.Source, startOffset int32, length int32) *TypeReference {
 	return &TypeReference{
 		BaseNode:       BaseNode{Type: NodeTypeReference, Source: source, StartOffset: startOffset, Length: length},
@@ -23,7 +22,6 @@ func NewTypeReference(identifiers []*Identifier, typeIdentifier *TypeIdentifier,
 	}
 }
 
-// String returns a textual representation of the type reference
 func (t *TypeReference) String() string {
 	return t.TypeIdentifier.String()
 }
@@ -45,7 +43,6 @@ type NilableType struct {
 	InnerType Node // The type that is made nilable
 }
 
-// NewNilableType creates a new NilableType node
 func NewNilableType(innerType Node) *NilableType {
 	return &NilableType{
 		BaseNode:  BaseNode{Type: NodeNilableType},
@@ -53,28 +50,27 @@ func NewNilableType(innerType Node) *NilableType {
 	}
 }
 
-// String returns a textual representation of the nilable type
 func (n *NilableType) String() string {
 	return "?" + n.InnerType.String()
 }
 
-// ArrayType is the base type for array types
+// array_type = fixed_size_array | dynamic_array .
+
 type ArrayType struct {
 	BaseNode
 	ElementType Node // The type of array elements
 }
 
-// String returns a textual representation of the array type
 func (a *ArrayType) String() string {
 	return "[" + "]" + a.ElementType.String()
 }
 
-// DynamicArrayType represents a dynamic-size array type
+// dynamic_array = "[" "]" (type_reference | array_type) .
+
 type DynamicArrayType struct {
 	ArrayType
 }
 
-// NewDynamicArrayType creates a new DynamicArrayType node
 func NewDynamicArrayType(elementType Node) *DynamicArrayType {
 	return &DynamicArrayType{
 		ArrayType: ArrayType{
@@ -84,18 +80,17 @@ func NewDynamicArrayType(elementType Node) *DynamicArrayType {
 	}
 }
 
-// String returns a textual representation of the dynamic array type
 func (d *DynamicArrayType) String() string {
 	return "[]" + d.ElementType.String()
 }
 
-// FixedSizeArrayType represents a fixed-size array type
+// fixed_size_array = "[" size "]" (type_reference | array_type) .
+
 type FixedSizeArrayType struct {
 	ArrayType
 	Size Node // Size expression (can be a literal or identifier)
 }
 
-// NewFixedSizeArrayType creates a new FixedSizeArrayType node
 func NewFixedSizeArrayType(elementType Node, size Node) *FixedSizeArrayType {
 	return &FixedSizeArrayType{
 		ArrayType: ArrayType{
@@ -106,19 +101,22 @@ func NewFixedSizeArrayType(elementType Node, size Node) *FixedSizeArrayType {
 	}
 }
 
-// String returns a textual representation of the fixed-size array type
 func (f *FixedSizeArrayType) String() string {
 	return "[" + f.Size.String() + "]" + f.ElementType.String()
 }
 
-// Parameter represents a function parameter
+// parameter = annotations ( nilable_type
+//	                       | type
+//	                       | literal
+//	                       | union_type
+//	                       | union_declaration ) .
+
 type Parameter struct {
 	BaseNode
 	Annotations []Node // Optional annotations
 	Type        Node   // Parameter type
 }
 
-// String returns a textual representation of the parameter
 func (p *Parameter) String() string {
 	var builder strings.Builder
 
@@ -131,7 +129,12 @@ func (p *Parameter) String() string {
 	return builder.String()
 }
 
-// LabeledParameter represents a labeled function parameter
+// labeled_parameter = annotations identifier ":" ( nilable_type
+//	                                              | type
+//	                                              | literal
+//	                                              | union_type
+//	                                              | union_declaration ) .
+
 type LabeledParameter struct {
 	BaseNode
 	Annotations []Node      // Optional annotations
@@ -139,7 +142,6 @@ type LabeledParameter struct {
 	Type        Node        // Parameter type
 }
 
-// String returns a textual representation of the labeled parameter
 func (l *LabeledParameter) String() string {
 	var builder strings.Builder
 
@@ -154,13 +156,13 @@ func (l *LabeledParameter) String() string {
 	return builder.String()
 }
 
-// RestParameter represents a rest parameter (e.g., ...T)
+// rest_parameter = "..." type .
+
 type RestParameter struct {
 	BaseNode
 	Type Node // Parameter type
 }
 
-// NewRestParameter creates a new RestParameter node
 func NewRestParameter(paramType Node) *RestParameter {
 	return &RestParameter{
 		BaseNode: BaseNode{Type: NodeRestParameter},
@@ -168,12 +170,12 @@ func NewRestParameter(paramType Node) *RestParameter {
 	}
 }
 
-// String returns a textual representation of the rest parameter
 func (r *RestParameter) String() string {
 	return "..." + r.Type.String()
 }
 
-// LabeledRestParameter represents a labeled rest parameter (e.g., rest: ...T)
+// labeled_rest_parameter = annotations identifier ":" rest_parameter .
+
 type LabeledRestParameter struct {
 	BaseNode
 	Annotations []Node      // Optional annotations
@@ -181,7 +183,6 @@ type LabeledRestParameter struct {
 	RestType    Node        // Rest parameter type (changed from *RestParameter to Node)
 }
 
-// String returns a textual representation of the labeled rest parameter
 func (l *LabeledRestParameter) String() string {
 	var builder strings.Builder
 
@@ -199,13 +200,17 @@ func (l *LabeledRestParameter) String() string {
 	return builder.String()
 }
 
-// ReturnType represents a return type
+// return_type = union_with_error
+//             | union_declaration_with_error
+//             | nilable_type
+//             | type
+//             | "error" .
+
 type ReturnType struct {
 	BaseNode
 	Type Node // Return type
 }
 
-// NewReturnType creates a new ReturnType node
 func NewReturnType(returnType Node) *ReturnType {
 	return &ReturnType{
 		BaseNode: BaseNode{Type: NodeReturnType},
@@ -213,12 +218,12 @@ func NewReturnType(returnType Node) *ReturnType {
 	}
 }
 
-// String returns a textual representation of the return type
 func (r *ReturnType) String() string {
 	return r.Type.String()
 }
 
-// FunctionType represents a function type (fn(params) -> return_type or fx(params))
+// function_type = ( "fn" | "fx" ) "(" [ labeled_parameters | parameters ] ")" return_type .
+
 type FunctionType struct {
 	BaseNode
 	HasSideEffects bool   // True for 'fx', false for 'fn'
@@ -226,7 +231,6 @@ type FunctionType struct {
 	ReturnType     Node   // Return type (may be omitted for fx, resulting in nil) (changed from *ReturnType to Node)
 }
 
-// NewFunctionType creates a new FunctionType node
 func NewFunctionType(hasSideEffects bool, parameters []Node, returnType Node) *FunctionType {
 	return &FunctionType{
 		BaseNode:       BaseNode{Type: NodeFunctionType},
@@ -236,7 +240,6 @@ func NewFunctionType(hasSideEffects bool, parameters []Node, returnType Node) *F
 	}
 }
 
-// String returns a textual representation of the function type
 func (f *FunctionType) String() string {
 	var builder strings.Builder
 
@@ -265,7 +268,6 @@ func (f *FunctionType) String() string {
 	return builder.String()
 }
 
-// TupleTypeMember represents a member of a tuple type
 type TupleTypeMemberNode interface {
 	Node
 	tupleTypeMemberNode()
@@ -273,6 +275,12 @@ type TupleTypeMemberNode interface {
 
 func (n *TupleTypeMember) tupleTypeMemberNode()        {}
 func (n *LabeledTupleTypeMember) tupleTypeMemberNode() {}
+
+// tuple_type_member = annotations ( nilable_type
+// 	                               | type
+// 	                               | union_type
+// 	                               | union_declaration
+// 	                               | literal ) .
 
 type TupleTypeMember struct {
 	BaseNode
@@ -288,7 +296,6 @@ func NewTupleTypeMember(annotations *Annotations, memberType Node) *TupleTypeMem
 	}
 }
 
-// String returns a textual representation of the tuple type member
 func (t *TupleTypeMember) String() string {
 	var builder strings.Builder
 
@@ -300,7 +307,8 @@ func (t *TupleTypeMember) String() string {
 	return builder.String()
 }
 
-// LabeledTupleTypeMember represents a labeled member of a tuple type
+// labeled_tuple_type_member = annotations identifier ":" tuple_type_member .
+
 type LabeledTupleTypeMember struct {
 	BaseNode
 	Annotations *Annotations // Optional annotations
@@ -317,7 +325,6 @@ func NewLabeledTupleTypeMember(annotations *Annotations, identifier *Identifier,
 	}
 }
 
-// String returns a textual representation of the labeled tuple type member
 func (l *LabeledTupleTypeMember) String() string {
 	var builder strings.Builder
 
@@ -331,13 +338,13 @@ func (l *LabeledTupleTypeMember) String() string {
 	return builder.String()
 }
 
-// TupleType represents a tuple type
+// tuple_type = "(" [ labeled_tuple_type_members | tuple_type_members ] ")" .
+
 type TupleType struct {
 	BaseNode
 	Members []TupleTypeMemberNode
 }
 
-// NewTupleType creates a new TupleType node
 func NewTupleType(members []TupleTypeMemberNode) *TupleType {
 	return &TupleType{
 		BaseNode: BaseNode{Type: NodeTupleType},
@@ -345,7 +352,6 @@ func NewTupleType(members []TupleTypeMemberNode) *TupleType {
 	}
 }
 
-// String returns a textual representation of the tuple type
 func (t *TupleType) String() string {
 	var builder strings.Builder
 	builder.WriteString("(")
@@ -359,24 +365,24 @@ func (t *TupleType) String() string {
 	return builder.String()
 }
 
-// TypeArgument represents a type argument in a generic type
+// type_argument = type | generic_type .
+
 type TypeArgument struct {
 	BaseNode
 	Type Node // The type
 }
 
-// String returns a textual representation of the type argument
 func (t *TypeArgument) String() string {
 	return t.Type.String()
 }
 
-// TypeArgumentList represents a list of type arguments for a generic type
+// type_argument_list = "[" type_argument { "," type_argument } "]" .
+
 type TypeArgumentList struct {
 	BaseNode
 	Arguments []Node // List of TypeArgument nodes
 }
 
-// String returns a textual representation of the type argument list
 func (t *TypeArgumentList) String() string {
 	var builder strings.Builder
 	builder.WriteString("[")
@@ -390,14 +396,14 @@ func (t *TypeArgumentList) String() string {
 	return builder.String()
 }
 
-// GenericType represents a generic type with type arguments
+// generic_type = type_reference type_argument_list .
+
 type GenericType struct {
 	BaseNode
 	BaseType *TypeReference    // The base type
 	TypeArgs *TypeArgumentList // Type arguments
 }
 
-// NewGenericType creates a new GenericType node
 func NewGenericType(baseType *TypeReference, typeArgs *TypeArgumentList) *GenericType {
 	return &GenericType{
 		BaseNode: BaseNode{Type: NodeGenericType},
@@ -406,12 +412,12 @@ func NewGenericType(baseType *TypeReference, typeArgs *TypeArgumentList) *Generi
 	}
 }
 
-// String returns a textual representation of the generic type
 func (g *GenericType) String() string {
 	return g.BaseType.String() + g.TypeArgs.String()
 }
 
-// TypeParameter represents a type parameter in a generic type definition
+// type_parameter = identifier .
+
 type TypeParameter struct {
 	BaseNode
 	Identifier *Identifier // The type parameter name
@@ -429,6 +435,7 @@ func (t *TypeParameter) String() string {
 }
 
 // type_parameters = "[" type_parameter { "," type_parameter } "]" .
+
 type TypeParameters struct {
 	BaseNode
 	Parameters []*TypeParameter
@@ -441,7 +448,6 @@ func NewTypeParameters(parameters []*TypeParameter) *TypeParameters {
 	}
 }
 
-// String returns a textual representation of the type parameters
 func (t *TypeParameters) String() string {
 	var builder strings.Builder
 	builder.WriteString("[")
@@ -455,14 +461,14 @@ func (t *TypeParameters) String() string {
 	return builder.String()
 }
 
-// NamedTuple represents a named tuple type
+// named_tuple = type_identifier tuple_type .
+
 type NamedTuple struct {
 	BaseNode
 	TypeIdentifier *TypeIdentifier
 	TupleType      *TupleType
 }
 
-// NewNamedTuple creates a new NamedTuple node
 func NewNamedTuple(typeIdentifier *TypeIdentifier, tupleType *TupleType) *NamedTuple {
 	return &NamedTuple{
 		BaseNode:       BaseNode{Type: NodeNamedTuple},
@@ -471,7 +477,6 @@ func NewNamedTuple(typeIdentifier *TypeIdentifier, tupleType *TupleType) *NamedT
 	}
 }
 
-// String returns a textual representation of the named tuple
 func (n *NamedTuple) String() string {
 	return n.TypeIdentifier.String() + " " + n.TupleType.String()
 }
