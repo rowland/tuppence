@@ -72,11 +72,20 @@ func (e *ErrorTuple) String() string {
 	return "error" + e.TupleType.String()
 }
 
+type ArrayElementType interface {
+	Node
+	arrayElementTypeNode()
+}
+
+func (n *TypeReference) arrayElementTypeNode()      {}
+func (n *DynamicArrayType) arrayElementTypeNode()   {}
+func (n *FixedSizeArrayType) arrayElementTypeNode() {}
+
 // array_type = fixed_size_array | dynamic_array .
 
 type ArrayType struct {
 	BaseNode
-	ElementType Node // The type of array elements
+	ElementType ArrayElementType
 }
 
 func (a *ArrayType) String() string {
@@ -89,7 +98,7 @@ type DynamicArrayType struct {
 	ArrayType
 }
 
-func NewDynamicArrayType(elementType Node) *DynamicArrayType {
+func NewDynamicArrayType(elementType ArrayElementType) *DynamicArrayType {
 	return &DynamicArrayType{
 		ArrayType: ArrayType{
 			BaseNode:    BaseNode{Type: NodeArrayType},
@@ -106,10 +115,10 @@ func (d *DynamicArrayType) String() string {
 
 type FixedSizeArrayType struct {
 	ArrayType
-	Size Node // Size expression (can be a literal or identifier)
+	Size Size
 }
 
-func NewFixedSizeArrayType(elementType Node, size Node) *FixedSizeArrayType {
+func NewFixedSizeArrayType(elementType ArrayElementType, size Size) *FixedSizeArrayType {
 	return &FixedSizeArrayType{
 		ArrayType: ArrayType{
 			BaseNode:    BaseNode{Type: NodeArrayType},

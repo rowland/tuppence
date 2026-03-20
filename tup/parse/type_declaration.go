@@ -305,15 +305,23 @@ func ContractDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Toke
 
 // array_type = fixed_size_array | dynamic_array .
 
-func ArrayType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
+func ArrayType(tokens []tok.Token) (ast.ArrayElementType, []tok.Token, error) {
 	if fixedSizeArray, remainder, err := FixedSizeArray(tokens); err == nil {
-		return fixedSizeArray, remainder, nil
+		arrayType, ok := fixedSizeArray.(*ast.FixedSizeArrayType)
+		if !ok {
+			return nil, remainder, errorExpecting("fixed size array type", remainder)
+		}
+		return arrayType, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
 	if dynamicArray, remainder, err := DynamicArray(tokens); err == nil {
-		return dynamicArray, remainder, nil
+		arrayType, ok := dynamicArray.(*ast.DynamicArrayType)
+		if !ok {
+			return nil, remainder, errorExpecting("dynamic array type", remainder)
+		}
+		return arrayType, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
@@ -321,7 +329,7 @@ func ArrayType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
 	return nil, tokens, ErrNoMatch
 }
 
-func ArrayElementType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
+func ArrayElementType(tokens []tok.Token) (ast.ArrayElementType, []tok.Token, error) {
 	if typeReference, remainder, err := TypeReference(tokens); err == nil {
 		return typeReference, remainder, nil
 	} else if err != ErrNoMatch {
