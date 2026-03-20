@@ -130,7 +130,7 @@
                                         - [ ] array_type
                                     - [ ] dynamic_array
                                     - [ ] function_type
-                                    - [ ] tuple_type
+                                    - [x] tuple_type
                                     - [ ] error_tuple
                                     - [ ] generic_type
                                         - [ ] type_argument_list
@@ -153,8 +153,8 @@
                             - [ ] union_declaration_with_error
                     - [x] block
                 - [ ] type_qualified_declaration
-                - [ ] type_declaration
-                    - [ ] type_declaration_lhs
+                - [x] type_declaration
+                    - [x] type_declaration_lhs
                     - [ ] type_declaration_rhs
                 - [ ] function_declaration
                 - [ ] compound_assignment
@@ -213,8 +213,8 @@
 - [x] labeled_tuple
 - [x] labeled_tuple_member
 - [x] labeled_tuple_members
-- [ ] labeled_tuple_type_member
-- [ ] labeled_tuple_type_members
+- [x] labeled_tuple_type_member
+- [x] labeled_tuple_type_members
 - [ ] leading_whitespace
 - [x] letter
 - [ ] list_match

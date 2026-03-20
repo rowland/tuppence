@@ -190,9 +190,53 @@ func TestTypeDeclaration(t *testing.T) {
 			),
 		},
 		{
-			name:    "tuple type rhs is not implemented yet",
-			input:   "Person = type(name: String, age: Int)",
-			wantErr: true,
+			name:  "tuple type rhs",
+			input: "Person = type(name: String, age: Int)",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Person", nil, 0, 6), nil),
+				ast.NewTupleType([]ast.TupleTypeMemberNode{
+					ast.NewLabeledTupleTypeMember(
+						nil,
+						ast.NewIdentifier("name", nil, 0, 4),
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+					),
+					ast.NewLabeledTupleTypeMember(
+						nil,
+						ast.NewIdentifier("age", nil, 0, 3),
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					),
+				}),
+			),
+		},
+		{
+			name:  "nested tuple type rhs",
+			input: "Nested = type(id: Int, data: (name: String, value: Float))",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Nested", nil, 0, 6), nil),
+				ast.NewTupleType([]ast.TupleTypeMemberNode{
+					ast.NewLabeledTupleTypeMember(
+						nil,
+						ast.NewIdentifier("id", nil, 0, 2),
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					),
+					ast.NewLabeledTupleTypeMember(
+						nil,
+						ast.NewIdentifier("data", nil, 0, 4),
+						ast.NewTupleType([]ast.TupleTypeMemberNode{
+							ast.NewLabeledTupleTypeMember(
+								nil,
+								ast.NewIdentifier("name", nil, 0, 4),
+								ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+							),
+							ast.NewLabeledTupleTypeMember(
+								nil,
+								ast.NewIdentifier("value", nil, 0, 5),
+								ast.NewTypeReference(nil, ast.NewTypeIdentifier("Float", nil, 0, 5), nil, 0, 5),
+							),
+						}),
+					),
+				}),
+			),
 		},
 		{
 			name:    "dynamic array rhs is not implemented yet",
@@ -215,6 +259,85 @@ func TestTypeDeclaration(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
 				"TypeDeclaration", TypeDeclaration, StringerCheck[*ast.TypeDeclaration])
+		})
+	}
+}
+
+func TestTupleType(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.TupleType
+		wantErr bool
+	}{
+		{
+			name:  "ordinal tuple type",
+			input: "(Int, String)",
+			want: ast.NewTupleType([]ast.TupleTypeMemberNode{
+				ast.NewTupleTypeMember(nil, ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3)),
+				ast.NewTupleTypeMember(nil, ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6)),
+			}),
+		},
+		{
+			name:  "labeled tuple type",
+			input: "(name: String, age: Int)",
+			want: ast.NewTupleType([]ast.TupleTypeMemberNode{
+				ast.NewLabeledTupleTypeMember(
+					nil,
+					ast.NewIdentifier("name", nil, 0, 4),
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+				),
+				ast.NewLabeledTupleTypeMember(
+					nil,
+					ast.NewIdentifier("age", nil, 0, 3),
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+				),
+			}),
+		},
+		{
+			name:  "nested tuple type member",
+			input: "(coords: (x: Float, y: Float))",
+			want: ast.NewTupleType([]ast.TupleTypeMemberNode{
+				ast.NewLabeledTupleTypeMember(
+					nil,
+					ast.NewIdentifier("coords", nil, 0, 6),
+					ast.NewTupleType([]ast.TupleTypeMemberNode{
+						ast.NewLabeledTupleTypeMember(
+							nil,
+							ast.NewIdentifier("x", nil, 0, 1),
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("Float", nil, 0, 5), nil, 0, 5),
+						),
+						ast.NewLabeledTupleTypeMember(
+							nil,
+							ast.NewIdentifier("y", nil, 0, 1),
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("Float", nil, 0, 5), nil, 0, 5),
+						),
+					}),
+				),
+			}),
+		},
+		{
+			name:  "nilable tuple type member",
+			input: "(id: ?Int)",
+			want: ast.NewTupleType([]ast.TupleTypeMemberNode{
+				ast.NewLabeledTupleTypeMember(
+					nil,
+					ast.NewIdentifier("id", nil, 0, 2),
+					ast.NewNilableType(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3)),
+				),
+			}),
+		},
+		{
+			name:    "mixed labeled and ordinal members are rejected",
+			input:   "(name: String, Int)",
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"TupleType", TupleType, StringerCheck[*ast.TupleType])
 		})
 	}
 }

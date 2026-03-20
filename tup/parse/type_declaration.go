@@ -70,7 +70,7 @@ func TypeDeclarationRHS(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token
 		return nil, remainder, err
 	}
 
-	if tupleType, remainder, err := TypeTupleDeclarationRHS(tokens); err == nil {
+	if tupleType, remainder, err := TypeTupleType(tokens); err == nil {
 		return tupleType, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
@@ -196,8 +196,14 @@ func TypeParameters(tokens []tok.Token) (*ast.TypeParameters, []tok.Token, error
 
 // "type" tuple_type .
 
-func TypeTupleDeclarationRHS(tokens []tok.Token) (*ast.TupleType, []tok.Token, error) {
-	return nil, tokens, ErrNoMatch // TODO: Implement
+func TypeTupleType(tokens []tok.Token) (*ast.TupleType, []tok.Token, error) {
+	remainder := skipTrivia(tokens)
+	if peek(remainder).Type != tok.TokKwType {
+		return nil, tokens, ErrNoMatch
+	}
+	remainder = remainder[1:]
+
+	return TupleType(remainder)
 }
 
 // error_tuple .
@@ -240,4 +246,174 @@ func EnumDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, e
 
 func ContractDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
 	return nil, tokens, ErrNoMatch // TODO: Implement
+}
+
+// tuple_type = "(" [ labeled_tuple_type_members | tuple_type_members ] ")" .
+
+func TupleType(tokens []tok.Token) (*ast.TupleType, []tok.Token, error) {
+	remainder, found := OpenParen(tokens)
+	if !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	remainder = skipTrivia(remainder)
+	if remainder, found = CloseParen(remainder); found {
+		return ast.NewTupleType(nil), remainder, nil
+	}
+
+	var members []ast.TupleTypeMemberNode
+	var err error
+	if members, remainder, err = LabeledTupleTypeMembers(remainder); err == nil {
+		if remainder, found = CloseParen(remainder); !found {
+			return nil, remainder, errorExpectingTokenType(tok.TokCloseParen, remainder)
+		}
+		return ast.NewTupleType(members), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if members, remainder, err = TupleTypeMembers(remainder); err != nil {
+		return nil, remainder, err
+	}
+
+	if remainder, found = CloseParen(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseParen, remainder)
+	}
+
+	return ast.NewTupleType(members), remainder, nil
+}
+
+// labeled_tuple_type_member = annotations identifier ":" tuple_type_member .
+
+func LabeledTupleTypeMember(tokens []tok.Token) (*ast.LabeledTupleTypeMember, []tok.Token, error) {
+	annotations, remainder, err := Annotations(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	identifier, remainder, err := Identifier(remainder)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	var found bool
+	if remainder, found = Colon(remainder); !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	member, remainder, err := TupleTypeMember(remainder)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewLabeledTupleTypeMember(annotations, identifier, member.Type), remainder, nil
+}
+
+// labeled_tuple_type_members = labeled_tuple_type_member { "," labeled_tuple_type_member } .
+
+func LabeledTupleTypeMembers(tokens []tok.Token) ([]ast.TupleTypeMemberNode, []tok.Token, error) {
+	first, remainder, err := LabeledTupleTypeMember(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	members := []ast.TupleTypeMemberNode{first}
+	for {
+		var found bool
+		if remainder, found = Comma(remainder); !found {
+			break
+		}
+
+		next, remainder2, err := LabeledTupleTypeMember(remainder)
+		if err == ErrNoMatch {
+			return nil, remainder2, errorExpecting("labeled tuple type member", remainder2)
+		} else if err != nil {
+			return nil, remainder2, err
+		}
+
+		members = append(members, next)
+		remainder = remainder2
+	}
+
+	return members, remainder, nil
+}
+
+// tuple_type_member = annotations ( nilable_type
+//                                 | type
+//                                 | union_type
+//                                 | union_declaration
+//                                 | literal ) .
+//
+// The parser currently implements the subset that is already in use elsewhere:
+// nilable types, tuple types, type references, and literals.
+
+func TupleTypeMember(tokens []tok.Token) (*ast.TupleTypeMember, []tok.Token, error) {
+	annotations, remainder, err := Annotations(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	var memberType ast.Node
+	if memberType, remainder, err = tupleTypeMemberType(remainder); err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewTupleTypeMember(annotations, memberType), remainder, nil
+}
+
+// tuple_type_members = tuple_type_member { "," tuple_type_member } .
+
+func TupleTypeMembers(tokens []tok.Token) ([]ast.TupleTypeMemberNode, []tok.Token, error) {
+	first, remainder, err := TupleTypeMember(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	members := []ast.TupleTypeMemberNode{first}
+	for {
+		var found bool
+		if remainder, found = Comma(remainder); !found {
+			break
+		}
+
+		next, remainder2, err := TupleTypeMember(remainder)
+		if err == ErrNoMatch {
+			return nil, remainder2, errorExpecting("tuple type member", remainder2)
+		} else if err != nil {
+			return nil, remainder2, err
+		}
+
+		members = append(members, next)
+		remainder = remainder2
+	}
+
+	return members, remainder, nil
+}
+
+func tupleTypeMemberType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
+	if nilableType, remainder, err := NilableType(tokens); err == nil {
+		return nilableType, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if tupleType, remainder, err := TupleType(tokens); err == nil {
+		return tupleType, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if typeReference, remainder, err := TypeReference(tokens); err == nil {
+		return typeReference, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if literal, remainder, err := Literal(tokens); err == nil {
+		return literal, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
 }

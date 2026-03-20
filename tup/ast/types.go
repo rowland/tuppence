@@ -266,19 +266,34 @@ func (f *FunctionType) String() string {
 }
 
 // TupleTypeMember represents a member of a tuple type
+type TupleTypeMemberNode interface {
+	Node
+	tupleTypeMemberNode()
+}
+
+func (n *TupleTypeMember) tupleTypeMemberNode()        {}
+func (n *LabeledTupleTypeMember) tupleTypeMemberNode() {}
+
 type TupleTypeMember struct {
 	BaseNode
-	Annotations []Node // Optional annotations
-	Type        Node   // Member type
+	Annotations *Annotations // Optional annotations
+	Type        Node         // Member type
+}
+
+func NewTupleTypeMember(annotations *Annotations, memberType Node) *TupleTypeMember {
+	return &TupleTypeMember{
+		BaseNode:    BaseNode{Type: NodeTupleTypeMember},
+		Annotations: annotations,
+		Type:        memberType,
+	}
 }
 
 // String returns a textual representation of the tuple type member
 func (t *TupleTypeMember) String() string {
 	var builder strings.Builder
 
-	for _, anno := range t.Annotations {
-		builder.WriteString(anno.String())
-		builder.WriteString(" ")
+	if t.Annotations != nil {
+		builder.WriteString(t.Annotations.String())
 	}
 
 	builder.WriteString(t.Type.String())
@@ -288,18 +303,26 @@ func (t *TupleTypeMember) String() string {
 // LabeledTupleTypeMember represents a labeled member of a tuple type
 type LabeledTupleTypeMember struct {
 	BaseNode
-	Annotations []Node      // Optional annotations
-	Identifier  *Identifier // Field name
-	Type        Node        // Field type
+	Annotations *Annotations // Optional annotations
+	Identifier  *Identifier  // Field name
+	Type        Node         // Field type
+}
+
+func NewLabeledTupleTypeMember(annotations *Annotations, identifier *Identifier, memberType Node) *LabeledTupleTypeMember {
+	return &LabeledTupleTypeMember{
+		BaseNode:    BaseNode{Type: NodeLabeledTupleTypeMember},
+		Annotations: annotations,
+		Identifier:  identifier,
+		Type:        memberType,
+	}
 }
 
 // String returns a textual representation of the labeled tuple type member
 func (l *LabeledTupleTypeMember) String() string {
 	var builder strings.Builder
 
-	for _, anno := range l.Annotations {
-		builder.WriteString(anno.String())
-		builder.WriteString(" ")
+	if l.Annotations != nil {
+		builder.WriteString(l.Annotations.String())
 	}
 
 	builder.WriteString(l.Identifier.String())
@@ -311,11 +334,11 @@ func (l *LabeledTupleTypeMember) String() string {
 // TupleType represents a tuple type
 type TupleType struct {
 	BaseNode
-	Members []Node // Mix of TupleTypeMember and LabeledTupleTypeMember nodes
+	Members []TupleTypeMemberNode
 }
 
 // NewTupleType creates a new TupleType node
-func NewTupleType(members []Node) *TupleType {
+func NewTupleType(members []TupleTypeMemberNode) *TupleType {
 	return &TupleType{
 		BaseNode: BaseNode{Type: NodeTupleType},
 		Members:  members,
