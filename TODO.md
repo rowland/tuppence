@@ -126,7 +126,7 @@
                             - [ ] parameter
                                 - [ ] nilable_type
                                 - [ ] type
-                                    - [ ] fixed_size_array
+                                    - [x] fixed_size_array
                                         - [ ] array_type
                                     - [ ] dynamic_array
                                     - [ ] function_type

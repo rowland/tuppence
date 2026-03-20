@@ -261,9 +261,29 @@ func TestTypeDeclaration(t *testing.T) {
 			),
 		},
 		{
-			name:    "fixed size array rhs is not implemented yet",
-			input:   "IPv4 = [4]Byte",
-			wantErr: true,
+			name:  "fixed size array rhs",
+			input: "IPv4 = [4]Byte",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("IPv4", nil, 0, 4), nil),
+				ast.NewFixedSizeArrayType(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Byte", nil, 0, 4), nil, 0, 4),
+					ast.NewDecimalLiteral("4", 4, nil, 0, 1),
+				),
+			),
+		},
+		{
+			name:  "nested fixed size array rhs",
+			input: "Matrix = [3][3]Int",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Matrix", nil, 0, 6), nil),
+				ast.NewFixedSizeArrayType(
+					ast.NewFixedSizeArrayType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+						ast.NewDecimalLiteral("3", 3, nil, 0, 1),
+					),
+					ast.NewDecimalLiteral("3", 3, nil, 0, 1),
+				),
+			),
 		},
 		{
 			name:    "missing equals",
@@ -314,6 +334,60 @@ func TestDynamicArray(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
 				"DynamicArray", DynamicArray, StringerCheck[ast.TypeDeclarationRHS])
+		})
+	}
+}
+
+func TestFixedSizeArray(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    ast.TypeDeclarationRHS
+		wantErr bool
+	}{
+		{
+			name:  "simple fixed size array",
+			input: "[4]Byte",
+			want: ast.NewFixedSizeArrayType(
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Byte", nil, 0, 4), nil, 0, 4),
+				ast.NewDecimalLiteral("4", 4, nil, 0, 1),
+			),
+		},
+		{
+			name:  "identifier sized fixed size array",
+			input: "[n]Byte",
+			want: ast.NewFixedSizeArrayType(
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Byte", nil, 0, 4), nil, 0, 4),
+				ast.NewIdentifier("n", nil, 0, 1),
+			),
+		},
+		{
+			name:  "nested fixed size array",
+			input: "[3][3]Int",
+			want: ast.NewFixedSizeArrayType(
+				ast.NewFixedSizeArrayType(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					ast.NewDecimalLiteral("3", 3, nil, 0, 1),
+				),
+				ast.NewDecimalLiteral("3", 3, nil, 0, 1),
+			),
+		},
+		{
+			name:    "missing size",
+			input:   "[]Byte",
+			wantErr: true,
+		},
+		{
+			name:    "missing element type",
+			input:   "[4]",
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"FixedSizeArray", FixedSizeArray, StringerCheck[ast.TypeDeclarationRHS])
 		})
 	}
 }

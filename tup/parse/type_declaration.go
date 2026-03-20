@@ -237,7 +237,33 @@ func DynamicArray(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, erro
 // fixed_size_array .
 
 func FixedSizeArray(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
-	return nil, tokens, ErrNoMatch // TODO: Implement
+	remainder, found := OpenBracket(tokens)
+	if !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	size, remainder, err := Size(remainder)
+	if err == ErrNoMatch {
+		if peek(remainder).Type == tok.TokCloseBracket {
+			return nil, tokens, ErrNoMatch
+		}
+		return nil, remainder, errorExpecting("array size", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	if remainder, found = CloseBracket(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseBracket, remainder)
+	}
+
+	elementType, remainder, err := ArrayElementType(remainder)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("array element type", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewFixedSizeArrayType(elementType, size), remainder, nil
 }
 
 // union_type .

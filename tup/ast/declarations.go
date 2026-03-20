@@ -101,9 +101,9 @@ type TypeDeclarationRHS interface {
 func (n NilableType) typeDeclarationRHSNode() {}
 func (n TupleType) typeDeclarationRHSNode()   {}
 func (n DynamicArrayType) typeDeclarationRHSNode() {}
+func (n FixedSizeArrayType) typeDeclarationRHSNode() {}
 
 // func (n ErrorTuple) typeDeclarationRHSNode()          {}
-// func (n FixedSizeArray) typeDeclarationRHSNode()      {}
 
 func (n UnionType) typeDeclarationRHSNode()           {}
 func (n UnionDeclaration) typeDeclarationRHSNode()    {}
