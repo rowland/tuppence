@@ -632,6 +632,87 @@ func TestUnionDeclarationWithError(t *testing.T) {
 	}
 }
 
+func TestReturnType(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.ReturnType
+		wantErr bool
+	}{
+		{
+			name:  "union with error shorthand",
+			input: "!Card",
+			want: ast.NewReturnType(
+				ast.NewUnionWithError(
+					[]ast.UnionMemberType{
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Card", nil, 0, 4), nil, 0, 4),
+					},
+					true,
+				),
+			),
+		},
+		{
+			name:  "union declaration with error",
+			input: "union(\nOk()\nErr(a)\nerror\n)",
+			want: ast.NewReturnType(
+				ast.NewUnionDeclarationWithError(ast.UnionMembers{
+					ast.NewUnionMemberDeclaration(
+						nil,
+						ast.NewNamedTuple(
+							ast.NewTypeIdentifier("Ok", nil, 0, 2),
+							ast.NewTupleType(nil),
+						),
+					),
+					ast.NewUnionMemberDeclaration(
+						nil,
+						ast.NewNamedTuple(
+							ast.NewTypeIdentifier("Err", nil, 0, 3),
+							ast.NewTupleType([]ast.TupleTypeMemberNode{
+								ast.NewTupleTypeMember(nil, ast.NewIdentifier("a", nil, 0, 1)),
+							}),
+						),
+					),
+				}),
+			),
+		},
+		{
+			name:  "nilable return type",
+			input: "?Card",
+			want: ast.NewReturnType(
+				ast.NewNilableType(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Card", nil, 0, 4), nil, 0, 4),
+				),
+			),
+		},
+		{
+			name:  "inline union return type",
+			input: "(Int | String)",
+			want: ast.NewReturnType(
+				ast.NewInlineUnion(
+					ast.NewUnionType([]ast.UnionMemberType{
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+					}),
+				),
+			),
+		},
+		{
+			name:  "bare error return type",
+			input: "error",
+			want: ast.NewReturnType(
+				ast.NewInferredErrorType(),
+			),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"ReturnType", ReturnType, StringerCheck[*ast.ReturnType])
+		})
+	}
+}
+
 func TestDynamicArray(t *testing.T) {
 	tests := []struct {
 		name    string

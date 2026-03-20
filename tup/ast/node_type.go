@@ -183,6 +183,7 @@ const (
 	NodeInlineUnion
 	NodeNamedTuple
 	NodeNilableType
+	NodeInferredErrorType
 	NodeErrorTuple
 	NodeRestParameter
 	NodeReturnType
@@ -378,6 +379,7 @@ var NodeTypes = map[NodeType]string{
 	NodeInlineUnion:   "InlineUnion",
 	NodeNamedTuple:    "NamedTuple",
 	NodeNilableType:   "NilableType",
+	NodeInferredErrorType: "InferredErrorType",
 	NodeErrorTuple:    "ErrorTuple",
 	NodeRestParameter: "RestParameter",
 	NodeReturnType:    "ReturnType",

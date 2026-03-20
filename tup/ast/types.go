@@ -227,6 +227,22 @@ func (l *LabeledRestParameter) String() string {
 	return builder.String()
 }
 
+// InferredErrorType represents a bare `error` return type whose concrete
+// error type or union of error types is inferred from the function body.
+type InferredErrorType struct {
+	BaseNode
+}
+
+func NewInferredErrorType() *InferredErrorType {
+	return &InferredErrorType{
+		BaseNode: BaseNode{Type: NodeInferredErrorType},
+	}
+}
+
+func (i *InferredErrorType) String() string {
+	return "error"
+}
+
 // return_type = union_with_error
 //             | union_declaration_with_error
 //             | nilable_type

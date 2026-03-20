@@ -522,6 +522,85 @@ func TypeArgumentList(tokens []tok.Token) (*ast.TypeArgumentList, []tok.Token, e
 	return ast.NewTypeArgumentList(arguments), remainder, nil
 }
 
+// return_type = union_with_error
+//             | union_declaration_with_error
+//             | nilable_type
+//             | type
+//             | "error" .
+//
+// The parser currently implements the already-supported subset of type:
+// generic_type, array types, error_tuple, tuple_type, local_type_reference,
+// and inline_union.
+
+func ReturnType(tokens []tok.Token) (*ast.ReturnType, []tok.Token, error) {
+	if unionWithError, remainder, err := UnionWithError(tokens); err == nil {
+		return ast.NewReturnType(unionWithError), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if unionDeclarationWithError, remainder, err := UnionDeclarationWithError(tokens); err == nil {
+		return ast.NewReturnType(unionDeclarationWithError), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if nilableType, remainder, err := NilableType(tokens); err == nil {
+		return ast.NewReturnType(nilableType), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if genericType, remainder, err := GenericType(tokens); err == nil {
+		return ast.NewReturnType(genericType), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if dynamicArray, remainder, err := DynamicArray(tokens); err == nil {
+		return ast.NewReturnType(dynamicArray), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if fixedSizeArray, remainder, err := FixedSizeArray(tokens); err == nil {
+		return ast.NewReturnType(fixedSizeArray), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	remainder := skipTrivia(tokens)
+	if peek(remainder).Type == tok.TokKwError {
+		return ast.NewReturnType(ast.NewInferredErrorType()), remainder[1:], nil
+	}
+
+	if errorTuple, remainder, err := ErrorTuple(tokens); err == nil {
+		return ast.NewReturnType(errorTuple), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if inlineUnion, remainder, err := InlineUnion(tokens); err == nil {
+		return ast.NewReturnType(inlineUnion), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if tupleType, remainder, err := TupleType(tokens); err == nil {
+		return ast.NewReturnType(tupleType), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if localTypeReference, remainder, err := LocalTypeReference(tokens); err == nil {
+		return ast.NewReturnType(localTypeReference), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
+}
+
 // union_declaration = "union" "(" eol union_members ")" .
 
 func UnionDeclaration(tokens []tok.Token) (*ast.UnionDeclaration, []tok.Token, error) {

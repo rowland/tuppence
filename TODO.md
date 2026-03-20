@@ -148,7 +148,7 @@
                                             - [ ] contract_member
                                                 - [ ] contract_function
                                                 - [ ] contract_field
-                        - [ ] return_type
+                        - [x] return_type
                             - [x] union_with_error
                             - [x] union_declaration_with_error
                     - [x] block
