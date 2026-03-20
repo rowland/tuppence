@@ -282,7 +282,7 @@ func FixedSizeArray(tokens []tok.Token) (*ast.FixedSizeArrayType, []tok.Token, e
 // union_type = "any"
 //            | union_member "|" union_member { "|" union_member } .
 
-func UnionType(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
+func UnionType(tokens []tok.Token) (*ast.UnionType, []tok.Token, error) {
 	remainder := skipTrivia(tokens)
 	if identifier, remainder2, err := Identifier(remainder); err == nil && identifier.Name == "any" {
 		return ast.NewUnionType(nil), remainder2, nil
@@ -305,7 +305,7 @@ func UnionType(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) 
 		return nil, remainder, err
 	}
 
-	members := []ast.Node{first, second}
+	members := []ast.UnionMemberType{first, second}
 	for {
 		var found bool
 		if remainder, found = Pipe(remainder); !found {
@@ -324,6 +324,28 @@ func UnionType(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) 
 	}
 
 	return ast.NewUnionType(members), remainder, nil
+}
+
+// inline_union = "(" union_type ")" .
+
+func InlineUnion(tokens []tok.Token) (*ast.InlineUnion, []tok.Token, error) {
+	remainder, found := OpenParen(tokens)
+	if !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	unionType, remainder, err := UnionType(remainder)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("union type", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	if remainder, found = CloseParen(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseParen, remainder)
+	}
+
+	return ast.NewInlineUnion(unionType), remainder, nil
 }
 
 // generic_type = type_reference type_argument_list .
@@ -434,19 +456,19 @@ func TypeArgumentList(tokens []tok.Token) (*ast.TypeArgumentList, []tok.Token, e
 	return ast.NewTypeArgumentList(arguments), remainder, nil
 }
 
-// union_declaration .
+// union_declaration = "union" "(" eol union_members ")" .
 
 func UnionDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
 	return nil, tokens, ErrNoMatch // TODO: Implement
 }
 
-// enum_declaration .
+// enum_declaration = "enum" "(" eol enum_members ")" .
 
 func EnumDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
 	return nil, tokens, ErrNoMatch // TODO: Implement
 }
 
-// contract_declaration .
+// contract_declaration = "contract" "(" eol contract_members ")" .
 
 func ContractDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
 	return nil, tokens, ErrNoMatch // TODO: Implement
@@ -462,7 +484,7 @@ func ContractDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Toke
 // The parser currently implements the already-supported subset: local type
 // references, array types, and named tuples.
 
-func UnionMember(tokens []tok.Token) (ast.Node, []tok.Token, error) {
+func UnionMember(tokens []tok.Token) (ast.UnionMemberType, []tok.Token, error) {
 	if namedTuple, remainder, err := NamedTuple(tokens); err == nil {
 		return namedTuple, remainder, nil
 	} else if err != ErrNoMatch {
@@ -487,14 +509,28 @@ func UnionMember(tokens []tok.Token) (ast.Node, []tok.Token, error) {
 		return nil, remainder, err
 	}
 
-	if localTypeReference, remainder, err := LocalTypeReference(tokens); err == nil {
-		return localTypeReference, remainder, nil
+	// local_type_reference = type_reference | identifier .
+	// We spell those alternatives out here instead of calling
+	// LocalTypeReference(...) so UnionMember(...) can return the narrower
+	// UnionMemberType interface directly.
+	if typeReference, remainder, err := TypeReference(tokens); err == nil {
+		return typeReference, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if identifier, remainder, err := Identifier(tokens); err == nil {
+		return identifier, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
 	if contractDeclaration, remainder, err := ContractDeclaration(tokens); err == nil {
-		return contractDeclaration, remainder, nil
+		member, ok := contractDeclaration.(ast.UnionMemberType)
+		if !ok {
+			return nil, remainder, errorExpecting("union member type", remainder)
+		}
+		return member, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}

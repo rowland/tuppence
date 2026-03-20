@@ -734,7 +734,19 @@ func TypeComparisonTail(left ast.Expression, tokens []tok.Token) (expr ast.Expre
 
 func TypePredicate(tokens []tok.Token) (expr ast.TypePredicate, remainder []tok.Token, err error) {
 	// fmt.Println("TypePredicate", tokens)
-	return nil, nil, ErrNoMatch // TODO: Implement
+	if typeReference, remainder, err := TypeReference(tokens); err == nil {
+		return typeReference, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if inlineUnion, remainder, err := InlineUnion(tokens); err == nil {
+		return inlineUnion, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
 }
 
 // relational_comparison_tail = rel_op add_sub_expression .

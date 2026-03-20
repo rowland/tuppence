@@ -301,7 +301,7 @@ func TestTypeDeclaration(t *testing.T) {
 			input: "Key = Int | String",
 			want: ast.NewTypeDeclaration(
 				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Key", nil, 0, 3), nil),
-				ast.NewUnionType([]ast.Node{
+				ast.NewUnionType([]ast.UnionMemberType{
 					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
 					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
 				}),
@@ -312,7 +312,7 @@ func TestTypeDeclaration(t *testing.T) {
 			input: "ComplexKey = Int | String | ComplexTuple(primary: Int, secondary: String)",
 			want: ast.NewTypeDeclaration(
 				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("ComplexKey", nil, 0, 10), nil),
-				ast.NewUnionType([]ast.Node{
+				ast.NewUnionType([]ast.UnionMemberType{
 					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
 					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
 					ast.NewNamedTuple(
@@ -521,7 +521,7 @@ func TestUnionType(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    ast.TypeDeclarationRHS
+		want    *ast.UnionType
 		wantErr bool
 	}{
 		{
@@ -532,7 +532,7 @@ func TestUnionType(t *testing.T) {
 		{
 			name:  "simple union type",
 			input: "Int | String",
-			want: ast.NewUnionType([]ast.Node{
+			want: ast.NewUnionType([]ast.UnionMemberType{
 				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
 				ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
 			}),
@@ -540,7 +540,7 @@ func TestUnionType(t *testing.T) {
 		{
 			name:  "named tuple member union type",
 			input: "Int | ComplexTuple(primary: Int, secondary: String)",
-			want: ast.NewUnionType([]ast.Node{
+			want: ast.NewUnionType([]ast.UnionMemberType{
 				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
 				ast.NewNamedTuple(
 					ast.NewTypeIdentifier("ComplexTuple", nil, 0, 12),
@@ -562,7 +562,7 @@ func TestUnionType(t *testing.T) {
 		{
 			name:  "generic member union type",
 			input: "Result[Int, String] | Card",
-			want: ast.NewUnionType([]ast.Node{
+			want: ast.NewUnionType([]ast.UnionMemberType{
 				ast.NewGenericType(
 					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Result", nil, 0, 6), nil, 0, 6),
 					ast.NewTypeArgumentList([]*ast.TypeArgument{
@@ -588,7 +588,55 @@ func TestUnionType(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
-				"UnionType", UnionType, StringerCheck[ast.TypeDeclarationRHS])
+				"UnionType", UnionType, StringerCheck[*ast.UnionType])
+		})
+	}
+}
+
+func TestInlineUnion(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.InlineUnion
+		wantErr bool
+	}{
+		{
+			name:  "simple inline union",
+			input: "(Int | String)",
+			want: ast.NewInlineUnion(
+				ast.NewUnionType([]ast.UnionMemberType{
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+				}),
+			),
+		},
+		{
+			name:  "inline union with generic member",
+			input: "(Result[Int, String] | Card)",
+			want: ast.NewInlineUnion(
+				ast.NewUnionType([]ast.UnionMemberType{
+					ast.NewGenericType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Result", nil, 0, 6), nil, 0, 6),
+						ast.NewTypeArgumentList([]*ast.TypeArgument{
+							ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3)),
+							ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6)),
+						}),
+					),
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Card", nil, 0, 4), nil, 0, 4),
+				}),
+			),
+		},
+		{
+			name:    "parenthesized type reference is not an inline union",
+			input:   "(Int)",
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"InlineUnion", InlineUnion, StringerCheck[*ast.InlineUnion])
 		})
 	}
 }

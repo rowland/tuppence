@@ -76,25 +76,34 @@ func (u *UnionDeclaration) String() string {
 	return builder.String()
 }
 
-// UnionMember represents a member of a union type
-type UnionMember struct {
-	BaseNode
-	Type Node // Member type
+// union_member = named_tuple
+//              | generic_type
+//              | dynamic_array
+//              | fixed_size_array
+//              | local_type_reference
+//              | contract_declaration .
+
+type UnionMemberType interface {
+	Node
+	unionMemberTypeNode()
 }
 
-// String returns a textual representation of the union member
-func (u *UnionMember) String() string {
-	return u.Type.String()
-}
+func (n *NamedTuple) unionMemberTypeNode()          {}
+func (n *GenericType) unionMemberTypeNode()         {}
+func (n *DynamicArrayType) unionMemberTypeNode()    {}
+func (n *FixedSizeArrayType) unionMemberTypeNode()  {}
+func (n *TypeReference) unionMemberTypeNode()       {}
+func (n *Identifier) unionMemberTypeNode()          {}
+func (n *ContractDeclaration) unionMemberTypeNode() {}
 
 // UnionType represents a union type
 type UnionType struct {
 	BaseNode
-	Members []Node // List of UnionMember nodes
+	Members []UnionMemberType
 }
 
 // NewUnionType creates a new UnionType node
-func NewUnionType(members []Node) *UnionType {
+func NewUnionType(members []UnionMemberType) *UnionType {
 	return &UnionType{
 		BaseNode: BaseNode{Type: NodeUnionType},
 		Members:  members,

@@ -135,7 +135,7 @@
                                     - [x] generic_type
                                         - [x] type_argument_list
                                             - [x] type_argument
-                                    - [ ] inline_union
+                                    - [x] inline_union
                          - [x] union_type
                                 - [ ] union_declaration
                                     - [ ] union_members

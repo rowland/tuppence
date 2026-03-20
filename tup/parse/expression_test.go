@@ -192,6 +192,19 @@ func TestExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "type comparison with inline union",
+			input: "value is (Int | String)",
+			want: ast.NewTypeComparison(
+				ast.NewIdentifier("value", nil, 0, 5),
+				ast.NewInlineUnion(
+					ast.NewUnionType([]ast.UnionMemberType{
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+					}),
+				),
+			),
+		},
+		{
 			name:    "invalid expression",
 			input:   "1 +",
 			want:    nil,
@@ -778,6 +791,38 @@ func TestExpression(t *testing.T) {
 					}
 				}
 			}
+		})
+	}
+}
+
+func TestTypePredicate(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    ast.TypePredicate
+		wantErr bool
+	}{
+		{
+			name:  "type reference predicate",
+			input: "Card",
+			want:  ast.NewTypeReference(nil, ast.NewTypeIdentifier("Card", nil, 0, 4), nil, 0, 4),
+		},
+		{
+			name:  "inline union predicate",
+			input: "(Int | String)",
+			want: ast.NewInlineUnion(
+				ast.NewUnionType([]ast.UnionMemberType{
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+				}),
+			),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"TypePredicate", TypePredicate, StringerCheck[ast.TypePredicate])
 		})
 	}
 }
