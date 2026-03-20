@@ -1,0 +1,133 @@
+Single-Character Symbols
+
+These are used for operators, punctuation, or special syntax.
+
+Symbol	Purpose
+=	Assignment
++	Addition
+-	Subtraction
+*	Multiplication
+/	Division
+%	Modulus
+&	Bitwise AND
+^	Exponentiation
+!	Logical NOT
+~	Bitwise NOT
+<	Less than
+>	Greater than
+[	Start of array indexing
+]	End of array indexing
+{	Start of block
+}	End of block
+(	Start of tuple or function call
+)	End of tuple or function call
+:	Labeling in tuples, type aliasing, and export syntax
+,	Argument/parameter separator
+.	Member access, tuple update expression
+"	String delimiter
+`	Raw string delimiter
+#	Comment indicator
+
+Multi-Character Symbols
+
+These include compound operators and special syntax elements.
+
+Symbol	Purpose
+==	Equality comparison
+!=	Inequality comparison
+<=	Less than or equal to
+>=	Greater than or equal to
+<=>	General comparison (similar to compare_to)
++=	Augmented addition (a = a + x)
+-=	Augmented subtraction (a = a - x)
+*=	Augmented multiplication (a = a * x)
+/=	Augmented division (a = a / x)
+<<	Bitwise shift left
+>>	Bitwise shift right
+<<=	Augmented bitwise shift left
+>>=	Augmented bitwise shift right
+&&	Logical AND
+?+	Checked addition
+?-	Checked subtraction
+?*	Checked multiplication
+?/	Checked division
+?%	Checked modulus
+...	Rest operator (for arrays, tuples, and parameters)
+"	Start of string literal
+```	Start and end of multi-line string literal
+\(	Start of interpolation inside a string
+\n	Escape sequence for newline
+\t	Escape sequence for tab
+\r	Escape sequence for carriage return
+\xNN	Byte escape sequence
+\uNNNN	Unicode escape sequence
+\U00NNNNNN	Extended Unicode escape
+
+Reserved Keywords
+
+These are explicitly reserved words in the language.
+
+Keyword	Purpose
+fn	Defines a pure function
+fx	Defines a function with side effects
+return	Returns from a function
+type	Defines a tuple type
+error	Defines an error type
+enum	Defines an enum type
+union	Defines a union type
+contract	Defines a contract type
+if	Conditional statement
+else	Alternate branch of if
+switch	Switch statement for pattern matching
+for	Looping construct
+in	Used in for ... in loops
+break	Exits a loop
+continue	Skips an iteration in a loop
+try	Try expression for error handling
+try_break	Special break for error handling in loops
+try_continue	Special continue for error handling in loops
+mut	Marks an identifier for reassignment (compiler-generated substitution)
+import	Imports a module
+array	Used for defining array types
+it	Default function parameter in blocks
+typeof	Determines the type of an expression
+true	Boolean literal
+false	Boolean literal
+
+Reserved Operators That Map to Built-In Functions
+
+In Tuppence, some operators are mapped to functions instead of being hardcoded as syntax.
+
+Operator	Function Equivalent
+==	eq?
+!=	neq?
+<	lt?
+>	gt?
+<=	lte?
+>=	gte?
+<=>	compare_to
++	add
+-	sub
+*	mul
+/	div
+%	mod
+^	pow
+[]	index
+[]!	safe_index
+
+Symbols That Are Not Reserved
+
+cap	Retrieves array capacity
+len	Retrieves array length
+
+These functions are part of the core library, not the language syntax, 
+meaning users can override or redefine them if needed.
+
+Final Notes
+	•	Identifiers cannot start with uppercase letters unless they are type identifiers.
+	•	The backtick (`) is used for raw strings but not as an operator.
+	•	Triple backticks (```) are reserved for multi-line string literals.
+	•	The mut keyword is syntactic sugar for compiler-generated variable substitution.
+
+
+Should comments include the newline?
