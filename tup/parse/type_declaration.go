@@ -524,8 +524,34 @@ func TypeArgumentList(tokens []tok.Token) (*ast.TypeArgumentList, []tok.Token, e
 
 // union_declaration = "union" "(" eol union_members ")" .
 
-func UnionDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
-	return nil, tokens, ErrNoMatch // TODO: Implement
+func UnionDeclaration(tokens []tok.Token) (*ast.UnionDeclaration, []tok.Token, error) {
+	remainder := skipTrivia(tokens)
+	if peek(remainder).Type != tok.TokKwUnion {
+		return nil, tokens, ErrNoMatch
+	}
+	remainder = remainder[1:]
+
+	var found bool
+	if remainder, found = OpenParen(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokOpenParen, remainder)
+	}
+
+	if remainder, found = EOL(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokEOL, remainder)
+	}
+
+	members, remainder, err := UnionMembers(remainder)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("union members", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	if remainder, found = CloseParen(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseParen, remainder)
+	}
+
+	return ast.NewUnionDeclaration(members), remainder, nil
 }
 
 // enum_declaration = "enum" "(" eol enum_members ")" .
@@ -538,6 +564,97 @@ func EnumDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, e
 
 func ContractDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
 	return nil, tokens, ErrNoMatch // TODO: Implement
+}
+
+// union_member_declaration = annotations named_tuple
+//                          | union_member_no_annotations .
+
+func UnionMemberDeclaration(tokens []tok.Token) (*ast.UnionMemberDeclaration, []tok.Token, error) {
+	annotations, remainder, err := Annotations(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	// annotations is optional in the grammar, so introduced named_tuple members
+	// may appear with or without annotations. We give that form precedence over
+	// union_member_no_annotations so Ok() and Err(a) are treated as introduced
+	// members, not as failed existing-type members.
+	if namedTuple, remainder, err := NamedTuple(remainder); err == nil {
+		return ast.NewUnionMemberDeclaration(annotations.Annotations, namedTuple), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if len(annotations.Annotations) > 0 {
+		return nil, remainder, errorExpecting("named tuple", remainder)
+	}
+
+	member, remainder, err := UnionMemberNoAnnotations(remainder)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewUnionMemberDeclaration(nil, member), remainder, nil
+}
+
+// union_members = union_member_declaration { eol union_member_declaration } eol .
+
+func UnionMembers(tokens []tok.Token) (ast.UnionMembers, []tok.Token, error) {
+	first, remainder, err := UnionMemberDeclaration(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	members := ast.UnionMembers{first}
+	for {
+		remainder2, found := EOL(remainder)
+		if !found {
+			return nil, remainder, errorExpectingTokenType(tok.TokEOL, remainder)
+		}
+
+		next, remainder3, err := UnionMemberDeclaration(remainder2)
+		if err == ErrNoMatch {
+			return members, remainder2, nil
+		} else if err != nil {
+			return nil, remainder3, err
+		}
+
+		members = append(members, next)
+		remainder = remainder3
+	}
+}
+
+// union_member_no_annotations = generic_type
+//                             | dynamic_array
+//                             | fixed_size_array
+//                             | type_reference .
+
+func UnionMemberNoAnnotations(tokens []tok.Token) (ast.UnionDeclarationMemberType, []tok.Token, error) {
+	if genericType, remainder, err := GenericType(tokens); err == nil {
+		return genericType, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if dynamicArray, remainder, err := DynamicArray(tokens); err == nil {
+		return dynamicArray, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if fixedSizeArray, remainder, err := FixedSizeArray(tokens); err == nil {
+		return fixedSizeArray, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if typeReference, remainder, err := TypeReference(tokens); err == nil {
+		return typeReference, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
 }
 
 // union_member = named_tuple
@@ -753,7 +870,7 @@ func LabeledTupleTypeMembers(tokens []tok.Token) ([]ast.TupleTypeMemberNode, []t
 //                                 | literal ) .
 //
 // The parser currently implements the subset that is already in use elsewhere:
-// nilable types, tuple types, type references, and literals.
+// nilable types, tuple types, local type references, and literals.
 
 func TupleTypeMember(tokens []tok.Token) (*ast.TupleTypeMember, []tok.Token, error) {
 	annotations, remainder, err := Annotations(tokens)
@@ -811,8 +928,8 @@ func tupleTypeMemberType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
 		return nil, remainder, err
 	}
 
-	if typeReference, remainder, err := TypeReference(tokens); err == nil {
-		return typeReference, remainder, nil
+	if localTypeReference, remainder, err := LocalTypeReference(tokens); err == nil {
+		return localTypeReference, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}

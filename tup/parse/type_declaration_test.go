@@ -334,6 +334,37 @@ func TestTypeDeclaration(t *testing.T) {
 			),
 		},
 		{
+			name: "union declaration rhs",
+			input: "Result[a] = union(\n    Ok()\n    Err(a)\n)",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(
+					nil,
+					ast.NewTypeIdentifier("Result", nil, 0, 6),
+					ast.NewTypeParameters([]*ast.TypeParameter{
+						ast.NewTypeParameter(ast.NewIdentifier("a", nil, 0, 1)),
+					}),
+				),
+				ast.NewUnionDeclaration(ast.UnionMembers{
+					ast.NewUnionMemberDeclaration(
+						nil,
+						ast.NewNamedTuple(
+							ast.NewTypeIdentifier("Ok", nil, 0, 2),
+							ast.NewTupleType(nil),
+						),
+					),
+					ast.NewUnionMemberDeclaration(
+						nil,
+						ast.NewNamedTuple(
+							ast.NewTypeIdentifier("Err", nil, 0, 3),
+							ast.NewTupleType([]ast.TupleTypeMemberNode{
+								ast.NewTupleTypeMember(nil, ast.NewIdentifier("a", nil, 0, 1)),
+							}),
+						),
+					),
+				}),
+			),
+		},
+		{
 			name:  "fixed size array rhs",
 			input: "IPv4 = [4]Byte",
 			want: ast.NewTypeDeclaration(
@@ -369,6 +400,166 @@ func TestTypeDeclaration(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
 				"TypeDeclaration", TypeDeclaration, StringerCheck[*ast.TypeDeclaration])
+		})
+	}
+}
+
+func TestUnionMemberNoAnnotations(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    ast.UnionDeclarationMemberType
+		wantErr bool
+	}{
+		{
+			name:  "type reference member",
+			input: "Card",
+			want:  ast.NewTypeReference(nil, ast.NewTypeIdentifier("Card", nil, 0, 4), nil, 0, 4),
+		},
+		{
+			name:  "generic member",
+			input: "Result[Int, String]",
+			want: ast.NewGenericType(
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Result", nil, 0, 6), nil, 0, 6),
+				ast.NewTypeArgumentList([]*ast.TypeArgument{
+					ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3)),
+					ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6)),
+				}),
+			),
+		},
+		{
+			name:    "annotated introduced member is not union_member_no_annotations",
+			input:   "@flag\nOk()",
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"UnionMemberNoAnnotations", UnionMemberNoAnnotations, StringerCheck[ast.UnionDeclarationMemberType])
+		})
+	}
+}
+
+func TestUnionMemberDeclaration(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.UnionMemberDeclaration
+		wantErr bool
+	}{
+		{
+			name:  "introduced named tuple member",
+			input: "@flag\nOk()",
+			want: ast.NewUnionMemberDeclaration(
+				[]ast.Annotation{ast.NewSimpleAnnotation("flag")},
+				ast.NewNamedTuple(
+					ast.NewTypeIdentifier("Ok", nil, 0, 2),
+					ast.NewTupleType(nil),
+				),
+			),
+		},
+		{
+			name:  "unannotated introduced named tuple member",
+			input: "Err(a)",
+			want: ast.NewUnionMemberDeclaration(
+				nil,
+				ast.NewNamedTuple(
+					ast.NewTypeIdentifier("Err", nil, 0, 3),
+					ast.NewTupleType([]ast.TupleTypeMemberNode{
+						ast.NewTupleTypeMember(nil, ast.NewIdentifier("a", nil, 0, 1)),
+					}),
+				),
+			),
+		},
+		{
+			name:  "existing type member",
+			input: "Result[Int]",
+			want: ast.NewUnionMemberDeclaration(
+				nil,
+				ast.NewGenericType(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Result", nil, 0, 6), nil, 0, 6),
+					ast.NewTypeArgumentList([]*ast.TypeArgument{
+						ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3)),
+					}),
+				),
+			),
+		},
+		{
+			name:    "annotations require introduced named tuple members",
+			input:   "@flag\nCard",
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"UnionMemberDeclaration", UnionMemberDeclaration, StringerCheck[*ast.UnionMemberDeclaration])
+		})
+	}
+}
+
+func TestUnionDeclaration(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.UnionDeclaration
+		wantErr bool
+	}{
+		{
+			name: "introduced generic union declaration",
+			input: "union(\nOk()\nErr(a)\n)",
+			want: ast.NewUnionDeclaration(ast.UnionMembers{
+				ast.NewUnionMemberDeclaration(
+					nil,
+					ast.NewNamedTuple(
+						ast.NewTypeIdentifier("Ok", nil, 0, 2),
+						ast.NewTupleType(nil),
+					),
+				),
+				ast.NewUnionMemberDeclaration(
+					nil,
+					ast.NewNamedTuple(
+						ast.NewTypeIdentifier("Err", nil, 0, 3),
+						ast.NewTupleType([]ast.TupleTypeMemberNode{
+							ast.NewTupleTypeMember(nil, ast.NewIdentifier("a", nil, 0, 1)),
+						}),
+					),
+				),
+			}),
+		},
+		{
+			name: "union declaration with existing members",
+			input: "union(\nResult[Int]\nCard\n)",
+			want: ast.NewUnionDeclaration(ast.UnionMembers{
+				ast.NewUnionMemberDeclaration(
+					nil,
+					ast.NewGenericType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Result", nil, 0, 6), nil, 0, 6),
+						ast.NewTypeArgumentList([]*ast.TypeArgument{
+							ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3)),
+						}),
+					),
+				),
+				ast.NewUnionMemberDeclaration(
+					nil,
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Card", nil, 0, 4), nil, 0, 4),
+				),
+			}),
+		},
+		{
+			name:    "missing trailing eol before close paren",
+			input:   "union(\nOk())",
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"UnionDeclaration", UnionDeclaration, StringerCheck[*ast.UnionDeclaration])
 		})
 	}
 }

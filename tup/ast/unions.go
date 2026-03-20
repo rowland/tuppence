@@ -2,25 +2,39 @@ package ast
 
 import "strings"
 
-// UnionMemberDeclaration represents a member of a union declaration
-type UnionMemberDeclaration struct {
-	BaseNode
-	Name        *TypeIdentifier // The union member name
-	Parameters  []Node          // Optional parameters (for tuple-like variant)
-	Annotations []Annotation    // Member annotations
+// union_member_declaration = annotations named_tuple
+//                          | union_member_no_annotations .
+
+type UnionDeclarationMemberType interface {
+	Node
+	unionDeclarationMemberTypeNode()
 }
 
-// NewUnionMemberDeclaration creates a new UnionMemberDeclaration node
-func NewUnionMemberDeclaration(name *TypeIdentifier, parameters []Node, annotations []Annotation) *UnionMemberDeclaration {
+func (n *NamedTuple) unionDeclarationMemberTypeNode()      {}
+func (n *GenericType) unionDeclarationMemberTypeNode()     {}
+func (n *DynamicArrayType) unionDeclarationMemberTypeNode() {}
+func (n *FixedSizeArrayType) unionDeclarationMemberTypeNode() {}
+func (n *TypeReference) unionDeclarationMemberTypeNode()   {}
+
+// UnionMemberDeclaration represents a member of a union declaration.
+// The member itself mirrors the grammar directly: either an introduced
+// named_tuple or an existing union_member_no_annotations form.
+type UnionMemberDeclaration struct {
+	BaseNode
+	Annotations []Annotation
+	Member      UnionDeclarationMemberType
+}
+
+// NewUnionMemberDeclaration creates a new UnionMemberDeclaration node.
+func NewUnionMemberDeclaration(annotations []Annotation, member UnionDeclarationMemberType) *UnionMemberDeclaration {
 	return &UnionMemberDeclaration{
 		BaseNode:    BaseNode{Type: NodeUnionMemberDeclaration},
-		Name:        name,
-		Parameters:  parameters,
 		Annotations: annotations,
+		Member:      member,
 	}
 }
 
-// String returns a textual representation of the union member declaration
+// String returns a textual representation of the union member declaration.
 func (u *UnionMemberDeclaration) String() string {
 	var builder strings.Builder
 	for _, annotation := range u.Annotations {
@@ -28,19 +42,7 @@ func (u *UnionMemberDeclaration) String() string {
 		builder.WriteString(" ")
 	}
 
-	builder.WriteString(u.Name.String())
-
-	if len(u.Parameters) > 0 {
-		builder.WriteString("(")
-		for i, param := range u.Parameters {
-			if i > 0 {
-				builder.WriteString(", ")
-			}
-			builder.WriteString(param.String())
-		}
-		builder.WriteString(")")
-	}
-
+	builder.WriteString(u.Member.String())
 	return builder.String()
 }
 
@@ -54,10 +56,10 @@ type UnionDeclaration struct {
 }
 
 // NewUnionDeclaration creates a new UnionDeclaration node
-func NewUnionDeclaration() *UnionDeclaration {
+func NewUnionDeclaration(members UnionMembers) *UnionDeclaration {
 	return &UnionDeclaration{
 		BaseNode: BaseNode{Type: NodeUnionDeclaration},
-		Members:  UnionMembers{},
+		Members:  members,
 	}
 }
 

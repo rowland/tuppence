@@ -990,6 +990,15 @@ The multi-line declaration form may also introduce named members:
 
 Union members may include existing types, arrays, generic types, and newly introduced named tuple members.
 
+The example above is equivalent to:
+
+    Ok[a] = type(a)
+    Err = type(String)
+    Result[a] = union(
+        Ok[a]
+        Err
+    )
+
 ## Contract Declarations
 
 A `contract` declares a required interface for types that satisfy it:

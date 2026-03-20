@@ -137,10 +137,10 @@
                                             - [x] type_argument
                                     - [x] inline_union
                          - [x] union_type
-                                - [ ] union_declaration
-                                    - [ ] union_members
-                                        - [ ] union_member_declaration
-                                            - [ ] union_member_no_annotations
+                                - [x] union_declaration
+                                    - [x] union_members
+                                        - [x] union_member_declaration
+                                            - [x] union_member_no_annotations
                                 - [x] union_member
                                     - [x] named_tuple
                                     - [ ] contract_declaration
