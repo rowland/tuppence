@@ -127,7 +127,7 @@
                                 - [ ] nilable_type
                                 - [ ] type
                                     - [x] fixed_size_array
-                                        - [ ] array_type
+                                        - [x] array_type
                                     - [ ] dynamic_array
                                     - [ ] function_type
                                     - [x] tuple_type
@@ -141,8 +141,8 @@
                                     - [ ] union_members
                                         - [ ] union_member_declaration
                                             - [ ] union_member_no_annotations
-                                - [ ] union_member
-                                    - [ ] named_tuple
+                                - [x] union_member
+                                    - [x] named_tuple
                                     - [ ] contract_declaration
                                         - [ ] contract_members
                                             - [ ] contract_member
@@ -243,8 +243,8 @@
 - [x] tuple_member
 - [x] tuple_members
 - [ ] tuple_pattern
-- [ ] tuple_type_member
-- [ ] tuple_type_members
+- [x] tuple_type_member
+- [x] tuple_type_members
 - [ ] tuple_update_expression
 - [ ] typeof_expression
 - [ ] type_comparison

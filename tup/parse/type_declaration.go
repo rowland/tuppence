@@ -279,10 +279,51 @@ func FixedSizeArray(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, er
 	return ast.NewFixedSizeArrayType(elementType, size), remainder, nil
 }
 
-// union_type .
+// union_type = "any"
+//            | union_member "|" union_member { "|" union_member } .
 
 func UnionType(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
-	return nil, tokens, ErrNoMatch // TODO: Implement
+	remainder := skipTrivia(tokens)
+	if identifier, remainder2, err := Identifier(remainder); err == nil && identifier.Name == "any" {
+		return ast.NewUnionType(nil), remainder2, nil
+	}
+
+	first, remainder, err := UnionMember(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	remainder2, found := Pipe(remainder)
+	if !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	second, remainder, err := UnionMember(remainder2)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("union member", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	members := []ast.Node{first, second}
+	for {
+		var found bool
+		if remainder, found = Pipe(remainder); !found {
+			break
+		}
+
+		member, remainder2, err := UnionMember(remainder)
+		if err == ErrNoMatch {
+			return nil, remainder2, errorExpecting("union member", remainder2)
+		} else if err != nil {
+			return nil, remainder2, err
+		}
+
+		members = append(members, member)
+		remainder = remainder2
+	}
+
+	return ast.NewUnionType(members), remainder, nil
 }
 
 // union_declaration .
@@ -301,6 +342,74 @@ func EnumDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, e
 
 func ContractDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
 	return nil, tokens, ErrNoMatch // TODO: Implement
+}
+
+// union_member = named_tuple
+//              | generic_type
+//              | dynamic_array
+//              | fixed_size_array
+//              | local_type_reference
+//              | contract_declaration .
+//
+// The parser currently implements the already-supported subset: local type
+// references, array types, and named tuples.
+
+func UnionMember(tokens []tok.Token) (ast.Node, []tok.Token, error) {
+	if namedTuple, remainder, err := NamedTuple(tokens); err == nil {
+		return namedTuple, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	// if genericType, remainder, err := GenericType(tokens); err == nil {
+	// 	return genericType, remainder, nil
+	// } else if err != ErrNoMatch {
+	// 	return nil, remainder, err
+	// }
+
+	if dynamicArray, remainder, err := DynamicArray(tokens); err == nil {
+		return dynamicArray, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if fixedSizeArray, remainder, err := FixedSizeArray(tokens); err == nil {
+		return fixedSizeArray, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if localTypeReference, remainder, err := LocalTypeReference(tokens); err == nil {
+		return localTypeReference, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if contractDeclaration, remainder, err := ContractDeclaration(tokens); err == nil {
+		return contractDeclaration, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
+}
+
+// named_tuple = type_identifier tuple_type .
+
+func NamedTuple(tokens []tok.Token) (*ast.NamedTuple, []tok.Token, error) {
+	typeIdentifier, remainder, err := TypeIdentifier(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	tupleType, remainder, err := TupleType(remainder)
+	if err == ErrNoMatch {
+		return nil, tokens, ErrNoMatch
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewNamedTuple(typeIdentifier, tupleType), remainder, nil
 }
 
 // array_type = fixed_size_array | dynamic_array .

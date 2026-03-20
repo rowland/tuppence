@@ -297,6 +297,43 @@ func TestTypeDeclaration(t *testing.T) {
 			),
 		},
 		{
+			name:  "union type rhs",
+			input: "Key = Int | String",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Key", nil, 0, 3), nil),
+				ast.NewUnionType([]ast.Node{
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+				}),
+			),
+		},
+		{
+			name:  "named tuple union type rhs",
+			input: "ComplexKey = Int | String | ComplexTuple(primary: Int, secondary: String)",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("ComplexKey", nil, 0, 10), nil),
+				ast.NewUnionType([]ast.Node{
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+					ast.NewNamedTuple(
+						ast.NewTypeIdentifier("ComplexTuple", nil, 0, 12),
+						ast.NewTupleType([]ast.TupleTypeMemberNode{
+							ast.NewLabeledTupleTypeMember(
+								nil,
+								ast.NewIdentifier("primary", nil, 0, 7),
+								ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+							),
+							ast.NewLabeledTupleTypeMember(
+								nil,
+								ast.NewIdentifier("secondary", nil, 0, 9),
+								ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+							),
+						}),
+					),
+				}),
+			),
+		},
+		{
 			name:  "fixed size array rhs",
 			input: "IPv4 = [4]Byte",
 			want: ast.NewTypeDeclaration(
@@ -476,6 +513,68 @@ func TestErrorTuple(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
 				"ErrorTuple", ErrorTuple, StringerCheck[ast.TypeDeclarationRHS])
+		})
+	}
+}
+
+func TestUnionType(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    ast.TypeDeclarationRHS
+		wantErr bool
+	}{
+		{
+			name:  "any union type",
+			input: "any",
+			want:  ast.NewUnionType(nil),
+		},
+		{
+			name:  "simple union type",
+			input: "Int | String",
+			want: ast.NewUnionType([]ast.Node{
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+			}),
+		},
+		{
+			name:  "named tuple member union type",
+			input: "Int | ComplexTuple(primary: Int, secondary: String)",
+			want: ast.NewUnionType([]ast.Node{
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+				ast.NewNamedTuple(
+					ast.NewTypeIdentifier("ComplexTuple", nil, 0, 12),
+					ast.NewTupleType([]ast.TupleTypeMemberNode{
+						ast.NewLabeledTupleTypeMember(
+							nil,
+							ast.NewIdentifier("primary", nil, 0, 7),
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+						),
+						ast.NewLabeledTupleTypeMember(
+							nil,
+							ast.NewIdentifier("secondary", nil, 0, 9),
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+						),
+					}),
+				),
+			}),
+		},
+		{
+			name:    "single type reference is not a union",
+			input:   "Int",
+			wantErr: true,
+		},
+		{
+			name:    "missing right union member",
+			input:   "Int |",
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"UnionType", UnionType, StringerCheck[ast.TypeDeclarationRHS])
 		})
 	}
 }

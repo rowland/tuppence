@@ -588,11 +588,11 @@ union_declaration_with_error = "union" "(" eol
                              [ "error" eol ]
                              ")" .
 
-union_member = local_type_reference
+union_member = named_tuple
              | generic_type
              | dynamic_array
              | fixed_size_array
-             | named_tuple
+             | local_type_reference
              | contract_declaration .
 
 union_members = union_member_declaration { eol union_member_declaration } eol .
@@ -600,12 +600,13 @@ union_members = union_member_declaration { eol union_member_declaration } eol .
 union_member_declaration = annotations named_tuple
                          | union_member_no_annotations .
 
-union_type = "any" | ( union_member { "|" union_member } ) .
+union_type = "any"
+           | union_member "|" union_member { "|" union_member } .
 
-union_member_no_annotations = type_reference
-                            | generic_type
+union_member_no_annotations = generic_type
                             | dynamic_array
-                            | fixed_size_array .
+                            | fixed_size_array
+                            | type_reference .
 
 union_with_error = ( "!" union_member ) 
                  | ( union_member { "|" union_member } [ "|" "error" ] )
