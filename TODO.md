@@ -15,7 +15,7 @@
 
 ## AST / parse / test
 
-- [ ] literal
+- [x] literal
     - [x] number
         - [x] float_literal
         - [x] integer_literal
@@ -124,19 +124,19 @@
                         - [ ] labeled_parameters
                         - [ ] parameters
                             - [ ] parameter
-                                - [ ] nilable_type
+                                - [x] nilable_type
                                 - [ ] type
                                     - [x] fixed_size_array
                                         - [x] array_type
-                                    - [ ] dynamic_array
+                                    - [x] dynamic_array
                                     - [ ] function_type
                                     - [x] tuple_type
-                                    - [ ] error_tuple
-                                    - [ ] generic_type
-                                        - [ ] type_argument_list
-                                            - [ ] type_argument
+                                    - [x] error_tuple
+                                    - [x] generic_type
+                                        - [x] type_argument_list
+                                            - [x] type_argument
                                     - [ ] inline_union
-                         - [ ] union_type
+                         - [x] union_type
                                 - [ ] union_declaration
                                     - [ ] union_members
                                         - [ ] union_member_declaration
@@ -155,7 +155,7 @@
                 - [ ] type_qualified_declaration
                 - [x] type_declaration
                     - [x] type_declaration_lhs
-                    - [ ] type_declaration_rhs
+                    - [x] type_declaration_rhs
                 - [ ] function_declaration
                 - [ ] compound_assignment
                 - [x] assignment
@@ -221,7 +221,7 @@
 - [x] lowercase_letter
 - [ ] match_condition
 - [ ] match_element
-- [ ] member_access
+- [x] member_access_tail
 - [x] meta_expression
 - [ ] module
 - [x] nonzero_digit
@@ -231,11 +231,11 @@
 - [ ] pattern_match
 - [ ] range
 - [ ] range_bound
-- [ ] relational_comparison
+- [x] relational_comparison_tail
 - [x] rest_operator
 - [ ] rest_parameter
 - [ ] return_expression
-- [ ] safe_indexed_access
+- [x] safe_indexed_access_tail
 - [x] simple_annotation
 - [ ] step_expression
 - [ ] switch_statement
@@ -245,11 +245,11 @@
 - [ ] tuple_pattern
 - [x] tuple_type_member
 - [x] tuple_type_members
-- [ ] tuple_update_expression
-- [ ] typeof_expression
-- [ ] type_comparison
+- [x] tuple_update_expression
+- [x] typeof_expression
+- [x] type_comparison_tail
 - [ ] type_constructor_call
-- [ ] type_parameter
-- [ ] type_parameters
+- [x] type_parameter
+- [x] type_parameters
 - [x] uppercase_letter
 - [.] negatable_expression

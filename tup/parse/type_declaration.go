@@ -225,7 +225,7 @@ func ErrorTuple(tokens []tok.Token) (*ast.ErrorTuple, []tok.Token, error) {
 	return ast.NewErrorTuple(tupleType), remainder, nil
 }
 
-// dynamic_array .
+// dynamic_array = "[" "]" (type_reference | array_type) .
 
 func DynamicArray(tokens []tok.Token) (*ast.DynamicArrayType, []tok.Token, error) {
 	remainder, found := OpenBracket(tokens)
