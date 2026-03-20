@@ -150,7 +150,7 @@
                                                 - [ ] contract_field
                         - [ ] return_type
                             - [x] union_with_error
-                            - [ ] union_declaration_with_error
+                            - [x] union_declaration_with_error
                     - [x] block
                 - [ ] type_qualified_declaration
                 - [x] type_declaration

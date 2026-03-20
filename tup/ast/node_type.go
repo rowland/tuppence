@@ -16,6 +16,7 @@ const (
 	NodeContractMember
 	NodeContractMembers
 	NodeUnionDeclaration
+	NodeUnionDeclarationWithError
 	NodeUnionMemberDeclaration
 	NodeUnionMembers
 
@@ -212,6 +213,7 @@ var NodeTypes = map[NodeType]string{
 	NodeContractMembers:              "ContractMembers",
 	NodeEnumMembers:                  "EnumMembers",
 	NodeUnionDeclaration:             "UnionDeclaration",
+	NodeUnionDeclarationWithError:    "UnionDeclarationWithError",
 	NodeUnionMemberDeclaration:       "UnionMemberDeclaration",
 	NodeUnionMembers:                 "UnionMembers",
 

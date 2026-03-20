@@ -564,6 +564,74 @@ func TestUnionDeclaration(t *testing.T) {
 	}
 }
 
+func TestUnionDeclarationWithError(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.UnionDeclarationWithError
+		wantErr bool
+	}{
+		{
+			name: "introduced members with error",
+			input: "union(\nOk()\nErr(a)\nerror\n)",
+			want: ast.NewUnionDeclarationWithError(ast.UnionMembers{
+				ast.NewUnionMemberDeclaration(
+					nil,
+					ast.NewNamedTuple(
+						ast.NewTypeIdentifier("Ok", nil, 0, 2),
+						ast.NewTupleType(nil),
+					),
+				),
+				ast.NewUnionMemberDeclaration(
+					nil,
+					ast.NewNamedTuple(
+						ast.NewTypeIdentifier("Err", nil, 0, 3),
+						ast.NewTupleType([]ast.TupleTypeMemberNode{
+							ast.NewTupleTypeMember(nil, ast.NewIdentifier("a", nil, 0, 1)),
+						}),
+					),
+				),
+			}),
+		},
+		{
+			name: "existing members with error",
+			input: "union(\nResult[Int]\nCard\nerror\n)",
+			want: ast.NewUnionDeclarationWithError(ast.UnionMembers{
+				ast.NewUnionMemberDeclaration(
+					nil,
+					ast.NewGenericType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Result", nil, 0, 6), nil, 0, 6),
+						ast.NewTypeArgumentList([]*ast.TypeArgument{
+							ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3)),
+						}),
+					),
+				),
+				ast.NewUnionMemberDeclaration(
+					nil,
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Card", nil, 0, 4), nil, 0, 4),
+				),
+			}),
+		},
+		{
+			name:    "missing error line",
+			input:   "union(\nOk()\nErr(a)\n)",
+			wantErr: true,
+		},
+		{
+			name:    "error requires at least one real member",
+			input:   "union(\nerror\n)",
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"UnionDeclarationWithError", UnionDeclarationWithError, StringerCheck[*ast.UnionDeclarationWithError])
+		})
+	}
+}
+
 func TestDynamicArray(t *testing.T) {
 	tests := []struct {
 		name    string

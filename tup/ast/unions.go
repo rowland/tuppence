@@ -78,6 +78,34 @@ func (u *UnionDeclaration) String() string {
 	return builder.String()
 }
 
+// UnionDeclarationWithError represents a multiline union declaration used in
+// return types that ends with an explicit error member.
+type UnionDeclarationWithError struct {
+	BaseNode
+	Members UnionMembers
+}
+
+func NewUnionDeclarationWithError(members UnionMembers) *UnionDeclarationWithError {
+	return &UnionDeclarationWithError{
+		BaseNode: BaseNode{Type: NodeUnionDeclarationWithError},
+		Members:  members,
+	}
+}
+
+func (u *UnionDeclarationWithError) String() string {
+	var builder strings.Builder
+
+	builder.WriteString("union (\n")
+	for _, member := range u.Members {
+		builder.WriteString(member.String())
+		builder.WriteString("\n")
+	}
+	builder.WriteString("error\n")
+	builder.WriteString(")\n")
+
+	return builder.String()
+}
+
 // union_member = named_tuple
 //              | generic_type
 //              | dynamic_array

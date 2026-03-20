@@ -554,6 +554,52 @@ func UnionDeclaration(tokens []tok.Token) (*ast.UnionDeclaration, []tok.Token, e
 	return ast.NewUnionDeclaration(members), remainder, nil
 }
 
+// union_declaration_with_error = "union" "(" eol
+//                              union_member_declaration eol
+//                              { union_member_declaration eol }
+//                              "error" eol
+//                              ")" .
+
+func UnionDeclarationWithError(tokens []tok.Token) (*ast.UnionDeclarationWithError, []tok.Token, error) {
+	remainder := skipTrivia(tokens)
+	if peek(remainder).Type != tok.TokKwUnion {
+		return nil, tokens, ErrNoMatch
+	}
+	remainder = remainder[1:]
+
+	var found bool
+	if remainder, found = OpenParen(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokOpenParen, remainder)
+	}
+
+	if remainder, found = EOL(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokEOL, remainder)
+	}
+
+	members, remainder, err := UnionMembers(remainder)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("union members", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	remainder = skipComments(remainder)
+	if peek(remainder).Type != tok.TokKwError {
+		return nil, remainder, errorExpecting("error", remainder)
+	}
+	remainder = remainder[1:]
+
+	if remainder, found = EOL(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokEOL, remainder)
+	}
+
+	if remainder, found = CloseParen(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseParen, remainder)
+	}
+
+	return ast.NewUnionDeclarationWithError(members), remainder, nil
+}
+
 // enum_declaration = "enum" "(" eol enum_members ")" .
 
 func EnumDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
