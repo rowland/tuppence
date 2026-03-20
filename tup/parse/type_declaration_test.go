@@ -239,9 +239,26 @@ func TestTypeDeclaration(t *testing.T) {
 			),
 		},
 		{
-			name:    "dynamic array rhs is not implemented yet",
-			input:   "Bytes = []Byte",
-			wantErr: true,
+			name:  "dynamic array rhs",
+			input: "Bytes = []Byte",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Bytes", nil, 0, 5), nil),
+				ast.NewDynamicArrayType(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Byte", nil, 0, 4), nil, 0, 4),
+				),
+			),
+		},
+		{
+			name:  "nested dynamic array rhs",
+			input: "Grid = [][]Int",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Grid", nil, 0, 4), nil),
+				ast.NewDynamicArrayType(
+					ast.NewDynamicArrayType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					),
+				),
+			),
 		},
 		{
 			name:    "fixed size array rhs is not implemented yet",
@@ -259,6 +276,44 @@ func TestTypeDeclaration(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
 				"TypeDeclaration", TypeDeclaration, StringerCheck[*ast.TypeDeclaration])
+		})
+	}
+}
+
+func TestDynamicArray(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    ast.TypeDeclarationRHS
+		wantErr bool
+	}{
+		{
+			name:  "simple dynamic array",
+			input: "[]Byte",
+			want: ast.NewDynamicArrayType(
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Byte", nil, 0, 4), nil, 0, 4),
+			),
+		},
+		{
+			name:  "nested dynamic array",
+			input: "[][]Int",
+			want: ast.NewDynamicArrayType(
+				ast.NewDynamicArrayType(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+				),
+			),
+		},
+		{
+			name:    "missing element type",
+			input:   "[]",
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"DynamicArray", DynamicArray, StringerCheck[ast.TypeDeclarationRHS])
 		})
 	}
 }

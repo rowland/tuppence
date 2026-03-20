@@ -215,7 +215,23 @@ func ErrorTuple(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error)
 // dynamic_array .
 
 func DynamicArray(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
-	return nil, tokens, ErrNoMatch // TODO: Implement
+	remainder, found := OpenBracket(tokens)
+	if !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	if remainder, found = CloseBracket(remainder); !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	elementType, remainder, err := ArrayElementType(remainder)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("array element type", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewDynamicArrayType(elementType), remainder, nil
 }
 
 // fixed_size_array .
@@ -246,6 +262,40 @@ func EnumDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, e
 
 func ContractDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
 	return nil, tokens, ErrNoMatch // TODO: Implement
+}
+
+// array_type = fixed_size_array | dynamic_array .
+
+func ArrayType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
+	if fixedSizeArray, remainder, err := FixedSizeArray(tokens); err == nil {
+		return fixedSizeArray, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if dynamicArray, remainder, err := DynamicArray(tokens); err == nil {
+		return dynamicArray, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
+}
+
+func ArrayElementType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
+	if typeReference, remainder, err := TypeReference(tokens); err == nil {
+		return typeReference, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if arrayType, remainder, err := ArrayType(tokens); err == nil {
+		return arrayType, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
 }
 
 // tuple_type = "(" [ labeled_tuple_type_members | tuple_type_members ] ")" .
