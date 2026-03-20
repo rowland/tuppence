@@ -584,8 +584,9 @@ unicode_escape_sequence = "\\" "u" hex_digit hex_digit hex_digit hex_digit
 union_declaration = "union" "(" eol union_members ")" .
 
 union_declaration_with_error = "union" "(" eol
+                             union_member_declaration eol
                              { union_member_declaration eol }
-                             [ "error" eol ]
+                             "error" eol
                              ")" .
 
 union_member = named_tuple
