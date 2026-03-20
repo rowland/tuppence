@@ -394,9 +394,31 @@ func (t *TupleType) String() string {
 
 // type_argument = type | generic_type .
 
+type TypeArgumentType interface {
+	Node
+	typeArgumentTypeNode()
+}
+
+func (n *TypeReference) typeArgumentTypeNode()      {}
+func (n *Identifier) typeArgumentTypeNode()         {}
+func (n *DynamicArrayType) typeArgumentTypeNode()   {}
+func (n *FixedSizeArrayType) typeArgumentTypeNode() {}
+func (n *FunctionType) typeArgumentTypeNode()       {}
+func (n *ErrorTuple) typeArgumentTypeNode()         {}
+func (n *TupleType) typeArgumentTypeNode()          {}
+func (n *GenericType) typeArgumentTypeNode()        {}
+func (n *InlineUnion) typeArgumentTypeNode()        {}
+
 type TypeArgument struct {
 	BaseNode
-	Type Node // The type
+	Type TypeArgumentType
+}
+
+func NewTypeArgument(item TypeArgumentType) *TypeArgument {
+	return &TypeArgument{
+		BaseNode: BaseNode{Type: NodeTypeArgument},
+		Type:     item,
+	}
 }
 
 func (t *TypeArgument) String() string {
@@ -407,7 +429,14 @@ func (t *TypeArgument) String() string {
 
 type TypeArgumentList struct {
 	BaseNode
-	Arguments []Node // List of TypeArgument nodes
+	Arguments []*TypeArgument
+}
+
+func NewTypeArgumentList(arguments []*TypeArgument) *TypeArgumentList {
+	return &TypeArgumentList{
+		BaseNode:  BaseNode{Type: NodeTypeArgumentList},
+		Arguments: arguments,
+	}
 }
 
 func (t *TypeArgumentList) String() string {

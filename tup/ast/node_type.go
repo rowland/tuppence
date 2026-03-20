@@ -176,6 +176,8 @@ const (
 	// Type node types
 	NodeArrayType
 	NodeFunctionType
+	NodeTypeArgument
+	NodeTypeArgumentList
 	NodeGenericType
 	NodeInlineUnion
 	NodeNamedTuple
@@ -367,6 +369,8 @@ var NodeTypes = map[NodeType]string{
 	// Type node types
 	NodeArrayType:     "ArrayType",
 	NodeFunctionType:  "FunctionType",
+	NodeTypeArgument:  "TypeArgument",
+	NodeTypeArgumentList: "TypeArgumentList",
 	NodeGenericType:   "GenericType",
 	NodeInlineUnion:   "InlineUnion",
 	NodeNamedTuple:    "NamedTuple",

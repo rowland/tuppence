@@ -208,7 +208,7 @@ func TypeTupleType(tokens []tok.Token) (*ast.TupleType, []tok.Token, error) {
 
 // error_tuple .
 
-func ErrorTuple(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
+func ErrorTuple(tokens []tok.Token) (*ast.ErrorTuple, []tok.Token, error) {
 	remainder := skipTrivia(tokens)
 	if peek(remainder).Type != tok.TokKwError {
 		return nil, tokens, ErrNoMatch
@@ -227,7 +227,7 @@ func ErrorTuple(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error)
 
 // dynamic_array .
 
-func DynamicArray(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
+func DynamicArray(tokens []tok.Token) (*ast.DynamicArrayType, []tok.Token, error) {
 	remainder, found := OpenBracket(tokens)
 	if !found {
 		return nil, tokens, ErrNoMatch
@@ -249,7 +249,7 @@ func DynamicArray(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, erro
 
 // fixed_size_array .
 
-func FixedSizeArray(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
+func FixedSizeArray(tokens []tok.Token) (*ast.FixedSizeArrayType, []tok.Token, error) {
 	remainder, found := OpenBracket(tokens)
 	if !found {
 		return nil, tokens, ErrNoMatch
@@ -326,6 +326,114 @@ func UnionType(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) 
 	return ast.NewUnionType(members), remainder, nil
 }
 
+// generic_type = type_reference type_argument_list .
+
+func GenericType(tokens []tok.Token) (*ast.GenericType, []tok.Token, error) {
+	typeReference, remainder, err := TypeReference(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	typeArguments, remainder, err := TypeArgumentList(remainder)
+	if err == ErrNoMatch {
+		return nil, tokens, ErrNoMatch
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewGenericType(typeReference, typeArguments), remainder, nil
+}
+
+// type_argument = type
+//               | generic_type .
+//
+// The parser currently implements the already-supported subset of type:
+// generic_type, array types, error_tuple, tuple_type, and local_type_reference.
+
+func TypeArgument(tokens []tok.Token) (*ast.TypeArgument, []tok.Token, error) {
+	if genericType, remainder, err := GenericType(tokens); err == nil {
+		return ast.NewTypeArgument(genericType), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if dynamicArray, remainder, err := DynamicArray(tokens); err == nil {
+		return ast.NewTypeArgument(dynamicArray), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if fixedSizeArray, remainder, err := FixedSizeArray(tokens); err == nil {
+		return ast.NewTypeArgument(fixedSizeArray), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if errorTuple, remainder, err := ErrorTuple(tokens); err == nil {
+		return ast.NewTypeArgument(errorTuple), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if tupleType, remainder, err := TupleType(tokens); err == nil {
+		return ast.NewTypeArgument(tupleType), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if localTypeReference, remainder, err := LocalTypeReference(tokens); err == nil {
+		typeArgumentType, ok := localTypeReference.(ast.TypeArgumentType)
+		if !ok {
+			return nil, remainder, errorExpecting("type argument type", remainder)
+		}
+		return ast.NewTypeArgument(typeArgumentType), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
+}
+
+// type_argument_list = "[" type_argument { "," type_argument } "]" .
+
+func TypeArgumentList(tokens []tok.Token) (*ast.TypeArgumentList, []tok.Token, error) {
+	remainder, found := OpenBracket(tokens)
+	if !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	first, remainder, err := TypeArgument(remainder)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("type argument", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	arguments := []*ast.TypeArgument{first}
+	for {
+		var found bool
+		if remainder, found = Comma(remainder); !found {
+			break
+		}
+
+		argument, remainder2, err := TypeArgument(remainder)
+		if err == ErrNoMatch {
+			return nil, remainder, errorExpecting("type argument", remainder)
+		} else if err != nil {
+			return nil, remainder2, err
+		}
+
+		arguments = append(arguments, argument)
+		remainder = remainder2
+	}
+
+	if remainder, found = CloseBracket(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseBracket, remainder)
+	}
+
+	return ast.NewTypeArgumentList(arguments), remainder, nil
+}
+
 // union_declaration .
 
 func UnionDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
@@ -361,11 +469,11 @@ func UnionMember(tokens []tok.Token) (ast.Node, []tok.Token, error) {
 		return nil, remainder, err
 	}
 
-	// if genericType, remainder, err := GenericType(tokens); err == nil {
-	// 	return genericType, remainder, nil
-	// } else if err != ErrNoMatch {
-	// 	return nil, remainder, err
-	// }
+	if genericType, remainder, err := GenericType(tokens); err == nil {
+		return genericType, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
 
 	if dynamicArray, remainder, err := DynamicArray(tokens); err == nil {
 		return dynamicArray, remainder, nil
@@ -416,21 +524,13 @@ func NamedTuple(tokens []tok.Token) (*ast.NamedTuple, []tok.Token, error) {
 
 func ArrayType(tokens []tok.Token) (ast.ArrayElementType, []tok.Token, error) {
 	if fixedSizeArray, remainder, err := FixedSizeArray(tokens); err == nil {
-		arrayType, ok := fixedSizeArray.(*ast.FixedSizeArrayType)
-		if !ok {
-			return nil, remainder, errorExpecting("fixed size array type", remainder)
-		}
-		return arrayType, remainder, nil
+		return fixedSizeArray, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
 	if dynamicArray, remainder, err := DynamicArray(tokens); err == nil {
-		arrayType, ok := dynamicArray.(*ast.DynamicArrayType)
-		if !ok {
-			return nil, remainder, errorExpecting("dynamic array type", remainder)
-		}
-		return arrayType, remainder, nil
+		return dynamicArray, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}

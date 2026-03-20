@@ -377,7 +377,7 @@ func TestDynamicArray(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    ast.TypeDeclarationRHS
+		want    *ast.DynamicArrayType
 		wantErr bool
 	}{
 		{
@@ -406,7 +406,7 @@ func TestDynamicArray(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
-				"DynamicArray", DynamicArray, StringerCheck[ast.TypeDeclarationRHS])
+				"DynamicArray", DynamicArray, StringerCheck[*ast.DynamicArrayType])
 		})
 	}
 }
@@ -415,7 +415,7 @@ func TestFixedSizeArray(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    ast.TypeDeclarationRHS
+		want    *ast.FixedSizeArrayType
 		wantErr bool
 	}{
 		{
@@ -460,7 +460,7 @@ func TestFixedSizeArray(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
-				"FixedSizeArray", FixedSizeArray, StringerCheck[ast.TypeDeclarationRHS])
+				"FixedSizeArray", FixedSizeArray, StringerCheck[*ast.FixedSizeArrayType])
 		})
 	}
 }
@@ -469,7 +469,7 @@ func TestErrorTuple(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    ast.TypeDeclarationRHS
+		want    *ast.ErrorTuple
 		wantErr bool
 	}{
 		{
@@ -512,7 +512,7 @@ func TestErrorTuple(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
-				"ErrorTuple", ErrorTuple, StringerCheck[ast.TypeDeclarationRHS])
+				"ErrorTuple", ErrorTuple, StringerCheck[*ast.ErrorTuple])
 		})
 	}
 }
@@ -560,6 +560,20 @@ func TestUnionType(t *testing.T) {
 			}),
 		},
 		{
+			name:  "generic member union type",
+			input: "Result[Int, String] | Card",
+			want: ast.NewUnionType([]ast.Node{
+				ast.NewGenericType(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Result", nil, 0, 6), nil, 0, 6),
+					ast.NewTypeArgumentList([]*ast.TypeArgument{
+						ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3)),
+						ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6)),
+					}),
+				),
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Card", nil, 0, 4), nil, 0, 4),
+			}),
+		},
+		{
 			name:    "single type reference is not a union",
 			input:   "Int",
 			wantErr: true,
@@ -575,6 +589,146 @@ func TestUnionType(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
 				"UnionType", UnionType, StringerCheck[ast.TypeDeclarationRHS])
+		})
+	}
+}
+
+func TestTypeArgument(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.TypeArgument
+		wantErr bool
+	}{
+		{
+			name:  "type reference argument",
+			input: "Int",
+			want: ast.NewTypeArgument(
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+			),
+		},
+		{
+			name:  "generic type argument",
+			input: "List[Int]",
+			want: ast.NewTypeArgument(
+				ast.NewGenericType(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("List", nil, 0, 4), nil, 0, 4),
+					ast.NewTypeArgumentList([]*ast.TypeArgument{
+						ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3)),
+					}),
+				),
+			),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"TypeArgument", TypeArgument, StringerCheck[*ast.TypeArgument])
+		})
+	}
+}
+
+func TestTypeArgumentList(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.TypeArgumentList
+		wantErr bool
+	}{
+		{
+			name:  "multiple type arguments",
+			input: "[Int, String]",
+			want: ast.NewTypeArgumentList([]*ast.TypeArgument{
+				ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3)),
+				ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6)),
+			}),
+		},
+		{
+			name:  "nested generic type argument",
+			input: "[Result[Int, String], []Byte]",
+			want: ast.NewTypeArgumentList([]*ast.TypeArgument{
+				ast.NewTypeArgument(
+					ast.NewGenericType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Result", nil, 0, 6), nil, 0, 6),
+						ast.NewTypeArgumentList([]*ast.TypeArgument{
+							ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3)),
+							ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6)),
+						}),
+					),
+				),
+				ast.NewTypeArgument(
+					ast.NewDynamicArrayType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Byte", nil, 0, 4), nil, 0, 4),
+					),
+				),
+			}),
+		},
+		{
+			name:    "empty type argument list is rejected",
+			input:   "[]",
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"TypeArgumentList", TypeArgumentList, StringerCheck[*ast.TypeArgumentList])
+		})
+	}
+}
+
+func TestGenericType(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.GenericType
+		wantErr bool
+	}{
+		{
+			name:  "simple generic type",
+			input: "List[Int]",
+			want: ast.NewGenericType(
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("List", nil, 0, 4), nil, 0, 4),
+				ast.NewTypeArgumentList([]*ast.TypeArgument{
+					ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3)),
+				}),
+			),
+		},
+		{
+			name:  "nested generic type",
+			input: "Result[List[Int], []Byte]",
+			want: ast.NewGenericType(
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Result", nil, 0, 6), nil, 0, 6),
+				ast.NewTypeArgumentList([]*ast.TypeArgument{
+					ast.NewTypeArgument(
+						ast.NewGenericType(
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("List", nil, 0, 4), nil, 0, 4),
+							ast.NewTypeArgumentList([]*ast.TypeArgument{
+								ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3)),
+							}),
+						),
+					),
+					ast.NewTypeArgument(
+						ast.NewDynamicArrayType(
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("Byte", nil, 0, 4), nil, 0, 4),
+						),
+					),
+				}),
+			),
+		},
+		{
+			name:    "type reference without arguments is not generic",
+			input:   "List",
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"GenericType", GenericType, StringerCheck[*ast.GenericType])
 		})
 	}
 }
