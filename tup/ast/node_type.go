@@ -39,6 +39,9 @@ const (
 	NodeFunctionDeclaration
 	NodeGenericTypeParam
 	NodeTypeDeclaration
+	NodeTypeDeclarationLHS
+	NodeTypeParameter
+	NodeTypeParameters
 
 	// Export related node types
 	NodeExportAssignment
@@ -225,6 +228,9 @@ var NodeTypes = map[NodeType]string{
 	NodeFunctionDeclaration: "FunctionDeclaration",
 	NodeGenericTypeParam:    "GenericTypeParam",
 	NodeTypeDeclaration:     "TypeDeclaration",
+	NodeTypeDeclarationLHS:  "TypeDeclarationLHS",
+	NodeTypeParameter:       "TypeParameter",
+	NodeTypeParameters:      "TypeParameters",
 
 	// Export related node types
 	NodeExportAssignment:                       "ExportAssignment",

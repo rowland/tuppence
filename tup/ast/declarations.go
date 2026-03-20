@@ -1,5 +1,10 @@
 package ast
 
+import (
+	"fmt"
+	"strings"
+)
+
 // GenericTypeParam represents a type parameter for generic types and functions
 type GenericTypeParam struct {
 	BaseNode
@@ -24,48 +29,87 @@ func (t *GenericTypeParam) String() string {
 	return t.Name
 }
 
-// TypeDeclaration represents a type declaration
+// type_declaration = type_declaration_lhs "=" type_declaration_rhs .
+
 type TypeDeclaration struct {
 	BaseNode
-	Name           *TypeIdentifier     // The name of the type
-	TypeParameters []*GenericTypeParam // Type parameters if this is a generic type
-	Type           Node                // The type definition
-	Annotations    []Annotation        // Annotations applied to the type
+	LHS *TypeDeclarationLHS
+	RHS TypeDeclarationRHS
 }
 
-// NewTypeDeclaration creates a new TypeDeclaration node
-func NewTypeDeclaration(name *TypeIdentifier, typeParams []*GenericTypeParam, typeNode Node, annotations []Annotation) *TypeDeclaration {
+func NewTypeDeclaration(
+	lhs *TypeDeclarationLHS,
+	rhs TypeDeclarationRHS,
+) *TypeDeclaration {
 	return &TypeDeclaration{
-		BaseNode:       BaseNode{Type: NodeTypeDeclaration},
-		Name:           name,
-		TypeParameters: typeParams,
-		Type:           typeNode,
-		Annotations:    annotations,
+		BaseNode: BaseNode{Type: NodeTypeDeclaration},
+		LHS:      lhs,
+		RHS:      rhs,
 	}
 }
 
-// String returns a textual representation of the type declaration
 func (d *TypeDeclaration) String() string {
-	result := ""
-	for _, a := range d.Annotations {
-		result += a.String() + "\n"
-	}
-	result += "type " + d.Name.String()
-
-	if len(d.TypeParameters) > 0 {
-		result += "<"
-		for i, param := range d.TypeParameters {
-			if i > 0 {
-				result += ", "
-			}
-			result += param.String()
-		}
-		result += ">"
-	}
-
-	result += " = " + d.Type.String()
-	return result
+	return fmt.Sprintf("%s = %s", d.LHS, d.RHS)
 }
+
+// type_declaration_lhs = annotations type_identifier [ type_parameters ] .
+
+type TypeDeclarationLHS struct {
+	BaseNode
+	Annotations    []Annotation
+	Name           *TypeIdentifier
+	TypeParameters *TypeParameters
+}
+
+func NewTypeDeclarationLHS(annotations []Annotation, name *TypeIdentifier, typeParameters *TypeParameters) *TypeDeclarationLHS {
+	return &TypeDeclarationLHS{
+		BaseNode:       BaseNode{Type: NodeTypeDeclarationLHS},
+		Annotations:    annotations,
+		Name:           name,
+		TypeParameters: typeParameters,
+	}
+}
+
+func (d *TypeDeclarationLHS) String() string {
+	var result strings.Builder
+	for _, a := range d.Annotations {
+		fmt.Fprintf(&result, "%s\n", a.String())
+	}
+	result.WriteString(d.Name.String())
+	if d.TypeParameters != nil {
+		result.WriteString(d.TypeParameters.String())
+	}
+	return result.String()
+}
+
+// type_declaration_rhs = nilable_type
+//                      | "type" tuple_type
+//                      | error_tuple
+//                      | dynamic_array
+//                      | fixed_size_array
+//                      | union_type
+//                      | union_declaration
+//                      | enum_declaration
+//                      | contract_declaration
+//                      | type_reference .
+
+type TypeDeclarationRHS interface {
+	Node
+	typeDeclarationRHSNode()
+}
+
+func (n NilableType) typeDeclarationRHSNode() {}
+func (n TupleType) typeDeclarationRHSNode()   {}
+
+// func (n ErrorTuple) typeDeclarationRHSNode()          {}
+// func (n DynamicArray) typeDeclarationRHSNode()        {}
+// func (n FixedSizeArray) typeDeclarationRHSNode()      {}
+
+func (n UnionType) typeDeclarationRHSNode()           {}
+func (n UnionDeclaration) typeDeclarationRHSNode()    {}
+func (n EnumDeclaration) typeDeclarationRHSNode()     {}
+func (n ContractDeclaration) typeDeclarationRHSNode() {}
+func (n TypeReference) typeDeclarationRHSNode()       {}
 
 // FunctionDeclaration represents a function declaration
 type FunctionDeclaration struct {

@@ -394,15 +394,28 @@ type TypeParameter struct {
 	Identifier *Identifier // The type parameter name
 }
 
-// String returns a textual representation of the type parameter
+func NewTypeParameter(identifier *Identifier) *TypeParameter {
+	return &TypeParameter{
+		BaseNode:   BaseNode{Type: NodeTypeParameter},
+		Identifier: identifier,
+	}
+}
+
 func (t *TypeParameter) String() string {
 	return t.Identifier.String()
 }
 
-// TypeParameters represents a list of type parameters for a generic type definition
+// type_parameters = "[" type_parameter { "," type_parameter } "]" .
 type TypeParameters struct {
 	BaseNode
-	Parameters []Node // List of TypeParameter nodes
+	Parameters []*TypeParameter
+}
+
+func NewTypeParameters(parameters []*TypeParameter) *TypeParameters {
+	return &TypeParameters{
+		BaseNode:   BaseNode{Type: NodeTypeParameters},
+		Parameters: parameters,
+	}
 }
 
 // String returns a textual representation of the type parameters
