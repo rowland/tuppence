@@ -54,6 +54,24 @@ func (n *NilableType) String() string {
 	return "?" + n.InnerType.String()
 }
 
+// error_tuple = "error" tuple_type .
+
+type ErrorTuple struct {
+	BaseNode
+	TupleType *TupleType
+}
+
+func NewErrorTuple(tupleType *TupleType) *ErrorTuple {
+	return &ErrorTuple{
+		BaseNode:  BaseNode{Type: NodeErrorTuple},
+		TupleType: tupleType,
+	}
+}
+
+func (e *ErrorTuple) String() string {
+	return "error" + e.TupleType.String()
+}
+
 // array_type = fixed_size_array | dynamic_array .
 
 type ArrayType struct {

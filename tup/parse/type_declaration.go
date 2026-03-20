@@ -209,7 +209,20 @@ func TypeTupleType(tokens []tok.Token) (*ast.TupleType, []tok.Token, error) {
 // error_tuple .
 
 func ErrorTuple(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
-	return nil, tokens, ErrNoMatch // TODO: Implement
+	remainder := skipTrivia(tokens)
+	if peek(remainder).Type != tok.TokKwError {
+		return nil, tokens, ErrNoMatch
+	}
+	remainder = remainder[1:]
+
+	tupleType, remainder, err := TupleType(remainder)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("tuple type", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewErrorTuple(tupleType), remainder, nil
 }
 
 // dynamic_array .

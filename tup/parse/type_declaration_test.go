@@ -261,6 +261,42 @@ func TestTypeDeclaration(t *testing.T) {
 			),
 		},
 		{
+			name:  "error tuple rhs",
+			input: "HttpError = error(code: Int, message: String)",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("HttpError", nil, 0, 9), nil),
+				ast.NewErrorTuple(
+					ast.NewTupleType([]ast.TupleTypeMemberNode{
+						ast.NewLabeledTupleTypeMember(
+							nil,
+							ast.NewIdentifier("code", nil, 0, 4),
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+						),
+						ast.NewLabeledTupleTypeMember(
+							nil,
+							ast.NewIdentifier("message", nil, 0, 7),
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+						),
+					}),
+				),
+			),
+		},
+		{
+			name:  "single member error tuple rhs",
+			input: "BogusCard = error(Card)",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("BogusCard", nil, 0, 9), nil),
+				ast.NewErrorTuple(
+					ast.NewTupleType([]ast.TupleTypeMemberNode{
+						ast.NewTupleTypeMember(
+							nil,
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("Card", nil, 0, 4), nil, 0, 4),
+						),
+					}),
+				),
+			),
+		},
+		{
 			name:  "fixed size array rhs",
 			input: "IPv4 = [4]Byte",
 			want: ast.NewTypeDeclaration(
@@ -388,6 +424,58 @@ func TestFixedSizeArray(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
 				"FixedSizeArray", FixedSizeArray, StringerCheck[ast.TypeDeclarationRHS])
+		})
+	}
+}
+
+func TestErrorTuple(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    ast.TypeDeclarationRHS
+		wantErr bool
+	}{
+		{
+			name:  "labeled error tuple",
+			input: "error(code: Int, message: String)",
+			want: ast.NewErrorTuple(
+				ast.NewTupleType([]ast.TupleTypeMemberNode{
+					ast.NewLabeledTupleTypeMember(
+						nil,
+						ast.NewIdentifier("code", nil, 0, 4),
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					),
+					ast.NewLabeledTupleTypeMember(
+						nil,
+						ast.NewIdentifier("message", nil, 0, 7),
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+					),
+				}),
+			),
+		},
+		{
+			name:  "single member error tuple",
+			input: "error(Card)",
+			want: ast.NewErrorTuple(
+				ast.NewTupleType([]ast.TupleTypeMemberNode{
+					ast.NewTupleTypeMember(
+						nil,
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Card", nil, 0, 4), nil, 0, 4),
+					),
+				}),
+			),
+		},
+		{
+			name:    "missing tuple type",
+			input:   "error",
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"ErrorTuple", ErrorTuple, StringerCheck[ast.TypeDeclarationRHS])
 		})
 	}
 }

@@ -180,6 +180,7 @@ const (
 	NodeInlineUnion
 	NodeNamedTuple
 	NodeNilableType
+	NodeErrorTuple
 	NodeRestParameter
 	NodeReturnType
 	NodeTupleType
@@ -370,6 +371,7 @@ var NodeTypes = map[NodeType]string{
 	NodeInlineUnion:   "InlineUnion",
 	NodeNamedTuple:    "NamedTuple",
 	NodeNilableType:   "NilableType",
+	NodeErrorTuple:    "ErrorTuple",
 	NodeRestParameter: "RestParameter",
 	NodeReturnType:    "ReturnType",
 	NodeTupleType:     "TupleType",
