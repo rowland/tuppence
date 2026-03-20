@@ -641,6 +641,70 @@ func TestInlineUnion(t *testing.T) {
 	}
 }
 
+func TestUnionWithError(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.UnionWithError
+		wantErr bool
+	}{
+		{
+			name:  "exclamation shorthand",
+			input: "!Result[Int, String]",
+			want: ast.NewUnionWithError(
+				[]ast.UnionMemberType{
+					ast.NewGenericType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Result", nil, 0, 6), nil, 0, 6),
+						ast.NewTypeArgumentList([]*ast.TypeArgument{
+							ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3)),
+							ast.NewTypeArgument(ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6)),
+						}),
+					),
+				},
+				true,
+			),
+		},
+		{
+			name:  "simple union with error",
+			input: "Card | error",
+			want: ast.NewUnionWithError(
+				[]ast.UnionMemberType{
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Card", nil, 0, 4), nil, 0, 4),
+				},
+				false,
+			),
+		},
+		{
+			name:  "parenthesized union with error",
+			input: "(Int | String | error)",
+			want: ast.NewUnionWithError(
+				[]ast.UnionMemberType{
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+				},
+				false,
+			),
+		},
+		{
+			name:    "plain union without error is rejected",
+			input:   "Int | String",
+			wantErr: true,
+		},
+		{
+			name:    "parenthesized plain union is rejected",
+			input:   "(Int | String)",
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"UnionWithError", UnionWithError, StringerCheck[*ast.UnionWithError])
+		})
+	}
+}
+
 func TestTypeArgument(t *testing.T) {
 	tests := []struct {
 		name    string

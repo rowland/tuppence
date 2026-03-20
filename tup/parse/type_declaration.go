@@ -348,6 +348,72 @@ func InlineUnion(tokens []tok.Token) (*ast.InlineUnion, []tok.Token, error) {
 	return ast.NewInlineUnion(unionType), remainder, nil
 }
 
+// union_with_error = ( "!" union_member )
+//                  | ( union_member { "|" union_member } "|" "error" )
+//                  | ( "(" union_member { "|" union_member } "|" "error" ")" ) .
+
+func UnionWithError(tokens []tok.Token) (*ast.UnionWithError, []tok.Token, error) {
+	remainder := skipTrivia(tokens)
+	if peek(remainder).Type == tok.TokOpNot {
+		remainder = remainder[1:]
+
+		member, remainder, err := UnionMember(remainder)
+		if err == ErrNoMatch {
+			return nil, remainder, errorExpecting("union member", remainder)
+		} else if err != nil {
+			return nil, remainder, err
+		}
+
+		return ast.NewUnionWithError([]ast.UnionMemberType{member}, true), remainder, nil
+	}
+
+	if remainder, found := OpenParen(tokens); found {
+		unionWithError, remainder, err := unionMembersWithError(remainder)
+		if err != nil {
+			return nil, remainder, err
+		}
+
+		if remainder, found = CloseParen(remainder); !found {
+			return nil, remainder, errorExpectingTokenType(tok.TokCloseParen, remainder)
+		}
+
+		return unionWithError, remainder, nil
+	}
+
+	return unionMembersWithError(tokens)
+}
+
+func unionMembersWithError(tokens []tok.Token) (*ast.UnionWithError, []tok.Token, error) {
+	first, remainder, err := UnionMember(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	members := []ast.UnionMemberType{first}
+	for {
+		remainder2, found := Pipe(remainder)
+		if !found {
+			return nil, tokens, ErrNoMatch
+		}
+
+		remainder = remainder2
+		remainder2 = skipTrivia(remainder)
+		if peek(remainder2).Type == tok.TokKwError {
+			return ast.NewUnionWithError(members, false), remainder2[1:], nil
+		}
+
+		member, remainder2, err := UnionMember(remainder)
+		if err == ErrNoMatch {
+			return nil, remainder2, errorExpecting("union member or error", remainder2)
+		} else if err != nil {
+			return nil, remainder2, err
+		}
+
+		members = append(members, member)
+		remainder = remainder2
+	}
+}
+
 // generic_type = type_reference type_argument_list .
 
 func GenericType(tokens []tok.Token) (*ast.GenericType, []tok.Token, error) {

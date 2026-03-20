@@ -190,6 +190,7 @@ const (
 	NodeLabeledTupleTypeMember
 	NodeTypeReference
 	NodeUnionType
+	NodeUnionWithError
 )
 
 func (t NodeType) String() string {
@@ -383,4 +384,5 @@ var NodeTypes = map[NodeType]string{
 	NodeLabeledTupleTypeMember: "LabeledTupleTypeMember",
 	NodeTypeReference: "TypeReference",
 	NodeUnionType:     "UnionType",
+	NodeUnionWithError: "UnionWithError",
 }

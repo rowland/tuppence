@@ -129,8 +129,16 @@ func (u *UnionType) String() string {
 // UnionWithError represents a union type that includes an error
 type UnionWithError struct {
 	BaseNode
-	Members       []Node // List of UnionMember nodes (excluding error)
+	Members       []UnionMemberType // Union members excluding error
 	IsExclamation bool   // True if using the ! prefix syntax
+}
+
+func NewUnionWithError(members []UnionMemberType, isExclamation bool) *UnionWithError {
+	return &UnionWithError{
+		BaseNode:       BaseNode{Type: NodeUnionWithError},
+		Members:        members,
+		IsExclamation:  isExclamation,
+	}
 }
 
 // String returns a textual representation of the union with error
