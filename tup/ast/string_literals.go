@@ -122,8 +122,3 @@ func (m *MultiLineStringLiteral) String() string {
 	builder.WriteString("```")
 	return builder.String()
 }
-
-// LiteralValue returns the Go value of the literal
-func (m *MultiLineStringLiteral) LiteralValue() any {
-	return strings.Join(m.Lines, "\n")
-}
