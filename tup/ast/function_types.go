@@ -46,10 +46,10 @@ func (n *InterpolatedStringLiteral) functionTypeParameterTypeNode() {
 func (n *RawStringLiteral) functionTypeParameterTypeNode() {}
 func (n *MultiLineStringLiteral) functionTypeParameterTypeNode() {
 }
-func (n *TupleLiteral) functionTypeParameterTypeNode()          {}
-func (n *ArrayLiteral) functionTypeParameterTypeNode()          {}
-func (n *SymbolLiteral) functionTypeParameterTypeNode()         {}
-func (n *RuneLiteral) functionTypeParameterTypeNode()           {}
+func (n *TupleLiteral) functionTypeParameterTypeNode()  {}
+func (n *ArrayLiteral) functionTypeParameterTypeNode()  {}
+func (n *SymbolLiteral) functionTypeParameterTypeNode() {}
+func (n *RuneLiteral) functionTypeParameterTypeNode()   {}
 
 type Parameter struct {
 	BaseNode

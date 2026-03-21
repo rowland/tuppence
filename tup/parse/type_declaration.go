@@ -146,6 +146,25 @@ func NilableType(tokens []tok.Token) (*ast.NilableType, []tok.Token, error) {
 	return ast.NewNilableType(localTypeReference), remainder, nil
 }
 
+// fallible_type = "!" union_member .
+
+func FallibleType(tokens []tok.Token) (*ast.FallibleType, []tok.Token, error) {
+	remainder := skipTrivia(tokens)
+	if peek(remainder).Type != tok.TokOpNot {
+		return nil, tokens, ErrNoMatch
+	}
+	remainder = remainder[1:]
+
+	member, remainder, err := UnionMember(remainder)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("union member", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewFallibleType(member), remainder, nil
+}
+
 // type_parameter = identifier .
 
 func TypeParameter(tokens []tok.Token) (*ast.TypeParameter, []tok.Token, error) {

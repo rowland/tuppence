@@ -708,10 +708,26 @@ in module `strconv`:
 
 It will implicitly have the name `strconv.atoi`, but within the `strconv` model, or when it has been
 imported into another module, it is not necessary to use the module-qualified function name.
-However, `strconv.atoi` is not the entirety of the fully-qualified name. The full name includes the
-types from the function signature, starting with the return type and continuing with the parameter types.
+However, `strconv.atoi` is not the entirety of the fully-qualified name. The full name may also include
+selector types used to disambiguate overloads. Selector types are not a restatement of the full function
+signature. They should include only the types needed to distinguish one overload from another. When a
+return-type selector is present, it appears first.
 
     atoi[!Int, String] = fn(s: String) !Int { ... }
+
+There are several common declaration forms:
+
+1. `name = fn(...) _`
+   The compiler infers the return type from the function body. If different code paths return different
+   types, the inferred result may be a union.
+2. `name = fn(...) T`
+   The function body is constrained to return `T` or a subset thereof.
+3. `name[S] = fn(...) _`
+   The compiler infers the return type from the function body, but the inferred type must match the
+   first selector `S`.
+4. `name[S] = fn(...) T`
+   The explicit return type `T` must match the first selector `S`, and the function body is constrained
+   to return `T` or a subset thereof.
 
 When introducing an identifier into a namespace, such as a module, no two identifiers may be identical.
 However, it is only necessary to explicitly include what would otherwise be implicit until the two
@@ -723,7 +739,7 @@ Consider a family of functions with different return types:
     atoi[!Int32] = fn(s: String) !Int32 { ... }
     atoi[!Int64] = fn(s: String) !Int64 { ... }
 
-The complete identifier for the first function might be `atoi[!Int16,String]`, or the types may also
+The complete identifier for the first function might be `atoi[!Int16, String]`, or the types may also
 include the module names where they were declared, but the rules for scope resolution make it
 unnecessary to use the most verbose version.
 
@@ -735,6 +751,10 @@ array of `Byte`:
 
 When declaring the two functions, they only differ starting with the second type argument, so both
 must be included in the function identifier.
+
+Nilable and fallible selector types are especially useful because they are concise and often sufficient
+to distinguish overloads. More complex return types should ordinarily be named and then referred to by
+name rather than repeated verbosely in a selector list.
 
 Invoking the functions have different ergonomic tradeoffs. In the first scenario, the arguments are
 of matching times, so the version of the function with the desired return type must be specified:

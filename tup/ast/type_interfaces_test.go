@@ -3,6 +3,13 @@ package ast
 var _ LocalTypeReference = &TypeReference{}
 var _ LocalTypeReference = &Identifier{}
 
+var _ FunctionParameterType = &TypeReference{}
+var _ FunctionParameterType = &Identifier{}
+var _ FunctionParameterType = &NilableType{}
+var _ FunctionParameterType = &FallibleType{}
+var _ FunctionParameterType = &DynamicArrayType{}
+var _ FunctionParameterType = &FixedSizeArrayType{}
+
 var _ TypeDeclarationRHS = &NilableType{}
 var _ TypeDeclarationRHS = &TypeTuple{}
 var _ TypeDeclarationRHS = &ErrorTuple{}

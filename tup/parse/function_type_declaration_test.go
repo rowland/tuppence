@@ -51,11 +51,15 @@ func TestFunctionTypeDeclarationLHS(t *testing.T) {
 		},
 		{
 			name:     "lhs with parameter types",
-			input:    "Transformer[String, Int]",
+			input:    "Transformer[?String, !Int]",
 			wantName: ast.NewTypeIdentifier("Transformer", nil, 0, 11),
-			wantParameterTypes: ast.NewFunctionParameterTypes([]ast.LocalTypeReference{
-				ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
-				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+			wantParameterTypes: ast.NewFunctionParameterTypes([]ast.FunctionParameterType{
+				ast.NewNilableType(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+				),
+				ast.NewFallibleType(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+				),
 			}),
 		},
 	}
@@ -120,12 +124,16 @@ func TestFunctionTypeDeclaration(t *testing.T) {
 		},
 		{
 			name:  "function type declaration with parameter types",
-			input: "Transformer[String, Int] = fn(input: Int) String",
+			input: "Transformer[?String, !Int] = fn(input: Int) String",
 			want: ast.NewFunctionTypeDeclaration(
 				ast.NewTypeIdentifier("Transformer", nil, 0, 11),
-				ast.NewFunctionParameterTypes([]ast.LocalTypeReference{
-					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
-					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+				ast.NewFunctionParameterTypes([]ast.FunctionParameterType{
+					ast.NewNilableType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+					),
+					ast.NewFallibleType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					),
 				}),
 				ast.NewFunctionType(
 					false,

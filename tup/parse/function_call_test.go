@@ -149,8 +149,7 @@ func TestFunctionCall(t *testing.T) {
 				ast.NewFunctionIdentifier("fizz", nil, 0, 3),
 				// parameterTypes
 				ast.NewFunctionParameterTypes(
-					// parameters
-					[]ast.LocalTypeReference{
+					[]ast.FunctionParameterType{
 						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
 						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
 					},
@@ -372,7 +371,7 @@ func TestFunctionCall(t *testing.T) {
 	}
 }
 
-// function_parameter_types = "[" local_type_reference { "," local_type_reference } "]" .
+// function_parameter_types = "[" function_parameter_type { "," function_parameter_type } "]" .
 
 func TestFunctionParameterTypes(t *testing.T) {
 	tests := []struct {
@@ -391,8 +390,7 @@ func TestFunctionParameterTypes(t *testing.T) {
 			name:  "one parameter",
 			input: "[Int]",
 			want: ast.NewFunctionParameterTypes(
-				// parameters
-				[]ast.LocalTypeReference{
+				[]ast.FunctionParameterType{
 					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
 				},
 			),
@@ -401,10 +399,38 @@ func TestFunctionParameterTypes(t *testing.T) {
 			name:  "two parameters",
 			input: "[Int, Int]",
 			want: ast.NewFunctionParameterTypes(
-				// parameters
-				[]ast.LocalTypeReference{
+				[]ast.FunctionParameterType{
 					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
 					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+				},
+			),
+		},
+		{
+			name:  "nilable and fallible parameters",
+			input: "[?String, !Int]",
+			want: ast.NewFunctionParameterTypes(
+				[]ast.FunctionParameterType{
+					ast.NewNilableType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+					),
+					ast.NewFallibleType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					),
+				},
+			),
+		},
+		{
+			name:  "dynamic and fixed-size array parameters",
+			input: "[[]Byte, [4]Byte]",
+			want: ast.NewFunctionParameterTypes(
+				[]ast.FunctionParameterType{
+					ast.NewDynamicArrayType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Byte", nil, 0, 4), nil, 0, 4),
+					),
+					ast.NewFixedSizeArrayType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Byte", nil, 0, 4), nil, 0, 4),
+						ast.NewDecimalLiteral("4", 4, nil, 0, 1),
+					),
 				},
 			),
 		},

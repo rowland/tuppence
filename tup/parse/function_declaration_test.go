@@ -28,7 +28,7 @@ func TestFunctionDeclarationLHS(t *testing.T) {
 			input: "read[String]",
 			want: ast.NewFunctionDeclarationLHS(
 				ast.NewFunctionIdentifier("read", nil, 0, 4),
-				ast.NewFunctionParameterTypes([]ast.LocalTypeReference{
+				ast.NewFunctionParameterTypes([]ast.FunctionParameterType{
 					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
 				}),
 			),
@@ -44,7 +44,7 @@ func TestFunctionDeclarationLHS(t *testing.T) {
 }
 
 func TestFunctionDeclarationLHSStringRoundTrip(t *testing.T) {
-	input := "read[String, Handle]"
+	input := "read[?String, !Handle]"
 
 	src := source.NewSource([]byte(input), "test.tup")
 	tokens, err := tok.Tokenize(src.Contents, src.Filename)
@@ -198,13 +198,15 @@ func TestFunctionDeclaration(t *testing.T) {
 		},
 		{
 			name:  "function declaration with selector types and inferred return",
-			input: "read[String] = fn(handle: Handle) _ { handle }",
+			input: "read[!String] = fn(handle: Handle) _ { handle }",
 			want: ast.NewFunctionDeclaration(
 				nil,
 				ast.NewFunctionDeclarationLHS(
 					ast.NewFunctionIdentifier("read", nil, 0, 4),
-					ast.NewFunctionParameterTypes([]ast.LocalTypeReference{
-						ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+					ast.NewFunctionParameterTypes([]ast.FunctionParameterType{
+						ast.NewFallibleType(
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+						),
 					}),
 				),
 				ast.NewFunctionDeclarationType(

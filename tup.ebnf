@@ -196,7 +196,13 @@ function_declaration_lhs = function_identifier [ function_parameter_types ] .
 
 function_identifier = lowercase_letter { letter | decimal_digit | "_" } [ "?" | "!" ] .
 
-function_parameter_types = "[" local_type_reference { "," local_type_reference } "]" .
+function_parameter_types = "[" function_parameter_type { "," function_parameter_type } "]" .
+
+function_parameter_type = local_type_reference
+                        | nilable_type
+                        | fallible_type
+                        | dynamic_array
+                        | fixed_size_array .
 
 function_type = ( "fn" | "fx" ) "(" [ labeled_parameters | parameters ] ")" return_type .
 
@@ -352,6 +358,8 @@ namespaced_annotation = "@" namespace ":" identifier annotation_value eol .
 neq_op = "!=" .
 
 nilable_type = "?" local_type_reference .
+
+fallible_type = "!" union_member .
 
 nonzero_digit = "1"-"9" .
 

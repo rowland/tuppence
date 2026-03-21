@@ -8,4 +8,4 @@ fiver = fn() _ { five }
 log = fx(message: String) { message }
 
 # function declaration with selector types
-read[String] = fn(handle: Handle) _ { handle }
+read[!String] = fn(handle: Handle) _ { handle }

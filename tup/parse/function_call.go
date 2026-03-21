@@ -134,17 +134,16 @@ func callableBaseExpression(tokens []tok.Token) (expr ast.Expression, remainder 
 	return nil, tokens, ErrNoMatch
 }
 
-// function_parameter_types = "[" local_type_reference { "," local_type_reference } "]" .
+// function_parameter_types = "[" function_parameter_type { "," function_parameter_type } "]" .
 
 func FunctionParameterTypes(tokens []tok.Token) (expr *ast.FunctionParameterTypes, remainder []tok.Token, err error) {
-	// fmt.Println("FunctionParameterTypes", tok.Types(tokens))
 	var found bool
 	if remainder, found = OpenBracket(tokens); !found {
 		return nil, tokens, ErrNoMatch
 	}
 
-	var parameters []ast.LocalTypeReference
-	if parameters, remainder, err = LocalTypeReferenceList(remainder); err != nil {
+	var parameters []ast.FunctionParameterType
+	if parameters, remainder, err = FunctionParameterTypeList(remainder); err != nil {
 		return nil, remainder, err
 	}
 
@@ -155,12 +154,58 @@ func FunctionParameterTypes(tokens []tok.Token) (expr *ast.FunctionParameterType
 	return ast.NewFunctionParameterTypes(parameters), remainder, nil
 }
 
-func LocalTypeReferenceList(tokens []tok.Token) (parameters []ast.LocalTypeReference, remainder []tok.Token, err error) {
-	// fmt.Println("LocalTypeReferenceList", tok.Types(tokens))
+// function_parameter_type = local_type_reference
+//                         | nilable_type
+//                         | fallible_type
+//                         | dynamic_array
+//                         | fixed_size_array .
+
+func FunctionParameterType(tokens []tok.Token) (ast.FunctionParameterType, []tok.Token, error) {
+	if nilableType, remainder, err := NilableType(tokens); err == nil {
+		return nilableType, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if fallibleType, remainder, err := FallibleType(tokens); err == nil {
+		return fallibleType, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if localTypeReference, remainder, err := LocalTypeReference(tokens); err == nil {
+		switch t := localTypeReference.(type) {
+		case *ast.TypeReference:
+			return t, remainder, nil
+		case *ast.Identifier:
+			return t, remainder, nil
+		default:
+			return nil, remainder, errorExpecting("function parameter type", remainder)
+		}
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if dynamicArray, remainder, err := DynamicArray(tokens); err == nil {
+		return dynamicArray, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if fixedSizeArray, remainder, err := FixedSizeArray(tokens); err == nil {
+		return fixedSizeArray, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
+}
+
+func FunctionParameterTypeList(tokens []tok.Token) (parameters []ast.FunctionParameterType, remainder []tok.Token, err error) {
 	remainder = tokens
 	for {
-		var parameter ast.LocalTypeReference
-		if parameter, remainder, err = LocalTypeReference(remainder); err != nil {
+		var parameter ast.FunctionParameterType
+		if parameter, remainder, err = FunctionParameterType(remainder); err != nil {
 			return nil, remainder, err
 		}
 		parameters = append(parameters, parameter)

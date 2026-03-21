@@ -14,6 +14,6 @@ log = fx(message: String) {
 }
 
 # function declaration with selector types
-read[String] = fn(handle: Handle) _ {
+read[!String] = fn(handle: Handle) _ {
     handle
 }

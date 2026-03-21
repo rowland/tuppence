@@ -51,14 +51,32 @@ func (f *FunctionDeclarationType) String() string {
 	return result.String()
 }
 
-// function_parameter_types = "[" local_type_reference { "," local_type_reference } "]" .
+// function_parameter_type = local_type_reference
+//                         | nilable_type
+//                         | fallible_type
+//                         | dynamic_array
+//                         | fixed_size_array .
+
+type FunctionParameterType interface {
+	Node
+	functionParameterTypeNode()
+}
+
+func (n *TypeReference) functionParameterTypeNode()      {}
+func (n *Identifier) functionParameterTypeNode()         {}
+func (n *NilableType) functionParameterTypeNode()        {}
+func (n *FallibleType) functionParameterTypeNode()       {}
+func (n *DynamicArrayType) functionParameterTypeNode()   {}
+func (n *FixedSizeArrayType) functionParameterTypeNode() {}
+
+// function_parameter_types = "[" function_parameter_type { "," function_parameter_type } "]" .
 
 type FunctionParameterTypes struct {
 	BaseNode
-	Parameters []LocalTypeReference // The function parameter types
+	Parameters []FunctionParameterType // The function parameter types
 }
 
-func NewFunctionParameterTypes(parameters []LocalTypeReference) *FunctionParameterTypes {
+func NewFunctionParameterTypes(parameters []FunctionParameterType) *FunctionParameterTypes {
 	return &FunctionParameterTypes{
 		BaseNode:   BaseNode{Type: NodeFunctionParameterTypes},
 		Parameters: parameters,

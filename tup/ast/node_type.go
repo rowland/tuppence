@@ -184,6 +184,7 @@ const (
 	NodeInlineUnion
 	NodeNamedTuple
 	NodeNilableType
+	NodeFallibleType
 	NodeInferredErrorType
 	NodeParameter
 	NodeLabeledParameter
@@ -235,17 +236,17 @@ var NodeTypes = map[NodeType]string{
 	NodeSwitchStatement:     "SwitchStatement",
 
 	// Declaration node types
-	NodeAnnotation:          "Annotation",
-	NodeEnumDeclaration:     "EnumDeclaration",
-	NodeEnumMember:          "EnumMember",
-	NodeErrorDeclaration:    "ErrorDeclaration",
-	NodeFunctionDeclaration: "FunctionDeclaration",
+	NodeAnnotation:             "Annotation",
+	NodeEnumDeclaration:        "EnumDeclaration",
+	NodeEnumMember:             "EnumMember",
+	NodeErrorDeclaration:       "ErrorDeclaration",
+	NodeFunctionDeclaration:    "FunctionDeclaration",
 	NodeFunctionDeclarationLHS: "FunctionDeclarationLHS",
-	NodeGenericTypeParam:    "GenericTypeParam",
-	NodeTypeDeclaration:     "TypeDeclaration",
-	NodeTypeDeclarationLHS:  "TypeDeclarationLHS",
-	NodeTypeParameter:       "TypeParameter",
-	NodeTypeParameters:      "TypeParameters",
+	NodeGenericTypeParam:       "GenericTypeParam",
+	NodeTypeDeclaration:        "TypeDeclaration",
+	NodeTypeDeclarationLHS:     "TypeDeclarationLHS",
+	NodeTypeParameter:          "TypeParameter",
+	NodeTypeParameters:         "TypeParameters",
 
 	// Export related node types
 	NodeExportAssignment:                       "ExportAssignment",
@@ -341,16 +342,16 @@ var NodeTypes = map[NodeType]string{
 	NodeStructuredMatch:      "StructuredMatch",
 
 	// Pattern and matching node types
-	NodeArrayPattern:      "ArrayPattern",
-	NodeAssignment:        "Assignment",
+	NodeArrayPattern:       "ArrayPattern",
+	NodeAssignment:         "Assignment",
 	NodeCompoundAssignment: "CompoundAssignment",
-	NodeLiteralPattern:    "LiteralPattern",
-	NodeMatchCase:         "MatchCase",
-	NodeMatchExpression:   "MatchExpression",
-	NodePatternIdentifier: "PatternIdentifier",
-	NodeTuplePattern:      "TuplePattern",
-	NodeTypePattern:       "TypePattern",
-	NodeWildcardPattern:   "WildcardPattern",
+	NodeLiteralPattern:     "LiteralPattern",
+	NodeMatchCase:          "MatchCase",
+	NodeMatchExpression:    "MatchExpression",
+	NodePatternIdentifier:  "PatternIdentifier",
+	NodeTuplePattern:       "TuplePattern",
+	NodeTypePattern:        "TypePattern",
+	NodeWildcardPattern:    "WildcardPattern",
 
 	// PrimaryExpression node types
 	NodeFunctionArguments:   "FunctionArguments",
@@ -388,6 +389,7 @@ var NodeTypes = map[NodeType]string{
 	NodeLabeledRestParameter:   "LabeledRestParameter",
 	NodeNamedTuple:             "NamedTuple",
 	NodeNilableType:            "NilableType",
+	NodeFallibleType:           "FallibleType",
 	NodeInferredErrorType:      "InferredErrorType",
 	NodeErrorTuple:             "ErrorTuple",
 	NodeRestParameter:          "RestParameter",

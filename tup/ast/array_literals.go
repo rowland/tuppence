@@ -10,7 +10,7 @@ type ArrayLiteralType interface {
 	arrayLiteralTypeNode()
 }
 
-func (n *TypeReference) arrayLiteralTypeNode()   {}
+func (n *TypeReference) arrayLiteralTypeNode()      {}
 func (n *FixedSizeArrayType) arrayLiteralTypeNode() {}
 
 // array_literal = fixed_size_array array_initializer

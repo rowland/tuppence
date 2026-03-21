@@ -49,3 +49,21 @@ func NewNilableType(innerType Node) *NilableType {
 func (n *NilableType) String() string {
 	return "?" + n.InnerType.String()
 }
+
+// fallible_type = "!" union_member .
+
+type FallibleType struct {
+	BaseNode
+	InnerType UnionMemberType
+}
+
+func NewFallibleType(innerType UnionMemberType) *FallibleType {
+	return &FallibleType{
+		BaseNode:  BaseNode{Type: NodeFallibleType},
+		InnerType: innerType,
+	}
+}
+
+func (f *FallibleType) String() string {
+	return "!" + f.InnerType.String()
+}

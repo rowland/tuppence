@@ -95,7 +95,7 @@ func TestArrayLiteral(t *testing.T) {
 		want    *ast.ArrayLiteral
 		wantErr bool
 	}{
-	{
+		{
 			name:  "empty array",
 			input: "[]",
 			want:  ast.NewArrayLiteral(nil, nil, nil),
