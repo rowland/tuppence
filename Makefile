@@ -27,6 +27,14 @@ $(HTML): $(TUP) $(FMT) $(FMT_HTML) $(FMT_JS)
 # Optional target to update the grammar explicitly.
 grammar: $(HTML)
 
+# Refresh the curated top-level parser golden outputs.
+goldens:
+	cd tup && UPDATE_TOP_LEVEL_GOLDENS=1 go test ./parse -run TestTopLevelGoldenFixtures
+
+# Validate the curated top-level parser golden outputs without rewriting them.
+test-goldens:
+	cd tup && go test ./parse -run TestTopLevelGoldenFixtures
+
 # Build the language server
 ls-build:
 	@echo "Building language server..."
@@ -75,4 +83,4 @@ clean-vscode:
 test:
 	cd tup && go test ./...
 
-.PHONY: all grammar clean clean-ls clean-vscode ls-build ls-install vscode-build vscode-install dev-setup test
+.PHONY: all grammar goldens test-goldens clean clean-ls clean-vscode ls-build ls-install vscode-build vscode-install dev-setup test
