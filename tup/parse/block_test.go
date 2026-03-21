@@ -156,6 +156,56 @@ func TestBlock(t *testing.T) {
 				),
 			),
 		},
+		{
+			name:  "block with if expression statement before final expression",
+			input: "{ if ready { value }; fallback }",
+			want: ast.NewBlock(
+				ast.NewBlockBody(
+					[]ast.Statement{
+						ast.NewIfExpression(
+							[]ast.Node{
+								ast.NewIdentifier("ready", nil, 0, 5),
+							},
+							[]*ast.Block{
+								ast.NewBlock(
+									ast.NewBlockBody(
+										[]ast.Statement{},
+										ast.NewIdentifier("value", nil, 0, 5),
+									),
+								),
+							},
+							false,
+						),
+					},
+					ast.NewIdentifier("fallback", nil, 0, 8),
+				),
+			),
+		},
+		{
+			name:  "block with if expression statement before final expression separated by newline",
+			input: "{\n  if ready { value }\n  fallback\n}",
+			want: ast.NewBlock(
+				ast.NewBlockBody(
+					[]ast.Statement{
+						ast.NewIfExpression(
+							[]ast.Node{
+								ast.NewIdentifier("ready", nil, 0, 5),
+							},
+							[]*ast.Block{
+								ast.NewBlock(
+									ast.NewBlockBody(
+										[]ast.Statement{},
+										ast.NewIdentifier("value", nil, 0, 5),
+									),
+								),
+							},
+							false,
+						),
+					},
+					ast.NewIdentifier("fallback", nil, 0, 8),
+				),
+			),
+		},
 	}
 
 	for _, test := range tests {

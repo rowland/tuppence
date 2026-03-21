@@ -502,7 +502,12 @@ func postfixBaseExpression(tokens []tok.Token) (expr ast.Expression, remainder [
 		return nil, remainder, err
 	}
 
-	// if_expression
+	if ifExpression, remainder, err := IfExpression(tokens); err == nil {
+		return ifExpression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
 	// for_expression
 	// inline_for_expression
 

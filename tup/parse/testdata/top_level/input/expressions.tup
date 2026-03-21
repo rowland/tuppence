@@ -63,3 +63,6 @@ _ = {
     ready = true
     ready
 }
+
+# wrapped if expression
+_ = if ready { value } else { fallback }

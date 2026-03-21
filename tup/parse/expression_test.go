@@ -313,6 +313,30 @@ func TestExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "if expression",
+			input: "if ready { value } else { fallback }",
+			want: ast.NewIfExpression(
+				[]ast.Node{
+					ast.NewIdentifier("ready", nil, 0, 5),
+				},
+				[]*ast.Block{
+					ast.NewBlock(
+						ast.NewBlockBody(
+							[]ast.Statement{},
+							ast.NewIdentifier("value", nil, 0, 5),
+						),
+					),
+					ast.NewBlock(
+						ast.NewBlockBody(
+							[]ast.Statement{},
+							ast.NewIdentifier("fallback", nil, 0, 8),
+						),
+					),
+				},
+				true,
+			),
+		},
+		{
 			name:  "function call",
 			input: "foo(1, 2)",
 			want: ast.NewFunctionCall(
@@ -777,6 +801,16 @@ func TestExpression(t *testing.T) {
 				}
 			case *ast.Block:
 				got, ok := expression.(*ast.Block)
+				if !ok {
+					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Expression(%q) = %v, want %v", tt.input, got, want)
+					return
+				}
+			case *ast.IfExpression:
+				got, ok := expression.(*ast.IfExpression)
 				if !ok {
 					t.Errorf("Expression(%q) = %T, want %T", tt.input, expression, tt.want)
 					return

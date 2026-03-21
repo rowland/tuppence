@@ -166,13 +166,13 @@
 - [ ] case_block
 - [x] character
 - [x] comment
-- [ ] condition
+- [x] condition
 - [ ] constant
 - [ ] content_line
 - [ ] continue_expression
 - [x] decimal_digit
 - [ ] structured_match
-- [ ] else_block
+- [x] else_block
 - [x] enum_declaration
 - [x] enum_members
 - [x] enum_member_declaration
@@ -195,7 +195,7 @@
 - [x] function_type_declaration_lhs
 - [x] function_type_identifier
 - [x] hex_digit
-- [ ] if_expression
+- [x] if_expression
 - [x] import_expression
 - [ ] indented_closing
 - [ ] indented_line
