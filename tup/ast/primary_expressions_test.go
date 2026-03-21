@@ -14,8 +14,8 @@ var _ PrimaryExpression = &SafeIndexedAccess{}
 var _ PrimaryExpression = &IndexedAccess{}
 var _ PrimaryExpression = &FunctionIdentifier{}
 var _ PrimaryExpression = &Identifier{}
+var _ PrimaryExpression = &ImportExpression{}
 
-// var _ PrimaryExpression = &ImportExpression{}
 // var _ PrimaryExpression = &ReturnExpression{}
 // var _ PrimaryExpression = &BreakExpression{}
 // var _ PrimaryExpression = &ContinueExpression{}

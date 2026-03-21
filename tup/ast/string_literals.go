@@ -8,14 +8,12 @@ import (
 
 // string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' - eol } '"' .
 
-// StringLiteral represents a string literal in the code
 type StringLiteral struct {
 	BaseNode
 	Value       string
 	StringValue string
 }
 
-// NewStringLiteral creates a new StringLiteral node
 func NewStringLiteral(value string, stringValue string, source *source.Source, startOffset int32, length int32) *StringLiteral {
 	return &StringLiteral{
 		BaseNode:    BaseNode{Type: NodeStringLiteral, Source: source, StartOffset: startOffset, Length: length},
@@ -37,7 +35,6 @@ type RawStringLiteral struct {
 	StringValue string
 }
 
-// NewRawStringLiteral creates a new RawStringLiteral node
 func NewRawStringLiteral(value string, stringValue string, source *source.Source, startOffset int32, length int32) *RawStringLiteral {
 	return &RawStringLiteral{
 		BaseNode:    BaseNode{Type: NodeRawStringLiteral, Source: source, StartOffset: startOffset, Length: length},
@@ -82,7 +79,6 @@ func NewInterpolatedStringLiteral(parts []Node, source *source.Source) *Interpol
 	}
 }
 
-// String returns a textual representation of the interpolated string literal
 func (i *InterpolatedStringLiteral) String() string {
 	var builder strings.Builder
 	builder.WriteString("\"")
@@ -91,11 +87,6 @@ func (i *InterpolatedStringLiteral) String() string {
 	}
 	builder.WriteString("\"")
 	return builder.String()
-}
-
-// LiteralValue returns the Go value of the literal (concatenated parts)
-func (i *InterpolatedStringLiteral) LiteralValue() any {
-	return i.String()
 }
 
 // multi_line_string_literal = "```" [ function_call_context ] eol { indented_line } indented_closing .

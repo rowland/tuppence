@@ -10,11 +10,11 @@ type UnionDeclarationMemberType interface {
 	unionDeclarationMemberTypeNode()
 }
 
-func (n *NamedTuple) unionDeclarationMemberTypeNode()      {}
-func (n *GenericType) unionDeclarationMemberTypeNode()     {}
-func (n *DynamicArrayType) unionDeclarationMemberTypeNode() {}
+func (n *NamedTuple) unionDeclarationMemberTypeNode()         {}
+func (n *GenericType) unionDeclarationMemberTypeNode()        {}
+func (n *DynamicArrayType) unionDeclarationMemberTypeNode()   {}
 func (n *FixedSizeArrayType) unionDeclarationMemberTypeNode() {}
-func (n *TypeReference) unionDeclarationMemberTypeNode()   {}
+func (n *TypeReference) unionDeclarationMemberTypeNode()      {}
 
 // UnionMemberDeclaration represents a member of a union declaration.
 // The member itself mirrors the grammar directly: either an introduced
@@ -25,7 +25,6 @@ type UnionMemberDeclaration struct {
 	Member      UnionDeclarationMemberType
 }
 
-// NewUnionMemberDeclaration creates a new UnionMemberDeclaration node.
 func NewUnionMemberDeclaration(annotations []Annotation, member UnionDeclarationMemberType) *UnionMemberDeclaration {
 	return &UnionMemberDeclaration{
 		BaseNode:    BaseNode{Type: NodeUnionMemberDeclaration},
@@ -34,7 +33,6 @@ func NewUnionMemberDeclaration(annotations []Annotation, member UnionDeclaration
 	}
 }
 
-// String returns a textual representation of the union member declaration.
 func (u *UnionMemberDeclaration) String() string {
 	var builder strings.Builder
 	for _, annotation := range u.Annotations {
@@ -46,16 +44,13 @@ func (u *UnionMemberDeclaration) String() string {
 	return builder.String()
 }
 
-// UnionMembers represents a collection of union members
 type UnionMembers []*UnionMemberDeclaration // The union members
 
-// UnionDeclaration represents a union declaration
 type UnionDeclaration struct {
 	BaseNode
 	Members UnionMembers
 }
 
-// NewUnionDeclaration creates a new UnionDeclaration node
 func NewUnionDeclaration(members UnionMembers) *UnionDeclaration {
 	return &UnionDeclaration{
 		BaseNode: BaseNode{Type: NodeUnionDeclaration},
@@ -63,7 +58,6 @@ func NewUnionDeclaration(members UnionMembers) *UnionDeclaration {
 	}
 }
 
-// String returns a textual representation of the union declaration
 func (u *UnionDeclaration) String() string {
 	var builder strings.Builder
 
@@ -127,13 +121,11 @@ func (n *TypeReference) unionMemberTypeNode()       {}
 func (n *Identifier) unionMemberTypeNode()          {}
 func (n *ContractDeclaration) unionMemberTypeNode() {}
 
-// UnionType represents a union type
 type UnionType struct {
 	BaseNode
 	Members []UnionMemberType
 }
 
-// NewUnionType creates a new UnionType node
 func NewUnionType(members []UnionMemberType) *UnionType {
 	return &UnionType{
 		BaseNode: BaseNode{Type: NodeUnionType},
@@ -141,7 +133,6 @@ func NewUnionType(members []UnionMemberType) *UnionType {
 	}
 }
 
-// String returns a textual representation of the union type
 func (u *UnionType) String() string {
 	if len(u.Members) == 0 {
 		return "any"
@@ -161,18 +152,17 @@ func (u *UnionType) String() string {
 type UnionWithError struct {
 	BaseNode
 	Members       []UnionMemberType // Union members excluding error
-	IsExclamation bool   // True if using the ! prefix syntax
+	IsExclamation bool              // True if using the ! prefix syntax
 }
 
 func NewUnionWithError(members []UnionMemberType, isExclamation bool) *UnionWithError {
 	return &UnionWithError{
-		BaseNode:       BaseNode{Type: NodeUnionWithError},
-		Members:        members,
-		IsExclamation:  isExclamation,
+		BaseNode:      BaseNode{Type: NodeUnionWithError},
+		Members:       members,
+		IsExclamation: isExclamation,
 	}
 }
 
-// String returns a textual representation of the union with error
 func (u *UnionWithError) String() string {
 	if u.IsExclamation {
 		if len(u.Members) == 1 {
@@ -191,13 +181,11 @@ func (u *UnionWithError) String() string {
 	return builder.String()
 }
 
-// InlineUnion represents an inline union type
 type InlineUnion struct {
 	BaseNode
 	UnionType *UnionType
 }
 
-// NewInlineUnion creates a new InlineUnion node
 func NewInlineUnion(unionType *UnionType) *InlineUnion {
 	return &InlineUnion{
 		BaseNode:  BaseNode{Type: NodeInlineUnion},
@@ -205,7 +193,6 @@ func NewInlineUnion(unionType *UnionType) *InlineUnion {
 	}
 }
 
-// String returns a textual representation of the inline union
 func (i *InlineUnion) String() string {
 	return "(" + i.UnionType.String() + ")"
 }

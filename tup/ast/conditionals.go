@@ -2,7 +2,6 @@ package ast
 
 import "strings"
 
-// IfExpression represents an if expression
 type IfExpression struct {
 	BaseNode
 	Conditions []Node   // The conditions (one for the if, and one for each else if)
@@ -10,7 +9,6 @@ type IfExpression struct {
 	HasElse    bool     // Whether there's a final else block
 }
 
-// NewIfExpression creates a new IfExpression node
 func NewIfExpression(conditions []Node, blocks []*Block, hasElse bool) *IfExpression {
 	return &IfExpression{
 		BaseNode:   BaseNode{Type: NodeIfExpression},
@@ -20,7 +18,6 @@ func NewIfExpression(conditions []Node, blocks []*Block, hasElse bool) *IfExpres
 	}
 }
 
-// String returns a textual representation of the if expression
 func (i *IfExpression) String() string {
 	var builder strings.Builder
 
@@ -47,14 +44,12 @@ func (i *IfExpression) String() string {
 	return builder.String()
 }
 
-// CaseBlock represents a case block in a switch statement
 type CaseBlock struct {
 	BaseNode
 	Condition Node   // The case condition
 	Block     *Block // The case body
 }
 
-// NewCaseBlock creates a new CaseBlock node
 func NewCaseBlock(condition Node, block *Block) *CaseBlock {
 	return &CaseBlock{
 		BaseNode:  BaseNode{Type: NodeCaseBlock},
@@ -63,18 +58,15 @@ func NewCaseBlock(condition Node, block *Block) *CaseBlock {
 	}
 }
 
-// String returns a textual representation of the case block
 func (c *CaseBlock) String() string {
 	return c.Condition.String() + " " + c.Block.String()
 }
 
-// ElseBlock represents an else block in a switch statement
 type ElseBlock struct {
 	BaseNode
 	Block *Block // The else body
 }
 
-// NewElseBlock creates a new ElseBlock node
 func NewElseBlock(block *Block) *ElseBlock {
 	return &ElseBlock{
 		BaseNode: BaseNode{Type: NodeElseBlock},
@@ -82,12 +74,10 @@ func NewElseBlock(block *Block) *ElseBlock {
 	}
 }
 
-// String returns a textual representation of the else block
 func (e *ElseBlock) String() string {
 	return "else " + e.Block.String()
 }
 
-// SwitchStatement represents a switch statement
 type SwitchStatement struct {
 	BaseNode
 	Expression Node         // The expression being switched on
@@ -95,7 +85,6 @@ type SwitchStatement struct {
 	ElseBlock  *ElseBlock   // The optional else block (may be nil)
 }
 
-// NewSwitchStatement creates a new SwitchStatement node
 func NewSwitchStatement(expression Node, cases []*CaseBlock, elseBlock *ElseBlock) *SwitchStatement {
 	return &SwitchStatement{
 		BaseNode:   BaseNode{Type: NodeSwitchStatement},
@@ -105,7 +94,6 @@ func NewSwitchStatement(expression Node, cases []*CaseBlock, elseBlock *ElseBloc
 	}
 }
 
-// String returns a textual representation of the switch statement
 func (s *SwitchStatement) String() string {
 	var builder strings.Builder
 	builder.WriteString("switch ")

@@ -1,13 +1,11 @@
 package ast
 
-// GenericTypeParam represents a type parameter for generic types and functions
 type GenericTypeParam struct {
 	BaseNode
 	Name       string // The name of the type parameter
 	Constraint Node   // Optional type constraint
 }
 
-// NewGenericTypeParam creates a new GenericTypeParam node
 func NewGenericTypeParam(name string, constraint Node) *GenericTypeParam {
 	return &GenericTypeParam{
 		BaseNode:   BaseNode{Type: NodeGenericTypeParam},
@@ -16,7 +14,6 @@ func NewGenericTypeParam(name string, constraint Node) *GenericTypeParam {
 	}
 }
 
-// String returns a textual representation of the type parameter
 func (t *GenericTypeParam) String() string {
 	if t.Constraint != nil {
 		return t.Name + ": " + t.Constraint.String()
@@ -24,7 +21,6 @@ func (t *GenericTypeParam) String() string {
 	return t.Name
 }
 
-// FunctionDeclaration represents a function declaration
 type FunctionDeclaration struct {
 	BaseNode
 	Name           *FunctionIdentifier // The name of the function
@@ -36,7 +32,6 @@ type FunctionDeclaration struct {
 	IsLocal        bool                // Whether this is a local function
 }
 
-// NewFunctionDeclaration creates a new FunctionDeclaration node
 func NewFunctionDeclaration(name *FunctionIdentifier, typeParams []*GenericTypeParam, params []Node, returnType Node, body Node, annotations []Annotation, isLocal bool) *FunctionDeclaration {
 	return &FunctionDeclaration{
 		BaseNode:       BaseNode{Type: NodeFunctionDeclaration},
@@ -50,7 +45,6 @@ func NewFunctionDeclaration(name *FunctionIdentifier, typeParams []*GenericTypeP
 	}
 }
 
-// String returns a textual representation of the function declaration
 func (d *FunctionDeclaration) String() string {
 	result := ""
 	for _, a := range d.Annotations {
@@ -91,7 +85,6 @@ func (d *FunctionDeclaration) String() string {
 	return result
 }
 
-// ErrorDeclaration represents an error type declaration
 type ErrorDeclaration struct {
 	BaseNode
 	Name        *TypeIdentifier // The name of the error
@@ -99,7 +92,6 @@ type ErrorDeclaration struct {
 	Annotations []Annotation    // Annotations applied to the error
 }
 
-// NewErrorDeclaration creates a new ErrorDeclaration node
 func NewErrorDeclaration(name *TypeIdentifier, fields []Node, annotations []Annotation) *ErrorDeclaration {
 	return &ErrorDeclaration{
 		BaseNode:    BaseNode{Type: NodeErrorDeclaration},
@@ -109,7 +101,6 @@ func NewErrorDeclaration(name *TypeIdentifier, fields []Node, annotations []Anno
 	}
 }
 
-// String returns a textual representation of the error declaration
 func (d *ErrorDeclaration) String() string {
 	result := ""
 

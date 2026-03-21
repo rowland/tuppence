@@ -7,7 +7,6 @@ type RangeBound struct {
 	IsInclusive bool // Whether the bound is inclusive
 }
 
-// NewRangeBound creates a new RangeBound node
 func NewRangeBound(value Node, isInclusive bool) *RangeBound {
 	return &RangeBound{
 		BaseNode:    BaseNode{Type: NodeRangeBound},
@@ -16,7 +15,6 @@ func NewRangeBound(value Node, isInclusive bool) *RangeBound {
 	}
 }
 
-// String returns a textual representation of the range bound
 func (r *RangeBound) String() string {
 	if r.IsInclusive {
 		return r.Value.String()
@@ -24,14 +22,12 @@ func (r *RangeBound) String() string {
 	return r.Value.String() + "!"
 }
 
-// Range represents a range expression
 type Range struct {
 	BaseNode
 	Start *RangeBound // The start bound
 	End   *RangeBound // The end bound
 }
 
-// NewRange creates a new Range node
 func NewRange(start, end *RangeBound) *Range {
 	return &Range{
 		BaseNode: BaseNode{Type: NodeRange},
@@ -40,7 +36,6 @@ func NewRange(start, end *RangeBound) *Range {
 	}
 }
 
-// String returns a textual representation of the range
 func (r *Range) String() string {
 	return r.Start.String() + ".." + r.End.String()
 }
@@ -51,7 +46,6 @@ type RestOperator struct {
 	Identifier *Identifier // The identifier being spread/rested
 }
 
-// NewRestOperator creates a new RestOperator node
 func NewRestOperator(identifier *Identifier) *RestOperator {
 	return &RestOperator{
 		BaseNode:   BaseNode{Type: NodeRestOperator},
@@ -59,7 +53,6 @@ func NewRestOperator(identifier *Identifier) *RestOperator {
 	}
 }
 
-// String returns a textual representation of the rest operator
 func (r *RestOperator) String() string {
 	return "..." + r.Identifier.String()
 }

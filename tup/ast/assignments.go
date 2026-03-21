@@ -20,7 +20,6 @@ type Assignment struct {
 	Right Expression    // Value being assigned
 }
 
-// NewAssignment creates a new Assignment node
 func NewAssignment(left AssignmentLHS, mut bool, right Expression) *Assignment {
 	return &Assignment{
 		BaseNode: BaseNode{Type: NodeAssignment},
@@ -30,7 +29,6 @@ func NewAssignment(left AssignmentLHS, mut bool, right Expression) *Assignment {
 	}
 }
 
-// String returns a textual representation of the assignment
 func (a *Assignment) String() string {
 	var builder strings.Builder
 	builder.WriteString(a.Left.String())
@@ -161,8 +159,6 @@ type CompoundAssignment struct {
 	Right    Node                 // The right operand
 }
 
-// String returns a textual representation of the operator
-// NewCompoundAssignment creates a new CompoundAssignment node
 func NewCompoundAssignment(left Node, operator CompoundAssignmentOp, right Node) *CompoundAssignment {
 	return &CompoundAssignment{
 		BaseNode: BaseNode{Type: NodeCompoundAssignmentOp},

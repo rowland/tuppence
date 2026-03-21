@@ -26,7 +26,6 @@ func NewSimpleAnnotation(identifier string) *SimpleAnnotation {
 	}
 }
 
-// String returns a textual representation of the annotation
 func (a *SimpleAnnotation) String() string {
 	return "@" + a.Identifier
 }
@@ -49,7 +48,6 @@ func NewNamespacedAnnotation(namespace, name string, value AnnotationValue) *Nam
 	}
 }
 
-// String returns a textual representation of the annotation
 func (a *NamespacedAnnotation) String() string {
 	return "@" + a.Namespace + ":" + a.Identifier + " " + a.Value.String()
 }
@@ -61,20 +59,17 @@ type AnnotationValue interface {
 	annotationValueNode()
 }
 
-// NewAnnotationValue creates a new AnnotationValue node
 func (n *StringLiteral) annotationValueNode()  {}
 func (n *IntegerLiteral) annotationValueNode() {}
 func (n *FloatLiteral) annotationValueNode()   {}
 func (n *BooleanLiteral) annotationValueNode() {}
 func (n *TypeReference) annotationValueNode()  {}
 
-// Annotations represents a list of annotations
 type Annotations struct {
 	BaseNode
 	Annotations []Annotation // List of annotations
 }
 
-// NewAnnotations creates a new Annotations node
 func NewAnnotations(annotations []Annotation) *Annotations {
 	return &Annotations{
 		BaseNode:    BaseNode{Type: NodeAnnotations},
@@ -82,7 +77,6 @@ func NewAnnotations(annotations []Annotation) *Annotations {
 	}
 }
 
-// String returns a textual representation of the annotations
 func (a *Annotations) String() string {
 	var builder strings.Builder
 	for _, annotation := range a.Annotations {

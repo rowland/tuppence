@@ -27,7 +27,6 @@ func NewFunctionCall(
 	}
 }
 
-// String returns a textual representation of the function call
 func (f *FunctionCall) String() string {
 	var builder strings.Builder
 	builder.WriteString(f.Function.String())
@@ -48,7 +47,6 @@ func (f *FunctionCall) String() string {
 	return builder.String()
 }
 
-// UFCSFunctionCall represents a Uniform Function Call Syntax function call
 type UFCSFunctionCall struct {
 	BaseNode
 	Receiver  Node   // The receiver object
@@ -56,7 +54,6 @@ type UFCSFunctionCall struct {
 	Arguments []Node // The arguments passed to the function (excluding the receiver)
 }
 
-// NewUFCSFunctionCall creates a new UFCSFunctionCall node
 func NewUFCSFunctionCall(receiver Node, function Node, arguments []Node) *UFCSFunctionCall {
 	return &UFCSFunctionCall{
 		BaseNode:  BaseNode{Type: NodeUFCSFunctionCall},
@@ -66,7 +63,6 @@ func NewUFCSFunctionCall(receiver Node, function Node, arguments []Node) *UFCSFu
 	}
 }
 
-// String returns a textual representation of the UFCS function call
 func (u *UFCSFunctionCall) String() string {
 	var builder strings.Builder
 	builder.WriteString(u.Receiver.String())

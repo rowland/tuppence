@@ -1,12 +1,10 @@
 package ast
 
-// PatternIdentifier represents an identifier in a pattern
 type PatternIdentifier struct {
 	BaseNode
 	Name string
 }
 
-// NewPatternIdentifier creates a new PatternIdentifier node
 func NewPatternIdentifier(name string) *PatternIdentifier {
 	return &PatternIdentifier{
 		BaseNode: BaseNode{Type: NodePatternIdentifier},
@@ -14,18 +12,15 @@ func NewPatternIdentifier(name string) *PatternIdentifier {
 	}
 }
 
-// String returns a textual representation of the pattern identifier
 func (p *PatternIdentifier) String() string {
 	return p.Name
 }
 
-// TuplePattern represents a tuple pattern in pattern matching
 type TuplePattern struct {
 	BaseNode
 	Elements []Node // Pattern elements
 }
 
-// NewTuplePattern creates a new TuplePattern node
 func NewTuplePattern(elements []Node) *TuplePattern {
 	return &TuplePattern{
 		BaseNode: BaseNode{Type: NodeTuplePattern},
@@ -33,7 +28,6 @@ func NewTuplePattern(elements []Node) *TuplePattern {
 	}
 }
 
-// String returns a textual representation of the tuple pattern
 func (p *TuplePattern) String() string {
 	result := "("
 	for i, elem := range p.Elements {
@@ -46,14 +40,12 @@ func (p *TuplePattern) String() string {
 	return result
 }
 
-// ArrayPattern represents an array pattern in pattern matching
 type ArrayPattern struct {
 	BaseNode
 	Elements []Node // Pattern elements
 	Rest     Node   // Optional rest pattern (e.g., [a, b, ...rest])
 }
 
-// NewArrayPattern creates a new ArrayPattern node
 func NewArrayPattern(elements []Node, rest Node) *ArrayPattern {
 	return &ArrayPattern{
 		BaseNode: BaseNode{Type: NodeArrayPattern},
@@ -62,7 +54,6 @@ func NewArrayPattern(elements []Node, rest Node) *ArrayPattern {
 	}
 }
 
-// String returns a textual representation of the array pattern
 func (p *ArrayPattern) String() string {
 	result := "["
 	for i, elem := range p.Elements {
@@ -88,7 +79,6 @@ type TypePattern struct {
 	TypeRef    Node // The type to check against
 }
 
-// NewTypePattern creates a new TypePattern node
 func NewTypePattern(identifier, typeRef Node) *TypePattern {
 	return &TypePattern{
 		BaseNode:   BaseNode{Type: NodeTypePattern},
@@ -97,18 +87,15 @@ func NewTypePattern(identifier, typeRef Node) *TypePattern {
 	}
 }
 
-// String returns a textual representation of the type pattern
 func (p *TypePattern) String() string {
 	return p.Identifier.String() + " is " + p.TypeRef.String()
 }
 
-// LiteralPattern represents a literal value in pattern matching
 type LiteralPattern struct {
 	BaseNode
 	Value Node // The literal value to match against
 }
 
-// NewLiteralPattern creates a new LiteralPattern node
 func NewLiteralPattern(value Node) *LiteralPattern {
 	return &LiteralPattern{
 		BaseNode: BaseNode{Type: NodeLiteralPattern},
@@ -116,7 +103,6 @@ func NewLiteralPattern(value Node) *LiteralPattern {
 	}
 }
 
-// String returns a textual representation of the literal pattern
 func (p *LiteralPattern) String() string {
 	return p.Value.String()
 }
@@ -126,14 +112,12 @@ type WildcardPattern struct {
 	BaseNode
 }
 
-// NewWildcardPattern creates a new WildcardPattern node
 func NewWildcardPattern() *WildcardPattern {
 	return &WildcardPattern{
 		BaseNode: BaseNode{Type: NodeWildcardPattern},
 	}
 }
 
-// String returns a textual representation of the wildcard pattern
 func (p *WildcardPattern) String() string {
 	return "_"
 }
@@ -146,7 +130,6 @@ type MatchCase struct {
 	Guard   Node // Optional guard condition
 }
 
-// NewMatchCase creates a new MatchCase node
 func NewMatchCase(pattern, body Node, guard Node) *MatchCase {
 	return &MatchCase{
 		BaseNode: BaseNode{Type: NodeMatchCase},
@@ -156,7 +139,6 @@ func NewMatchCase(pattern, body Node, guard Node) *MatchCase {
 	}
 }
 
-// String returns a textual representation of the match case
 func (c *MatchCase) String() string {
 	result := c.Pattern.String()
 	if c.Guard != nil {
@@ -166,14 +148,12 @@ func (c *MatchCase) String() string {
 	return result
 }
 
-// MatchExpression represents a match expression
 type MatchExpression struct {
 	BaseNode
 	Subject Node         // The expression being matched
 	Cases   []*MatchCase // The match cases
 }
 
-// NewMatchExpression creates a new MatchExpression node
 func NewMatchExpression(subject Node, cases []*MatchCase) *MatchExpression {
 	return &MatchExpression{
 		BaseNode: BaseNode{Type: NodeMatchExpression},
@@ -182,7 +162,6 @@ func NewMatchExpression(subject Node, cases []*MatchCase) *MatchExpression {
 	}
 }
 
-// String returns a textual representation of the match expression
 func (m *MatchExpression) String() string {
 	result := "match " + m.Subject.String() + " {\n"
 	for _, c := range m.Cases {

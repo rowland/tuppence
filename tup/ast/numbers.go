@@ -5,14 +5,12 @@ import "github.com/rowland/tuppence/tup/source"
 // float_literal = decimal_digit { decimal_digit | "_" } "." decimal_digit { decimal_digit | "_" } [ exponent ]
 //               | decimal_digit { decimal_digit | "_" } exponent .
 
-// FloatLiteral represents a floating point literal in the code
 type FloatLiteral struct {
 	BaseNode
 	Value      string
 	FloatValue float64
 }
 
-// NewFloatLiteral creates a new FloatLiteral node
 func NewFloatLiteral(value string, floatValue float64, source *source.Source, startOffset int32, length int32) *FloatLiteral {
 	return &FloatLiteral{
 		BaseNode:   BaseNode{Type: NodeFloatLiteral, Source: source, StartOffset: startOffset, Length: length},

@@ -15,7 +15,6 @@ type TypeConstructorCall struct {
 	FunctionBlock *FunctionBlock     // Optional function block (may be nil)
 }
 
-// NewTypeConstructorCall creates a new TypeConstructorCall node
 func NewTypeConstructorCall(typeRef *TypeReference, arguments *FunctionArguments, functionBlock *FunctionBlock) *TypeConstructorCall {
 	return &TypeConstructorCall{
 		BaseNode:      BaseNode{Type: NodeTypeConstructorCall},
@@ -25,7 +24,6 @@ func NewTypeConstructorCall(typeRef *TypeReference, arguments *FunctionArguments
 	}
 }
 
-// String returns a textual representation of the type constructor call
 func (t *TypeConstructorCall) String() string {
 	var builder strings.Builder
 	builder.WriteString(t.TypeReference.String())
@@ -43,14 +41,12 @@ func (t *TypeConstructorCall) String() string {
 	return builder.String()
 }
 
-// BuiltinFunctionCall represents a call to a built-in function
 type BuiltinFunctionCall struct {
 	BaseNode
 	Name      string // Name of the builtin function
 	Arguments []Node // The arguments passed to the function
 }
 
-// NewBuiltinFunctionCall creates a new BuiltinFunctionCall node
 func NewBuiltinFunctionCall(name string, arguments []Node) *BuiltinFunctionCall {
 	return &BuiltinFunctionCall{
 		BaseNode:  BaseNode{Type: NodeBuiltinFunctionCall},
@@ -59,7 +55,6 @@ func NewBuiltinFunctionCall(name string, arguments []Node) *BuiltinFunctionCall 
 	}
 }
 
-// String returns a textual representation of the builtin function call
 func (b *BuiltinFunctionCall) String() string {
 	var builder strings.Builder
 	builder.WriteString(b.Name)
@@ -78,14 +73,12 @@ func (b *BuiltinFunctionCall) String() string {
 
 // array_function_call = "array" "(" type_identifier "," expression ")" .
 
-// ArrayFunctionCall represents a call to the array() function
 type ArrayFunctionCall struct {
 	BaseNode
 	TypeArg Node // The type argument
 	SizeArg Node // The size argument (may be nil)
 }
 
-// NewArrayFunctionCall creates a new ArrayFunctionCall node
 func NewArrayFunctionCall(typeArg Node, sizeArg Node) *ArrayFunctionCall {
 	return &ArrayFunctionCall{
 		BaseNode: BaseNode{Type: NodeArrayFunctionCall},
@@ -94,7 +87,6 @@ func NewArrayFunctionCall(typeArg Node, sizeArg Node) *ArrayFunctionCall {
 	}
 }
 
-// String returns a textual representation of the array function call
 func (a *ArrayFunctionCall) String() string {
 	var builder strings.Builder
 	builder.WriteString("array(")
@@ -126,7 +118,6 @@ type MemberAccess struct {
 	Member MemberAccessMember // The selected member
 }
 
-// NewMemberAccess creates a new MemberAccess node
 func NewMemberAccess(object Node, member MemberAccessMember) *MemberAccess {
 	return &MemberAccess{
 		BaseNode: BaseNode{Type: NodeMemberAccess},
@@ -135,7 +126,6 @@ func NewMemberAccess(object Node, member MemberAccessMember) *MemberAccess {
 	}
 }
 
-// String returns a textual representation of the member access
 func (m *MemberAccess) String() string {
 	return fmt.Sprintf("%s.%s", m.Object, m.Member)
 }
@@ -149,7 +139,6 @@ type IndexedAccess struct {
 	Index  Expression // The index expression
 }
 
-// NewIndexedAccess creates a new IndexedAccess node
 func NewIndexedAccess(object Expression, index Expression) *IndexedAccess {
 	return &IndexedAccess{
 		BaseNode: BaseNode{Type: NodeIndexedAccess},
@@ -158,7 +147,6 @@ func NewIndexedAccess(object Expression, index Expression) *IndexedAccess {
 	}
 }
 
-// String returns a textual representation of the indexed access
 func (i *IndexedAccess) String() string {
 	return i.Object.String() + "[" + i.Index.String() + "]"
 }
@@ -172,7 +160,6 @@ type SafeIndexedAccess struct {
 	Index  Expression // The index expression
 }
 
-// NewSafeIndexedAccess creates a new SafeIndexedAccess node
 func NewSafeIndexedAccess(object Expression, index Expression) *SafeIndexedAccess {
 	return &SafeIndexedAccess{
 		BaseNode: BaseNode{Type: NodeSafeIndexedAccess},
@@ -181,7 +168,6 @@ func NewSafeIndexedAccess(object Expression, index Expression) *SafeIndexedAcces
 	}
 }
 
-// String returns a textual representation of the safe indexed access
 func (s *SafeIndexedAccess) String() string {
 	return s.Object.String() + "[" + s.Index.String() + "]!"
 }
@@ -195,7 +181,6 @@ type TupleUpdateExpression struct {
 	Update *TupleLiteral // The labeled tuple literal with updated fields
 }
 
-// NewTupleUpdateExpression creates a new TupleUpdateExpression node
 func NewTupleUpdateExpression(object Expression, update *TupleLiteral) *TupleUpdateExpression {
 	return &TupleUpdateExpression{
 		BaseNode: BaseNode{Type: NodeTupleUpdateExpression},
@@ -204,7 +189,6 @@ func NewTupleUpdateExpression(object Expression, update *TupleLiteral) *TupleUpd
 	}
 }
 
-// String returns a textual representation of the tuple update expression
 func (t *TupleUpdateExpression) String() string {
 	return t.Object.String() + "." + t.Update.String()
 }

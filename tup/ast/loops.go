@@ -10,7 +10,6 @@ type ForHeader struct {
 	StepExpr    Node // The step expression (may be nil)
 }
 
-// String returns a textual representation of the for header
 func (f *ForHeader) String() string {
 	var builder strings.Builder
 
@@ -29,7 +28,6 @@ func (f *ForHeader) String() string {
 	return builder.String()
 }
 
-// ForInHeader represents the header of a for-in loop
 type ForInHeader struct {
 	BaseNode
 	Initializer Node // The initializer expression (may be nil)
@@ -38,7 +36,6 @@ type ForInHeader struct {
 	StepExpr    Node // The step expression (may be nil)
 }
 
-// String returns a textual representation of the for-in header
 func (f *ForInHeader) String() string {
 	var builder strings.Builder
 
@@ -66,19 +63,16 @@ type IterableHeader struct {
 	Iterable Node // The iterable expression
 }
 
-// String returns a textual representation of the iterable header
 func (i *IterableHeader) String() string {
 	return i.LoopVar.String() + " in " + i.Iterable.String()
 }
 
-// ForExpression represents a for loop expression
 type ForExpression struct {
 	BaseNode
 	Header Node   // ForHeader, ForInHeader, or nil
 	Block  *Block // The loop body
 }
 
-// NewForExpression creates a new ForExpression node
 func NewForExpression(header Node, block *Block) *ForExpression {
 	return &ForExpression{
 		BaseNode: BaseNode{Type: NodeForExpression},
@@ -87,7 +81,6 @@ func NewForExpression(header Node, block *Block) *ForExpression {
 	}
 }
 
-// String returns a textual representation of the for expression
 func (f *ForExpression) String() string {
 	var builder strings.Builder
 	builder.WriteString("for ")
@@ -101,14 +94,12 @@ func (f *ForExpression) String() string {
 	return builder.String()
 }
 
-// InlineForExpression represents an inline for loop expression
 type InlineForExpression struct {
 	BaseNode
 	Header *ForInHeader // The for-in header
 	Block  *Block       // The loop body
 }
 
-// NewInlineForExpression creates a new InlineForExpression node
 func NewInlineForExpression(header *ForInHeader, block *Block) *InlineForExpression {
 	return &InlineForExpression{
 		BaseNode: BaseNode{Type: NodeInlineForExpression},
@@ -117,7 +108,6 @@ func NewInlineForExpression(header *ForInHeader, block *Block) *InlineForExpress
 	}
 }
 
-// String returns a textual representation of the inline for expression
 func (i *InlineForExpression) String() string {
 	return "inline for " + i.Header.String() + " " + i.Block.String()
 }

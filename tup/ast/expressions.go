@@ -75,7 +75,6 @@ func NewLogicalOrExpression(operands []Expression) *LogicalOrExpression {
 	}
 }
 
-// String returns a textual representation of the logical_or_expression
 func (p *LogicalOrExpression) String() string {
 	var builder strings.Builder
 	for i, operand := range p.Operands {
@@ -94,7 +93,6 @@ type LogicalAndExpression struct {
 	Operands []Expression
 }
 
-// NewLogicalAndExpression creates a new LogicalAndExpression node
 func NewLogicalAndExpression(operands []Expression) *LogicalAndExpression {
 	return &LogicalAndExpression{
 		BaseNode: BaseNode{Type: NodeLogicalAndExpression},
@@ -102,7 +100,6 @@ func NewLogicalAndExpression(operands []Expression) *LogicalAndExpression {
 	}
 }
 
-// String returns a textual representation of the logical_and_expression
 func (p *LogicalAndExpression) String() string {
 	var builder strings.Builder
 	for i, operand := range p.Operands {
@@ -142,7 +139,6 @@ func NewAddSubExpression(left Expression, operator AddSubOp, right Expression) *
 	}
 }
 
-// String returns a textual representation of the add_sub_expression
 func (p *AddSubExpression) String() string {
 	return fmt.Sprintf("%s %s %s", p.Left, p.Operator, p.Right)
 }
@@ -272,14 +268,12 @@ func (u *UnaryExpression) String() string {
 
 // chained_expression = logical_or_expression { "|>" function_call } .
 
-// ChainedExpression represents a chained pipe expression (e.g., a |> b |> c)
 type ChainedExpression struct {
 	BaseNode
 	Initial       Node            // The initial expression
 	FunctionCalls []*FunctionCall // The chained expressions (FunctionCall nodes)
 }
 
-// NewChainedExpression creates a new ChainedExpression node
 func NewChainedExpression(initial Node, functionCalls []*FunctionCall) *ChainedExpression {
 	return &ChainedExpression{
 		BaseNode:      BaseNode{Type: NodeChainedExpression},
@@ -288,7 +282,6 @@ func NewChainedExpression(initial Node, functionCalls []*FunctionCall) *ChainedE
 	}
 }
 
-// String returns a textual representation of the chained expression
 func (c *ChainedExpression) String() string {
 	var builder strings.Builder
 	builder.WriteString(c.Initial.String())

@@ -8,7 +8,6 @@ type Block struct {
 	Body *BlockBody
 }
 
-// NewBlock creates a new Block node
 func NewBlock(body *BlockBody) *Block {
 	return &Block{
 		BaseNode: BaseNode{Type: NodeBlock},
@@ -16,7 +15,6 @@ func NewBlock(body *BlockBody) *Block {
 	}
 }
 
-// String returns a textual representation of the block
 func (b *Block) String() string {
 	if b.Body == nil {
 		return "{}"
@@ -40,7 +38,6 @@ type BlockParameters struct {
 	Parameters AssignmentLHS // The block parameters (identifiers)
 }
 
-// NewBlockParameters creates a new BlockParameters node
 func NewBlockParameters(parameters AssignmentLHS) *BlockParameters {
 	return &BlockParameters{
 		BaseNode:   BaseNode{Type: NodeBlockParameters},
@@ -48,7 +45,6 @@ func NewBlockParameters(parameters AssignmentLHS) *BlockParameters {
 	}
 }
 
-// String returns a textual representation of the block parameters
 func (b *BlockParameters) String() string {
 	var builder strings.Builder
 	builder.WriteString("|")
@@ -59,7 +55,6 @@ func (b *BlockParameters) String() string {
 	return builder.String()
 }
 
-// BlockBody represents the body of a block
 type BlockBody struct {
 	BaseNode
 	Statements []Statement // The statements in the block body

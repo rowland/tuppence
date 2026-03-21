@@ -5,7 +5,6 @@ import "strings"
 // function_declaration_type = ( "fn" "(" [ labeled_parameters | parameters ] ")" ( return_type | "_" ) )
 //                           | ( "fx" "(" [ labeled_parameters | parameters ] ")" [ return_type | "_" ] ) .
 
-// FunctionDeclarationType represents the type part of a function declaration
 type FunctionDeclarationType struct {
 	BaseNode
 	HasSideEffects bool // Whether the function has side effects (fx vs fn)
@@ -13,7 +12,6 @@ type FunctionDeclarationType struct {
 	ReturnType     Node // The return type (may be nil)
 }
 
-// NewFunctionDeclarationType creates a new FunctionDeclarationType node
 func NewFunctionDeclarationType(hasSideEffects bool, parameters Node, returnType Node) *FunctionDeclarationType {
 	return &FunctionDeclarationType{
 		BaseNode:       BaseNode{Type: NodeFunctionDeclarationType},
@@ -23,7 +21,6 @@ func NewFunctionDeclarationType(hasSideEffects bool, parameters Node, returnType
 	}
 }
 
-// String returns a textual representation of the function declaration type
 func (f *FunctionDeclarationType) String() string {
 	var result strings.Builder
 	if f.HasSideEffects {
@@ -43,13 +40,11 @@ func (f *FunctionDeclarationType) String() string {
 
 // function_parameter_types = "[" local_type_reference { "," local_type_reference } "]" .
 
-// FunctionParameterTypes represents the parameter types in a function declaration
 type FunctionParameterTypes struct {
 	BaseNode
 	Parameters []LocalTypeReference // The function parameter types
 }
 
-// NewFunctionParameterTypes creates a new FunctionParameterTypes node
 func NewFunctionParameterTypes(parameters []LocalTypeReference) *FunctionParameterTypes {
 	return &FunctionParameterTypes{
 		BaseNode:   BaseNode{Type: NodeFunctionParameterTypes},
@@ -57,7 +52,6 @@ func NewFunctionParameterTypes(parameters []LocalTypeReference) *FunctionParamet
 	}
 }
 
-// String returns a textual representation of the function parameter types
 func (f *FunctionParameterTypes) String() string {
 	if len(f.Parameters) == 0 {
 		return ""
@@ -76,7 +70,6 @@ func (f *FunctionParameterTypes) String() string {
 
 // function_type_declaration = function_type_declaration_lhs "=" function_type .
 
-// FunctionTypeDeclaration represents a function type declaration
 type FunctionTypeDeclaration struct {
 	BaseNode
 	Name           *TypeIdentifier

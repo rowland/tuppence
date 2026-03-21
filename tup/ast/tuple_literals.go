@@ -37,7 +37,6 @@ type TupleLiteral struct {
 	Members []*TupleMember
 }
 
-// NewTupleLiteral creates a new TupleLiteral node
 func NewTupleLiteral(labeled bool, members []*TupleMember) *TupleLiteral {
 	return &TupleLiteral{
 		BaseNode: BaseNode{Type: NodeTupleLiteral},
@@ -46,7 +45,6 @@ func NewTupleLiteral(labeled bool, members []*TupleMember) *TupleLiteral {
 	}
 }
 
-// String returns a textual representation of the tuple literal
 func (t *TupleLiteral) String() string {
 	var builder strings.Builder
 	builder.WriteString("(")
@@ -58,9 +56,4 @@ func (t *TupleLiteral) String() string {
 	}
 	builder.WriteString(")")
 	return builder.String()
-}
-
-// LiteralValue returns the Go value of the literal
-func (t *TupleLiteral) LiteralValue() any {
-	return t.String()
 }

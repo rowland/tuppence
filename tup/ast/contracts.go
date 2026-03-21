@@ -4,13 +4,11 @@ import (
 	"strings"
 )
 
-// ContractMember represents a member of a contract
 type ContractMember struct {
 	BaseNode
 	Member Node // Either ContractField or ContractFunction
 }
 
-// NewContractMember creates a new ContractMember node
 func NewContractMember(member Node) *ContractMember {
 	return &ContractMember{
 		BaseNode: BaseNode{Type: NodeContractMember},
@@ -18,18 +16,15 @@ func NewContractMember(member Node) *ContractMember {
 	}
 }
 
-// String returns a textual representation of the contract member
 func (c *ContractMember) String() string {
 	return c.Member.String()
 }
 
-// ContractMembers represents a collection of contract members
 type ContractMembers struct {
 	BaseNode
 	Members []*ContractMember // The contract members
 }
 
-// NewContractMembers creates a new ContractMembers node
 func NewContractMembers(members []*ContractMember) *ContractMembers {
 	return &ContractMembers{
 		BaseNode: BaseNode{Type: NodeContractMembers},
@@ -37,7 +32,6 @@ func NewContractMembers(members []*ContractMember) *ContractMembers {
 	}
 }
 
-// String returns a textual representation of the contract members
 func (c *ContractMembers) String() string {
 	var builder strings.Builder
 	for i, member := range c.Members {
@@ -49,7 +43,6 @@ func (c *ContractMembers) String() string {
 	return builder.String()
 }
 
-// ContractField represents a field in a contract
 type ContractField struct {
 	BaseNode
 	Name        *Identifier  // The field name
@@ -58,7 +51,6 @@ type ContractField struct {
 	Docs        string       // Documentation comments
 }
 
-// NewContractField creates a new ContractField node
 func NewContractField(name *Identifier, fieldType Node, annotations []Annotation, docs string) *ContractField {
 	return &ContractField{
 		BaseNode:    BaseNode{Type: NodeContractField},
@@ -69,7 +61,6 @@ func NewContractField(name *Identifier, fieldType Node, annotations []Annotation
 	}
 }
 
-// String returns a textual representation of the contract field
 func (c *ContractField) String() string {
 	var builder strings.Builder
 	for _, annotation := range c.Annotations {
@@ -83,7 +74,6 @@ func (c *ContractField) String() string {
 	return builder.String()
 }
 
-// ContractFunction represents a function in a contract
 type ContractFunction struct {
 	BaseNode
 	Name        *FunctionIdentifier // The function name
@@ -92,7 +82,6 @@ type ContractFunction struct {
 	Annotations []Annotation        // Function annotations
 }
 
-// NewContractFunction creates a new ContractFunction node
 func NewContractFunction(name *FunctionIdentifier, parameters []Node, returnType Node, annotations []Annotation) *ContractFunction {
 	return &ContractFunction{
 		BaseNode:    BaseNode{Type: NodeContractFunction},
@@ -103,7 +92,6 @@ func NewContractFunction(name *FunctionIdentifier, parameters []Node, returnType
 	}
 }
 
-// String returns a textual representation of the contract function
 func (c *ContractFunction) String() string {
 	var builder strings.Builder
 	for _, annotation := range c.Annotations {
@@ -128,13 +116,11 @@ func (c *ContractFunction) String() string {
 	return builder.String()
 }
 
-// ContractImplementsAnnotation represents an @implements annotation for a contract
 type ContractImplementsAnnotation struct {
 	BaseNode
 	Contract *TypeIdentifier // The contract being implemented
 }
 
-// NewContractImplementsAnnotation creates a new ContractImplementsAnnotation node
 func NewContractImplementsAnnotation(contract *TypeIdentifier) *ContractImplementsAnnotation {
 	return &ContractImplementsAnnotation{
 		BaseNode: BaseNode{Type: NodeContractImplementsAnnotation},
@@ -142,12 +128,10 @@ func NewContractImplementsAnnotation(contract *TypeIdentifier) *ContractImplemen
 	}
 }
 
-// String returns a textual representation of the contract implements annotation
 func (c *ContractImplementsAnnotation) String() string {
 	return "@implements(" + c.Contract.String() + ")"
 }
 
-// ContractDeclaration represents a contract declaration
 type ContractDeclaration struct {
 	BaseNode
 	Name        *TypeIdentifier                 // The contract name
@@ -157,7 +141,6 @@ type ContractDeclaration struct {
 	Annotations []Annotation                    // Contract annotations
 }
 
-// NewContractDeclaration creates a new ContractDeclaration node
 func NewContractDeclaration(name *TypeIdentifier, typeParams []*GenericTypeParam, members *ContractMembers, implements []*ContractImplementsAnnotation, annotations []Annotation) *ContractDeclaration {
 	return &ContractDeclaration{
 		BaseNode:    BaseNode{Type: NodeContractDeclaration},
@@ -169,7 +152,6 @@ func NewContractDeclaration(name *TypeIdentifier, typeParams []*GenericTypeParam
 	}
 }
 
-// String returns a textual representation of the contract declaration
 func (c *ContractDeclaration) String() string {
 	var builder strings.Builder
 	for _, annotation := range c.Annotations {
