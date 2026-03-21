@@ -490,6 +490,14 @@ func matchPostfixTail(expr ast.Expression, tokens []tok.Token, includeFunctionCa
 // as explicit follow-up work in the stacked postfix refactor.
 
 func postfixBaseExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	return postfixBaseExpressionWithRange(tokens, true)
+}
+
+func postfixBaseExpressionWithoutRange(tokens []tok.Token) (expr ast.Expression, remainder []tok.Token, err error) {
+	return postfixBaseExpressionWithRange(tokens, false)
+}
+
+func postfixBaseExpressionWithRange(tokens []tok.Token, includeRange bool) (expr ast.Expression, remainder []tok.Token, err error) {
 	if expression, remainder, err := parenthesizedExpression(tokens); err == nil {
 		return expression, remainder, nil
 	} else if err != ErrNoMatch {
@@ -539,7 +547,14 @@ func postfixBaseExpression(tokens []tok.Token) (expr ast.Expression, remainder [
 	// return_expression
 	// break_expression
 	// continue_expression
-	// range
+
+	if includeRange {
+		if rangeExpression, remainder, err := Range(tokens); err == nil {
+			return rangeExpression, remainder, nil
+		} else if err != ErrNoMatch {
+			return nil, remainder, err
+		}
+	}
 
 	if literal, remainder, err := Literal(tokens); err == nil {
 		return literal, remainder, nil

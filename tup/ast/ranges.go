@@ -1,43 +1,41 @@
 package ast
 
-// RangeBound represents a bound in a range (start or end)
+// range_bound = postfix_expression .
+
 type RangeBound struct {
 	BaseNode
-	Value       Node // The value of the bound
-	IsInclusive bool // Whether the bound is inclusive
+	Value Expression
 }
 
-func NewRangeBound(value Node, isInclusive bool) *RangeBound {
+func NewRangeBound(value Expression) *RangeBound {
 	return &RangeBound{
-		BaseNode:    BaseNode{Type: NodeRangeBound},
-		Value:       value,
-		IsInclusive: isInclusive,
+		BaseNode: BaseNode{Type: NodeRangeBound},
+		Value:    value,
 	}
 }
 
 func (r *RangeBound) String() string {
-	if r.IsInclusive {
-		return r.Value.String()
-	}
-	return r.Value.String() + "!"
+	return r.Value.String()
 }
+
+// range = range_bound ".." range_bound .
 
 type Range struct {
 	BaseNode
-	Start *RangeBound // The start bound
-	End   *RangeBound // The end bound
+	StartBound *RangeBound
+	EndBound   *RangeBound
 }
 
 func NewRange(start, end *RangeBound) *Range {
 	return &Range{
-		BaseNode: BaseNode{Type: NodeRange},
-		Start:    start,
-		End:      end,
+		BaseNode:   BaseNode{Type: NodeRange},
+		StartBound: start,
+		EndBound:   end,
 	}
 }
 
 func (r *Range) String() string {
-	return r.Start.String() + ".." + r.End.String()
+	return r.StartBound.String() + ".." + r.EndBound.String()
 }
 
 // RestOperator represents the rest/spread operator (...)

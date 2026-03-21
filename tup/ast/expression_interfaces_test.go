@@ -25,6 +25,7 @@ var _ Expression = &MemberAccess{}
 var _ Expression = &TupleUpdateExpression{}
 var _ Expression = &SafeIndexedAccess{}
 var _ Expression = &IndexedAccess{}
+var _ Expression = &Range{}
 var _ Expression = &FloatLiteral{}
 var _ Expression = &IntegerLiteral{}
 var _ Expression = &BooleanLiteral{}

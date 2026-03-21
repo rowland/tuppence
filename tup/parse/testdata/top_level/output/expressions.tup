@@ -43,6 +43,9 @@ _ = $(name: "Brent")
 # wrapped type comparison expression
 _ = value is (Int | String)
 
+# wrapped range expression
+_ = foo.bar..foo.qux
+
 # wrapped unary on member chain
 _ = !foo.bar.flag
 

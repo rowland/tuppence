@@ -199,8 +199,8 @@
 - [x] import_expression
 - [ ] indented_closing
 - [ ] indented_line
-- [ ] index
-- [ ] indexed_access
+- [x] index
+- [x] indexed_access_tail
 - [ ] initializer
 - [ ] inline_for_expression
 - [ ] interpolation
@@ -228,8 +228,8 @@
 - [x] octal_digit
 - [ ] pattern
 - [ ] pattern_match
-- [ ] range
-- [ ] range_bound
+- [x] range
+- [x] range_bound
 - [x] relational_comparison_tail
 - [x] rest_operator
 - [ ] rest_parameter

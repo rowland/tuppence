@@ -313,6 +313,24 @@ func TestExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "range expression",
+			input: "foo.bar..foo.qux",
+			want: ast.NewRange(
+				ast.NewRangeBound(
+					ast.NewMemberAccess(
+						ast.NewIdentifier("foo", nil, 0, 3),
+						ast.NewIdentifier("bar", nil, 0, 3),
+					),
+				),
+				ast.NewRangeBound(
+					ast.NewMemberAccess(
+						ast.NewIdentifier("foo", nil, 0, 3),
+						ast.NewIdentifier("qux", nil, 0, 3),
+					),
+				),
+			),
+		},
+		{
 			name:  "if expression",
 			input: "if ready { value } else { fallback }",
 			want: ast.NewIfExpression(

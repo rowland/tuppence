@@ -42,6 +42,7 @@ func (n *MemberAccess) expressionNode()          {}
 func (n *TupleUpdateExpression) expressionNode() {}
 func (n *SafeIndexedAccess) expressionNode()     {}
 func (n *IndexedAccess) expressionNode()         {}
+func (n *Range) expressionNode()                 {}
 
 // func (n *ImportExpression) expressionNode() {}
 // func (n *ReturnExpression) expressionNode()      {}
