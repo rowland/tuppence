@@ -208,7 +208,7 @@
 - [ ] iterable_header
 - [x] labeled_parameter
 - [ ] labeled_pattern
-- [ ] labeled_rest_parameter
+- [x] labeled_rest_parameter
 - [x] labeled_tuple
 - [x] labeled_tuple_member
 - [x] labeled_tuple_members
@@ -232,7 +232,7 @@
 - [x] range_bound
 - [x] relational_comparison_tail
 - [x] rest_operator
-- [ ] rest_parameter
+- [x] rest_parameter
 - [ ] return_expression
 - [x] safe_indexed_access_tail
 - [x] simple_annotation
