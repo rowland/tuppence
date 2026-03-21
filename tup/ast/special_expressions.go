@@ -167,22 +167,39 @@ func (m *MetaExpression) String() string {
 }
 
 // constant = literal
-//          | scoped_identifier
-//          | identifier .
+//          | scoped_identifier .
+
+type ConstantValue interface {
+	Node
+	constantValueNode()
+}
+
+func (n *FloatLiteral) constantValueNode()              {}
+func (n *IntegerLiteral) constantValueNode()            {}
+func (n *BooleanLiteral) constantValueNode()            {}
+func (n *StringLiteral) constantValueNode()             {}
+func (n *InterpolatedStringLiteral) constantValueNode() {}
+func (n *RawStringLiteral) constantValueNode()          {}
+func (n *MultiLineStringLiteral) constantValueNode()    {}
+func (n *TupleLiteral) constantValueNode()              {}
+func (n *ArrayLiteral) constantValueNode()              {}
+func (n *SymbolLiteral) constantValueNode()             {}
+func (n *RuneLiteral) constantValueNode()               {}
+func (n *ScopedIdentifier) constantValueNode()          {}
 
 // Constant represents a constant value reference (e.g., module-level constants)
 type Constant struct {
 	BaseNode
-	Identifier Node // The identifier of the constant
+	Value ConstantValue
 }
 
-func NewConstant(identifier Node) *Constant {
+func NewConstant(value ConstantValue) *Constant {
 	return &Constant{
-		BaseNode:   BaseNode{Type: NodeConstant},
-		Identifier: identifier,
+		BaseNode: BaseNode{Type: NodeConstant},
+		Value:    value,
 	}
 }
 
 func (c *Constant) String() string {
-	return c.Identifier.String()
+	return c.Value.String()
 }

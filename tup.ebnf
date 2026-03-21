@@ -86,8 +86,7 @@ compound_assignment_op = plus_eq_op | minus_eq_op | mul_eq_op | div_eq_op | pow_
 condition = expression .
 
 constant = literal
-         | scoped_identifier
-         | identifier .
+         | scoped_identifier .
 
 content_line = { byte_escape_sequence 
                | unicode_escape_sequence 
@@ -488,6 +487,8 @@ statement = ( type_qualified_function_declaration
 step_expression = expression .
 
 string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | character - '"' - eol } '"' .
+
+scoped_identifier = identifier { "." identifier } .
 
 structured_match = labeled_pattern
                  | tuple_pattern

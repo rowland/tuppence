@@ -94,6 +94,7 @@ const (
 	// Identifier node types
 	NodeFunctionIdentifier
 	NodeIdentifier
+	NodeScopedIdentifier
 	NodeRenameIdentifier
 	NodeRenameType
 	NodeTypeIdentifier
@@ -297,6 +298,7 @@ var NodeTypes = map[NodeType]string{
 	// Identifier node types
 	NodeFunctionIdentifier: "FunctionIdentifier",
 	NodeIdentifier:         "Identifier",
+	NodeScopedIdentifier:   "ScopedIdentifier",
 	NodeRenameIdentifier:   "RenameIdentifier",
 	NodeRenameType:         "RenameType",
 	NodeTypeIdentifier:     "TypeIdentifier",

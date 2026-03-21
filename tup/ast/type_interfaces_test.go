@@ -69,3 +69,16 @@ var _ TypeArgumentType = &InlineUnion{}
 
 var _ TypePredicate = &TypeReference{}
 var _ TypePredicate = &InlineUnion{}
+
+var _ ConstantValue = &FloatLiteral{}
+var _ ConstantValue = &IntegerLiteral{}
+var _ ConstantValue = &BooleanLiteral{}
+var _ ConstantValue = &StringLiteral{}
+var _ ConstantValue = &InterpolatedStringLiteral{}
+var _ ConstantValue = &RawStringLiteral{}
+var _ ConstantValue = &MultiLineStringLiteral{}
+var _ ConstantValue = &TupleLiteral{}
+var _ ConstantValue = &ArrayLiteral{}
+var _ ConstantValue = &SymbolLiteral{}
+var _ ConstantValue = &RuneLiteral{}
+var _ ConstantValue = &ScopedIdentifier{}

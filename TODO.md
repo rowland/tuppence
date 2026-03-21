@@ -167,7 +167,7 @@
 - [x] character
 - [x] comment
 - [x] condition
-- [ ] constant
+- [x] constant
 - [ ] content_line
 - [ ] continue_expression
 - [x] decimal_digit

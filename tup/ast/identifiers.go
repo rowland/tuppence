@@ -1,6 +1,10 @@
 package ast
 
-import "github.com/rowland/tuppence/tup/source"
+import (
+	"strings"
+
+	"github.com/rowland/tuppence/tup/source"
+)
 
 // identifier = ( lowercase_letter | "_" ) { letter | decimal_digit | "_" } .
 
@@ -18,6 +22,33 @@ func NewIdentifier(name string, source *source.Source, startOffset int32, length
 
 func (i *Identifier) String() string {
 	return i.Name
+}
+
+// scoped_identifier = identifier { "." identifier } .
+
+type ScopedIdentifier struct {
+	BaseNode
+	Identifiers []*Identifier
+}
+
+func NewScopedIdentifier(identifiers []*Identifier) *ScopedIdentifier {
+	return &ScopedIdentifier{
+		BaseNode:    BaseNode{Type: NodeScopedIdentifier},
+		Identifiers: identifiers,
+	}
+}
+
+func (s *ScopedIdentifier) String() string {
+	if len(s.Identifiers) == 0 {
+		return ""
+	}
+
+	var result strings.Builder
+	result.WriteString(s.Identifiers[0].String())
+	for _, identifier := range s.Identifiers[1:] {
+		result.WriteString("." + identifier.String())
+	}
+	return result.String()
 }
 
 // type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
