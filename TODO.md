@@ -121,8 +121,8 @@
                     - [x] function_declaration_lhs
                     - [x] function_declaration_type
                         - [x] labeled_parameters
-                        - [ ] parameters
-                            - [ ] parameter
+                        - [x] parameters
+                            - [x] parameter
                                 - [x] nilable_type
                                 - [ ] type
                                     - [x] fixed_size_array

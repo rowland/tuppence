@@ -166,6 +166,87 @@ func TestLabeledParameters(t *testing.T) {
 	}
 }
 
+func TestParameters(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    []ast.FunctionTypeParameter
+		wantErr bool
+	}{
+		{
+			name:  "two positional parameters",
+			input: "String, Int",
+			want: []ast.FunctionTypeParameter{
+				ast.NewParameter(
+					ast.NewAnnotations(nil),
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+				),
+				ast.NewParameter(
+					ast.NewAnnotations(nil),
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+				),
+			},
+		},
+		{
+			name:  "parameters with trailing comma",
+			input: "String, Int,",
+			want: []ast.FunctionTypeParameter{
+				ast.NewParameter(
+					ast.NewAnnotations(nil),
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+				),
+				ast.NewParameter(
+					ast.NewAnnotations(nil),
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+				),
+			},
+		},
+		{
+			name:  "rest parameter followed by callable parameter",
+			input: "...Int, fn(Int) Int",
+			want: []ast.FunctionTypeParameter{
+				ast.NewRestParameter(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+				),
+				ast.NewParameter(
+					ast.NewAnnotations(nil),
+					ast.NewFunctionType(
+						false,
+						[]ast.FunctionTypeParameter{
+							ast.NewParameter(
+								ast.NewAnnotations(nil),
+								ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+							),
+						},
+						ast.NewReturnType(
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+						),
+					),
+				),
+			},
+		},
+	}
+
+	check := func(t *testing.T, input, parserName string, got, want []ast.FunctionTypeParameter) {
+		t.Helper()
+		if len(got) != len(want) {
+			t.Fatalf("%s(%q) len = %d, want %d", parserName, input, len(got), len(want))
+		}
+		for i := range want {
+			if got[i].String() != want[i].String() {
+				t.Fatalf("%s(%q)[%d] = %q, want %q", parserName, input, i, got[i].String(), want[i].String())
+			}
+		}
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"Parameters", Parameters, check)
+		})
+	}
+}
+
 func TestRestParameter(t *testing.T) {
 	tests := []struct {
 		name    string
