@@ -84,15 +84,15 @@
 - [x] annotation_value
 - [x] chained_expression
 - [x] binary_expression
-- [.] prec1_expression -> logical_or_expression
-- [.] prec2_expression -> logical_and_expression
-- [.] prec3_expression -> comparison_expression
-- [.] prec4_expression -> add_sub_expression
-- [.] prec5_expression -> mul_div_expression
-- [.] prec6_expression -> pow_expression
+- [x] prec1_expression -> logical_or_expression
+- [x] prec2_expression -> logical_and_expression
+- [x] prec3_expression -> comparison_expression
+- [x] prec4_expression -> add_sub_expression
+- [x] prec5_expression -> mul_div_expression
+- [x] prec6_expression -> pow_expression
 - [.] primary_expression
-- [.] try_expression
-- [.] type_reference
+- [x] try_expression
+- [x] type_reference
 - [.] unary_expression
 - [x] function_call
     - [x] function_parameter_types
@@ -251,4 +251,4 @@
 - [x] type_parameter
 - [x] type_parameters
 - [x] uppercase_letter
-- [.] negatable_expression
+- [x] negatable_expression
