@@ -1,0 +1,57 @@
+# simple type alias
+Result = Foo
+
+# annotated type alias
+@serializable
+Saved = Foo
+
+# generic nilable type
+Maybe[a] = ?a
+
+# tuple type rhs
+Person = type(
+    name: String,
+    age: Int,
+)
+
+# nested tuple type rhs
+Nested = type(
+    id: Int,
+    data: (
+        name: String,
+        value: Float,
+    ),
+)
+
+# dynamic array rhs
+Bytes = []Byte
+
+# nested dynamic array rhs
+Grid = [][]Int
+
+# error tuple rhs
+HttpError = error(
+    code: Int,
+    message: String,
+)
+
+# fixed size array rhs
+IPv4 = [4]Byte
+
+# nested fixed size array rhs
+Matrix = [3][3]Int
+
+# union type rhs
+Key = Int | String
+
+# named tuple union rhs
+ComplexKey = Int | String | ComplexTuple(
+    primary: Int,
+    secondary: String,
+)
+
+# union declaration rhs
+Result[a] = union (
+    Ok()
+    Err(a)
+)

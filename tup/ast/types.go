@@ -72,6 +72,24 @@ func (e *ErrorTuple) String() string {
 	return "error" + e.TupleType.String()
 }
 
+// type_tuple = "type" tuple_type .
+
+type TypeTuple struct {
+	BaseNode
+	TupleType *TupleType
+}
+
+func NewTypeTuple(tupleType *TupleType) *TypeTuple {
+	return &TypeTuple{
+		BaseNode:  BaseNode{Type: NodeTypeTuple},
+		TupleType: tupleType,
+	}
+}
+
+func (t *TypeTuple) String() string {
+	return "type" + t.TupleType.String()
+}
+
 type ArrayElementType interface {
 	Node
 	arrayElementTypeNode()
@@ -396,8 +414,32 @@ func NewTupleType(members []TupleTypeMemberNode) *TupleType {
 }
 
 func (t *TupleType) String() string {
+	if len(t.Members) == 0 {
+		return "()"
+	}
+
+	multiline := len(t.Members) > 1
+	if !multiline {
+		for _, member := range t.Members {
+			if strings.Contains(member.String(), "\n") {
+				multiline = true
+				break
+			}
+		}
+	}
+
 	var builder strings.Builder
 	builder.WriteString("(")
+	if multiline {
+		builder.WriteString("\n")
+		for _, member := range t.Members {
+			builder.WriteString(indentString(member.String()))
+			builder.WriteString(",\n")
+		}
+		builder.WriteString(")")
+		return builder.String()
+	}
+
 	for i, member := range t.Members {
 		if i > 0 {
 			builder.WriteString(", ")
@@ -550,5 +592,5 @@ func NewNamedTuple(typeIdentifier *TypeIdentifier, tupleType *TupleType) *NamedT
 }
 
 func (n *NamedTuple) String() string {
-	return n.TypeIdentifier.String() + " " + n.TupleType.String()
+	return n.TypeIdentifier.String() + n.TupleType.String()
 }

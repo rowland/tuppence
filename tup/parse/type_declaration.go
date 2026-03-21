@@ -53,7 +53,7 @@ func TypeDeclarationLHS(tokens []tok.Token) (*ast.TypeDeclarationLHS, []tok.Toke
 }
 
 // type_declaration_rhs = nilable_type
-//                      | "type" tuple_type
+//                      | type_tuple
 //                      | error_tuple
 //                      | dynamic_array
 //                      | fixed_size_array
@@ -70,7 +70,7 @@ func TypeDeclarationRHS(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token
 		return nil, remainder, err
 	}
 
-	if tupleType, remainder, err := TypeTupleType(tokens); err == nil {
+	if tupleType, remainder, err := TypeTuple(tokens); err == nil {
 		return tupleType, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
@@ -194,16 +194,21 @@ func TypeParameters(tokens []tok.Token) (*ast.TypeParameters, []tok.Token, error
 	return ast.NewTypeParameters(parameters), remainder, nil
 }
 
-// "type" tuple_type .
+// type_tuple = "type" tuple_type .
 
-func TypeTupleType(tokens []tok.Token) (*ast.TupleType, []tok.Token, error) {
+func TypeTuple(tokens []tok.Token) (*ast.TypeTuple, []tok.Token, error) {
 	remainder := skipTrivia(tokens)
 	if peek(remainder).Type != tok.TokKwType {
 		return nil, tokens, ErrNoMatch
 	}
 	remainder = remainder[1:]
 
-	return TupleType(remainder)
+	tupleType, remainder, err := TupleType(remainder)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewTypeTuple(tupleType), remainder, nil
 }
 
 // error_tuple .

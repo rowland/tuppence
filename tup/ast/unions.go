@@ -70,7 +70,7 @@ func (u *UnionDeclaration) String() string {
 	builder.WriteString("union (\n")
 
 	for _, member := range u.Members {
-		builder.WriteString(member.String())
+		builder.WriteString(indentString(member.String()))
 		builder.WriteString("\n")
 	}
 	builder.WriteString(")\n")
@@ -97,9 +97,10 @@ func (u *UnionDeclarationWithError) String() string {
 
 	builder.WriteString("union (\n")
 	for _, member := range u.Members {
-		builder.WriteString(member.String())
+		builder.WriteString(indentString(member.String()))
 		builder.WriteString("\n")
 	}
+	builder.WriteString(prettyIndent)
 	builder.WriteString("error\n")
 	builder.WriteString(")\n")
 

@@ -194,18 +194,20 @@ func TestTypeDeclaration(t *testing.T) {
 			input: "Person = type(name: String, age: Int)",
 			want: ast.NewTypeDeclaration(
 				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Person", nil, 0, 6), nil),
-				ast.NewTupleType([]ast.TupleTypeMemberNode{
-					ast.NewLabeledTupleTypeMember(
-						nil,
-						ast.NewIdentifier("name", nil, 0, 4),
-						ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
-					),
-					ast.NewLabeledTupleTypeMember(
-						nil,
-						ast.NewIdentifier("age", nil, 0, 3),
-						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
-					),
-				}),
+				ast.NewTypeTuple(
+					ast.NewTupleType([]ast.TupleTypeMemberNode{
+						ast.NewLabeledTupleTypeMember(
+							nil,
+							ast.NewIdentifier("name", nil, 0, 4),
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+						),
+						ast.NewLabeledTupleTypeMember(
+							nil,
+							ast.NewIdentifier("age", nil, 0, 3),
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+						),
+					}),
+				),
 			),
 		},
 		{
@@ -213,29 +215,31 @@ func TestTypeDeclaration(t *testing.T) {
 			input: "Nested = type(id: Int, data: (name: String, value: Float))",
 			want: ast.NewTypeDeclaration(
 				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Nested", nil, 0, 6), nil),
-				ast.NewTupleType([]ast.TupleTypeMemberNode{
-					ast.NewLabeledTupleTypeMember(
-						nil,
-						ast.NewIdentifier("id", nil, 0, 2),
-						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
-					),
-					ast.NewLabeledTupleTypeMember(
-						nil,
-						ast.NewIdentifier("data", nil, 0, 4),
-						ast.NewTupleType([]ast.TupleTypeMemberNode{
-							ast.NewLabeledTupleTypeMember(
-								nil,
-								ast.NewIdentifier("name", nil, 0, 4),
-								ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
-							),
-							ast.NewLabeledTupleTypeMember(
-								nil,
-								ast.NewIdentifier("value", nil, 0, 5),
-								ast.NewTypeReference(nil, ast.NewTypeIdentifier("Float", nil, 0, 5), nil, 0, 5),
-							),
-						}),
-					),
-				}),
+				ast.NewTypeTuple(
+					ast.NewTupleType([]ast.TupleTypeMemberNode{
+						ast.NewLabeledTupleTypeMember(
+							nil,
+							ast.NewIdentifier("id", nil, 0, 2),
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+						),
+						ast.NewLabeledTupleTypeMember(
+							nil,
+							ast.NewIdentifier("data", nil, 0, 4),
+							ast.NewTupleType([]ast.TupleTypeMemberNode{
+								ast.NewLabeledTupleTypeMember(
+									nil,
+									ast.NewIdentifier("name", nil, 0, 4),
+									ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+								),
+								ast.NewLabeledTupleTypeMember(
+									nil,
+									ast.NewIdentifier("value", nil, 0, 5),
+									ast.NewTypeReference(nil, ast.NewTypeIdentifier("Float", nil, 0, 5), nil, 0, 5),
+								),
+							}),
+						),
+					}),
+				),
 			),
 		},
 		{

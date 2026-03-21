@@ -20,15 +20,19 @@ func NewBlock(body *BlockBody) *Block {
 
 // String returns a textual representation of the block
 func (b *Block) String() string {
-	var builder strings.Builder
-	builder.WriteString("{")
-
-	if b.Body != nil {
-		builder.WriteString(" ")
-		builder.WriteString(b.Body.String())
+	if b.Body == nil {
+		return "{}"
 	}
 
-	builder.WriteString(" }")
+	body := b.Body.String()
+	if body == "" {
+		return "{\n}"
+	}
+
+	var builder strings.Builder
+	builder.WriteString("{\n")
+	builder.WriteString(indentString(body))
+	builder.WriteString("\n}")
 	return builder.String()
 }
 

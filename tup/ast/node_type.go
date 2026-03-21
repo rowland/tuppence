@@ -188,6 +188,7 @@ const (
 	NodeRestParameter
 	NodeReturnType
 	NodeTupleType
+	NodeTypeTuple
 	NodeTupleTypeMember
 	NodeLabeledTupleTypeMember
 	NodeTypeReference
@@ -384,6 +385,7 @@ var NodeTypes = map[NodeType]string{
 	NodeRestParameter: "RestParameter",
 	NodeReturnType:    "ReturnType",
 	NodeTupleType:     "TupleType",
+	NodeTypeTuple:     "TypeTuple",
 	NodeTupleTypeMember: "TupleTypeMember",
 	NodeLabeledTupleTypeMember: "LabeledTupleTypeMember",
 	NodeTypeReference: "TypeReference",

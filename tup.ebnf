@@ -547,7 +547,7 @@ type_declaration = type_declaration_lhs "=" type_declaration_rhs .
 type_declaration_lhs = annotations type_identifier [ type_parameters ] .
 
 type_declaration_rhs = nilable_type
-                     | "type" tuple_type
+                     | type_tuple
                      | error_tuple
                      | dynamic_array
                      | fixed_size_array
@@ -570,6 +570,8 @@ type_qualified_declaration = type_identifier "." identifier "=" expression .
 type_qualified_function_declaration = annotations type_identifier "." function_declaration_lhs "=" function_declaration_type block .
 
 type_reference = [ identifier { "." identifier } "." ] type_identifier .
+
+type_tuple = "type" tuple_type .
 
 unary_expression = prefixed_unary_expression
                  | primary_expression .

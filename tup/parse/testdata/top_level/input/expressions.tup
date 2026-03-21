@@ -1,0 +1,44 @@
+# wrapped add expression
+_ = 1 + 2
+
+# wrapped symbol literal
+_ = :ok
+
+# wrapped tuple expression
+_ = (a: :x, b: :y)
+
+# wrapped typed array expression
+_ = Int[1, 2]
+
+# wrapped import expression
+_ = import("math")
+
+# wrapped typeof expression
+_ = typeof(answer)
+
+# wrapped meta expression
+_ = $(name: "Brent")
+
+# wrapped type comparison expression
+_ = value is (Int | String)
+
+# wrapped unary on member chain
+_ = !foo.bar.flag
+
+# wrapped member access chain with indexing
+_ = a.b.c[d]
+
+# wrapped safe indexed access on member chain
+_ = users.list[0]!
+
+# wrapped indexed function call
+_ = some_funcs[5](x + 1)
+
+# wrapped tuple update followed by member access
+_ = user.(name: "Brent").name
+
+# wrapped block expression
+_ = {
+    ready = true
+    ready
+}

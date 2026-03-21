@@ -83,7 +83,7 @@ func (d *TypeDeclarationLHS) String() string {
 }
 
 // type_declaration_rhs = nilable_type
-//                      | "type" tuple_type
+//                      | type_tuple
 //                      | error_tuple
 //                      | dynamic_array
 //                      | fixed_size_array
@@ -99,7 +99,7 @@ type TypeDeclarationRHS interface {
 }
 
 func (n NilableType) typeDeclarationRHSNode() {}
-func (n TupleType) typeDeclarationRHSNode()   {}
+func (n TypeTuple) typeDeclarationRHSNode()   {}
 func (n ErrorTuple) typeDeclarationRHSNode()  {}
 func (n DynamicArrayType) typeDeclarationRHSNode() {}
 func (n FixedSizeArrayType) typeDeclarationRHSNode() {}
