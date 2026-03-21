@@ -156,18 +156,69 @@ func (f *FixedSizeArrayType) String() string {
 //	                       | union_type
 //	                       | union_declaration ) .
 
+type FunctionTypeParameter interface {
+	Node
+	functionTypeParameterNode()
+}
+
+func (n *Parameter) functionTypeParameterNode()        {}
+func (n *LabeledParameter) functionTypeParameterNode() {}
+func (n *RestParameter) functionTypeParameterNode()    {}
+func (n *LabeledRestParameter) functionTypeParameterNode() {
+}
+
+type FunctionTypeParameterType interface {
+	Node
+	functionTypeParameterTypeNode()
+}
+
+func (n *NilableType) functionTypeParameterTypeNode()      {}
+func (n *DynamicArrayType) functionTypeParameterTypeNode() {}
+func (n *FixedSizeArrayType) functionTypeParameterTypeNode() {
+}
+func (n *FunctionType) functionTypeParameterTypeNode()     {}
+func (n *ErrorTuple) functionTypeParameterTypeNode()       {}
+func (n *TupleType) functionTypeParameterTypeNode()        {}
+func (n *GenericType) functionTypeParameterTypeNode()      {}
+func (n *TypeReference) functionTypeParameterTypeNode()    {}
+func (n *Identifier) functionTypeParameterTypeNode()       {}
+func (n *InlineUnion) functionTypeParameterTypeNode()      {}
+func (n *UnionType) functionTypeParameterTypeNode()        {}
+func (n *UnionDeclaration) functionTypeParameterTypeNode() {}
+func (n *FloatLiteral) functionTypeParameterTypeNode()     {}
+func (n *IntegerLiteral) functionTypeParameterTypeNode()   {}
+func (n *BooleanLiteral) functionTypeParameterTypeNode()   {}
+func (n *StringLiteral) functionTypeParameterTypeNode()    {}
+func (n *InterpolatedStringLiteral) functionTypeParameterTypeNode() {
+}
+func (n *RawStringLiteral) functionTypeParameterTypeNode() {}
+func (n *MultiLineStringLiteral) functionTypeParameterTypeNode() {
+}
+func (n *TupleLiteral) functionTypeParameterTypeNode()          {}
+func (n *ArrayLiteral) functionTypeParameterTypeNode()          {}
+func (n *SymbolLiteral) functionTypeParameterTypeNode()         {}
+func (n *RuneLiteral) functionTypeParameterTypeNode()           {}
+func (n *FixedSizeArrayLiteral) functionTypeParameterTypeNode() {}
+
 type Parameter struct {
 	BaseNode
-	Annotations []Node // Optional annotations
-	Type        Node   // Parameter type
+	Annotations *Annotations              // Optional annotations
+	Type        FunctionTypeParameterType // Parameter type
+}
+
+func NewParameter(annotations *Annotations, paramType FunctionTypeParameterType) *Parameter {
+	return &Parameter{
+		BaseNode:    BaseNode{Type: NodeParameter},
+		Annotations: annotations,
+		Type:        paramType,
+	}
 }
 
 func (p *Parameter) String() string {
 	var builder strings.Builder
 
-	for _, anno := range p.Annotations {
-		builder.WriteString(anno.String())
-		builder.WriteString(" ")
+	if p.Annotations != nil {
+		builder.WriteString(p.Annotations.String())
 	}
 
 	builder.WriteString(p.Type.String())
@@ -182,17 +233,25 @@ func (p *Parameter) String() string {
 
 type LabeledParameter struct {
 	BaseNode
-	Annotations []Node      // Optional annotations
-	Identifier  *Identifier // Parameter name
-	Type        Node        // Parameter type
+	Annotations *Annotations              // Optional annotations
+	Identifier  *Identifier               // Parameter name
+	Type        FunctionTypeParameterType // Parameter type
+}
+
+func NewLabeledParameter(annotations *Annotations, identifier *Identifier, paramType FunctionTypeParameterType) *LabeledParameter {
+	return &LabeledParameter{
+		BaseNode:    BaseNode{Type: NodeLabeledParameter},
+		Annotations: annotations,
+		Identifier:  identifier,
+		Type:        paramType,
+	}
 }
 
 func (l *LabeledParameter) String() string {
 	var builder strings.Builder
 
-	for _, anno := range l.Annotations {
-		builder.WriteString(anno.String())
-		builder.WriteString(" ")
+	if l.Annotations != nil {
+		builder.WriteString(l.Annotations.String())
 	}
 
 	builder.WriteString(l.Identifier.String())
@@ -205,10 +264,10 @@ func (l *LabeledParameter) String() string {
 
 type RestParameter struct {
 	BaseNode
-	Type Node // Parameter type
+	Type TypeArgumentType // Parameter type
 }
 
-func NewRestParameter(paramType Node) *RestParameter {
+func NewRestParameter(paramType TypeArgumentType) *RestParameter {
 	return &RestParameter{
 		BaseNode: BaseNode{Type: NodeRestParameter},
 		Type:     paramType,
@@ -223,19 +282,25 @@ func (r *RestParameter) String() string {
 
 type LabeledRestParameter struct {
 	BaseNode
-	Annotations []Node      // Optional annotations
-	Identifier  *Identifier // Parameter name
-	RestType    Node        // Rest parameter type (changed from *RestParameter to Node)
+	Annotations *Annotations   // Optional annotations
+	Identifier  *Identifier    // Parameter name
+	RestType    *RestParameter // Rest parameter type
+}
+
+func NewLabeledRestParameter(annotations *Annotations, identifier *Identifier, restType *RestParameter) *LabeledRestParameter {
+	return &LabeledRestParameter{
+		BaseNode:    BaseNode{Type: NodeLabeledRestParameter},
+		Annotations: annotations,
+		Identifier:  identifier,
+		RestType:    restType,
+	}
 }
 
 func (l *LabeledRestParameter) String() string {
 	var builder strings.Builder
 
-	if len(l.Annotations) > 0 {
-		for _, ann := range l.Annotations {
-			builder.WriteString(ann.String())
-			builder.WriteString(" ")
-		}
+	if l.Annotations != nil {
+		builder.WriteString(l.Annotations.String())
 	}
 
 	builder.WriteString(l.Identifier.String())
@@ -287,12 +352,12 @@ func (r *ReturnType) String() string {
 
 type FunctionType struct {
 	BaseNode
-	HasSideEffects bool   // True for 'fx', false for 'fn'
-	Parameters     []Node // Can be Parameter, LabeledParameter, RestParameter, or LabeledRestParameter
-	ReturnType     Node   // Return type (may be omitted for fx, resulting in nil) (changed from *ReturnType to Node)
+	HasSideEffects bool                    // True for 'fx', false for 'fn'
+	Parameters     []FunctionTypeParameter // Can be Parameter, LabeledParameter, RestParameter, or LabeledRestParameter
+	ReturnType     *ReturnType             // Return type
 }
 
-func NewFunctionType(hasSideEffects bool, parameters []Node, returnType Node) *FunctionType {
+func NewFunctionType(hasSideEffects bool, parameters []FunctionTypeParameter, returnType *ReturnType) *FunctionType {
 	return &FunctionType{
 		BaseNode:       BaseNode{Type: NodeFunctionType},
 		HasSideEffects: hasSideEffects,
@@ -321,8 +386,8 @@ func (f *FunctionType) String() string {
 
 	builder.WriteString(")")
 
-	if !f.HasSideEffects && f.ReturnType != nil {
-		builder.WriteString(" -> ")
+	if f.ReturnType != nil {
+		builder.WriteString(" ")
 		builder.WriteString(f.ReturnType.String())
 	}
 

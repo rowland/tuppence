@@ -441,9 +441,16 @@ func GenericType(tokens []tok.Token) (*ast.GenericType, []tok.Token, error) {
 //               | generic_type .
 //
 // The parser currently implements the already-supported subset of type:
-// generic_type, array types, error_tuple, tuple_type, and local_type_reference.
+// function_type, generic_type, array types, error_tuple, tuple_type, and
+// local_type_reference.
 
 func TypeArgument(tokens []tok.Token) (*ast.TypeArgument, []tok.Token, error) {
+	if functionType, remainder, err := FunctionType(tokens); err == nil {
+		return ast.NewTypeArgument(functionType), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
 	if genericType, remainder, err := GenericType(tokens); err == nil {
 		return ast.NewTypeArgument(genericType), remainder, nil
 	} else if err != ErrNoMatch {
@@ -534,8 +541,8 @@ func TypeArgumentList(tokens []tok.Token) (*ast.TypeArgumentList, []tok.Token, e
 //             | "error" .
 //
 // The parser currently implements the already-supported subset of type:
-// generic_type, array types, error_tuple, tuple_type, local_type_reference,
-// and inline_union.
+// function_type, generic_type, array types, error_tuple, tuple_type,
+// local_type_reference, and inline_union.
 
 func ReturnType(tokens []tok.Token) (*ast.ReturnType, []tok.Token, error) {
 	if unionWithError, remainder, err := UnionWithError(tokens); err == nil {
@@ -552,6 +559,12 @@ func ReturnType(tokens []tok.Token) (*ast.ReturnType, []tok.Token, error) {
 
 	if nilableType, remainder, err := NilableType(tokens); err == nil {
 		return ast.NewReturnType(nilableType), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if functionType, remainder, err := FunctionType(tokens); err == nil {
+		return ast.NewReturnType(functionType), remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
@@ -1128,6 +1141,12 @@ func TupleTypeMembers(tokens []tok.Token) ([]ast.TupleTypeMemberNode, []tok.Toke
 func tupleTypeMemberType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
 	if nilableType, remainder, err := NilableType(tokens); err == nil {
 		return nilableType, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if functionType, remainder, err := FunctionType(tokens); err == nil {
+		return functionType, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}

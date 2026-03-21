@@ -184,6 +184,9 @@ const (
 	NodeNamedTuple
 	NodeNilableType
 	NodeInferredErrorType
+	NodeParameter
+	NodeLabeledParameter
+	NodeLabeledRestParameter
 	NodeErrorTuple
 	NodeRestParameter
 	NodeReturnType
@@ -372,23 +375,26 @@ var NodeTypes = map[NodeType]string{
 	NodeLabeledTupleMembers: "LabeledTupleMembers",
 
 	// Type node types
-	NodeArrayType:     "ArrayType",
-	NodeFunctionType:  "FunctionType",
-	NodeTypeArgument:  "TypeArgument",
-	NodeTypeArgumentList: "TypeArgumentList",
-	NodeGenericType:   "GenericType",
-	NodeInlineUnion:   "InlineUnion",
-	NodeNamedTuple:    "NamedTuple",
-	NodeNilableType:   "NilableType",
-	NodeInferredErrorType: "InferredErrorType",
-	NodeErrorTuple:    "ErrorTuple",
-	NodeRestParameter: "RestParameter",
-	NodeReturnType:    "ReturnType",
-	NodeTupleType:     "TupleType",
-	NodeTypeTuple:     "TypeTuple",
-	NodeTupleTypeMember: "TupleTypeMember",
+	NodeArrayType:              "ArrayType",
+	NodeFunctionType:           "FunctionType",
+	NodeTypeArgument:           "TypeArgument",
+	NodeTypeArgumentList:       "TypeArgumentList",
+	NodeGenericType:            "GenericType",
+	NodeInlineUnion:            "InlineUnion",
+	NodeParameter:              "Parameter",
+	NodeLabeledParameter:       "LabeledParameter",
+	NodeLabeledRestParameter:   "LabeledRestParameter",
+	NodeNamedTuple:             "NamedTuple",
+	NodeNilableType:            "NilableType",
+	NodeInferredErrorType:      "InferredErrorType",
+	NodeErrorTuple:             "ErrorTuple",
+	NodeRestParameter:          "RestParameter",
+	NodeReturnType:             "ReturnType",
+	NodeTupleType:              "TupleType",
+	NodeTypeTuple:              "TypeTuple",
+	NodeTupleTypeMember:        "TupleTypeMember",
 	NodeLabeledTupleTypeMember: "LabeledTupleTypeMember",
-	NodeTypeReference: "TypeReference",
-	NodeUnionType:     "UnionType",
-	NodeUnionWithError: "UnionWithError",
+	NodeTypeReference:          "TypeReference",
+	NodeUnionType:              "UnionType",
+	NodeUnionWithError:         "UnionWithError",
 }
