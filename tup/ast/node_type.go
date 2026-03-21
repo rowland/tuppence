@@ -100,7 +100,6 @@ const (
 	// Literal node types
 	NodeArrayLiteral
 	NodeBooleanLiteral
-	NodeFixedSizeArrayLiteral
 	NodeFloatLiteral
 	NodeIntegerLiteral
 	NodeInterpolatedStringLiteral
@@ -302,7 +301,6 @@ var NodeTypes = map[NodeType]string{
 	// Literal node types
 	NodeArrayLiteral:              "ArrayLiteral",
 	NodeBooleanLiteral:            "BooleanLiteral",
-	NodeFixedSizeArrayLiteral:     "FixedSizeArrayLiteral",
 	NodeFloatLiteral:              "FloatLiteral",
 	NodeIntegerLiteral:            "IntegerLiteral",
 	NodeInterpolatedStringLiteral: "InterpolatedStringLiteral",

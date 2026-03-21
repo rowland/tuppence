@@ -120,5 +120,4 @@ fmt.Printf("Line: %d, Column: %d\n", pos.Line, pos.Column)
 
 ## References
 
-- `ast.md` - Contains the complete punch list of all implemented AST nodes.
-- The Tuppence language specification document. 
+- The Tuppence language specification document.

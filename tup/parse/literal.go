@@ -12,7 +12,6 @@ import (
 //         | raw_string_literal
 //         | multi_line_string_literal
 //         | tuple_literal
-//         | fixed_size_array_literal
 //         | array_literal
 //         | symbol_literal
 //         | rune_literal .

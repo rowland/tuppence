@@ -32,7 +32,6 @@
     - [x] raw_string_literal
     - [ ] multi_line_string_literal
     - [x] tuple_literal
-    - [x] fixed_size_array_literal
     - [x] array_literal
     - [x] symbol_literal
     - [x] rune_literal
