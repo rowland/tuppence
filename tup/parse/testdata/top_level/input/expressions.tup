@@ -10,6 +10,12 @@ _ = (a: :x, b: :y)
 # wrapped typed array expression
 _ = Int[1, 2]
 
+# wrapped fixed-size array expression
+_ = [3]Int[1, 2, 3]
+
+# wrapped fixed-size array block initializer
+_ = [n]Int { |index| index }
+
 # wrapped import expression
 _ = import("math")
 

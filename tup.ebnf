@@ -158,7 +158,7 @@ expression = try_expression
 
 fixed_size_array = "[" size "]" (type_reference | array_type) .
 
-fixed_size_array_literal = fixed_size_array "[" array_members "]" .
+fixed_size_array_literal = fixed_size_array ( "[" array_members "]" | function_block ) .
 
 float_literal = decimal_digit { decimal_digit | "_" } "." decimal_digit { decimal_digit | "_" } [ exponent ]
               | decimal_digit { decimal_digit | "_" } exponent .

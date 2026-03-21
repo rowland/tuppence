@@ -37,23 +37,38 @@ func (a *ArrayLiteral) String() string {
 
 // fixed_size_array_literal = fixed_size_array "[" array_members "]" .
 
-type FixedSizeArrayLiteral struct {
-	BaseNode
-	ArrayType *ArrayType
-	Elements  []Expression
+type FixedSizeArrayLiteralType interface {
+	Node
+	fixedSizeArrayLiteralTypeNode()
 }
 
-func NewFixedSizeArrayLiteral(arrayType *ArrayType, elements []Expression) *FixedSizeArrayLiteral {
+func (n *FixedSizeArrayType) fixedSizeArrayLiteralTypeNode() {}
+func (n *TypeReference) fixedSizeArrayLiteralTypeNode()      {}
+
+type FixedSizeArrayLiteral struct {
+	BaseNode
+	ArrayType   FixedSizeArrayLiteralType
+	Elements    []Expression
+	Initializer *FunctionBlock
+}
+
+func NewFixedSizeArrayLiteral(arrayType FixedSizeArrayLiteralType, elements []Expression, initializer *FunctionBlock) *FixedSizeArrayLiteral {
 	return &FixedSizeArrayLiteral{
-		BaseNode:  BaseNode{Type: NodeFixedSizeArrayLiteral},
-		ArrayType: arrayType,
-		Elements:  elements,
+		BaseNode:    BaseNode{Type: NodeFixedSizeArrayLiteral},
+		ArrayType:   arrayType,
+		Elements:    elements,
+		Initializer: initializer,
 	}
 }
 
 func (f *FixedSizeArrayLiteral) String() string {
 	var builder strings.Builder
 	builder.WriteString(f.ArrayType.String())
+	if f.Initializer != nil {
+		builder.WriteString(" ")
+		builder.WriteString(f.Initializer.String())
+		return builder.String()
+	}
 	builder.WriteString("[")
 	for i, elem := range f.Elements {
 		if i > 0 {

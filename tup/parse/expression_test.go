@@ -219,6 +219,22 @@ func TestExpression(t *testing.T) {
 			}),
 		},
 		{
+			name:  "fixed size array literal",
+			input: "[3]Int[1, 2, 3]",
+			want: ast.NewFixedSizeArrayLiteral(
+				ast.NewFixedSizeArrayType(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					ast.NewDecimalLiteral("3", 3, nil, 0, 0),
+				),
+				[]ast.Expression{
+					ast.NewDecimalLiteral("1", 1, nil, 0, 0),
+					ast.NewDecimalLiteral("2", 2, nil, 0, 0),
+					ast.NewDecimalLiteral("3", 3, nil, 0, 0),
+				},
+				nil,
+			),
+		},
+		{
 			name:  "array expression",
 			input: "[1, 2, 3]",
 			want: ast.NewArrayLiteral([]ast.Expression{

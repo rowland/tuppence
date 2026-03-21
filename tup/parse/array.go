@@ -81,3 +81,61 @@ func ArrayMembers(tokens []tok.Token) (members []ast.Expression, remainder []tok
 
 	return members, remainder, nil
 }
+
+// fixed_size_array_literal = fixed_size_array ( "[" array_members "]" | block ) .
+
+func FixedSizeArrayLiteral(tokens []tok.Token) (arr *ast.FixedSizeArrayLiteral, remainder []tok.Token, err error) {
+	var arrayType *ast.FixedSizeArrayType
+	if arrayType, remainder, err = fixedSizeArrayLiteralType(tokens); err != nil {
+		return nil, remainder, err
+	}
+
+	if functionBlock, remainder2, blockErr := FunctionBlock(remainder); blockErr == nil {
+		return ast.NewFixedSizeArrayLiteral(arrayType, nil, functionBlock), remainder2, nil
+	} else if blockErr != ErrNoMatch {
+		return nil, remainder2, blockErr
+	}
+
+	var found bool
+	if remainder, found = OpenBracket(remainder); !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	var arrayMembers []ast.Expression
+	if arrayMembers, remainder, err = ArrayMembers(remainder); err != nil {
+		return nil, remainder, err
+	}
+
+	remainder = skipTrivia(remainder)
+	if remainder, found = CloseBracket(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseBracket, remainder)
+	}
+
+	return ast.NewFixedSizeArrayLiteral(arrayType, arrayMembers, nil), remainder, nil
+}
+
+// fixed_size_array but parsed conservatively so plain array literals like [1, 2, 3]
+// do not get consumed as malformed fixed-size array prefixes.
+
+func fixedSizeArrayLiteralType(tokens []tok.Token) (*ast.FixedSizeArrayType, []tok.Token, error) {
+	remainder, found := OpenBracket(tokens)
+	if !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	size, remainder, err := Size(remainder)
+	if err != nil {
+		return nil, tokens, ErrNoMatch
+	}
+
+	if remainder, found = CloseBracket(remainder); !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	elementType, remainder, err := ArrayElementType(remainder)
+	if err != nil {
+		return nil, tokens, ErrNoMatch
+	}
+
+	return ast.NewFixedSizeArrayType(elementType, size), remainder, nil
+}

@@ -53,14 +53,15 @@ func TestLiteral(t *testing.T) {
 		{"typed array literal with trailing comma", "Int[1,\n2,\n3,\n]", ast.NodeArrayLiteral, false},
 		{"typed array literal with symbol members", "Any[:a, :b]", ast.NodeArrayLiteral, false},
 
+		// fixed size array
+		{"fixed size array literal", "[3]Int[1, 2, 3]", ast.NodeFixedSizeArrayLiteral, false},
+		{"fixed size array literal with block initializer", "[8]Int { it }", ast.NodeFixedSizeArrayLiteral, false},
+
 		// symbol
 		{"symbol literal", ":hello", ast.NodeSymbolLiteral, false},
 
 		// rune
 		{"rune literal", "'a'", ast.NodeRuneLiteral, false},
-
-		// fixed size array
-		// {"fixed size array literal", "[1, 2, 3]", ast.NodeFixedSizeArrayLiteral, false},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
