@@ -1,0 +1,65 @@
+package ast
+
+var _ LocalTypeReference = &TypeReference{}
+var _ LocalTypeReference = &Identifier{}
+
+var _ TypeDeclarationRHS = &NilableType{}
+var _ TypeDeclarationRHS = &TypeTuple{}
+var _ TypeDeclarationRHS = &ErrorTuple{}
+var _ TypeDeclarationRHS = &DynamicArrayType{}
+var _ TypeDeclarationRHS = &FixedSizeArrayType{}
+var _ TypeDeclarationRHS = &UnionType{}
+var _ TypeDeclarationRHS = &UnionDeclaration{}
+var _ TypeDeclarationRHS = &EnumDeclaration{}
+var _ TypeDeclarationRHS = &ContractDeclaration{}
+var _ TypeDeclarationRHS = &TypeReference{}
+
+var _ ArrayElementType = &TypeReference{}
+var _ ArrayElementType = &DynamicArrayType{}
+var _ ArrayElementType = &FixedSizeArrayType{}
+
+var _ FunctionTypeParameter = &Parameter{}
+var _ FunctionTypeParameter = &LabeledParameter{}
+var _ FunctionTypeParameter = &RestParameter{}
+var _ FunctionTypeParameter = &LabeledRestParameter{}
+
+var _ FunctionTypeParameterType = &NilableType{}
+var _ FunctionTypeParameterType = &DynamicArrayType{}
+var _ FunctionTypeParameterType = &FixedSizeArrayType{}
+var _ FunctionTypeParameterType = &FunctionType{}
+var _ FunctionTypeParameterType = &ErrorTuple{}
+var _ FunctionTypeParameterType = &TupleType{}
+var _ FunctionTypeParameterType = &GenericType{}
+var _ FunctionTypeParameterType = &TypeReference{}
+var _ FunctionTypeParameterType = &Identifier{}
+var _ FunctionTypeParameterType = &InlineUnion{}
+var _ FunctionTypeParameterType = &UnionType{}
+var _ FunctionTypeParameterType = &UnionDeclaration{}
+var _ FunctionTypeParameterType = &FloatLiteral{}
+var _ FunctionTypeParameterType = &IntegerLiteral{}
+var _ FunctionTypeParameterType = &BooleanLiteral{}
+var _ FunctionTypeParameterType = &StringLiteral{}
+var _ FunctionTypeParameterType = &InterpolatedStringLiteral{}
+var _ FunctionTypeParameterType = &RawStringLiteral{}
+var _ FunctionTypeParameterType = &MultiLineStringLiteral{}
+var _ FunctionTypeParameterType = &TupleLiteral{}
+var _ FunctionTypeParameterType = &ArrayLiteral{}
+var _ FunctionTypeParameterType = &SymbolLiteral{}
+var _ FunctionTypeParameterType = &RuneLiteral{}
+var _ FunctionTypeParameterType = &FixedSizeArrayLiteral{}
+
+var _ TupleTypeMemberNode = &TupleTypeMember{}
+var _ TupleTypeMemberNode = &LabeledTupleTypeMember{}
+
+var _ TypeArgumentType = &TypeReference{}
+var _ TypeArgumentType = &Identifier{}
+var _ TypeArgumentType = &DynamicArrayType{}
+var _ TypeArgumentType = &FixedSizeArrayType{}
+var _ TypeArgumentType = &FunctionType{}
+var _ TypeArgumentType = &ErrorTuple{}
+var _ TypeArgumentType = &TupleType{}
+var _ TypeArgumentType = &GenericType{}
+var _ TypeArgumentType = &InlineUnion{}
+
+var _ TypePredicate = &TypeReference{}
+var _ TypePredicate = &InlineUnion{}
