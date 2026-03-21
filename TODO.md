@@ -120,7 +120,7 @@
                     - [x] type_identifier
                     - [x] function_declaration_lhs
                     - [x] function_declaration_type
-                        - [ ] labeled_parameters
+                        - [x] labeled_parameters
                         - [ ] parameters
                             - [ ] parameter
                                 - [x] nilable_type
@@ -206,7 +206,7 @@
 - [ ] interpolation
 - [ ] iterable
 - [ ] iterable_header
-- [ ] labeled_parameter
+- [x] labeled_parameter
 - [ ] labeled_pattern
 - [ ] labeled_rest_parameter
 - [x] labeled_tuple
