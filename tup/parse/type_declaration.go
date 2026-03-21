@@ -686,14 +686,94 @@ func UnionDeclarationWithError(tokens []tok.Token) (*ast.UnionDeclarationWithErr
 
 // enum_declaration = "enum" "(" eol enum_members ")" .
 
-func EnumDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
-	return nil, tokens, ErrNoMatch // TODO: Implement
+func EnumDeclaration(tokens []tok.Token) (*ast.EnumDeclaration, []tok.Token, error) {
+	remainder := skipTrivia(tokens)
+	if peek(remainder).Type != tok.TokKwEnum {
+		return nil, tokens, ErrNoMatch
+	}
+	remainder = remainder[1:]
+
+	var found bool
+	if remainder, found = OpenParen(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokOpenParen, remainder)
+	}
+
+	if remainder, found = EOL(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokEOL, remainder)
+	}
+
+	members, remainder, err := EnumMembers(remainder)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("enum members", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	if remainder, found = CloseParen(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseParen, remainder)
+	}
+
+	return ast.NewEnumDeclaration(members), remainder, nil
 }
 
 // contract_declaration = "contract" "(" eol contract_members ")" .
 
 func ContractDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
 	return nil, tokens, ErrNoMatch // TODO: Implement
+}
+
+// enum_members = enum_member_declaration { eol enum_member_declaration } eol .
+
+func EnumMembers(tokens []tok.Token) (*ast.EnumMembers, []tok.Token, error) {
+	first, remainder, err := EnumMemberDeclaration(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	members := []*ast.EnumMember{first}
+	for {
+		remainder2, found := EOL(remainder)
+		if !found {
+			return nil, remainder, errorExpectingTokenType(tok.TokEOL, remainder)
+		}
+
+		next, remainder3, err := EnumMemberDeclaration(remainder2)
+		if err == ErrNoMatch {
+			return ast.NewEnumMembers(members), remainder2, nil
+		} else if err != nil {
+			return nil, remainder3, err
+		}
+
+		members = append(members, next)
+		remainder = remainder3
+	}
+}
+
+// enum_member_declaration = annotations identifier [ "=" integer_literal ] .
+
+func EnumMemberDeclaration(tokens []tok.Token) (*ast.EnumMember, []tok.Token, error) {
+	annotations, remainder, err := Annotations(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	name, remainder, err := Identifier(remainder)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	var value *ast.IntegerLiteral
+	if remainder2, found := AssignOp(remainder); found {
+		value, remainder2, err = IntegerLiteral(remainder2)
+		if err == ErrNoMatch {
+			return nil, remainder2, errorExpecting("integer literal", remainder2)
+		} else if err != nil {
+			return nil, remainder2, err
+		}
+		remainder = remainder2
+	}
+
+	return ast.NewEnumMember(annotations, name, value), remainder, nil
 }
 
 // union_member_declaration = annotations named_tuple

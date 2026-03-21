@@ -55,3 +55,11 @@ Result[a] = union (
     Ok()
     Err(a)
 )
+
+# enum declaration rhs
+Fruit = enum(
+    apple
+    banana = 2
+    @deprecated
+    cantaloupe
+)

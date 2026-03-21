@@ -338,7 +338,35 @@ func TestTypeDeclaration(t *testing.T) {
 			),
 		},
 		{
-			name: "union declaration rhs",
+			name:  "enum declaration rhs",
+			input: "Fruit = enum(\n    apple\n    banana = 2\n    @deprecated\n    cantaloupe\n)",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Fruit", nil, 0, 5), nil),
+				ast.NewEnumDeclaration(
+					ast.NewEnumMembers([]*ast.EnumMember{
+						ast.NewEnumMember(
+							ast.NewAnnotations(nil),
+							ast.NewIdentifier("apple", nil, 0, 5),
+							nil,
+						),
+						ast.NewEnumMember(
+							ast.NewAnnotations(nil),
+							ast.NewIdentifier("banana", nil, 0, 6),
+							ast.NewDecimalLiteral("2", 2, nil, 0, 1),
+						),
+						ast.NewEnumMember(
+							ast.NewAnnotations([]ast.Annotation{
+								ast.NewSimpleAnnotation("deprecated"),
+							}),
+							ast.NewIdentifier("cantaloupe", nil, 0, 10),
+							nil,
+						),
+					}),
+				),
+			),
+		},
+		{
+			name:  "union declaration rhs",
 			input: "Result[a] = union(\n    Ok()\n    Err(a)\n)",
 			want: ast.NewTypeDeclaration(
 				ast.NewTypeDeclarationLHS(
@@ -404,6 +432,92 @@ func TestTypeDeclaration(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
 				"TypeDeclaration", TypeDeclaration, StringerCheck[*ast.TypeDeclaration])
+		})
+	}
+}
+
+func TestEnumMemberDeclaration(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.EnumMember
+		wantErr bool
+	}{
+		{
+			name:  "simple member",
+			input: "apple",
+			want: ast.NewEnumMember(
+				ast.NewAnnotations(nil),
+				ast.NewIdentifier("apple", nil, 0, 5),
+				nil,
+			),
+		},
+		{
+			name:  "member with value",
+			input: "banana = 2",
+			want: ast.NewEnumMember(
+				ast.NewAnnotations(nil),
+				ast.NewIdentifier("banana", nil, 0, 6),
+				ast.NewDecimalLiteral("2", 2, nil, 0, 1),
+			),
+		},
+		{
+			name:  "annotated member",
+			input: "@deprecated\ncantaloupe",
+			want: ast.NewEnumMember(
+				ast.NewAnnotations([]ast.Annotation{
+					ast.NewSimpleAnnotation("deprecated"),
+				}),
+				ast.NewIdentifier("cantaloupe", nil, 0, 10),
+				nil,
+			),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"EnumMemberDeclaration", EnumMemberDeclaration, StringerCheck[*ast.EnumMember])
+		})
+	}
+}
+
+func TestEnumDeclaration(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.EnumDeclaration
+		wantErr bool
+	}{
+		{
+			name:  "simple enum",
+			input: "enum(\n    apple\n    banana = 2\n)",
+			want: ast.NewEnumDeclaration(
+				ast.NewEnumMembers([]*ast.EnumMember{
+					ast.NewEnumMember(
+						ast.NewAnnotations(nil),
+						ast.NewIdentifier("apple", nil, 0, 5),
+						nil,
+					),
+					ast.NewEnumMember(
+						ast.NewAnnotations(nil),
+						ast.NewIdentifier("banana", nil, 0, 6),
+						ast.NewDecimalLiteral("2", 2, nil, 0, 1),
+					),
+				}),
+			),
+		},
+		{
+			name:    "requires members",
+			input:   "enum(\n)",
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"EnumDeclaration", EnumDeclaration, StringerCheck[*ast.EnumDeclaration])
 		})
 	}
 }
@@ -513,7 +627,7 @@ func TestUnionDeclaration(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "introduced generic union declaration",
+			name:  "introduced generic union declaration",
 			input: "union(\nOk()\nErr(a)\n)",
 			want: ast.NewUnionDeclaration(ast.UnionMembers{
 				ast.NewUnionMemberDeclaration(
@@ -535,7 +649,7 @@ func TestUnionDeclaration(t *testing.T) {
 			}),
 		},
 		{
-			name: "union declaration with existing members",
+			name:  "union declaration with existing members",
 			input: "union(\nResult[Int]\nCard\n)",
 			want: ast.NewUnionDeclaration(ast.UnionMembers{
 				ast.NewUnionMemberDeclaration(
@@ -576,7 +690,7 @@ func TestUnionDeclarationWithError(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "introduced members with error",
+			name:  "introduced members with error",
 			input: "union(\nOk()\nErr(a)\nerror\n)",
 			want: ast.NewUnionDeclarationWithError(ast.UnionMembers{
 				ast.NewUnionMemberDeclaration(
@@ -598,7 +712,7 @@ func TestUnionDeclarationWithError(t *testing.T) {
 			}),
 		},
 		{
-			name: "existing members with error",
+			name:  "existing members with error",
 			input: "union(\nResult[Int]\nCard\nerror\n)",
 			want: ast.NewUnionDeclarationWithError(ast.UnionMembers{
 				ast.NewUnionMemberDeclaration(

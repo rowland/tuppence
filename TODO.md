@@ -174,9 +174,9 @@
 - [x] decimal_digit
 - [ ] structured_match
 - [ ] else_block
-- [ ] enum_declaration
-- [ ] enum_members
-- [ ] enum_member_declaration
+- [x] enum_declaration
+- [x] enum_members
+- [x] enum_member_declaration
 - [x] exponent
 - [ ] export_assignment
 - [ ] export_declaration
