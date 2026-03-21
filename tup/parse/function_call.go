@@ -113,6 +113,12 @@ func callableBaseExpression(tokens []tok.Token) (expr ast.Expression, remainder 
 	// continue_expression
 	// range
 
+	if literal, remainder, err := Literal(tokens); err == nil {
+		return literal, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
 	if functionIdentifier, remainder, err := FunctionIdentifier(tokens); err == nil {
 		return functionIdentifier, remainder, nil
 	} else if err != ErrNoMatch {
@@ -121,12 +127,6 @@ func callableBaseExpression(tokens []tok.Token) (expr ast.Expression, remainder 
 
 	if identifier, remainder, err := Identifier(tokens); err == nil {
 		return ast.NewIdentifier(identifier.Name, identifier.Source, identifier.StartOffset, identifier.Length), remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if literal, remainder, err := Literal(tokens); err == nil {
-		return literal, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}

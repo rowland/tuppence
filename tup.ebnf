@@ -17,9 +17,13 @@ arguments = argument { "," argument } .
 arguments_body = labeled_arguments
                | arguments [ "," labeled_arguments ]
 
-array_function_call = "array" "(" type_identifier [ "," expression ] ")" .
+array_function_call = "array" "(" type_identifier [ "," expression ] ")" [ function_block ] .
 
-array_literal = type_identifier "[" [ array_members ] "]"
+array_initializer = "[" [ array_members ] "]"
+                  | function_block .
+
+array_literal = fixed_size_array array_initializer
+              | type_reference array_initializer
               | "[" [ array_members ] "]" .
 
 array_members = expression { "," expression } [ "," ] .
@@ -157,8 +161,6 @@ expression = try_expression
            | unary_expression .
 
 fixed_size_array = "[" size "]" (type_reference | array_type) .
-
-fixed_size_array_literal = fixed_size_array ( "[" array_members "]" | function_block ) .
 
 float_literal = decimal_digit { decimal_digit | "_" } "." decimal_digit { decimal_digit | "_" } [ exponent ]
               | decimal_digit { decimal_digit | "_" } exponent .
@@ -411,9 +413,9 @@ postfix_base_expression = "(" expression ")"
                         | break_expression
                         | continue_expression
                         | range
+                        | literal
                         | function_identifier
-                        | identifier
-                        | literal .
+                        | identifier .
 
 postfix_tail = function_call_tail
              | member_access_tail
@@ -625,6 +627,6 @@ negatable_postfix_expression = negatable_postfix_base_expression { postfix_tail 
 
 negatable_postfix_base_expression = "(" expression ")"
                                   | block
+                                  | literal
                                   | function_identifier
-                                  | identifier
-                                  | literal .
+                                  | identifier .

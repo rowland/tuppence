@@ -59,7 +59,6 @@ func (n *TupleLiteral) expressionNode()              {}
 func (n *ArrayLiteral) expressionNode()              {}
 func (n *SymbolLiteral) expressionNode()             {}
 func (n *RuneLiteral) expressionNode()               {}
-func (n *FixedSizeArrayLiteral) expressionNode()     {}
 
 // logical_or_expression = logical_and_expression { logical_or_op logical_and_expression } .
 

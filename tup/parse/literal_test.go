@@ -52,10 +52,13 @@ func TestLiteral(t *testing.T) {
 		{"typed array literal", "Int[1, 2, 3]", ast.NodeArrayLiteral, false},
 		{"typed array literal with trailing comma", "Int[1,\n2,\n3,\n]", ast.NodeArrayLiteral, false},
 		{"typed array literal with symbol members", "Any[:a, :b]", ast.NodeArrayLiteral, false},
+		{"identifier sized fixed size array literal", "[n]Int[1, 2, 3]", ast.NodeArrayLiteral, false},
+		{"named fixed size array literal", "IPv4Address[1, 2, 3, 4]", ast.NodeArrayLiteral, false},
+		{"namespaced fixed size array literal", "ipv4.Address[1, 2, 3, 4]", ast.NodeArrayLiteral, false},
 
 		// fixed size array
-		{"fixed size array literal", "[3]Int[1, 2, 3]", ast.NodeFixedSizeArrayLiteral, false},
-		{"fixed size array literal with block initializer", "[8]Int { it }", ast.NodeFixedSizeArrayLiteral, false},
+		{"fixed size array literal", "[3]Int[1, 2, 3]", ast.NodeArrayLiteral, false},
+		{"fixed size array literal with block initializer", "[8]Int { it }", ast.NodeArrayLiteral, false},
 
 		// symbol
 		{"symbol literal", ":hello", ast.NodeSymbolLiteral, false},

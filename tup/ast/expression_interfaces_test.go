@@ -36,4 +36,3 @@ var _ Expression = &TupleLiteral{}
 var _ Expression = &ArrayLiteral{}
 var _ Expression = &SymbolLiteral{}
 var _ Expression = &RuneLiteral{}
-var _ Expression = &FixedSizeArrayLiteral{}

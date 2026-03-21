@@ -23,25 +23,36 @@ func Size(tokens []tok.Token) (size ast.Size, remainder []tok.Token, err error) 
 	return nil, tokens, ErrNoMatch
 }
 
-// array_literal = type_identifier "[" [ array_members ] "]"
+// array_literal = fixed_size_array array_initializer
+//               | type_reference array_initializer
 //               | "[" [ array_members ] "]" .
 
 func ArrayLiteral(tokens []tok.Token) (arr *ast.ArrayLiteral, remainder []tok.Token, err error) {
 	remainder = skipTrivia(tokens)
 
-	var typeSpecifier *ast.TypeIdentifier
-	if typeIdentifier, remainder2, typeErr := TypeIdentifier(remainder); typeErr == nil {
-		var found bool
-		if remainder2, found = OpenBracket(remainder2); !found {
-			return nil, tokens, ErrNoMatch
+	if fixedSizeArray, remainder2, fixedErr := fixedSizeArrayLiteralType(remainder); fixedErr == nil {
+		if arr, remainder, err = arrayLiteralWithType(fixedSizeArray, remainder2); err == nil {
+			return arr, remainder, nil
+		} else if err != ErrNoMatch {
+			return nil, remainder, err
 		}
-		typeSpecifier = typeIdentifier
-		remainder = remainder2
-	} else {
-		var found bool
-		if remainder, found = OpenBracket(remainder); !found {
-			return nil, tokens, ErrNoMatch
+	} else if fixedErr != ErrNoMatch {
+		return nil, remainder2, fixedErr
+	}
+
+	if typeReference, remainder2, typeErr := TypeReference(remainder); typeErr == nil {
+		if arr, remainder, err = arrayLiteralWithType(typeReference, remainder2); err == nil {
+			return arr, remainder, nil
+		} else if err != ErrNoMatch {
+			return nil, remainder, err
 		}
+	} else if typeErr != ErrNoMatch {
+		return nil, remainder2, typeErr
+	}
+
+	var found bool
+	if remainder, found = OpenBracket(remainder); !found {
+		return nil, tokens, ErrNoMatch
 	}
 
 	var arrayMembers []ast.Expression
@@ -50,13 +61,11 @@ func ArrayLiteral(tokens []tok.Token) (arr *ast.ArrayLiteral, remainder []tok.To
 	}
 
 	remainder = skipTrivia(remainder)
-	var found bool
 	if remainder, found = CloseBracket(remainder); !found {
 		return nil, remainder, errorExpectingTokenType(tok.TokCloseBracket, remainder)
 	}
 
-	arr = ast.NewArrayLiteral(arrayMembers, typeSpecifier)
-	return arr, remainder, nil
+	return ast.NewArrayLiteral(nil, arrayMembers, nil), remainder, nil
 }
 
 // array_members = expression { "," expression } [ "," ] .
@@ -82,22 +91,15 @@ func ArrayMembers(tokens []tok.Token) (members []ast.Expression, remainder []tok
 	return members, remainder, nil
 }
 
-// fixed_size_array_literal = fixed_size_array ( "[" array_members "]" | block ) .
-
-func FixedSizeArrayLiteral(tokens []tok.Token) (arr *ast.FixedSizeArrayLiteral, remainder []tok.Token, err error) {
-	var arrayType *ast.FixedSizeArrayType
-	if arrayType, remainder, err = fixedSizeArrayLiteralType(tokens); err != nil {
-		return nil, remainder, err
-	}
-
-	if functionBlock, remainder2, blockErr := FunctionBlock(remainder); blockErr == nil {
-		return ast.NewFixedSizeArrayLiteral(arrayType, nil, functionBlock), remainder2, nil
+func arrayLiteralWithType(arrayType ast.ArrayLiteralType, tokens []tok.Token) (arr *ast.ArrayLiteral, remainder []tok.Token, err error) {
+	if functionBlock, remainder2, blockErr := FunctionBlock(tokens); blockErr == nil {
+		return ast.NewArrayLiteral(arrayType, nil, functionBlock), remainder2, nil
 	} else if blockErr != ErrNoMatch {
 		return nil, remainder2, blockErr
 	}
 
 	var found bool
-	if remainder, found = OpenBracket(remainder); !found {
+	if remainder, found = OpenBracket(tokens); !found {
 		return nil, tokens, ErrNoMatch
 	}
 
@@ -111,7 +113,7 @@ func FixedSizeArrayLiteral(tokens []tok.Token) (arr *ast.FixedSizeArrayLiteral, 
 		return nil, remainder, errorExpectingTokenType(tok.TokCloseBracket, remainder)
 	}
 
-	return ast.NewFixedSizeArrayLiteral(arrayType, arrayMembers, nil), remainder, nil
+	return ast.NewArrayLiteral(arrayType, arrayMembers, nil), remainder, nil
 }
 
 // fixed_size_array but parsed conservatively so plain array literals like [1, 2, 3]

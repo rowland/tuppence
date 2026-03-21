@@ -16,6 +16,21 @@ _ = [3]Int[1, 2, 3]
 # wrapped fixed-size array block initializer
 _ = [n]Int { |index| index }
 
+# wrapped fixed-size array block initializer with explicit size
+_ = [4]Int { |i| i + 1 }
+
+# wrapped named fixed-size array expression
+_ = IPv4Address[1, 2, 3, 4]
+
+# wrapped named fixed-size array block initializer
+_ = IPv4Address { |i| i + 1 }
+
+# wrapped namespaced fixed-size array expression
+_ = ipv4.Address[1, 2, 3, 4]
+
+# wrapped namespaced fixed-size array block initializer
+_ = ipv4.Address { |i| i + 1 }
+
 # wrapped import expression
 _ = import("math")
 

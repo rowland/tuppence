@@ -66,13 +66,6 @@ func Literal(tokens []tok.Token) (item ast.Literal, remainder []tok.Token, err e
 		return nil, tokens, err
 	}
 
-	fixedSizeArrayLiteral, remainder, err := FixedSizeArrayLiteral(remainder)
-	if err == nil {
-		return fixedSizeArrayLiteral, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, tokens, err
-	}
-
 	arrayLiteral, remainder, err := ArrayLiteral(remainder)
 	if err == nil {
 		return arrayLiteral, remainder, nil

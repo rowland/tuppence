@@ -1340,9 +1340,11 @@ For user-defined types, the ~ operator invokes the not function:
 Tuppence allows creating dynamic arrays with a specified capacity. This ensures memory is preallocated, avoiding frequent resizing.
 
     arr = array(Int, 10)  # Creates a dynamic array of Int with capacity 10
+    evens = array(Int, n) { |i| i * 2 }  # Creates [0, 2, 4, ...] up to n elements
 
   - The first argument is the type of elements.
   - The second argument is the initial capacity (optional, defaults to 0 if omitted).
+  - When a block is provided, it is invoked once per index to produce the initial elements.
 
 The built-in function `array` is joined by `cap` and `len`.
 

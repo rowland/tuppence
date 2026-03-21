@@ -57,4 +57,3 @@ func (s *TupleLiteral) statementNode()                     {}
 func (s *ArrayLiteral) statementNode()                     {}
 func (s *SymbolLiteral) statementNode()                    {}
 func (s *RuneLiteral) statementNode()                      {}
-func (s *FixedSizeArrayLiteral) statementNode()            {}

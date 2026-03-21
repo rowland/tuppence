@@ -46,7 +46,6 @@ var _ FunctionTypeParameterType = &TupleLiteral{}
 var _ FunctionTypeParameterType = &ArrayLiteral{}
 var _ FunctionTypeParameterType = &SymbolLiteral{}
 var _ FunctionTypeParameterType = &RuneLiteral{}
-var _ FunctionTypeParameterType = &FixedSizeArrayLiteral{}
 
 var _ TupleTypeMemberNode = &TupleTypeMember{}
 var _ TupleTypeMemberNode = &LabeledTupleTypeMember{}

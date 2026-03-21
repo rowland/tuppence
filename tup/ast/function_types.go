@@ -50,7 +50,6 @@ func (n *TupleLiteral) functionTypeParameterTypeNode()          {}
 func (n *ArrayLiteral) functionTypeParameterTypeNode()          {}
 func (n *SymbolLiteral) functionTypeParameterTypeNode()         {}
 func (n *RuneLiteral) functionTypeParameterTypeNode()           {}
-func (n *FixedSizeArrayLiteral) functionTypeParameterTypeNode() {}
 
 type Parameter struct {
 	BaseNode

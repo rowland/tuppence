@@ -221,7 +221,7 @@ func TestExpression(t *testing.T) {
 		{
 			name:  "fixed size array literal",
 			input: "[3]Int[1, 2, 3]",
-			want: ast.NewFixedSizeArrayLiteral(
+			want: ast.NewArrayLiteral(
 				ast.NewFixedSizeArrayType(
 					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
 					ast.NewDecimalLiteral("3", 3, nil, 0, 0),
@@ -237,7 +237,7 @@ func TestExpression(t *testing.T) {
 		{
 			name:  "array expression",
 			input: "[1, 2, 3]",
-			want: ast.NewArrayLiteral([]ast.Expression{
+			want: ast.NewArrayLiteral(nil, []ast.Expression{
 				ast.NewDecimalLiteral("1", 1, nil, 0, 0),
 				ast.NewDecimalLiteral("2", 2, nil, 0, 0),
 				ast.NewDecimalLiteral("3", 3, nil, 0, 0),
@@ -246,10 +246,10 @@ func TestExpression(t *testing.T) {
 		{
 			name:  "typed array expression",
 			input: "Int[1, 2]",
-			want: ast.NewArrayLiteral([]ast.Expression{
+			want: ast.NewArrayLiteral(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3), []ast.Expression{
 				ast.NewDecimalLiteral("1", 1, nil, 0, 0),
 				ast.NewDecimalLiteral("2", 2, nil, 0, 0),
-			}, ast.NewTypeIdentifier("Int", nil, 0, 3)),
+			}, nil),
 		},
 		{
 			name:  "labeled tuple expression with symbol values",

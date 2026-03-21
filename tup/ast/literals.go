@@ -18,7 +18,6 @@ func (n *TupleLiteral) literalNode()              {}
 func (n *ArrayLiteral) literalNode()              {}
 func (n *SymbolLiteral) literalNode()             {}
 func (n *RuneLiteral) literalNode()               {}
-func (n *FixedSizeArrayLiteral) literalNode()     {}
 
 // number = float_literal | integer_literal .
 
