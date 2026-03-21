@@ -1,5 +1,7 @@
 package ast
 
+import "strings"
+
 type GenericTypeParam struct {
 	BaseNode
 	Name       string // The name of the type parameter
@@ -21,68 +23,63 @@ func (t *GenericTypeParam) String() string {
 	return t.Name
 }
 
-type FunctionDeclaration struct {
+// function_declaration_lhs = function_identifier [ function_parameter_types ] .
+
+type FunctionDeclarationLHS struct {
 	BaseNode
-	Name           *FunctionIdentifier // The name of the function
-	TypeParameters []*GenericTypeParam // Type parameters for generic functions
-	Parameters     []Node              // Function parameters
-	ReturnType     Node                // The return type
-	Body           Node                // The function body
-	Annotations    []Annotation        // Annotations applied to the function
-	IsLocal        bool                // Whether this is a local function
+	Name           *FunctionIdentifier
+	ParameterTypes *FunctionParameterTypes
 }
 
-func NewFunctionDeclaration(name *FunctionIdentifier, typeParams []*GenericTypeParam, params []Node, returnType Node, body Node, annotations []Annotation, isLocal bool) *FunctionDeclaration {
-	return &FunctionDeclaration{
-		BaseNode:       BaseNode{Type: NodeFunctionDeclaration},
+func NewFunctionDeclarationLHS(name *FunctionIdentifier, parameterTypes *FunctionParameterTypes) *FunctionDeclarationLHS {
+	return &FunctionDeclarationLHS{
+		BaseNode:       BaseNode{Type: NodeFunctionDeclarationLHS},
 		Name:           name,
-		TypeParameters: typeParams,
-		Parameters:     params,
-		ReturnType:     returnType,
-		Body:           body,
-		Annotations:    annotations,
-		IsLocal:        isLocal,
+		ParameterTypes: parameterTypes,
+	}
+}
+
+func (f *FunctionDeclarationLHS) String() string {
+	var result strings.Builder
+	result.WriteString(f.Name.String())
+	if f.ParameterTypes != nil {
+		result.WriteString(f.ParameterTypes.String())
+	}
+	return result.String()
+}
+
+// function_declaration = annotations function_declaration_lhs "=" function_declaration_type block .
+
+type FunctionDeclaration struct {
+	BaseNode
+	Annotations []Annotation
+	LHS         *FunctionDeclarationLHS
+	Type        *FunctionDeclarationType
+	Body        *Block
+}
+
+func NewFunctionDeclaration(annotations []Annotation, lhs *FunctionDeclarationLHS, functionType *FunctionDeclarationType, body *Block) *FunctionDeclaration {
+	return &FunctionDeclaration{
+		BaseNode:    BaseNode{Type: NodeFunctionDeclaration},
+		Annotations: annotations,
+		LHS:         lhs,
+		Type:        functionType,
+		Body:        body,
 	}
 }
 
 func (d *FunctionDeclaration) String() string {
-	result := ""
+	var result strings.Builder
 	for _, a := range d.Annotations {
-		result += a.String() + "\n"
+		result.WriteString(a.String())
+		result.WriteString("\n")
 	}
-
-	if d.IsLocal {
-		result += "local "
-	}
-
-	result += "fn " + d.Name.String()
-
-	if len(d.TypeParameters) > 0 {
-		result += "<"
-		for i, param := range d.TypeParameters {
-			if i > 0 {
-				result += ", "
-			}
-			result += param.String()
-		}
-		result += ">"
-	}
-
-	result += "("
-	for i, param := range d.Parameters {
-		if i > 0 {
-			result += ", "
-		}
-		result += param.String()
-	}
-	result += ")"
-
-	if d.ReturnType != nil {
-		result += " -> " + d.ReturnType.String()
-	}
-
-	result += " " + d.Body.String()
-	return result
+	result.WriteString(d.LHS.String())
+	result.WriteString(" = ")
+	result.WriteString(d.Type.String())
+	result.WriteString(" ")
+	result.WriteString(d.Body.String())
+	return result.String()
 }
 
 type ErrorDeclaration struct {

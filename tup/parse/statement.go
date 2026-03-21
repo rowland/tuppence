@@ -38,12 +38,12 @@ func Statement(tokens []tok.Token) (stmt ast.Statement, remainder []tok.Token, e
 	// 	return nil, remainder, err
 	// }
 
-	// var functionDeclaration *ast.FunctionDeclaration
-	// if functionDeclaration, remainder, err = FunctionDeclaration(tokens); err == nil {
-	// 	return functionDeclaration, remainder, nil
-	// } else if err != ErrNoMatch {
-	// 	return nil, remainder, err
-	// }
+	var functionDeclaration *ast.FunctionDeclaration
+	if functionDeclaration, remainder, err = FunctionDeclaration(tokens); err == nil {
+		return functionDeclaration, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
 
 	var compoundAssignment *ast.CompoundAssignment
 	if compoundAssignment, remainder, err = CompoundAssignment(tokens); err == nil {

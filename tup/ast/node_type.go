@@ -38,6 +38,7 @@ const (
 	NodeEnumMembers
 	NodeErrorDeclaration
 	NodeFunctionDeclaration
+	NodeFunctionDeclarationLHS
 	NodeGenericTypeParam
 	NodeTypeDeclaration
 	NodeTypeDeclarationLHS
@@ -239,6 +240,7 @@ var NodeTypes = map[NodeType]string{
 	NodeEnumMember:          "EnumMember",
 	NodeErrorDeclaration:    "ErrorDeclaration",
 	NodeFunctionDeclaration: "FunctionDeclaration",
+	NodeFunctionDeclarationLHS: "FunctionDeclarationLHS",
 	NodeGenericTypeParam:    "GenericTypeParam",
 	NodeTypeDeclaration:     "TypeDeclaration",
 	NodeTypeDeclarationLHS:  "TypeDeclarationLHS",

@@ -8,16 +8,18 @@ import "strings"
 type FunctionDeclarationType struct {
 	BaseNode
 	HasSideEffects bool // Whether the function has side effects (fx vs fn)
-	Parameters     Node // The function parameters
+	Parameters     []FunctionTypeParameter
 	ReturnType     Node // The return type (may be nil)
+	InferredReturn bool
 }
 
-func NewFunctionDeclarationType(hasSideEffects bool, parameters Node, returnType Node) *FunctionDeclarationType {
+func NewFunctionDeclarationType(hasSideEffects bool, parameters []FunctionTypeParameter, returnType Node, inferredReturn bool) *FunctionDeclarationType {
 	return &FunctionDeclarationType{
 		BaseNode:       BaseNode{Type: NodeFunctionDeclarationType},
 		HasSideEffects: hasSideEffects,
 		Parameters:     parameters,
 		ReturnType:     returnType,
+		InferredReturn: inferredReturn,
 	}
 }
 
@@ -29,9 +31,20 @@ func (f *FunctionDeclarationType) String() string {
 		result.WriteString("fn")
 	}
 
-	result.WriteString(f.Parameters.String())
+	result.WriteString("(")
+	for i, param := range f.Parameters {
+		if i > 0 {
+			result.WriteString(", ")
+		}
+		result.WriteString(param.String())
+	}
+	result.WriteString(")")
 
-	if f.ReturnType != nil {
+	if f.InferredReturn {
+		result.WriteString(" ")
+		result.WriteString("_")
+	} else if f.ReturnType != nil {
+		result.WriteString(" ")
 		result.WriteString(f.ReturnType.String())
 	}
 

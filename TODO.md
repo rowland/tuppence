@@ -118,8 +118,8 @@
                 - [ ] type_qualified_function_declaration
                     - [x] annotations
                     - [x] type_identifier
-                    - [ ] function_declaration_lhs
-                    - [ ] function_declaration_type
+                    - [x] function_declaration_lhs
+                    - [x] function_declaration_type
                         - [ ] labeled_parameters
                         - [ ] parameters
                             - [ ] parameter
@@ -155,7 +155,7 @@
                 - [x] type_declaration
                     - [x] type_declaration_lhs
                     - [x] type_declaration_rhs
-                - [ ] function_declaration
+                - [x] function_declaration
                 - [x] compound_assignment
                 - [x] assignment
 

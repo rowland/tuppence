@@ -1,0 +1,19 @@
+# simple pure function declaration
+sqr = fn(i: Int) Int {
+    i * i
+}
+
+# pure function declaration with inferred return
+fiver = fn() _ {
+    five
+}
+
+# effectful function declaration with omitted return
+log = fx(message: String) {
+    message
+}
+
+# function declaration with selector types
+read[String] = fn(handle: Handle) _ {
+    handle
+}
