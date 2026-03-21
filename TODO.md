@@ -129,7 +129,7 @@
                                     - [x] fixed_size_array
                                         - [x] array_type
                                     - [x] dynamic_array
-                                    - [ ] function_type
+                                    - [x] function_type
                                     - [x] tuple_type
                                     - [x] error_tuple
                                     - [x] generic_type
@@ -192,9 +192,9 @@
 - [ ] for_in_header
 - [ ] iterable
 - [ ] function_call_context
-- [ ] function_type_declaration
-- [ ] function_type_declaration_lhs
-- [ ] function_type_identifier
+- [x] function_type_declaration
+- [x] function_type_declaration_lhs
+- [x] function_type_identifier
 - [x] hex_digit
 - [ ] if_expression
 - [x] import_expression

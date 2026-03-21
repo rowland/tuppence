@@ -493,6 +493,7 @@ symbol_literal = ":" identifier .
 top_level_item = ( type_qualified_function_declaration
                  | type_qualified_declaration
                  | type_declaration
+                 | function_type_declaration
                  | function_declaration
                  | assignment
                  | export_declaration

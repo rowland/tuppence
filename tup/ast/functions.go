@@ -79,38 +79,33 @@ func (f *FunctionParameterTypes) String() string {
 // FunctionTypeDeclaration represents a function type declaration
 type FunctionTypeDeclaration struct {
 	BaseNode
-	Name       *FunctionIdentifier      // The function name
-	TypeParams []*GenericTypeParam      // Type parameters if generic
-	Type       *FunctionDeclarationType // The function type
+	Name           *TypeIdentifier
+	ParameterTypes *FunctionParameterTypes
+	Type           *FunctionType
 }
 
-// NewFunctionTypeDeclaration creates a new FunctionTypeDeclaration node
-func NewFunctionTypeDeclaration(name *FunctionIdentifier, typeParams []*GenericTypeParam, functionType *FunctionDeclarationType) *FunctionTypeDeclaration {
+func NewFunctionTypeDeclaration(
+	name *TypeIdentifier,
+	parameterTypes *FunctionParameterTypes,
+	functionType *FunctionType,
+) *FunctionTypeDeclaration {
 	return &FunctionTypeDeclaration{
-		BaseNode:   BaseNode{Type: NodeFunctionTypeDeclaration},
-		Name:       name,
-		TypeParams: typeParams,
-		Type:       functionType,
+		BaseNode:       BaseNode{Type: NodeFunctionTypeDeclaration},
+		Name:           name,
+		ParameterTypes: parameterTypes,
+		Type:           functionType,
 	}
 }
 
-// String returns a textual representation of the function type declaration
 func (f *FunctionTypeDeclaration) String() string {
 	var result strings.Builder
 	result.WriteString(f.Name.String())
 
-	if len(f.TypeParams) > 0 {
-		result.WriteString("<")
-		for i, param := range f.TypeParams {
-			if i > 0 {
-				result.WriteString(", ")
-			}
-			result.WriteString(param.String())
-		}
-		result.WriteString(">")
+	if f.ParameterTypes != nil {
+		result.WriteString(f.ParameterTypes.String())
 	}
 
-	result.WriteString(": ")
+	result.WriteString(" = ")
 	result.WriteString(f.Type.String())
 	return result.String()
 }

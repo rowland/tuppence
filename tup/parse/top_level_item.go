@@ -8,6 +8,7 @@ import (
 // top_level_item = ( type_qualified_function_declaration
 // 	                | type_qualified_declaration
 // 	                | type_declaration
+// 	                | function_type_declaration
 // 	                | function_declaration
 // 	                | assignment
 // 	                | export_declaration
@@ -34,6 +35,13 @@ func TopLevelItem(tokens []tok.Token) (item ast.TopLevelItem, remainder []tok.To
 		errors = append(errors, err)
 	} else if td != nil {
 		return td, remainder, nil
+	}
+
+	var ftd *ast.FunctionTypeDeclaration
+	if ftd, remainder, err = FunctionTypeDeclaration(tokens); err != nil {
+		errors = append(errors, err)
+	} else if ftd != nil {
+		return ftd, remainder, nil
 	}
 
 	var fd *ast.FunctionDeclaration

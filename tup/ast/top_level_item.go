@@ -3,6 +3,7 @@ package ast
 // top_level_item = ( type_qualified_function_declaration
 //                  | type_qualified_declaration
 //                  | type_declaration
+//                  | function_type_declaration
 //                  | function_declaration
 //                  | assignment
 //                  | export_declaration
@@ -15,6 +16,7 @@ type TopLevelItem interface {
 
 func (n *Assignment) topLevelItemNode()                       {}
 func (n *FunctionDeclaration) topLevelItemNode()              {}
+func (n *FunctionTypeDeclaration) topLevelItemNode()          {}
 func (n *TypeDeclaration) topLevelItemNode()                  {}
 func (n *TypeQualifiedDeclaration) topLevelItemNode()         {}
 func (n *TypeQualifiedFunctionDeclaration) topLevelItemNode() {}
