@@ -38,6 +38,24 @@ func (e *ExportFunctionDeclaration) String() string {
 	return strings.Replace(e.Function.String(), " = ", ": ", 1)
 }
 
+// export_function_type_declaration = function_type_declaration_lhs ":" function_type .
+
+type ExportFunctionTypeDeclaration struct {
+	BaseNode
+	FunctionType *FunctionTypeDeclaration
+}
+
+func NewExportFunctionTypeDeclaration(functionType *FunctionTypeDeclaration) *ExportFunctionTypeDeclaration {
+	return &ExportFunctionTypeDeclaration{
+		BaseNode:     BaseNode{Type: NodeExportFunctionTypeDeclaration},
+		FunctionType: functionType,
+	}
+}
+
+func (e *ExportFunctionTypeDeclaration) String() string {
+	return strings.Replace(e.FunctionType.String(), " = ", ": ", 1)
+}
+
 // export_type_declaration = type_declaration_lhs ":" type_declaration_rhs .
 
 type ExportTypeDeclaration struct {

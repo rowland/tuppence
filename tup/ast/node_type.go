@@ -49,6 +49,7 @@ const (
 	NodeExportAssignment
 	NodeExportDeclaration
 	NodeExportFunctionDeclaration
+	NodeExportFunctionTypeDeclaration
 	NodeExportTypeDeclaration
 	NodeExportTypeQualifiedDeclaration
 	NodeExportTypeQualifiedFunctionDeclaration
@@ -253,6 +254,7 @@ var NodeTypes = map[NodeType]string{
 	NodeExportAssignment:                       "ExportAssignment",
 	NodeExportDeclaration:                      "ExportDeclaration",
 	NodeExportFunctionDeclaration:              "ExportFunctionDeclaration",
+	NodeExportFunctionTypeDeclaration:          "ExportFunctionTypeDeclaration",
 	NodeExportTypeDeclaration:                  "ExportTypeDeclaration",
 	NodeExportTypeQualifiedDeclaration:         "ExportTypeQualifiedDeclaration",
 	NodeExportTypeQualifiedFunctionDeclaration: "ExportTypeQualifiedFunctionDeclaration",

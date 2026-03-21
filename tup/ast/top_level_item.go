@@ -24,6 +24,7 @@ func (n *TypeQualifiedFunctionDeclaration) topLevelItemNode() {}
 // ExportDeclaration
 func (n *ExportTypeQualifiedFunctionDeclaration) topLevelItemNode() {}
 func (n *ExportTypeQualifiedDeclaration) topLevelItemNode()         {}
+func (n *ExportFunctionTypeDeclaration) topLevelItemNode()          {}
 func (n *ExportTypeDeclaration) topLevelItemNode()                  {}
 func (n *ExportFunctionDeclaration) topLevelItemNode()              {}
 func (n *ExportAssignment) topLevelItemNode()                       {}

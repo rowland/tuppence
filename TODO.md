@@ -177,11 +177,11 @@
 - [x] enum_members
 - [x] enum_member_declaration
 - [x] exponent
-- [ ] export_assignment
-- [ ] export_declaration
-- [ ] export_function_declaration
-- [ ] export_function_type_declaration
-- [ ] export_type_declaration
+- [x] export_assignment
+- [x] export_declaration
+- [x] export_function_declaration
+- [x] export_function_type_declaration
+- [x] export_type_declaration
 - [ ] export_type_qualified_declaration
 - [ ] export_type_qualified_function_declaration
 - [x] eol
