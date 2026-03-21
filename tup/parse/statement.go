@@ -45,12 +45,12 @@ func Statement(tokens []tok.Token) (stmt ast.Statement, remainder []tok.Token, e
 	// 	return nil, remainder, err
 	// }
 
-	// var compoundAssignment *ast.CompoundAssignment
-	// if compoundAssignment, remainder, err = CompoundAssignment(tokens); err == nil {
-	// 	return compoundAssignment, remainder, nil
-	// } else if err != ErrNoMatch {
-	// 	return nil, remainder, err
-	// }
+	var compoundAssignment *ast.CompoundAssignment
+	if compoundAssignment, remainder, err = CompoundAssignment(tokens); err == nil {
+		return compoundAssignment, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
 
 	var assignment *ast.Assignment
 	if assignment, remainder, err = Assignment(tokens); err == nil {

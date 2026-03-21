@@ -16,6 +16,7 @@ x, y = (1, 2)
 # block assignment
 value = {
     ready = true
+    total += 1
     ready
 }
 

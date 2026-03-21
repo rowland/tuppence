@@ -157,7 +157,7 @@
                     - [x] type_declaration_lhs
                     - [x] type_declaration_rhs
                 - [ ] function_declaration
-                - [ ] compound_assignment
+                - [x] compound_assignment
                 - [x] assignment
 
 - [x] array_function_call
@@ -239,7 +239,7 @@
 - [x] simple_annotation
 - [ ] step_expression
 - [ ] switch_statement
-- [ ] top_level_item
+- [x] top_level_item
 - [x] tuple_member
 - [x] tuple_members
 - [ ] tuple_pattern

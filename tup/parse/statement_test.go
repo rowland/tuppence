@@ -76,6 +76,15 @@ func TestStatement(t *testing.T) {
 				nil,
 			),
 		},
+		{
+			name:  "compound assignment",
+			input: "x += 1",
+			want: ast.NewCompoundAssignment(
+				ast.NewIdentifier("x", nil, 0, 1),
+				ast.OpPlusEq,
+				ast.NewDecimalLiteral("1", 1, nil, 0, 1),
+			),
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -108,6 +117,15 @@ func TestStatement(t *testing.T) {
 				}
 			case *ast.FunctionCall:
 				got, ok := stmt.(*ast.FunctionCall)
+				if !ok {
+					t.Errorf("Statement(%q) = %T, want %T", test.input, stmt, test.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Statement(%q) = %v, want %v", test.input, got.String(), want.String())
+				}
+			case *ast.CompoundAssignment:
+				got, ok := stmt.(*ast.CompoundAssignment)
 				if !ok {
 					t.Errorf("Statement(%q) = %T, want %T", test.input, stmt, test.want)
 					return

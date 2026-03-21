@@ -142,6 +142,7 @@ const (
 	// Pattern and matching node types
 	NodeArrayPattern
 	NodeAssignment
+	NodeCompoundAssignment
 	NodeLiteralPattern
 	NodeMatchCase
 	NodeMatchExpression
@@ -342,6 +343,7 @@ var NodeTypes = map[NodeType]string{
 	// Pattern and matching node types
 	NodeArrayPattern:      "ArrayPattern",
 	NodeAssignment:        "Assignment",
+	NodeCompoundAssignment: "CompoundAssignment",
 	NodeLiteralPattern:    "LiteralPattern",
 	NodeMatchCase:         "MatchCase",
 	NodeMatchExpression:   "MatchExpression",

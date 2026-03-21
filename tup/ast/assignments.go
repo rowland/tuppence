@@ -154,14 +154,14 @@ func (l *LabeledAssignmentLHS) String() string {
 // CompoundAssignment represents a compound assignment (e.g., x += y)
 type CompoundAssignment struct {
 	BaseNode
-	Left     Node                 // The left operand (target of assignment)
+	Left     *Identifier          // The left operand (target of assignment)
 	Operator CompoundAssignmentOp // The compound assignment operator
-	Right    Node                 // The right operand
+	Right    Expression           // The right operand
 }
 
-func NewCompoundAssignment(left Node, operator CompoundAssignmentOp, right Node) *CompoundAssignment {
+func NewCompoundAssignment(left *Identifier, operator CompoundAssignmentOp, right Expression) *CompoundAssignment {
 	return &CompoundAssignment{
-		BaseNode: BaseNode{Type: NodeCompoundAssignmentOp},
+		BaseNode: BaseNode{Type: NodeCompoundAssignment},
 		Left:     left,
 		Operator: operator,
 		Right:    right,
