@@ -1,0 +1,2 @@
+# type-qualified value declaration
+Person.defaultName = "Brent"

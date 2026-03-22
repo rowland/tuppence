@@ -151,7 +151,7 @@
                             - [x] union_with_error
                             - [x] union_declaration_with_error
                     - [x] block
-                - [ ] type_qualified_declaration
+                - [x] type_qualified_declaration
                 - [x] type_declaration
                     - [x] type_declaration_lhs
                     - [x] type_declaration_rhs
@@ -256,7 +256,7 @@
 ## Punchlist
 
 - [x] continue_expression
-- [ ] type_qualified_declaration
+- [x] type_qualified_declaration
 - [ ] type_qualified_function_declaration
 - [ ] function_call_context
 - [ ] contract_declaration

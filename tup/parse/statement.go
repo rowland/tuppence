@@ -24,12 +24,12 @@ func Statement(tokens []tok.Token) (stmt ast.Statement, remainder []tok.Token, e
 	// 	return nil, remainder, err
 	// }
 
-	// var typeQualifiedDeclaration *ast.TypeQualifiedDeclaration
-	// if typeQualifiedDeclaration, remainder, err = TypeQualifiedDeclaration(tokens); err == nil {
-	// 	return typeQualifiedDeclaration, remainder, nil
-	// } else if err != ErrNoMatch {
-	// 	return nil, remainder, err
-	// }
+	var typeQualifiedDeclaration *ast.TypeQualifiedDeclaration
+	if typeQualifiedDeclaration, remainder, err = TypeQualifiedDeclaration(tokens); err == nil {
+		return typeQualifiedDeclaration, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
 
 	// var typeDeclaration *ast.TypeDeclaration
 	// if typeDeclaration, remainder, err = TypeDeclaration(tokens); err == nil {
