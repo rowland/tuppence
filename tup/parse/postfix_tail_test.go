@@ -46,6 +46,17 @@ func TestPostfixTails(t *testing.T) {
 			),
 		},
 		{
+			name:  "ordinal member access tail",
+			input: ".0",
+			parse: func(tokens []tok.Token) (ast.Expression, []tok.Token, error) {
+				return memberAccessTail(ast.NewIdentifier("pair", nil, 0, 4), tokens)
+			},
+			want: ast.NewMemberAccess(
+				ast.NewIdentifier("pair", nil, 0, 4),
+				ast.NewDecimalLiteral("0", 0, nil, 0, 1),
+			),
+		},
+		{
 			name:  "tuple update tail",
 			input: ".(name: \"Brent\")",
 			parse: func(tokens []tok.Token) (ast.Expression, []tok.Token, error) {

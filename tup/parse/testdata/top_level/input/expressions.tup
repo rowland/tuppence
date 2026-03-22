@@ -52,6 +52,9 @@ _ = !foo.bar.flag
 # wrapped member access chain with indexing
 _ = a.b.c[d]
 
+# wrapped ordinal member access
+_ = pair.0
+
 # wrapped safe indexed access on member chain
 _ = users.list[0]!
 

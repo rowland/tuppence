@@ -282,6 +282,14 @@ func TestExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "ordinal member access",
+			input: "pair.0",
+			want: ast.NewMemberAccess(
+				ast.NewIdentifier("pair", nil, 0, 4),
+				ast.NewDecimalLiteral("0", 0, nil, 0, 1),
+			),
+		},
+		{
 			name:  "safe indexed access on member chain",
 			input: "cache.entries[key]!",
 			want: ast.NewSafeIndexedAccess(
