@@ -96,6 +96,7 @@ const (
 	TokKwFor         // for
 	TokKwIf          // if
 	TokKwIn          // in
+	TokKwInline      // inline
 	TokKwIs          // is
 	TokKwIt          // it
 	TokKwImport      // import
@@ -228,6 +229,7 @@ var TokenTypes = map[TokenType]string{
 	TokKwFor:         "for",
 	TokKwIf:          "if",
 	TokKwIn:          "in",
+	TokKwInline:      "inline",
 	TokKwIs:          "is",
 	TokKwIt:          "it",
 	TokKwImport:      "import",

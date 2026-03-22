@@ -99,11 +99,64 @@ func ForHeader(tokens []tok.Token) (*ast.ForHeader, []tok.Token, error) {
 	return ast.NewForHeader(initializer, condition, stepExpression), remainder, nil
 }
 
-// for_expression = "for" [ for_header | for_in_header ] for_block .
-//
-// This first pass implements the plain for forms using for_header and defers
-// for_in_header to a later change.
+// iterable_header = assignment_lhs "in" iterable .
 
+func IterableHeader(tokens []tok.Token) (*ast.IterableHeader, []tok.Token, error) {
+	loopVar, remainder, err := AssignmentLHS(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	remainder = skipComments(remainder)
+	if peek(remainder).Type != tok.TokKwIn {
+		return nil, remainder, ErrNoMatch
+	}
+	remainder = remainder[1:]
+
+	iterable, remainder, err := Iterable(remainder)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewIterableHeader(loopVar, iterable), remainder, nil
+}
+
+// for_in_header = ( initializer ";" assignment_lhs "in" iterable [ ";" step_expression ] )
+//               | ( assignment_lhs "in" iterable ) .
+
+func ForInHeader(tokens []tok.Token) (*ast.ForInHeader, []tok.Token, error) {
+	if initializer, remainder, err := Initializer(tokens); err == nil {
+		if remainder2, found := SemiColon(remainder); found {
+			iterableHeader, remainder3, err := IterableHeader(remainder2)
+			if err == nil {
+				var stepExpression *ast.StepExpression
+				if remainder4, found := SemiColon(remainder3); found {
+					stepExpression, remainder3, err = StepExpression(remainder4)
+					if err == ErrNoMatch {
+						return nil, remainder3, errorExpecting("step expression", remainder3)
+					} else if err != nil {
+						return nil, remainder3, err
+					}
+				}
+
+				return ast.NewForInHeader(initializer, iterableHeader.LoopVar, iterableHeader.Iterable, stepExpression), remainder3, nil
+			} else if err != ErrNoMatch {
+				return nil, remainder3, err
+			}
+		}
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	iterableHeader, remainder, err := IterableHeader(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewForInHeader(nil, iterableHeader.LoopVar, iterableHeader.Iterable, nil), remainder, nil
+}
+
+// for_expression = "for" [ for_header | for_in_header ] for_block .
 func ForExpression(tokens []tok.Token) (*ast.ForExpression, []tok.Token, error) {
 	remainder := skipTrivia(tokens)
 	if peek(remainder).Type != tok.TokKwFor {
@@ -117,6 +170,16 @@ func ForExpression(tokens []tok.Token) (*ast.ForExpression, []tok.Token, error) 
 		return nil, remainder2, err
 	}
 
+	if header, remainder, err := ForInHeader(remainder); err == nil {
+		forBlock, remainder, err := ForBlock(remainder)
+		if err != nil {
+			return nil, remainder, err
+		}
+		return ast.NewForExpression(header, forBlock), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
 	header, remainder, err := ForHeader(remainder)
 	if err != nil {
 		return nil, remainder, err
@@ -128,4 +191,32 @@ func ForExpression(tokens []tok.Token) (*ast.ForExpression, []tok.Token, error) 
 	}
 
 	return ast.NewForExpression(header, forBlock), remainder, nil
+}
+
+// inline_for_expression = "inline" "for" for_in_header for_block .
+
+func InlineForExpression(tokens []tok.Token) (*ast.InlineForExpression, []tok.Token, error) {
+	remainder := skipTrivia(tokens)
+	if peek(remainder).Type != tok.TokKwInline {
+		return nil, tokens, ErrNoMatch
+	}
+	remainder = remainder[1:]
+
+	remainder = skipTrivia(remainder)
+	if peek(remainder).Type != tok.TokKwFor {
+		return nil, tokens, ErrNoMatch
+	}
+	remainder = remainder[1:]
+
+	header, remainder, err := ForInHeader(remainder)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	forBlock, remainder, err := ForBlock(remainder)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewInlineForExpression(header, forBlock), remainder, nil
 }

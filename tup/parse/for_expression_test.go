@@ -219,6 +219,107 @@ func TestForHeader(t *testing.T) {
 	}
 }
 
+func TestIterableHeader(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.IterableHeader
+		wantErr bool
+	}{
+		{
+			name:  "simple iterable header",
+			input: "i in items",
+			want: ast.NewIterableHeader(
+				ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("i", nil, 0, 1)}, nil),
+				ast.NewIterable(ast.NewIdentifier("items", nil, 0, 5)),
+			),
+		},
+		{
+			name:  "tuple iterable header",
+			input: "a, b in pairs",
+			want: ast.NewIterableHeader(
+				ast.NewOrdinalAssignmentLHS([]*ast.Identifier{
+					ast.NewIdentifier("a", nil, 0, 1),
+					ast.NewIdentifier("b", nil, 0, 1),
+				}, nil),
+				ast.NewIterable(ast.NewIdentifier("pairs", nil, 0, 5)),
+			),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"IterableHeader", IterableHeader, StringerCheck[*ast.IterableHeader])
+		})
+	}
+}
+
+func TestForInHeader(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.ForInHeader
+		wantErr bool
+	}{
+		{
+			name:  "simple for-in header",
+			input: "i in items",
+			want: ast.NewForInHeader(
+				nil,
+				ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("i", nil, 0, 1)}, nil),
+				ast.NewIterable(ast.NewIdentifier("items", nil, 0, 5)),
+				nil,
+			),
+		},
+		{
+			name:  "for-in header with initializer",
+			input: "acc = 0; i in items",
+			want: ast.NewForInHeader(
+				ast.NewInitializer(
+					ast.NewAssignment(
+						ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("acc", nil, 0, 3)}, nil),
+						ast.Immutable,
+						ast.NewDecimalLiteral("0", 0, nil, 0, 1),
+					),
+				),
+				ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("i", nil, 0, 1)}, nil),
+				ast.NewIterable(ast.NewIdentifier("items", nil, 0, 5)),
+				nil,
+			),
+		},
+		{
+			name:  "for-in header with initializer and step",
+			input: "acc = 0; i in items; acc + i",
+			want: ast.NewForInHeader(
+				ast.NewInitializer(
+					ast.NewAssignment(
+						ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("acc", nil, 0, 3)}, nil),
+						ast.Immutable,
+						ast.NewDecimalLiteral("0", 0, nil, 0, 1),
+					),
+				),
+				ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("i", nil, 0, 1)}, nil),
+				ast.NewIterable(ast.NewIdentifier("items", nil, 0, 5)),
+				ast.NewStepExpression(
+					ast.NewAddSubExpression(
+						ast.NewIdentifier("acc", nil, 0, 3),
+						ast.OpAdd,
+						ast.NewIdentifier("i", nil, 0, 1),
+					),
+				),
+			),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"ForInHeader", ForInHeader, StringerCheck[*ast.ForInHeader])
+		})
+	}
+}
+
 func TestForExpression(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -268,12 +369,80 @@ func TestForExpression(t *testing.T) {
 				),
 			),
 		},
+		{
+			name:  "for-in loop with initializer",
+			input: "for acc = 0; i in items { acc + i }",
+			want: ast.NewForExpression(
+				ast.NewForInHeader(
+					ast.NewInitializer(
+						ast.NewAssignment(
+							ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("acc", nil, 0, 3)}, nil),
+							ast.Immutable,
+							ast.NewDecimalLiteral("0", 0, nil, 0, 1),
+						),
+					),
+					ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("i", nil, 0, 1)}, nil),
+					ast.NewIterable(ast.NewIdentifier("items", nil, 0, 5)),
+					nil,
+				),
+				ast.NewForBlock(
+					[]ast.Statement{},
+					ast.NewAddSubExpression(
+						ast.NewIdentifier("acc", nil, 0, 3),
+						ast.OpAdd,
+						ast.NewIdentifier("i", nil, 0, 1),
+					),
+				),
+			),
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
 				"ForExpression", ForExpression, StringerCheck[*ast.ForExpression])
+		})
+	}
+}
+
+func TestInlineForExpression(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.InlineForExpression
+		wantErr bool
+	}{
+		{
+			name:  "inline for with initializer",
+			input: "inline for acc = (); name, value in some_tuple { acc }",
+			want: ast.NewInlineForExpression(
+				ast.NewForInHeader(
+					ast.NewInitializer(
+						ast.NewAssignment(
+							ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("acc", nil, 0, 3)}, nil),
+							ast.Immutable,
+							ast.NewTupleLiteral(false, []*ast.TupleMember{}),
+						),
+					),
+					ast.NewOrdinalAssignmentLHS([]*ast.Identifier{
+						ast.NewIdentifier("name", nil, 0, 4),
+						ast.NewIdentifier("value", nil, 0, 5),
+					}, nil),
+					ast.NewIterable(ast.NewIdentifier("some_tuple", nil, 0, 10)),
+					nil,
+				),
+				ast.NewForBlock(
+					[]ast.Statement{},
+					ast.NewIdentifier("acc", nil, 0, 3),
+				),
+			),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"InlineForExpression", InlineForExpression, StringerCheck[*ast.InlineForExpression])
 		})
 	}
 }

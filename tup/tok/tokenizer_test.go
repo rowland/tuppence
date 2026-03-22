@@ -291,7 +291,7 @@ func TestIdentifiers(t *testing.T) {
 
 func TestKeywords(t *testing.T) {
 	testTokenizeSeq(t,
-		"array break continue contract else enum error fn for fx if in it "+
+		"array break continue contract else enum error fn for fx if in inline it "+
 			"import mut return switch try try_break try_continue type typeof union",
 		[]TokenType{
 			TokKwArray,
@@ -306,6 +306,7 @@ func TestKeywords(t *testing.T) {
 			TokKwFx,
 			TokKwIf,
 			TokKwIn,
+			TokKwInline,
 			TokKwIt,
 			TokKwImport,
 			TokKwMut,

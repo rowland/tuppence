@@ -185,10 +185,10 @@
 - [ ] export_type_qualified_declaration
 - [ ] export_type_qualified_function_declaration
 - [x] eol
-- [ ] for_block
+- [x] for_block
 - [x] for_expression
-- [ ] for_header
-- [ ] for_in_header
+- [x] for_header
+- [x] for_in_header
 - [x] iterable
 - [ ] function_call_context
 - [x] function_type_declaration
@@ -202,9 +202,9 @@
 - [x] index
 - [x] indexed_access_tail
 - [x] initializer
-- [ ] inline_for_expression
+- [x] inline_for_expression
 - [ ] interpolation
-- [ ] iterable
+- [x] iterable
 - [ ] iterable_header
 - [x] labeled_parameter
 - [ ] labeled_pattern

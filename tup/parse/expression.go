@@ -523,7 +523,11 @@ func postfixBaseExpressionWithRange(tokens []tok.Token, includeRange bool) (expr
 		return nil, remainder, err
 	}
 
-	// inline_for_expression
+	if inlineForExpression, remainder, err := InlineForExpression(tokens); err == nil {
+		return inlineForExpression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
 
 	if arrayFunctionCall, remainder, err := ArrayFunctionCall(tokens); err == nil {
 		return arrayFunctionCall, remainder, nil

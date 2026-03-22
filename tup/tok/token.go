@@ -19,6 +19,7 @@ var reservedWords = map[string]TokenType{
 	"for":          TokKwFor,
 	"if":           TokKwIf,
 	"in":           TokKwIn,
+	"inline":       TokKwInline,
 	"is":           TokKwIs,
 	"it":           TokKwIt,
 	"import":       TokKwImport,
