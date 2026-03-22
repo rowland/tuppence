@@ -30,7 +30,7 @@
         - [x] unicode_escape_sequence
     - [x] interpolated_string_literal
     - [x] raw_string_literal
-    - [ ] multi_line_string_literal
+    - [x] multi_line_string_literal
     - [x] tuple_literal
     - [x] array_literal
     - [x] symbol_literal
@@ -168,7 +168,7 @@
 - [x] comment
 - [x] condition
 - [x] constant
-- [ ] content_line
+- [x] content_line
 - [x] continue_expression
 - [x] decimal_digit
 - [ ] structured_match
@@ -197,8 +197,8 @@
 - [x] hex_digit
 - [x] if_expression
 - [x] import_expression
-- [ ] indented_closing
-- [ ] indented_line
+- [x] indented_closing
+- [x] indented_line
 - [x] index
 - [x] indexed_access_tail
 - [x] initializer
@@ -214,7 +214,7 @@
 - [x] labeled_tuple_members
 - [x] labeled_tuple_type_member
 - [x] labeled_tuple_type_members
-- [ ] leading_whitespace
+- [x] leading_whitespace
 - [x] letter
 - [ ] list_match
 - [x] lowercase_letter
@@ -224,7 +224,7 @@
 - [x] meta_expression
 - [ ] module
 - [x] nonzero_digit
-- [ ] not_eol
+- [x] not_eol
 - [x] octal_digit
 - [ ] pattern
 - [ ] pattern_match
@@ -261,7 +261,7 @@
 - [x] function_call_context
 - [x] interpolated_string_literal
 - [x] interpolation
-- [ ] multi_line_string_literal
+- [x] multi_line_string_literal
 - [ ] content_line
 - [ ] indented_line
 - [ ] indented_closing

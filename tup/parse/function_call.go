@@ -5,7 +5,7 @@ import (
 	"github.com/rowland/tuppence/tup/tok"
 )
 
-// function_call_tail = [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
+// function_call = callable_expression function_call_tail { function_call_tail } .
 
 func FunctionCall(tokens []tok.Token) (expr *ast.FunctionCall, remainder []tok.Token, err error) {
 	var function ast.Expression

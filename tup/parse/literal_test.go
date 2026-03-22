@@ -33,7 +33,7 @@ func TestLiteral(t *testing.T) {
 		{"interpolated string literal", `"Hello \(name)!"`, ast.NodeInterpolatedStringLiteral, false},
 
 		// multi line string
-		// {"multi line string literal", "`hello\nworld`", ast.NodeMultiLineStringLiteral, false},
+		{"multi line string literal", "```\nhello\nworld\n```", ast.NodeMultiLineStringLiteral, false},
 
 		// tuple
 		{"tuple literal", "(1, 2, 3)", ast.NodeTupleLiteral, false},

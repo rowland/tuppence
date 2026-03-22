@@ -98,15 +98,15 @@ func (i *InterpolatedStringLiteral) String() string {
 // MultiLineStringLiteral represents a multi-line string literal with optional processor
 type MultiLineStringLiteral struct {
 	BaseNode
-	Lines     []string
-	Processor *FunctionCall
+	Contents  *InterpolatedStringLiteral
+	Processor *FunctionCallContext
 }
 
 // NewMultiLineStringLiteral creates a new MultiLineStringLiteral node
-func NewMultiLineStringLiteral(lines []string, processor *FunctionCall) *MultiLineStringLiteral {
+func NewMultiLineStringLiteral(contents *InterpolatedStringLiteral, processor *FunctionCallContext) *MultiLineStringLiteral {
 	return &MultiLineStringLiteral{
 		BaseNode:  BaseNode{Type: NodeMultiLineStringLiteral},
-		Lines:     lines,
+		Contents:  contents,
 		Processor: processor,
 	}
 }
@@ -119,9 +119,10 @@ func (m *MultiLineStringLiteral) String() string {
 		builder.WriteString(m.Processor.String())
 	}
 	builder.WriteString("\n")
-	for _, line := range m.Lines {
-		builder.WriteString(line)
-		builder.WriteString("\n")
+	if m.Contents != nil {
+		for _, part := range m.Contents.Parts {
+			builder.WriteString(part.String())
+		}
 	}
 	builder.WriteString("```")
 	return builder.String()

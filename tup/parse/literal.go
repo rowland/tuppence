@@ -50,12 +50,11 @@ func Literal(tokens []tok.Token) (item ast.Literal, remainder []tok.Token, err e
 		return nil, tokens, err
 	}
 
-	// multiLineStringLiteral, remainder, err := MultiLineStringLiteral(remainder)
-	// if err == nil {
-	// 	return multiLineStringLiteral, remainder, nil
-	// } else if err != ErrNoMatch {
-	// 	return nil, tokens, err
-	// }
+	if multiLineStringLiteral, remainder, err := MultiLineStringLiteral(remainder); err == nil {
+		return multiLineStringLiteral, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, tokens, err
+	}
 
 	tupleLiteral, remainder, err := TupleLiteral(remainder)
 	if err == nil {

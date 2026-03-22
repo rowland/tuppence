@@ -7,6 +7,33 @@ _ = :ok
 # wrapped interpolated string literal
 _ = "Hello \(name)!"
 
+# wrapped multi-line string literal
+_ = ```
+    This text
+    will have
+    leading whitespace
+    removed.
+```
+
+# wrapped multi-line string literal with interpolation
+_ = ```
+    Girls: \(girls.join(", "))
+    Boys: \(boys.join(", "))
+```
+
+# wrapped multi-line string literal with interpolation spanning lines
+_ = ```
+    Value: \(
+        a +
+        b
+    )
+```
+
+# wrapped multi-line string literal with processor
+_ = ```mustache(context)
+    Hello, {{name}}
+```
+
 # wrapped tuple expression
 _ = (a: :x, b: :y)
 
