@@ -101,6 +101,18 @@ func TestBlock(t *testing.T) {
 			),
 		},
 		{
+			name:  "block with bare continue before final expression",
+			input: "{ continue\nx }",
+			want: ast.NewBlock(
+				ast.NewBlockBody(
+					[]ast.Statement{
+						ast.NewContinueExpression(nil),
+					},
+					ast.NewIdentifier("x", nil, 0, 1),
+				),
+			),
+		},
+		{
 			name:    "block ending with assignment",
 			input:   "{ x = 1 }",
 			want:    nil,

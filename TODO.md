@@ -90,10 +90,10 @@
 - [x] prec4_expression -> add_sub_expression
 - [x] prec5_expression -> mul_div_expression
 - [x] prec6_expression -> pow_expression
-- [.] primary_expression
+- [x] primary_expression
 - [x] try_expression
 - [x] type_reference
-- [.] unary_expression
+- [x] unary_expression
 - [x] function_call
     - [x] function_parameter_types
         - [x] local_type_reference
@@ -103,7 +103,7 @@
             - [x] labeled_argument
         - [x] arguments
             - [x] argument
-                - [.] expression
+                - [x] expression
                 - [x] spread_argument
         - [x] partial_application
     - [x] function_block
@@ -169,7 +169,7 @@
 - [x] condition
 - [x] constant
 - [ ] content_line
-- [ ] continue_expression
+- [x] continue_expression
 - [x] decimal_digit
 - [ ] structured_match
 - [x] else_block
@@ -252,3 +252,34 @@
 - [x] type_parameters
 - [x] uppercase_letter
 - [x] negatable_expression
+
+## Punchlist
+
+- [x] continue_expression
+- [ ] type_qualified_declaration
+- [ ] type_qualified_function_declaration
+- [ ] function_call_context
+- [ ] contract_declaration
+- [ ] contract_members
+- [ ] contract_member
+- [ ] contract_function
+- [ ] contract_field
+- [ ] switch_statement
+- [ ] case_block
+- [ ] pattern
+- [ ] pattern_match
+- [ ] structured_match
+- [ ] tuple_pattern
+- [ ] array_pattern
+- [ ] list_match
+- [ ] labeled_pattern
+- [ ] match_element
+- [ ] match_condition
+- [ ] interpolated_string_literal
+- [ ] multi_line_string_literal
+- [ ] interpolation
+- [ ] content_line
+- [ ] indented_line
+- [ ] indented_closing
+- [ ] leading_whitespace
+- [ ] not_eol

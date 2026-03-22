@@ -102,6 +102,18 @@ func TestExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "bare continue expression",
+			input: "continue",
+			want:  ast.NewContinueExpression(nil),
+		},
+		{
+			name:  "continue expression with value",
+			input: "continue i",
+			want: ast.NewContinueExpression(
+				ast.NewIdentifier("i", nil, 0, 1),
+			),
+		},
+		{
 			name:  "type constructor call",
 			input: `Person(name: "Brent")`,
 			want: ast.NewTypeConstructorCall(

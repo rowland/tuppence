@@ -91,6 +91,12 @@ _ = for i = 0 {
     i + 1
 }
 
+# wrapped for expression with continue in if
+_ = for i = 0; i < 10 {
+    if i % 2 == 0 { continue i + 1 }
+    i + 1
+}
+
 # wrapped for-in expression
 _ = for acc = 0; i in items { acc + i }
 

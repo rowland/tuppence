@@ -84,10 +84,10 @@ func (b *BreakExpression) String() string {
 
 type ContinueExpression struct {
 	BaseNode
-	Expression Node // Optional expression (may be nil)
+	Expression Expression // Optional expression (may be nil)
 }
 
-func NewContinueExpression(expression Node) *ContinueExpression {
+func NewContinueExpression(expression Expression) *ContinueExpression {
 	return &ContinueExpression{
 		BaseNode:   BaseNode{Type: NodeContinueExpression},
 		Expression: expression,
