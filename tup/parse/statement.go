@@ -17,12 +17,12 @@ import (
 func Statement(tokens []tok.Token) (stmt ast.Statement, remainder []tok.Token, err error) {
 	// fmt.Println("Statement", tok.Types(tokens))
 
-	// var typeQualifiedFunctionDeclaration *ast.TypeQualifiedFunctionDeclaration
-	// if typeQualifiedFunctionDeclaration, remainder, err = TypeQualifiedFunctionDeclaration(tokens); err == nil {
-	// 	return typeQualifiedFunctionDeclaration, remainder, nil
-	// } else if err != ErrNoMatch {
-	// 	return nil, remainder, err
-	// }
+	var typeQualifiedFunctionDeclaration *ast.TypeQualifiedFunctionDeclaration
+	if typeQualifiedFunctionDeclaration, remainder, err = TypeQualifiedFunctionDeclaration(tokens); err == nil {
+		return typeQualifiedFunctionDeclaration, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
 
 	var typeQualifiedDeclaration *ast.TypeQualifiedDeclaration
 	if typeQualifiedDeclaration, remainder, err = TypeQualifiedDeclaration(tokens); err == nil {

@@ -115,7 +115,7 @@
                     - [x] rename_type
         - [.] block_body
             - [ ] statement
-                - [ ] type_qualified_function_declaration
+                - [x] type_qualified_function_declaration
                     - [x] annotations
                     - [x] type_identifier
                     - [x] function_declaration_lhs
@@ -257,7 +257,7 @@
 
 - [x] continue_expression
 - [x] type_qualified_declaration
-- [ ] type_qualified_function_declaration
+- [x] type_qualified_function_declaration
 - [ ] function_call_context
 - [ ] contract_declaration
 - [ ] contract_members
