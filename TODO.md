@@ -182,8 +182,8 @@
 - [x] export_function_declaration
 - [x] export_function_type_declaration
 - [x] export_type_declaration
-- [ ] export_type_qualified_declaration
-- [ ] export_type_qualified_function_declaration
+- [x] export_type_qualified_declaration
+- [x] export_type_qualified_function_declaration
 - [x] eol
 - [x] for_block
 - [x] for_expression
@@ -262,11 +262,11 @@
 - [x] interpolated_string_literal
 - [x] interpolation
 - [x] multi_line_string_literal
-- [ ] content_line
-- [ ] indented_line
-- [ ] indented_closing
-- [ ] leading_whitespace
-- [ ] not_eol
+- [x] content_line
+- [x] indented_line
+- [x] indented_closing
+- [x] leading_whitespace
+- [x] not_eol
 - [ ] contract_declaration
 - [ ] contract_members
 - [ ] contract_member

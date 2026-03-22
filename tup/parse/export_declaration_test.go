@@ -164,6 +164,86 @@ func TestExportTypeDeclaration(t *testing.T) {
 	}
 }
 
+func TestExportTypeQualifiedDeclaration(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.ExportTypeQualifiedDeclaration
+		wantErr bool
+	}{
+		{
+			name:  "simple export type qualified declaration",
+			input: "Person.name: \"Brent\"",
+			want: ast.NewExportTypeQualifiedDeclaration(
+				ast.NewTypeQualifiedDeclaration(
+					ast.NewTypeIdentifier("Person", nil, 0, 6),
+					ast.NewAssignment(
+						ast.NewOrdinalAssignmentLHS([]*ast.Identifier{
+							ast.NewIdentifier("name", nil, 0, 4),
+						}, nil),
+						ast.Immutable,
+						ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7),
+					),
+				),
+			),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"ExportTypeQualifiedDeclaration", ExportTypeQualifiedDeclaration, StringerCheck[*ast.ExportTypeQualifiedDeclaration])
+		})
+	}
+}
+
+func TestExportTypeQualifiedFunctionDeclaration(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.ExportTypeQualifiedFunctionDeclaration
+		wantErr bool
+	}{
+		{
+			name:  "simple export type qualified function declaration",
+			input: "Person.greet: fn() String { \"Hello\" }",
+			want: ast.NewExportTypeQualifiedFunctionDeclaration(
+				ast.NewTypeQualifiedFunctionDeclaration(
+					ast.NewTypeIdentifier("Person", nil, 0, 6),
+					ast.NewFunctionDeclaration(
+						nil,
+						ast.NewFunctionDeclarationLHS(
+							ast.NewFunctionIdentifier("greet", nil, 0, 5),
+							nil,
+						),
+						ast.NewFunctionDeclarationType(
+							false,
+							[]ast.FunctionTypeParameter{},
+							ast.NewReturnType(
+								ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+							),
+							false,
+						),
+						ast.NewBlock(
+							ast.NewBlockBody(
+								[]ast.Statement{},
+								ast.NewStringLiteral(`"Hello"`, "Hello", nil, 0, 7),
+							),
+						),
+					),
+				),
+			),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"ExportTypeQualifiedFunctionDeclaration", ExportTypeQualifiedFunctionDeclaration, StringerCheck[*ast.ExportTypeQualifiedFunctionDeclaration])
+		})
+	}
+}
+
 func TestExportDeclaration(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -260,6 +340,52 @@ func TestExportDeclaration(t *testing.T) {
 					}),
 				),
 			)),
+		},
+		{
+			name:  "export type qualified declaration",
+			input: "Person.name: \"Brent\"",
+			want: ast.NewExportTypeQualifiedDeclaration(
+				ast.NewTypeQualifiedDeclaration(
+					ast.NewTypeIdentifier("Person", nil, 0, 6),
+					ast.NewAssignment(
+						ast.NewOrdinalAssignmentLHS([]*ast.Identifier{
+							ast.NewIdentifier("name", nil, 0, 4),
+						}, nil),
+						ast.Immutable,
+						ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7),
+					),
+				),
+			),
+		},
+		{
+			name:  "export type qualified function declaration",
+			input: "Person.greet: fn() String { \"Hello\" }",
+			want: ast.NewExportTypeQualifiedFunctionDeclaration(
+				ast.NewTypeQualifiedFunctionDeclaration(
+					ast.NewTypeIdentifier("Person", nil, 0, 6),
+					ast.NewFunctionDeclaration(
+						nil,
+						ast.NewFunctionDeclarationLHS(
+							ast.NewFunctionIdentifier("greet", nil, 0, 5),
+							nil,
+						),
+						ast.NewFunctionDeclarationType(
+							false,
+							[]ast.FunctionTypeParameter{},
+							ast.NewReturnType(
+								ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+							),
+							false,
+						),
+						ast.NewBlock(
+							ast.NewBlockBody(
+								[]ast.Statement{},
+								ast.NewStringLiteral(`"Hello"`, "Hello", nil, 0, 7),
+							),
+						),
+					),
+				),
+			),
 		},
 	}
 

@@ -11,3 +11,11 @@ Transformer: fn(Int) String
 
 # export type declaration
 Person: type(name: String)
+
+# export type qualified declaration
+Person.name: "Brent"
+
+# export type qualified function declaration
+Person.greet: fn() String {
+    "Hello"
+}
