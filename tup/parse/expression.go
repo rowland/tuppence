@@ -517,7 +517,12 @@ func postfixBaseExpressionWithRange(tokens []tok.Token, includeRange bool) (expr
 		return nil, remainder, err
 	}
 
-	// for_expression
+	if forExpression, remainder, err := ForExpression(tokens); err == nil {
+		return forExpression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
 	// inline_for_expression
 
 	if arrayFunctionCall, remainder, err := ArrayFunctionCall(tokens); err == nil {

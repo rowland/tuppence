@@ -375,6 +375,52 @@ func TestExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "for expression with break in if",
+			input: "for i = 0 { if i >= 10 { break i }; i + 1 }",
+			want: ast.NewForExpression(
+				ast.NewForHeader(
+					ast.NewInitializer(
+						ast.NewAssignment(
+							ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("i", nil, 0, 1)}, nil),
+							ast.Immutable,
+							ast.NewDecimalLiteral("0", 0, nil, 0, 1),
+						),
+					),
+					nil,
+					nil,
+				),
+				ast.NewForBlock(
+					[]ast.Statement{
+						ast.NewIfExpression(
+							[]ast.Node{
+								ast.NewRelationalComparison(
+									ast.NewIdentifier("i", nil, 0, 1),
+									ast.OpGte,
+									ast.NewDecimalLiteral("10", 10, nil, 0, 2),
+								),
+							},
+							[]*ast.Block{
+								ast.NewBlock(
+									ast.NewBlockBody(
+										[]ast.Statement{},
+										ast.NewBreakExpression(
+											ast.NewIdentifier("i", nil, 0, 1),
+										),
+									),
+								),
+							},
+							false,
+						),
+					},
+					ast.NewAddSubExpression(
+						ast.NewIdentifier("i", nil, 0, 1),
+						ast.OpAdd,
+						ast.NewDecimalLiteral("1", 1, nil, 0, 1),
+					),
+				),
+			),
+		},
+		{
 			name:  "function call",
 			input: "foo(1, 2)",
 			want: ast.NewFunctionCall(

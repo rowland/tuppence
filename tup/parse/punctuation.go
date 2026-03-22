@@ -54,6 +54,10 @@ var Pipe = expectFunc(tok.TokOpBitOr)
 
 var PipeForward = expectFunc(tok.TokOpPipe)
 
+// semicolon = ";" .
+
+var SemiColon = expectFunc(tok.TokSemiColon)
+
 // rest_op = "..." .
 
 var RestOp = expectFunc(tok.TokOpRest)

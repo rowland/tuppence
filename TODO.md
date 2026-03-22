@@ -186,10 +186,10 @@
 - [ ] export_type_qualified_function_declaration
 - [x] eol
 - [ ] for_block
-- [ ] for_expression
+- [x] for_expression
 - [ ] for_header
 - [ ] for_in_header
-- [ ] iterable
+- [x] iterable
 - [ ] function_call_context
 - [x] function_type_declaration
 - [x] function_type_declaration_lhs
@@ -201,7 +201,7 @@
 - [ ] indented_line
 - [x] index
 - [x] indexed_access_tail
-- [ ] initializer
+- [x] initializer
 - [ ] inline_for_expression
 - [ ] interpolation
 - [ ] iterable
@@ -236,7 +236,7 @@
 - [ ] return_expression
 - [x] safe_indexed_access_tail
 - [x] simple_annotation
-- [ ] step_expression
+- [x] step_expression
 - [ ] switch_statement
 - [x] top_level_item
 - [x] tuple_member

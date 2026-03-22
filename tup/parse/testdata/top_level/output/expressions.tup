@@ -76,3 +76,11 @@ _ = if ready {
 } else {
     fallback
 }
+
+# wrapped for expression with break in if
+_ = for i = 0 {
+    if i >= 10 {
+        break i
+    }
+    i + 1
+}

@@ -26,9 +26,13 @@ const (
 	NodeBlockParameters
 	NodeCaseBlock
 	NodeElseBlock
+	NodeForBlock
 	NodeForExpression
+	NodeForHeader
+	NodeForInHeader
 	NodeIfExpression
 	NodeInlineForExpression
+	NodeIterableHeader
 	NodeSwitchStatement
 
 	// Declaration node types
@@ -233,9 +237,13 @@ var NodeTypes = map[NodeType]string{
 	NodeBlockParameters:     "BlockParameters",
 	NodeCaseBlock:           "CaseBlock",
 	NodeElseBlock:           "ElseBlock",
+	NodeForBlock:            "ForBlock",
 	NodeForExpression:       "ForExpression",
+	NodeForHeader:           "ForHeader",
+	NodeForInHeader:         "ForInHeader",
 	NodeIfExpression:        "IfExpression",
 	NodeInlineForExpression: "InlineForExpression",
+	NodeIterableHeader:      "IterableHeader",
 	NodeSwitchStatement:     "SwitchStatement",
 
 	// Declaration node types
