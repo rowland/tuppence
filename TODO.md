@@ -162,7 +162,7 @@
 - [x] array_function_call
 - [x] array_members
 - [ ] array_pattern
-- [ ] break_expression
+- [x] break_expression
 - [ ] case_block
 - [x] character
 - [x] comment

@@ -82,6 +82,13 @@ func TestExpression(t *testing.T) {
 			input: "it",
 			want:  ast.NewItExpression(nil, 0, 2),
 		},
+		{
+			name:  "break expression",
+			input: "break i",
+			want: ast.NewBreakExpression(
+				ast.NewIdentifier("i", nil, 0, 1),
+			),
+		},
 		// raw string
 		{
 			name:  "`hello`",

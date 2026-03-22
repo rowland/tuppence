@@ -21,6 +21,7 @@ func (s *FunctionDeclaration) statementNode()              {}
 func (s *CompoundAssignment) statementNode()               {}
 func (s *Assignment) statementNode()                       {}
 func (s *TryExpression) statementNode()                    {}
+func (s *BreakExpression) statementNode()                  {}
 func (s *BinaryExpression) statementNode()                 {}
 func (s *UnaryExpression) statementNode()                  {}
 func (s *LogicalOrExpression) statementNode()              {}

@@ -546,7 +546,13 @@ func postfixBaseExpressionWithRange(tokens []tok.Token, includeRange bool) (expr
 
 	// type_constructor_call
 	// return_expression
-	// break_expression
+
+	if breakExpression, remainder, err := BreakExpression(tokens); err == nil {
+		return breakExpression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
 	// continue_expression
 
 	if includeRange {

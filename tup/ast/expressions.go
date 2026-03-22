@@ -47,7 +47,7 @@ func (n *Range) expressionNode()                 {}
 
 // func (n *ImportExpression) expressionNode() {}
 // func (n *ReturnExpression) expressionNode()      {}
-// func (n *BreakExpression) expressionNode()       {}
+func (n *BreakExpression) expressionNode()         {}
 // func (n *ContinueExpression) expressionNode()    {}
 
 func (n *FloatLiteral) expressionNode()              {}

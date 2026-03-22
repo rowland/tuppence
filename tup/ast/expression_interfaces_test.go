@@ -20,6 +20,7 @@ var _ Expression = &ArrayFunctionCall{}
 var _ Expression = &ImportExpression{}
 var _ Expression = &TypeofExpression{}
 var _ Expression = &MetaExpression{}
+var _ Expression = &BreakExpression{}
 var _ Expression = &FunctionCall{}
 var _ Expression = &TypeConstructorCall{}
 var _ Expression = &MemberAccess{}

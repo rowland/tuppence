@@ -60,10 +60,10 @@ func (r *ReturnExpression) String() string {
 
 type BreakExpression struct {
 	BaseNode
-	Expression Node // Optional expression (may be nil)
+	Expression Expression // Optional expression (may be nil)
 }
 
-func NewBreakExpression(expression Node) *BreakExpression {
+func NewBreakExpression(expression Expression) *BreakExpression {
 	return &BreakExpression{
 		BaseNode:   BaseNode{Type: NodeBreakExpression},
 		Expression: expression,
