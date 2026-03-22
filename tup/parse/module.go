@@ -15,6 +15,11 @@ func Module(source *source.Source, module *ast.Module) (mod *ast.Module, err err
 	}
 	remainder := tokens
 	for {
+		remainder = skipTrivia(remainder)
+		if peek(remainder).Type == tok.TokEOF {
+			break
+		}
+
 		var item ast.TopLevelItem
 		if item, remainder, err = TopLevelItem(remainder); err != nil {
 			return nil, err

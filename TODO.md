@@ -222,7 +222,7 @@
 - [ ] match_element
 - [x] member_access_tail
 - [x] meta_expression
-- [ ] module
+- [x] module
 - [x] nonzero_digit
 - [x] not_eol
 - [x] octal_digit
