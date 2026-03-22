@@ -5,10 +5,47 @@ import (
 	"github.com/rowland/tuppence/tup/tok"
 )
 
-// function_call_context = function_identifier [ "(" [ function_arguments ] ")" ] .
+// scoped_function_identifier = identifier { "." identifier } "." function_identifier
+//                            | function_identifier .
+
+func ScopedFunctionIdentifier(tokens []tok.Token) (ast.FunctionCallContextFunction, []tok.Token, error) {
+	scope := []*ast.Identifier{}
+	remainder := tokens
+	for {
+		identifier, next, err := Identifier(remainder)
+		if err != nil {
+			break
+		}
+
+		var found bool
+		if next, found = Dot(next); !found {
+			break
+		}
+
+		scope = append(scope, identifier)
+		remainder = next
+
+		function, next, err := FunctionIdentifier(remainder)
+		if err == nil {
+			return ast.NewScopedFunctionIdentifier(scope, function), next, nil
+		} else if err != ErrNoMatch {
+			return nil, next, err
+		}
+	}
+
+	if function, remainder, err := FunctionIdentifier(tokens); err == nil {
+		return function, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
+}
+
+// function_call_context = scoped_function_identifier [ "(" [ function_arguments ] ")" ] .
 
 func FunctionCallContext(tokens []tok.Token) (*ast.FunctionCallContext, []tok.Token, error) {
-	function, remainder, err := FunctionIdentifier(tokens)
+	function, remainder, err := ScopedFunctionIdentifier(tokens)
 	if err != nil {
 		return nil, remainder, err
 	}

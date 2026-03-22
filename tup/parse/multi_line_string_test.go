@@ -113,6 +113,27 @@ func TestMultiLineStringLiteral(t *testing.T) {
 			)),
 		},
 		{
+			name:  "scoped processor with args",
+			input: "```templating.mustache(context)\n  Hello, {{name}}\n```",
+			want: ast.NewMultiLineStringLiteral(contents(
+				ast.NewStringLiteral("Hello, {{name}}\n", "Hello, {{name}}\n", nil, 0, 16),
+			), ast.NewFunctionCallContext(
+				ast.NewScopedFunctionIdentifier(
+					[]*ast.Identifier{
+						ast.NewIdentifier("templating", nil, 0, 10),
+					},
+					ast.NewFunctionIdentifier("mustache", nil, 0, 8),
+				),
+				ast.NewFunctionArguments(
+					ast.NewArguments([]*ast.Argument{
+						ast.NewArgument(ast.NewIdentifier("context", nil, 0, 7), false),
+					}),
+					nil,
+					false,
+				),
+			)),
+		},
+		{
 			name:  "interpolation spanning lines joins those lines",
 			input: "```\n    Value: \\(\n        a +\n        b\n    )\n```",
 			want: ast.NewMultiLineStringLiteral(contents(

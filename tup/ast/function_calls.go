@@ -111,15 +111,23 @@ func (f *FunctionBlock) String() string {
 	return result.String()
 }
 
-// function_call_context = function_identifier [ "(" [ function_arguments ] ")" ] .
+// function_call_context = scoped_function_identifier [ "(" [ function_arguments ] ")" ] .
+
+type FunctionCallContextFunction interface {
+	Node
+	functionCallContextFunctionNode()
+}
+
+func (n *FunctionIdentifier) functionCallContextFunctionNode()       {}
+func (n *ScopedFunctionIdentifier) functionCallContextFunctionNode() {}
 
 type FunctionCallContext struct {
 	BaseNode
-	Function  *FunctionIdentifier
+	Function  FunctionCallContextFunction
 	Arguments *FunctionArguments
 }
 
-func NewFunctionCallContext(function *FunctionIdentifier, arguments *FunctionArguments) *FunctionCallContext {
+func NewFunctionCallContext(function FunctionCallContextFunction, arguments *FunctionArguments) *FunctionCallContext {
 	return &FunctionCallContext{
 		BaseNode:  BaseNode{Type: NodeFunctionCallContext},
 		Function:  function,

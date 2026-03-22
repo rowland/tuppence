@@ -185,7 +185,10 @@ function_block = "{" [ block_parameters ] block_body "}" .
 
 function_call_tail = [ function_parameter_types ] "(" [ function_arguments ] ")" [ function_block ] .
 
-function_call_context = function_identifier [ "(" function_arguments ")" ] .
+scoped_function_identifier = identifier { "." identifier } "." function_identifier
+                           | function_identifier .
+
+function_call_context = scoped_function_identifier [ "(" [ function_arguments ] ")" ] .
 
 function_declaration = annotations function_declaration_lhs "=" function_declaration_type block .
 

@@ -67,6 +67,39 @@ func (s *ScopedIdentifier) String() string {
 	return result.String()
 }
 
+// ScopedFunctionIdentifier represents the actually scoped form of
+// scoped_function_identifier: identifier { "." identifier } "." function_identifier .
+
+type ScopedFunctionIdentifier struct {
+	BaseNode
+	Scope      []*Identifier
+	Identifier *FunctionIdentifier
+}
+
+func NewScopedFunctionIdentifier(scope []*Identifier, identifier *FunctionIdentifier) *ScopedFunctionIdentifier {
+	return &ScopedFunctionIdentifier{
+		BaseNode:   BaseNode{Type: NodeScopedFunctionIdentifier},
+		Scope:      scope,
+		Identifier: identifier,
+	}
+}
+
+func (s *ScopedFunctionIdentifier) String() string {
+	if len(s.Scope) == 0 {
+		return s.Identifier.String()
+	}
+
+	var result strings.Builder
+	result.WriteString(s.Scope[0].String())
+	for _, identifier := range s.Scope[1:] {
+		result.WriteString(".")
+		result.WriteString(identifier.String())
+	}
+	result.WriteString(".")
+	result.WriteString(s.Identifier.String())
+	return result.String()
+}
+
 // type_identifier = uppercase_letter { letter | decimal_digit | "_" } .
 
 // TypeIdentifier represents a type identifier (starts with uppercase)

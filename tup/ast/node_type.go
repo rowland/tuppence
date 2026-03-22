@@ -100,6 +100,7 @@ const (
 	NodeFunctionIdentifier
 	NodeIdentifier
 	NodeItExpression
+	NodeScopedFunctionIdentifier
 	NodeScopedIdentifier
 	NodeRenameIdentifier
 	NodeRenameType
@@ -307,13 +308,14 @@ var NodeTypes = map[NodeType]string{
 	NodeUnaryExpression:         "UnaryExpression",
 
 	// Identifier node types
-	NodeFunctionIdentifier: "FunctionIdentifier",
-	NodeIdentifier:         "Identifier",
-	NodeItExpression:       "ItExpression",
-	NodeScopedIdentifier:   "ScopedIdentifier",
-	NodeRenameIdentifier:   "RenameIdentifier",
-	NodeRenameType:         "RenameType",
-	NodeTypeIdentifier:     "TypeIdentifier",
+	NodeFunctionIdentifier:       "FunctionIdentifier",
+	NodeIdentifier:               "Identifier",
+	NodeItExpression:             "ItExpression",
+	NodeScopedFunctionIdentifier: "ScopedFunctionIdentifier",
+	NodeScopedIdentifier:         "ScopedIdentifier",
+	NodeRenameIdentifier:         "RenameIdentifier",
+	NodeRenameType:               "RenameType",
+	NodeTypeIdentifier:           "TypeIdentifier",
 
 	// Literal node types
 	NodeArrayLiteral:              "ArrayLiteral",

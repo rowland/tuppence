@@ -36,6 +36,38 @@ func TestFunctionCallContext(t *testing.T) {
 			),
 		},
 		{
+			name:  "scoped processor",
+			input: "templating.mustache",
+			want: ast.NewFunctionCallContext(
+				ast.NewScopedFunctionIdentifier(
+					[]*ast.Identifier{
+						ast.NewIdentifier("templating", nil, 0, 10),
+					},
+					ast.NewFunctionIdentifier("mustache", nil, 0, 8),
+				),
+				nil,
+			),
+		},
+		{
+			name:  "scoped processor with arguments",
+			input: "templating.mustache(context)",
+			want: ast.NewFunctionCallContext(
+				ast.NewScopedFunctionIdentifier(
+					[]*ast.Identifier{
+						ast.NewIdentifier("templating", nil, 0, 10),
+					},
+					ast.NewFunctionIdentifier("mustache", nil, 0, 8),
+				),
+				ast.NewFunctionArguments(
+					ast.NewArguments([]*ast.Argument{
+						ast.NewArgument(ast.NewIdentifier("context", nil, 0, 7), false),
+					}),
+					nil,
+					false,
+				),
+			),
+		},
+		{
 			name:  "processor with labeled arguments",
 			input: "html(trim: true, escape: false)",
 			want: ast.NewFunctionCallContext(
