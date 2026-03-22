@@ -76,6 +76,14 @@ _ = {
     ready
 }
 
+# wrapped block expression with return in if
+_ = {
+    if !ready {
+        return
+    }
+    fallback
+}
+
 # wrapped if expression
 _ = if ready {
     value

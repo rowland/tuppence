@@ -42,6 +42,7 @@ func (s *ArrayFunctionCall) statementNode()                {}
 func (s *ImportExpression) statementNode()                 {}
 func (s *TypeofExpression) statementNode()                 {}
 func (s *MetaExpression) statementNode()                   {}
+func (s *ReturnExpression) statementNode()                 {}
 func (s *FunctionCall) statementNode()                     {}
 func (s *TypeConstructorCall) statementNode()              {}
 func (s *MemberAccess) statementNode()                     {}

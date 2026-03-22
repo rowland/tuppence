@@ -233,7 +233,7 @@
 - [x] relational_comparison_tail
 - [x] rest_operator
 - [x] rest_parameter
-- [ ] return_expression
+- [x] return_expression
 - [x] safe_indexed_access_tail
 - [x] simple_annotation
 - [x] step_expression

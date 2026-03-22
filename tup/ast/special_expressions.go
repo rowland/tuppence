@@ -38,14 +38,14 @@ func (i *ImportExpression) String() string {
 	return "import(" + i.Path.String() + ")"
 }
 
-// return_expression = "return" expression .
+// return_expression = "return" [ expression ] .
 
 type ReturnExpression struct {
 	BaseNode
-	Expression Node // The expression being returned
+	Expression Expression // Optional expression (may be nil)
 }
 
-func NewReturnExpression(expression Node) *ReturnExpression {
+func NewReturnExpression(expression Expression) *ReturnExpression {
 	return &ReturnExpression{
 		BaseNode:   BaseNode{Type: NodeReturnExpression},
 		Expression: expression,
@@ -53,7 +53,10 @@ func NewReturnExpression(expression Node) *ReturnExpression {
 }
 
 func (r *ReturnExpression) String() string {
-	return "return " + r.Expression.String()
+	if r.Expression != nil {
+		return "return " + r.Expression.String()
+	}
+	return "return"
 }
 
 // break_expression = "break" [ expression ] .

@@ -90,6 +90,18 @@ func TestExpression(t *testing.T) {
 			),
 		},
 		{
+			name:  "bare return expression",
+			input: "return",
+			want:  ast.NewReturnExpression(nil),
+		},
+		{
+			name:  "return expression with value",
+			input: "return i",
+			want: ast.NewReturnExpression(
+				ast.NewIdentifier("i", nil, 0, 1),
+			),
+		},
+		{
 			name:  "type constructor call",
 			input: `Person(name: "Brent")`,
 			want: ast.NewTypeConstructorCall(

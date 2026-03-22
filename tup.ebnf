@@ -451,7 +451,7 @@ rest_operator = "..." [ identifier ] .
 
 rest_parameter = "..." type .
 
-return_expression = "return" expression .
+return_expression = "return" [ expression ] .
 
 return_type = union_with_error
             | union_declaration_with_error

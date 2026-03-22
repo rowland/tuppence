@@ -89,6 +89,18 @@ func TestBlock(t *testing.T) {
 			),
 		},
 		{
+			name:  "block with bare return before final expression",
+			input: "{ return\nx }",
+			want: ast.NewBlock(
+				ast.NewBlockBody(
+					[]ast.Statement{
+						ast.NewReturnExpression(nil),
+					},
+					ast.NewIdentifier("x", nil, 0, 1),
+				),
+			),
+		},
+		{
 			name:    "block ending with assignment",
 			input:   "{ x = 1 }",
 			want:    nil,
