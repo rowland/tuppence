@@ -113,8 +113,8 @@
                 - [x] labeled_assignment_lhs
                     - [x] rename_identifier
                     - [x] rename_type
-        - [.] block_body
-            - [ ] statement
+        - [x] block_body
+            - [x] statement
                 - [x] type_qualified_function_declaration
                     - [x] annotations
                     - [x] type_identifier

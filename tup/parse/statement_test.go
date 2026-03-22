@@ -85,6 +85,26 @@ func TestStatement(t *testing.T) {
 				ast.NewDecimalLiteral("1", 1, nil, 0, 1),
 			),
 		},
+		{
+			name:  "local type declaration statement",
+			input: "Person = type(name: String)",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(
+					nil,
+					ast.NewTypeIdentifier("Person", nil, 0, 6),
+					nil,
+				),
+				ast.NewTypeTuple(
+					ast.NewTupleType([]ast.TupleTypeMemberNode{
+						ast.NewLabeledTupleTypeMember(
+							ast.NewAnnotations(nil),
+							ast.NewIdentifier("name", nil, 0, 4),
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+						),
+					}),
+				),
+			),
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -126,6 +146,15 @@ func TestStatement(t *testing.T) {
 				}
 			case *ast.CompoundAssignment:
 				got, ok := stmt.(*ast.CompoundAssignment)
+				if !ok {
+					t.Errorf("Statement(%q) = %T, want %T", test.input, stmt, test.want)
+					return
+				}
+				if got.String() != want.String() {
+					t.Errorf("Statement(%q) = %v, want %v", test.input, got.String(), want.String())
+				}
+			case *ast.TypeDeclaration:
+				got, ok := stmt.(*ast.TypeDeclaration)
 				if !ok {
 					t.Errorf("Statement(%q) = %T, want %T", test.input, stmt, test.want)
 					return

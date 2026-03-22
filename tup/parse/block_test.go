@@ -77,6 +77,33 @@ func TestBlock(t *testing.T) {
 			),
 		},
 		{
+			name:  "block with local type declaration",
+			input: "{ Person = type(name: String)\nready }",
+			want: ast.NewBlock(
+				ast.NewBlockBody(
+					[]ast.Statement{
+						ast.NewTypeDeclaration(
+							ast.NewTypeDeclarationLHS(
+								nil,
+								ast.NewTypeIdentifier("Person", nil, 0, 6),
+								nil,
+							),
+							ast.NewTypeTuple(
+								ast.NewTupleType([]ast.TupleTypeMemberNode{
+									ast.NewLabeledTupleTypeMember(
+										ast.NewAnnotations(nil),
+										ast.NewIdentifier("name", nil, 0, 4),
+										ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+									),
+								}),
+							),
+						),
+					},
+					ast.NewIdentifier("ready", nil, 0, 5),
+				),
+			),
+		},
+		{
 			name:  "block with bare break before final expression",
 			input: "{ break\nx }",
 			want: ast.NewBlock(

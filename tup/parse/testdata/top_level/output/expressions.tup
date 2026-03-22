@@ -103,6 +103,12 @@ _ = {
     ready
 }
 
+# wrapped block expression with local type declaration
+_ = {
+    Person = type(name: String)
+    ready
+}
+
 # wrapped block expression with return in if
 _ = {
     if !ready {

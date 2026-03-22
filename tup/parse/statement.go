@@ -31,12 +31,12 @@ func Statement(tokens []tok.Token) (stmt ast.Statement, remainder []tok.Token, e
 		return nil, remainder, err
 	}
 
-	// var typeDeclaration *ast.TypeDeclaration
-	// if typeDeclaration, remainder, err = TypeDeclaration(tokens); err == nil {
-	// 	return typeDeclaration, remainder, nil
-	// } else if err != ErrNoMatch {
-	// 	return nil, remainder, err
-	// }
+	var typeDeclaration *ast.TypeDeclaration
+	if typeDeclaration, remainder, err = TypeDeclaration(tokens); err == nil {
+		return typeDeclaration, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
 
 	var functionDeclaration *ast.FunctionDeclaration
 	if functionDeclaration, remainder, err = FunctionDeclaration(tokens); err == nil {
