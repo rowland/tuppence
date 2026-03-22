@@ -12,10 +12,21 @@ func Identifier(tokens []tok.Token) (ident *ast.Identifier, remainder []tok.Toke
 	// fmt.Println("Identifier", tokens)
 	remainder = skipTrivia(tokens)
 	t := peek(remainder)
-	if t.Type != tok.TokID && t.Type != tok.TokKwIt {
+	if t.Type != tok.TokID {
 		return nil, tokens, ErrNoMatch
 	}
 	return ast.NewIdentifier(t.Value(), t.File, t.Offset, t.Length), remainder[1:], nil
+}
+
+// it_expression = "it" .
+
+func ItExpression(tokens []tok.Token) (expr *ast.ItExpression, remainder []tok.Token, err error) {
+	remainder = skipTrivia(tokens)
+	t := peek(remainder)
+	if t.Type != tok.TokKwIt {
+		return nil, tokens, ErrNoMatch
+	}
+	return ast.NewItExpression(t.File, t.Offset, t.Length), remainder[1:], nil
 }
 
 // type_identifier = uppercase_letter { letter | decimal_digit | "_" } .

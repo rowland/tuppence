@@ -77,6 +77,11 @@ func TestExpression(t *testing.T) {
 			input: ":hello",
 			want:  ast.NewSymbolLiteral(":hello", nil, 0, 6),
 		},
+		{
+			name:  "it expression",
+			input: "it",
+			want:  ast.NewItExpression(nil, 0, 2),
+		},
 		// raw string
 		{
 			name:  "`hello`",

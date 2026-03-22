@@ -224,6 +224,8 @@ hexadecimal_literal = "0x" hex_digit { hex_digit | "_" } .
 
 identifier = ( lowercase_letter | "_" ) { letter | decimal_digit | "_" } .
 
+it_expression = "it" .
+
 if_expression = "if" condition block { "else" "if" condition block } [ else_block ] .
 
 import_expression = "import" "(" string_literal ")" .
@@ -422,6 +424,7 @@ postfix_base_expression = "(" expression ")"
                         | range
                         | literal
                         | function_identifier
+                        | it_expression
                         | identifier .
 
 postfix_tail = function_call_tail
@@ -638,4 +641,5 @@ negatable_postfix_base_expression = "(" expression ")"
                                   | block
                                   | literal
                                   | function_identifier
+                                  | it_expression
                                   | identifier .

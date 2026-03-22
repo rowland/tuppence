@@ -483,6 +483,7 @@ func matchPostfixTail(expr ast.Expression, tokens []tok.Token, includeFunctionCa
 //                         | continue_expression
 //                         | range
 //                         | function_identifier
+//                         | it_expression
 //                         | identifier
 //                         | literal .
 //
@@ -562,6 +563,12 @@ func postfixBaseExpressionWithRange(tokens []tok.Token, includeRange bool) (expr
 		return nil, remainder, err
 	}
 
+	if itExpression, remainder, err := ItExpression(tokens); err == nil {
+		return itExpression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
 	if functionIdentifier, remainder, err := FunctionIdentifier(tokens); err == nil {
 		return functionIdentifier, remainder, nil
 	} else if err != ErrNoMatch {
@@ -580,6 +587,7 @@ func postfixBaseExpressionWithRange(tokens []tok.Token, includeRange bool) (expr
 // negatable_postfix_base_expression = "(" expression ")"
 //                                   | block
 //                                   | function_identifier
+//                                   | it_expression
 //                                   | identifier
 //                                   | literal .
 
@@ -598,6 +606,12 @@ func negatablePostfixBaseExpression(tokens []tok.Token) (expr ast.Expression, re
 
 	if literal, remainder, err := Literal(tokens); err == nil {
 		return literal, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if itExpression, remainder, err := ItExpression(tokens); err == nil {
+		return itExpression, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}

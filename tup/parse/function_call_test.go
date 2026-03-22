@@ -233,7 +233,7 @@ func TestFunctionCall(t *testing.T) {
 						[]ast.Statement{},
 						// expression
 						ast.NewAddSubExpression(
-							ast.NewIdentifier("it", nil, 9, 2),
+							ast.NewItExpression(nil, 9, 2),
 							ast.OpAdd,
 							ast.NewDecimalLiteral("1", 1, nil, 14, 1),
 						),

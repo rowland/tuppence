@@ -10,6 +10,7 @@ var _ Expression = &PowExpression{}
 var _ Expression = &TypeComparison{}
 var _ Expression = &RelationalComparison{}
 var _ Expression = &Identifier{}
+var _ Expression = &ItExpression{}
 var _ Expression = &FunctionIdentifier{}
 var _ Expression = &Block{}
 var _ Expression = &IfExpression{}

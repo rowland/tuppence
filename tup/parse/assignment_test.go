@@ -173,6 +173,13 @@ func TestAssignment(t *testing.T) {
 			want:    nil,
 			wantErr: true,
 		},
+		{
+			name:       "assignment to it is invalid",
+			input:      "it = 1",
+			tokenTypes: []tok.TokenType{tok.TokKwIt, tok.TokOpAssign, tok.TokDecLit, tok.TokEOF},
+			want:       nil,
+			wantErr:    true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

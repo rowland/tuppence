@@ -24,6 +24,22 @@ func (i *Identifier) String() string {
 	return i.Name
 }
 
+// it_expression = "it" .
+
+type ItExpression struct {
+	BaseNode
+}
+
+func NewItExpression(source *source.Source, startOffset int32, length int32) *ItExpression {
+	return &ItExpression{
+		BaseNode: BaseNode{Type: NodeItExpression, Source: source, StartOffset: startOffset, Length: length},
+	}
+}
+
+func (i *ItExpression) String() string {
+	return "it"
+}
+
 // scoped_identifier = identifier { "." identifier } .
 
 type ScopedIdentifier struct {

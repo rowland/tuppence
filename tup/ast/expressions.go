@@ -27,6 +27,7 @@ func (n *TypeComparison) expressionNode()       {}
 func (n *RelationalComparison) expressionNode() {}
 
 func (n *Identifier) expressionNode()            {}
+func (n *ItExpression) expressionNode()          {}
 func (n *FunctionIdentifier) expressionNode()    {}
 func (n *Block) expressionNode()                 {}
 func (n *IfExpression) expressionNode()          {}

@@ -31,6 +31,7 @@ func (s *PowExpression) statementNode()                    {}
 func (s *TypeComparison) statementNode()                   {}
 func (s *RelationalComparison) statementNode()             {}
 func (s *Identifier) statementNode()                       {}
+func (s *ItExpression) statementNode()                     {}
 func (s *FunctionIdentifier) statementNode()               {}
 func (s *Block) statementNode()                            {}
 func (s *IfExpression) statementNode()                     {}

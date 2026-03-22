@@ -35,7 +35,7 @@ func TestBlock(t *testing.T) {
 			want: ast.NewBlock(
 				ast.NewBlockBody(
 					[]ast.Statement{},
-					ast.NewIdentifier("it", nil, 0, 2),
+					ast.NewItExpression(nil, 0, 2),
 				),
 			),
 		},

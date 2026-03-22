@@ -21,12 +21,30 @@ func TestIdentifier(t *testing.T) {
 		{input: "x_y", want: ast.NewIdentifier("x_y", nil, 0, 3)},
 		{input: "x_y_", want: ast.NewIdentifier("x_y_", nil, 0, 4)},
 		{input: "x_y_z", want: ast.NewIdentifier("x_y_z", nil, 0, 5)},
+		{input: "it", want: nil, wantErr: true},
 		{input: "XYZ", want: nil, wantErr: true},
 	}
 	for _, test := range tests {
 		t.Run(test.input, func(t *testing.T) {
 			RunParseTest(t, test.input, test.input, test.want, test.wantErr,
 				"Identifier", Identifier, StringerCheck[*ast.Identifier])
+		})
+	}
+}
+
+func TestItExpression(t *testing.T) {
+	tests := []struct {
+		input   string
+		want    *ast.ItExpression
+		wantErr bool
+	}{
+		{input: "it", want: ast.NewItExpression(nil, 0, 2)},
+		{input: "x", want: nil, wantErr: true},
+	}
+	for _, test := range tests {
+		t.Run(test.input, func(t *testing.T) {
+			RunParseTest(t, test.input, test.input, test.want, test.wantErr,
+				"ItExpression", ItExpression, StringerCheck[*ast.ItExpression])
 		})
 	}
 }
