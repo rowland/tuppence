@@ -28,7 +28,7 @@
         - [x] escape_sequence
         - [x] byte_escape_sequence
         - [x] unicode_escape_sequence
-    - [ ] interpolated_string_literal
+    - [x] interpolated_string_literal
     - [x] raw_string_literal
     - [ ] multi_line_string_literal
     - [x] tuple_literal
@@ -203,7 +203,7 @@
 - [x] indexed_access_tail
 - [x] initializer
 - [x] inline_for_expression
-- [ ] interpolation
+- [x] interpolation
 - [x] iterable
 - [x] iterable_header
 - [x] labeled_parameter
@@ -259,6 +259,14 @@
 - [x] type_qualified_declaration
 - [x] type_qualified_function_declaration
 - [x] function_call_context
+- [x] interpolated_string_literal
+- [x] interpolation
+- [ ] multi_line_string_literal
+- [ ] content_line
+- [ ] indented_line
+- [ ] indented_closing
+- [ ] leading_whitespace
+- [ ] not_eol
 - [ ] contract_declaration
 - [ ] contract_members
 - [ ] contract_member
@@ -275,11 +283,3 @@
 - [ ] labeled_pattern
 - [ ] match_element
 - [ ] match_condition
-- [ ] interpolated_string_literal
-- [ ] multi_line_string_literal
-- [ ] interpolation
-- [ ] content_line
-- [ ] indented_line
-- [ ] indented_closing
-- [ ] leading_whitespace
-- [ ] not_eol

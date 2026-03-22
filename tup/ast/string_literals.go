@@ -63,6 +63,10 @@ func NewInterpolation(expr Expression, source *source.Source) *Interpolation {
 	}
 }
 
+func (i *Interpolation) String() string {
+	return `\(` + i.Expression.String() + `)`
+}
+
 // interpolated_string_literal = '"' { byte_escape_sequence | unicode_escape_sequence | escape_sequence | interpolation | character - '"' - eol } '"' .
 
 // InterpolatedStringLiteral represents a string literal with interpolated expressions

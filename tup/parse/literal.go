@@ -38,12 +38,11 @@ func Literal(tokens []tok.Token) (item ast.Literal, remainder []tok.Token, err e
 		return nil, tokens, err
 	}
 
-	// interpolatedStringLiteral, remainder, err := InterpolatedStringLiteral(remainder)
-	// if err == nil {
-	// 	return interpolatedStringLiteral, remainder, nil
-	// } else if err != ErrNoMatch {
-	// 	return nil, tokens, err
-	// }
+	if interpolatedStringLiteral, remainder, err := InterpolatedStringLiteral(remainder); err == nil {
+		return interpolatedStringLiteral, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, tokens, err
+	}
 
 	if rawStringLiteral, remainder, err := RawStringLiteral(remainder); err == nil {
 		return rawStringLiteral, remainder, nil

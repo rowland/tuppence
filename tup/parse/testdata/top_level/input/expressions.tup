@@ -4,6 +4,9 @@ _ = 1 + 2
 # wrapped symbol literal
 _ = :ok
 
+# wrapped interpolated string literal
+_ = "Hello \(name)!"
+
 # wrapped tuple expression
 _ = (a: :x, b: :y)
 
