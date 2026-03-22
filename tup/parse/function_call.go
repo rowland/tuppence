@@ -107,7 +107,12 @@ func callableBaseExpression(tokens []tok.Token) (expr ast.Expression, remainder 
 		return nil, remainder, err
 	}
 
-	// type_constructor_call
+	if typeConstructorCall, remainder, err := TypeConstructorCall(tokens); err == nil {
+		return typeConstructorCall, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
 	// return_expression
 	// break_expression
 	// continue_expression

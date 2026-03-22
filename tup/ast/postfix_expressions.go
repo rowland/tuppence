@@ -10,23 +10,33 @@ import (
 // TypeConstructorCall represents a type constructor call
 type TypeConstructorCall struct {
 	BaseNode
-	TypeReference *TypeReference     // The type being constructed
-	Arguments     *FunctionArguments // The constructor arguments
-	FunctionBlock *FunctionBlock     // Optional function block (may be nil)
+	TypeReference  *TypeReference          // The type being constructed
+	ParameterTypes *FunctionParameterTypes // Optional selector types
+	Arguments      *FunctionArguments      // The constructor arguments
+	FunctionBlock  *FunctionBlock          // Optional function block (may be nil)
 }
 
-func NewTypeConstructorCall(typeRef *TypeReference, arguments *FunctionArguments, functionBlock *FunctionBlock) *TypeConstructorCall {
+func NewTypeConstructorCall(
+	typeRef *TypeReference,
+	parameterTypes *FunctionParameterTypes,
+	arguments *FunctionArguments,
+	functionBlock *FunctionBlock,
+) *TypeConstructorCall {
 	return &TypeConstructorCall{
-		BaseNode:      BaseNode{Type: NodeTypeConstructorCall},
-		TypeReference: typeRef,
-		Arguments:     arguments,
-		FunctionBlock: functionBlock,
+		BaseNode:       BaseNode{Type: NodeTypeConstructorCall},
+		TypeReference:  typeRef,
+		ParameterTypes: parameterTypes,
+		Arguments:      arguments,
+		FunctionBlock:  functionBlock,
 	}
 }
 
 func (t *TypeConstructorCall) String() string {
 	var builder strings.Builder
 	builder.WriteString(t.TypeReference.String())
+	if t.ParameterTypes != nil {
+		builder.WriteString(t.ParameterTypes.String())
+	}
 	if t.Arguments != nil {
 		builder.WriteString(t.Arguments.String())
 	} else {

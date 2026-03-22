@@ -40,6 +40,12 @@ _ = typeof(answer)
 # wrapped meta expression
 _ = $(name: "Brent")
 
+# wrapped type constructor call
+_ = Person(name: "Brent")
+
+# wrapped type constructor call with function block
+_ = Reader[[]Byte](handle) { |bytes| bytes }
+
 # wrapped type comparison expression
 _ = value is (Int | String)
 

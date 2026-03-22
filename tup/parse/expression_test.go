@@ -89,6 +89,47 @@ func TestExpression(t *testing.T) {
 				ast.NewIdentifier("i", nil, 0, 1),
 			),
 		},
+		{
+			name:  "type constructor call",
+			input: `Person(name: "Brent")`,
+			want: ast.NewTypeConstructorCall(
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Person", nil, 0, 6), nil, 0, 6),
+				nil,
+				ast.NewFunctionArguments(
+					nil,
+					ast.NewLabeledArguments([]*ast.LabeledArgument{
+						ast.NewLabeledArgument(
+							ast.NewIdentifier("name", nil, 0, 4),
+							ast.NewArgument(ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7), false),
+						),
+					}),
+					false,
+				),
+				nil,
+			),
+		},
+		{
+			name:  "type constructor call followed by member access",
+			input: `Person(name: "Brent").name`,
+			want: ast.NewMemberAccess(
+				ast.NewTypeConstructorCall(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Person", nil, 0, 6), nil, 0, 6),
+					nil,
+					ast.NewFunctionArguments(
+						nil,
+						ast.NewLabeledArguments([]*ast.LabeledArgument{
+							ast.NewLabeledArgument(
+								ast.NewIdentifier("name", nil, 0, 4),
+								ast.NewArgument(ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7), false),
+							),
+						}),
+						false,
+					),
+					nil,
+				),
+				ast.NewIdentifier("name", nil, 0, 4),
+			),
+		},
 		// raw string
 		{
 			name:  "`hello`",

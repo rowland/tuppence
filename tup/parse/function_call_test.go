@@ -362,6 +362,27 @@ func TestFunctionCall(t *testing.T) {
 				nil,
 			),
 		},
+		{
+			name:  "type constructor call as function receiver",
+			input: `Factory()(1)`,
+			want: ast.NewFunctionCall(
+				ast.NewTypeConstructorCall(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Factory", nil, 0, 7), nil, 0, 7),
+					nil,
+					nil,
+					nil,
+				),
+				nil,
+				ast.NewFunctionArguments(
+					ast.NewArguments([]*ast.Argument{
+						ast.NewArgument(ast.NewDecimalLiteral("1", 1, nil, 0, 1), false),
+					}),
+					nil,
+					false,
+				),
+				nil,
+			),
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
