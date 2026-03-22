@@ -111,15 +111,15 @@ func (f *FunctionBlock) String() string {
 	return result.String()
 }
 
-// function_call_context = function_identifier [ "(" ( labeled_arguments | arguments [ "," labeled_arguments ] ) [ partial_application ] ")" ] .
+// function_call_context = function_identifier [ "(" [ function_arguments ] ")" ] .
 
 type FunctionCallContext struct {
 	BaseNode
-	Function  Node
+	Function  *FunctionIdentifier
 	Arguments *FunctionArguments
 }
 
-func NewFunctionCallContext(function Node, arguments *FunctionArguments) *FunctionCallContext {
+func NewFunctionCallContext(function *FunctionIdentifier, arguments *FunctionArguments) *FunctionCallContext {
 	return &FunctionCallContext{
 		BaseNode:  BaseNode{Type: NodeFunctionCallContext},
 		Function:  function,
@@ -128,7 +128,10 @@ func NewFunctionCallContext(function Node, arguments *FunctionArguments) *Functi
 }
 
 func (f *FunctionCallContext) String() string {
-	return f.Function.String() + f.Arguments.String()
+	if f.Arguments != nil {
+		return f.Function.String() + f.Arguments.String()
+	}
+	return f.Function.String()
 }
 
 // function_arguments = ( labeled_arguments

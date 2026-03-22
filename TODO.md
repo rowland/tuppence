@@ -190,7 +190,7 @@
 - [x] for_header
 - [x] for_in_header
 - [x] iterable
-- [ ] function_call_context
+- [x] function_call_context
 - [x] function_type_declaration
 - [x] function_type_declaration_lhs
 - [x] function_type_identifier
@@ -258,7 +258,7 @@
 - [x] continue_expression
 - [x] type_qualified_declaration
 - [x] type_qualified_function_declaration
-- [ ] function_call_context
+- [x] function_call_context
 - [ ] contract_declaration
 - [ ] contract_members
 - [ ] contract_member
