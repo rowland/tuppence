@@ -8,24 +8,12 @@ import (
 // continue_expression = "continue" [ expression ] .
 
 func ContinueExpression(tokens []tok.Token) (*ast.ContinueExpression, []tok.Token, error) {
-	remainder := skipTrivia(tokens)
-	if peek(remainder).Type != tok.TokKwContinue {
-		return nil, tokens, ErrNoMatch
-	}
-	remainder = remainder[1:]
-
-	// Optional continue value is confined to the same statement.
-	remainder = skipComments(remainder)
-	switch peek(remainder).Type {
-	case tok.TokEOF, tok.TokEOL, tok.TokSemiColon, tok.TokCloseBrace:
-		return ast.NewContinueExpression(nil), remainder, nil
-	}
-
-	expression, remainder, err := Expression(remainder)
-	if err == ErrNoMatch {
-		return ast.NewContinueExpression(nil), remainder, nil
-	} else if err != nil {
+	remainder, expression, matched, err := keywordOptionalExpression(tokens, tok.TokKwContinue)
+	if err != nil {
 		return nil, remainder, err
+	}
+	if !matched {
+		return nil, tokens, ErrNoMatch
 	}
 
 	return ast.NewContinueExpression(expression), remainder, nil
