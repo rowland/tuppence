@@ -1241,7 +1241,7 @@ func tupleTypeMemberType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
 	return nil, tokens, ErrNoMatch
 }
 
-func ContractFieldType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
+func ContractFieldType(tokens []tok.Token) (ast.ContractFieldType, []tok.Token, error) {
 	if nilableType, remainder, err := NilableType(tokens); err == nil {
 		return nilableType, remainder, nil
 	} else if err != ErrNoMatch {
@@ -1249,7 +1249,11 @@ func ContractFieldType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
 	}
 
 	if fieldType, remainder, err := Type(tokens); err == nil {
-		return fieldType, remainder, nil
+		contractFieldType, ok := any(fieldType).(ast.ContractFieldType)
+		if !ok {
+			return nil, remainder, errorExpecting("contract field type", remainder)
+		}
+		return contractFieldType, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}

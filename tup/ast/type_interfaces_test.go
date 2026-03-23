@@ -70,6 +70,17 @@ var _ TypeArgumentType = &InlineUnion{}
 var _ TypePredicate = &TypeReference{}
 var _ TypePredicate = &InlineUnion{}
 
+var _ ContractFieldType = &NilableType{}
+var _ ContractFieldType = &TypeReference{}
+var _ ContractFieldType = &Identifier{}
+var _ ContractFieldType = &DynamicArrayType{}
+var _ ContractFieldType = &FixedSizeArrayType{}
+var _ ContractFieldType = &FunctionType{}
+var _ ContractFieldType = &ErrorTuple{}
+var _ ContractFieldType = &TupleType{}
+var _ ContractFieldType = &GenericType{}
+var _ ContractFieldType = &InlineUnion{}
+
 var _ ConstantValue = &FloatLiteral{}
 var _ ConstantValue = &IntegerLiteral{}
 var _ ConstantValue = &BooleanLiteral{}

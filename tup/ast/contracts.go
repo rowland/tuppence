@@ -10,6 +10,23 @@ type ContractMemberNode interface {
 func (n *ContractFunction) contractMemberNode() {}
 func (n *ContractField) contractMemberNode()    {}
 
+type ContractFieldType interface {
+	Node
+	contractFieldTypeNode()
+}
+
+func (n *NilableType) contractFieldTypeNode()      {}
+func (n *TypeReference) contractFieldTypeNode()    {}
+func (n *Identifier) contractFieldTypeNode()       {}
+func (n *DynamicArrayType) contractFieldTypeNode() {}
+func (n *FixedSizeArrayType) contractFieldTypeNode() {
+}
+func (n *FunctionType) contractFieldTypeNode() {}
+func (n *ErrorTuple) contractFieldTypeNode()   {}
+func (n *TupleType) contractFieldTypeNode()    {}
+func (n *GenericType) contractFieldTypeNode()  {}
+func (n *InlineUnion) contractFieldTypeNode()  {}
+
 // contract_function = function_declaration_lhs "=" function_type .
 
 type ContractFunction struct {
@@ -40,10 +57,10 @@ type ContractField struct {
 	BaseNode
 	Name          *Identifier
 	TypeParameter *TypeParameter
-	Type          Node
+	Type          ContractFieldType
 }
 
-func NewContractField(name *Identifier, typeParameter *TypeParameter, fieldType Node) *ContractField {
+func NewContractField(name *Identifier, typeParameter *TypeParameter, fieldType ContractFieldType) *ContractField {
 	return &ContractField{
 		BaseNode:      BaseNode{Type: NodeContractField},
 		Name:          name,
