@@ -161,9 +161,9 @@
 
 - [x] array_function_call
 - [x] array_members
-- [ ] array_pattern
+- [x] array_pattern
 - [x] break_expression
-- [ ] case_block
+- [x] case_block
 - [x] character
 - [x] comment
 - [x] condition
@@ -171,7 +171,7 @@
 - [x] content_line
 - [x] continue_expression
 - [x] decimal_digit
-- [ ] structured_match
+- [x] structured_match
 - [x] else_block
 - [x] enum_declaration
 - [x] enum_members
@@ -207,7 +207,7 @@
 - [x] iterable
 - [x] iterable_header
 - [x] labeled_parameter
-- [ ] labeled_pattern
+- [x] labeled_pattern
 - [x] labeled_rest_parameter
 - [x] labeled_tuple
 - [x] labeled_tuple_member
@@ -216,18 +216,18 @@
 - [x] labeled_tuple_type_members
 - [x] leading_whitespace
 - [x] letter
-- [ ] list_match
+- [x] list_match
 - [x] lowercase_letter
-- [ ] match_condition
-- [ ] match_element
+- [x] match_condition
+- [x] match_element
 - [x] member_access_tail
 - [x] meta_expression
 - [x] module
 - [x] nonzero_digit
 - [x] not_eol
 - [x] octal_digit
-- [ ] pattern
-- [ ] pattern_match
+- [x] pattern
+- [x] pattern_match
 - [x] range
 - [x] range_bound
 - [x] relational_comparison_tail
@@ -237,11 +237,11 @@
 - [x] safe_indexed_access_tail
 - [x] simple_annotation
 - [x] step_expression
-- [ ] switch_statement
+- [x] switch_expression
 - [x] top_level_item
 - [x] tuple_member
 - [x] tuple_members
-- [ ] tuple_pattern
+- [x] tuple_pattern
 - [x] tuple_type_member
 - [x] tuple_type_members
 - [x] tuple_update_expression
@@ -272,14 +272,14 @@
 - [x] contract_member
 - [x] contract_function
 - [x] contract_field
-- [ ] switch_statement
-- [ ] case_block
-- [ ] pattern
-- [ ] pattern_match
-- [ ] structured_match
-- [ ] tuple_pattern
-- [ ] array_pattern
-- [ ] list_match
-- [ ] labeled_pattern
-- [ ] match_element
-- [ ] match_condition
+- [x] switch_expression
+- [x] case_block
+- [x] pattern
+- [x] pattern_match
+- [x] structured_match
+- [x] tuple_pattern
+- [x] array_pattern
+- [x] list_match
+- [x] labeled_pattern
+- [x] match_element
+- [x] match_condition

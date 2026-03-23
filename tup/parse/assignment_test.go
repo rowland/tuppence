@@ -87,7 +87,7 @@ func TestAssignment(t *testing.T) {
 			input:      "x, ...rest = (1, 2, 3)",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokComma, tok.TokOpRest, tok.TokID, tok.TokOpAssign, tok.TokOpenParen, tok.TokDecLit, tok.TokComma, tok.TokDecLit, tok.TokComma, tok.TokDecLit, tok.TokCloseParen, tok.TokEOF},
 			want: ast.NewAssignment(
-				ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("x", nil, 0, 1)}, ast.NewRestOperator(ast.NewIdentifier("...", nil, 0, 3))),
+				ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("x", nil, 0, 1)}, ast.NewRestOperator(ast.NewIdentifier("rest", nil, 0, 4))),
 				ast.Immutable,
 				ast.NewTupleLiteral(false, []*ast.TupleMember{
 					ast.NewTupleMember(nil, ast.NewDecimalLiteral("1", 1, nil, 0, 1)),
@@ -104,7 +104,7 @@ func TestAssignment(t *testing.T) {
 				ast.NewOrdinalAssignmentLHS([]*ast.Identifier{
 					ast.NewIdentifier("x", nil, 0, 1),
 					ast.NewIdentifier("y", nil, 0, 1),
-				}, ast.NewRestOperator(ast.NewIdentifier("...", nil, 0, 3))),
+				}, ast.NewRestOperator(nil)),
 				ast.Immutable,
 				ast.NewTupleLiteral(false, []*ast.TupleMember{
 					ast.NewTupleMember(nil, ast.NewDecimalLiteral("1", 1, nil, 0, 1)),
@@ -221,13 +221,13 @@ func TestOrdinalAssignmentLHS(t *testing.T) {
 			name:       "with rest binding",
 			input:      "x, ...rest",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokComma, tok.TokOpRest, tok.TokID, tok.TokEOF},
-			want:       ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("x", nil, 0, 1)}, ast.NewRestOperator(ast.NewIdentifier("...", nil, 0, 3))),
+			want:       ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("x", nil, 0, 1)}, ast.NewRestOperator(ast.NewIdentifier("rest", nil, 0, 4))),
 		},
 		{
 			name:       "with ignored rest binding",
 			input:      "x, y, ... = (1, 2, 3)",
 			tokenTypes: []tok.TokenType{tok.TokID, tok.TokComma, tok.TokID, tok.TokComma, tok.TokOpRest, tok.TokOpAssign, tok.TokOpenParen, tok.TokDecLit, tok.TokComma, tok.TokDecLit, tok.TokComma, tok.TokDecLit, tok.TokCloseParen, tok.TokEOF},
-			want:       ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("x", nil, 0, 1), ast.NewIdentifier("y", nil, 0, 1)}, ast.NewRestOperator(ast.NewIdentifier("...", nil, 0, 3))),
+			want:       ast.NewOrdinalAssignmentLHS([]*ast.Identifier{ast.NewIdentifier("x", nil, 0, 1), ast.NewIdentifier("y", nil, 0, 1)}, ast.NewRestOperator(nil)),
 		},
 		{
 			name:       "with multiple rest bindings (invalid)",

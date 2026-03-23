@@ -1,6 +1,10 @@
 package ast
 
-import "github.com/rowland/tuppence/tup/source"
+import (
+	"strings"
+
+	"github.com/rowland/tuppence/tup/source"
+)
 
 // type_reference = [ identifier { "." identifier } "." ] type_identifier .
 
@@ -19,7 +23,19 @@ func NewTypeReference(identifiers []*Identifier, typeIdentifier *TypeIdentifier,
 }
 
 func (t *TypeReference) String() string {
-	return t.TypeIdentifier.String()
+	if len(t.Identifiers) == 0 {
+		return t.TypeIdentifier.String()
+	}
+
+	var builder strings.Builder
+	builder.WriteString(t.Identifiers[0].String())
+	for _, identifier := range t.Identifiers[1:] {
+		builder.WriteString(".")
+		builder.WriteString(identifier.String())
+	}
+	builder.WriteString(".")
+	builder.WriteString(t.TypeIdentifier.String())
+	return builder.String()
 }
 
 // local_type_reference = type_reference | identifier .

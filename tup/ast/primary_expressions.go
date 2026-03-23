@@ -3,6 +3,7 @@ package ast
 // primary_expression = "(" expression ")"
 //	                  | block
 //	                  | if_expression
+//	                  | switch_expression
 //	                  | for_expression
 //	                  | inline_for_expression
 //	                  | array_function_call
@@ -29,6 +30,7 @@ type PrimaryExpression interface {
 
 func (n *Block) primaryExpressionNode()                 {}
 func (n *IfExpression) primaryExpressionNode()          {}
+func (n *SwitchExpression) primaryExpressionNode()      {}
 func (n *ForExpression) primaryExpressionNode()         {}
 func (n *InlineForExpression) primaryExpressionNode()   {}
 func (n *ArrayFunctionCall) primaryExpressionNode()     {}

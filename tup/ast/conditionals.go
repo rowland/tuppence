@@ -44,22 +44,22 @@ func (i *IfExpression) String() string {
 	return builder.String()
 }
 
-type CaseBlock struct {
+type SwitchCase struct {
 	BaseNode
-	Condition Node   // The case condition
-	Block     *Block // The case body
+	Condition MatchCondition
+	Body      *FunctionBlock
 }
 
-func NewCaseBlock(condition Node, block *Block) *CaseBlock {
-	return &CaseBlock{
-		BaseNode:  BaseNode{Type: NodeCaseBlock},
+func NewSwitchCase(condition MatchCondition, body *FunctionBlock) *SwitchCase {
+	return &SwitchCase{
+		BaseNode:  BaseNode{Type: NodeSwitchCase},
 		Condition: condition,
-		Block:     block,
+		Body:      body,
 	}
 }
 
-func (c *CaseBlock) String() string {
-	return c.Condition.String() + " " + c.Block.String()
+func (c *SwitchCase) String() string {
+	return c.Condition.String() + " " + c.Body.String()
 }
 
 type ElseBlock struct {
@@ -78,23 +78,23 @@ func (e *ElseBlock) String() string {
 	return "else " + e.Block.String()
 }
 
-type SwitchStatement struct {
+type SwitchExpression struct {
 	BaseNode
-	Expression Node         // The expression being switched on
-	Cases      []*CaseBlock // The case blocks
-	ElseBlock  *ElseBlock   // The optional else block (may be nil)
+	Expression Expression
+	Cases      []*SwitchCase
+	ElseBlock  *FunctionBlock
 }
 
-func NewSwitchStatement(expression Node, cases []*CaseBlock, elseBlock *ElseBlock) *SwitchStatement {
-	return &SwitchStatement{
-		BaseNode:   BaseNode{Type: NodeSwitchStatement},
+func NewSwitchExpression(expression Expression, cases []*SwitchCase, elseBlock *FunctionBlock) *SwitchExpression {
+	return &SwitchExpression{
+		BaseNode:   BaseNode{Type: NodeSwitchExpression},
 		Expression: expression,
 		Cases:      cases,
 		ElseBlock:  elseBlock,
 	}
 }
 
-func (s *SwitchStatement) String() string {
+func (s *SwitchExpression) String() string {
 	var builder strings.Builder
 	builder.WriteString("switch ")
 	builder.WriteString(s.Expression.String())
@@ -107,6 +107,7 @@ func (s *SwitchStatement) String() string {
 
 	if s.ElseBlock != nil {
 		builder.WriteString("\n  ")
+		builder.WriteString("else ")
 		builder.WriteString(s.ElseBlock.String())
 	}
 

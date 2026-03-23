@@ -126,6 +126,36 @@ _ = {
 # wrapped if expression
 _ = if ready { value } else { fallback }
 
+# wrapped switch expression
+_ = switch value {
+    1 { "one" }
+    2, 3, 4 { "small" }
+    5..9 { "medium" }
+    else { "large" }
+}
+
+# wrapped switch expression with type cases and implicit it
+_ = switch value {
+    Int, Int8 { |i| i }
+    String { it }
+    else { value }
+}
+
+# wrapped switch expression with structural and typed patterns
+_ = switch value {
+    Point(x: 0, y: 0) { "origin" }
+    (0, 0) { "origin tuple" }
+    [_, ...] { |head, ...tail| head }
+}
+
+# wrapped switch expression in lowered try style
+_ = {
+    switch result {
+        error { return it }
+        else { it }
+    }
+}
+
 # wrapped for expression with break in if
 _ = for i = 0 {
     if i >= 10 { break i }

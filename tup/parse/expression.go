@@ -471,6 +471,7 @@ func matchPostfixTail(expr ast.Expression, tokens []tok.Token, includeFunctionCa
 // postfix_base_expression = "(" expression ")"
 //                         | block
 //                         | if_expression
+//                         | switch_expression
 //                         | for_expression
 //                         | inline_for_expression
 //                         | array_function_call
@@ -513,6 +514,12 @@ func postfixBaseExpressionWithRange(tokens []tok.Token, includeRange bool) (expr
 
 	if ifExpression, remainder, err := IfExpression(tokens); err == nil {
 		return ifExpression, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if switchExpression, remainder, err := SwitchExpression(tokens); err == nil {
+		return switchExpression, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}

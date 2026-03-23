@@ -24,7 +24,7 @@ const (
 	NodeBlock
 	NodeBlockBody
 	NodeBlockParameters
-	NodeCaseBlock
+	NodeSwitchCase
 	NodeElseBlock
 	NodeForBlock
 	NodeForExpression
@@ -33,7 +33,7 @@ const (
 	NodeIfExpression
 	NodeInlineForExpression
 	NodeIterableHeader
-	NodeSwitchStatement
+	NodeSwitchExpression
 
 	// Declaration node types
 	NodeAnnotation
@@ -142,21 +142,15 @@ const (
 	NodeOrdinalAssignmentLHS
 	NodeLabeledAssignmentLHS
 	NodeLabeledPattern
+	NodeLabeledPatternMember
 	NodeListMatch
-	NodeMatchCondition
-	NodePatternMatch
-	NodeStructuredMatch
 
 	// Pattern and matching node types
 	NodeArrayPattern
 	NodeAssignment
 	NodeCompoundAssignment
-	NodeLiteralPattern
-	NodeMatchCase
-	NodeMatchExpression
-	NodePatternIdentifier
 	NodeTuplePattern
-	NodeTypePattern
+	NodeTypedPattern
 	NodeWildcardPattern
 
 	// PrimaryExpression node types
@@ -236,7 +230,7 @@ var NodeTypes = map[NodeType]string{
 	NodeBlock:               "Block",
 	NodeBlockBody:           "BlockBody",
 	NodeBlockParameters:     "BlockParameters",
-	NodeCaseBlock:           "CaseBlock",
+	NodeSwitchCase:          "SwitchCase",
 	NodeElseBlock:           "ElseBlock",
 	NodeForBlock:            "ForBlock",
 	NodeForExpression:       "ForExpression",
@@ -245,7 +239,7 @@ var NodeTypes = map[NodeType]string{
 	NodeIfExpression:        "IfExpression",
 	NodeInlineForExpression: "InlineForExpression",
 	NodeIterableHeader:      "IterableHeader",
-	NodeSwitchStatement:     "SwitchStatement",
+	NodeSwitchExpression:    "SwitchExpression",
 
 	// Declaration node types
 	NodeAnnotation:             "Annotation",
@@ -352,21 +346,15 @@ var NodeTypes = map[NodeType]string{
 	NodeOrdinalAssignmentLHS: "OrdinalAssignmentLHS",
 	NodeLabeledAssignmentLHS: "LabeledAssignmentLhs",
 	NodeLabeledPattern:       "LabeledPattern",
+	NodeLabeledPatternMember: "LabeledPatternMember",
 	NodeListMatch:            "ListMatch",
-	NodeMatchCondition:       "MatchCondition",
-	NodePatternMatch:         "PatternMatch",
-	NodeStructuredMatch:      "StructuredMatch",
 
 	// Pattern and matching node types
 	NodeArrayPattern:       "ArrayPattern",
 	NodeAssignment:         "Assignment",
 	NodeCompoundAssignment: "CompoundAssignment",
-	NodeLiteralPattern:     "LiteralPattern",
-	NodeMatchCase:          "MatchCase",
-	NodeMatchExpression:    "MatchExpression",
-	NodePatternIdentifier:  "PatternIdentifier",
 	NodeTuplePattern:       "TuplePattern",
-	NodeTypePattern:        "TypePattern",
+	NodeTypedPattern:       "TypedPattern",
 	NodeWildcardPattern:    "WildcardPattern",
 
 	// PrimaryExpression node types

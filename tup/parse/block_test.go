@@ -140,6 +140,57 @@ func TestBlock(t *testing.T) {
 			),
 		},
 		{
+			name: "block with switch statement before final expression",
+			input: `{
+    switch value {
+        1 { "one" }
+        else { "other" }
+    }
+    fallback
+}`,
+			want: ast.NewBlock(
+				ast.NewBlockBody(
+					[]ast.Statement{
+						ast.NewSwitchExpression(
+							ast.NewIdentifier("value", nil, 0, 5),
+							[]*ast.SwitchCase{
+								ast.NewSwitchCase(
+									ast.NewConstant(ast.NewDecimalLiteral("1", 1, nil, 0, 1)),
+									ast.NewFunctionBlock(nil, ast.NewBlockBody(nil, ast.NewStringLiteral(`"one"`, "one", nil, 0, 5))),
+								),
+							},
+							ast.NewFunctionBlock(nil, ast.NewBlockBody(nil, ast.NewStringLiteral(`"other"`, "other", nil, 0, 7))),
+						),
+					},
+					ast.NewIdentifier("fallback", nil, 0, 8),
+				),
+			),
+		},
+		{
+			name: "block with switch final expression",
+			input: `{
+    switch value {
+        1 { "one" }
+        else { "other" }
+    }
+}`,
+			want: ast.NewBlock(
+				ast.NewBlockBody(
+					nil,
+					ast.NewSwitchExpression(
+						ast.NewIdentifier("value", nil, 0, 5),
+						[]*ast.SwitchCase{
+							ast.NewSwitchCase(
+								ast.NewConstant(ast.NewDecimalLiteral("1", 1, nil, 0, 1)),
+								ast.NewFunctionBlock(nil, ast.NewBlockBody(nil, ast.NewStringLiteral(`"one"`, "one", nil, 0, 5))),
+							),
+						},
+						ast.NewFunctionBlock(nil, ast.NewBlockBody(nil, ast.NewStringLiteral(`"other"`, "other", nil, 0, 7))),
+					),
+				),
+			),
+		},
+		{
 			name:    "block ending with assignment",
 			input:   "{ x = 1 }",
 			want:    nil,

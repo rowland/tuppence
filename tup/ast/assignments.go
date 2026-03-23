@@ -88,6 +88,12 @@ func (o *OrdinalAssignmentLHS) String() string {
 		}
 		builder.WriteString(identifier.String())
 	}
+	if o.RestOperator != nil {
+		if len(o.Identifiers) > 0 {
+			builder.WriteString(", ")
+		}
+		builder.WriteString(o.RestOperator.String())
+	}
 	return builder.String()
 }
 

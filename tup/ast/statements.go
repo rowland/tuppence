@@ -36,6 +36,7 @@ func (s *ItExpression) statementNode()                     {}
 func (s *FunctionIdentifier) statementNode()               {}
 func (s *Block) statementNode()                            {}
 func (s *IfExpression) statementNode()                     {}
+func (s *SwitchExpression) statementNode()                 {}
 func (s *ForExpression) statementNode()                    {}
 func (s *InlineForExpression) statementNode()              {}
 func (s *ArrayFunctionCall) statementNode()                {}

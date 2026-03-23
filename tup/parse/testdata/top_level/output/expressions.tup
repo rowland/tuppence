@@ -58,10 +58,10 @@ _ = IPv4Address[1, 2, 3, 4]
 _ = IPv4Address { |i| i + 1 }
 
 # wrapped namespaced fixed-size array expression
-_ = Address[1, 2, 3, 4]
+_ = ipv4.Address[1, 2, 3, 4]
 
 # wrapped namespaced fixed-size array block initializer
-_ = Address { |i| i + 1 }
+_ = ipv4.Address { |i| i + 1 }
 
 # wrapped import expression
 _ = import("math")
@@ -127,6 +127,36 @@ _ = if ready {
     value
 } else {
     fallback
+}
+
+# wrapped switch expression
+_ = switch value {
+  1 { "one" }
+  2, 3, 4 { "small" }
+  5..9 { "medium" }
+  else { "large" }
+}
+
+# wrapped switch expression with type cases and implicit it
+_ = switch value {
+  Int, Int8 { |i| i }
+  String { it }
+  else { value }
+}
+
+# wrapped switch expression with structural and typed patterns
+_ = switch value {
+  Point(x: 0, y: 0) { "origin" }
+  (0, 0) { "origin tuple" }
+  [_, ...] { |head, ...tail| head }
+}
+
+# wrapped switch expression in lowered try style
+_ = {
+    switch result {
+      error { return it }
+      else { it }
+    }
 }
 
 # wrapped for expression with break in if

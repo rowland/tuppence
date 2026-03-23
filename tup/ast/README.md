@@ -38,7 +38,7 @@ The AST nodes are organized into several logical categories:
 5. **Declarations** - Represent declarations of variables, functions, and types (e.g., `FunctionDeclaration`, `TypeDeclaration`)
 6. **Statements** - Represent actions to be performed (e.g., `Assignment`, `ReturnExpression`)
 7. **Control Flow** - Represent flow control constructs (e.g., `IfExpression`, `ForExpression`)
-8. **Pattern Matching** - Represent pattern matching constructs (e.g., `MatchExpression`, `PatternMatch`)
+8. **Pattern Matching** - Represent switch-pattern constructs (e.g., `ListMatch`, `TypedPattern`)
 9. **Operators** - Represent operator constructs (e.g., `AddSubOp`, `RelOp`)
 10. **Miscellaneous** - Other constructs (e.g., `Comment`, `Module`)
 
@@ -54,7 +54,7 @@ The AST nodes are organized into several files based on their categories:
 - `declarations.go` - Declaration nodes
 - `operators.go` - Operator nodes
 - `controlflow.go` - Control flow nodes
-- `pattern_matching.go` - Pattern matching nodes
+- `patterns.go` - Pattern matching nodes
 - `primary_expressions.go` - Primary expression nodes
 - `contracts.go` - Contract and union declaration nodes
 - `annotations.go` - Annotation-related nodes

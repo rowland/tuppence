@@ -28,7 +28,7 @@ array_literal = fixed_size_array array_initializer
 
 array_members = expression { "," expression } [ "," ] .
 
-array_pattern = "[" pattern { "," pattern } [ "," rest_operator ] "]" .
+array_pattern = "[" [ pattern { "," pattern } [ "," "..." ] | "..." ] "]" .
 
 array_type = fixed_size_array | dynamic_array .
 
@@ -59,7 +59,7 @@ break_expression = "break" [ expression ] .
 
 byte_escape_sequence = "\\" "x" hex_digit hex_digit .
 
-case_block = match_condition block .
+case_block = match_condition function_block .
 
 chained_expression = logical_or_expression { pipe_op function_call } .
 
@@ -294,7 +294,7 @@ leading_whitespace = { " " | "\t" } .
 
 letter = "a"-"z" | "A"-"Z" .
 
-list_match = match_element { "," match_element } .
+list_match = match_element "," match_element { "," match_element } .
 
 literal = number
         | boolean_literal
@@ -326,9 +326,12 @@ lt_op = "<" .
 lte_op = "<=" .
 
 match_condition = list_match
-                | pattern_match .
+                | pattern .
 
-match_element = constant | range .
+match_element = constant
+              | range
+              | inferred_error_type
+              | type_reference .
 
 match_op = "=~" .
 
@@ -388,13 +391,12 @@ parameters = ( parameter | rest_parameter ) { "," ( parameter | rest_parameter )
 
 partial_application = "," "*" .
 
-pattern = labeled_pattern
-        | tuple_pattern
-        | identifier .
+pattern = "_"
+        | pattern_match
+        | match_element .
 
-pattern_match = type_reference "(" pattern ")" 
-              | structured_match
-              | type_reference .
+pattern_match = type_reference structured_match
+              | structured_match .
 
 pipe_op = "|>" .
 
@@ -414,6 +416,7 @@ postfix_expression = postfix_base_expression { postfix_tail }
 postfix_base_expression = "(" expression ")"
                         | block
                         | if_expression
+                        | switch_expression
                         | for_expression
                         | inline_for_expression
                         | array_function_call
@@ -503,7 +506,9 @@ structured_match = labeled_pattern
 
 sub_op = "-" .
 
-switch_statement = "switch" expression "{" case_block { case_block } [ else_block ] "}" .
+switch_expression = "switch" expression "{" case_block { case_block } [ switch_else_block ] "}" .
+
+switch_else_block = "else" function_block .
 
 symbol_literal = ":" identifier .
 

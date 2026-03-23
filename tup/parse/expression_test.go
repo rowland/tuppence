@@ -107,6 +107,29 @@ func TestExpression(t *testing.T) {
 			want:  ast.NewContinueExpression(nil),
 		},
 		{
+			name: "switch expression",
+			input: `switch value {
+    1 { "one" }
+    else { "other" }
+}`,
+			want: ast.NewSwitchExpression(
+				ast.NewIdentifier("value", nil, 0, 5),
+				[]*ast.SwitchCase{
+					ast.NewSwitchCase(
+						ast.NewConstant(ast.NewDecimalLiteral("1", 1, nil, 0, 1)),
+						ast.NewFunctionBlock(
+							nil,
+							ast.NewBlockBody(nil, ast.NewStringLiteral(`"one"`, "one", nil, 0, 5)),
+						),
+					),
+				},
+				ast.NewFunctionBlock(
+					nil,
+					ast.NewBlockBody(nil, ast.NewStringLiteral(`"other"`, "other", nil, 0, 7)),
+				),
+			),
+		},
+		{
 			name:  "continue expression with value",
 			input: "continue i",
 			want: ast.NewContinueExpression(

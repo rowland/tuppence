@@ -2,6 +2,7 @@ package ast
 
 var _ PrimaryExpression = &Block{}
 var _ PrimaryExpression = &IfExpression{}
+var _ PrimaryExpression = &SwitchExpression{}
 var _ PrimaryExpression = &ForExpression{}
 var _ PrimaryExpression = &InlineForExpression{}
 var _ PrimaryExpression = &ArrayFunctionCall{}

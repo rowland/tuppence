@@ -1,120 +1,94 @@
 package ast
 
-type PatternIdentifier struct {
+import "strings"
+
+// match_condition = list_match | pattern .
+
+type MatchCondition interface {
+	Node
+	matchConditionNode()
+}
+
+// pattern = wildcard_pattern
+//         | typed_pattern
+//         | labeled_pattern
+//         | tuple_pattern
+//         | array_pattern
+//         | match_element
+//         | type_reference .
+
+type Pattern interface {
+	MatchCondition
+	patternNode()
+}
+
+// match_element = constant | range | type_reference .
+
+type MatchElement interface {
+	Node
+	matchElementNode()
+}
+
+func (n *Constant) matchConditionNode()          {}
+func (n *Range) matchConditionNode()             {}
+func (n *InferredErrorType) matchConditionNode() {}
+func (n *TypeReference) matchConditionNode()     {}
+func (n *ListMatch) matchConditionNode()         {}
+func (n *WildcardPattern) matchConditionNode()   {}
+func (n *TypedPattern) matchConditionNode()      {}
+func (n *LabeledPattern) matchConditionNode()    {}
+func (n *TuplePattern) matchConditionNode()      {}
+func (n *ArrayPattern) matchConditionNode()      {}
+
+func (n *Constant) patternNode()          {}
+func (n *Range) patternNode()             {}
+func (n *InferredErrorType) patternNode() {}
+func (n *TypeReference) patternNode()     {}
+func (n *WildcardPattern) patternNode()   {}
+func (n *TypedPattern) patternNode()      {}
+func (n *LabeledPattern) patternNode()    {}
+func (n *TuplePattern) patternNode()      {}
+func (n *ArrayPattern) patternNode()      {}
+
+func (n *Constant) matchElementNode()          {}
+func (n *Range) matchElementNode()             {}
+func (n *InferredErrorType) matchElementNode() {}
+func (n *TypeReference) matchElementNode()     {}
+
+// list_match = match_element { "," match_element } .
+
+type ListMatch struct {
 	BaseNode
-	Name string
+	Elements []MatchElement
 }
 
-func NewPatternIdentifier(name string) *PatternIdentifier {
-	return &PatternIdentifier{
-		BaseNode: BaseNode{Type: NodePatternIdentifier},
-		Name:     name,
-	}
-}
-
-func (p *PatternIdentifier) String() string {
-	return p.Name
-}
-
-type TuplePattern struct {
-	BaseNode
-	Elements []Node // Pattern elements
-}
-
-func NewTuplePattern(elements []Node) *TuplePattern {
-	return &TuplePattern{
-		BaseNode: BaseNode{Type: NodeTuplePattern},
+func NewListMatch(elements []MatchElement) *ListMatch {
+	return &ListMatch{
+		BaseNode: BaseNode{Type: NodeListMatch},
 		Elements: elements,
 	}
 }
 
-func (p *TuplePattern) String() string {
-	result := "("
-	for i, elem := range p.Elements {
+func (l *ListMatch) String() string {
+	var builder strings.Builder
+	for i, elem := range l.Elements {
 		if i > 0 {
-			result += ", "
+			builder.WriteString(", ")
 		}
-		result += elem.String()
+		builder.WriteString(elem.String())
 	}
-	result += ")"
-	return result
+	return builder.String()
 }
 
-type ArrayPattern struct {
-	BaseNode
-	Elements []Node // Pattern elements
-	Rest     Node   // Optional rest pattern (e.g., [a, b, ...rest])
-}
+// wildcard_pattern = "_" .
 
-func NewArrayPattern(elements []Node, rest Node) *ArrayPattern {
-	return &ArrayPattern{
-		BaseNode: BaseNode{Type: NodeArrayPattern},
-		Elements: elements,
-		Rest:     rest,
-	}
-}
-
-func (p *ArrayPattern) String() string {
-	result := "["
-	for i, elem := range p.Elements {
-		if i > 0 {
-			result += ", "
-		}
-		result += elem.String()
-	}
-	if p.Rest != nil {
-		if len(p.Elements) > 0 {
-			result += ", "
-		}
-		result += "..." + p.Rest.String()
-	}
-	result += "]"
-	return result
-}
-
-// TypePattern represents a type pattern in pattern matching (e.g., x is Type)
-type TypePattern struct {
-	BaseNode
-	Identifier Node // The identifier to check
-	TypeRef    Node // The type to check against
-}
-
-func NewTypePattern(identifier, typeRef Node) *TypePattern {
-	return &TypePattern{
-		BaseNode:   BaseNode{Type: NodeTypePattern},
-		Identifier: identifier,
-		TypeRef:    typeRef,
-	}
-}
-
-func (p *TypePattern) String() string {
-	return p.Identifier.String() + " is " + p.TypeRef.String()
-}
-
-type LiteralPattern struct {
-	BaseNode
-	Value Node // The literal value to match against
-}
-
-func NewLiteralPattern(value Node) *LiteralPattern {
-	return &LiteralPattern{
-		BaseNode: BaseNode{Type: NodeLiteralPattern},
-		Value:    value,
-	}
-}
-
-func (p *LiteralPattern) String() string {
-	return p.Value.String()
-}
-
-// WildcardPattern represents a wildcard (_) in pattern matching
 type WildcardPattern struct {
 	BaseNode
 }
 
-func NewWildcardPattern() *WildcardPattern {
+func NewWildcardPattern(identifier *Identifier) *WildcardPattern {
 	return &WildcardPattern{
-		BaseNode: BaseNode{Type: NodeWildcardPattern},
+		BaseNode: BaseNode{Type: NodeWildcardPattern, Source: identifier.Source, StartOffset: identifier.StartOffset, Length: identifier.Length},
 	}
 }
 
@@ -122,51 +96,129 @@ func (p *WildcardPattern) String() string {
 	return "_"
 }
 
-// MatchCase represents a case in a match expression
-type MatchCase struct {
+// tuple_pattern = "(" pattern { "," pattern } ")" .
+
+type TuplePattern struct {
 	BaseNode
-	Pattern Node // The pattern to match against
-	Body    Node // The body to execute if pattern matches
-	Guard   Node // Optional guard condition
+	Elements []Pattern
 }
 
-func NewMatchCase(pattern, body Node, guard Node) *MatchCase {
-	return &MatchCase{
-		BaseNode: BaseNode{Type: NodeMatchCase},
+func NewTuplePattern(elements []Pattern) *TuplePattern {
+	return &TuplePattern{
+		BaseNode: BaseNode{Type: NodeTuplePattern},
+		Elements: elements,
+	}
+}
+
+func (p *TuplePattern) String() string {
+	var builder strings.Builder
+	builder.WriteString("(")
+	for i, elem := range p.Elements {
+		if i > 0 {
+			builder.WriteString(", ")
+		}
+		builder.WriteString(elem.String())
+	}
+	builder.WriteString(")")
+	return builder.String()
+}
+
+// labeled_pattern = "(" identifier ":" pattern { "," identifier ":" pattern } ")" .
+
+type LabeledPatternMember struct {
+	BaseNode
+	Label   *Identifier
+	Pattern Pattern
+}
+
+func NewLabeledPatternMember(label *Identifier, pattern Pattern) *LabeledPatternMember {
+	return &LabeledPatternMember{
+		BaseNode: BaseNode{Type: NodeLabeledPatternMember},
+		Label:    label,
 		Pattern:  pattern,
-		Body:     body,
-		Guard:    guard,
 	}
 }
 
-func (c *MatchCase) String() string {
-	result := c.Pattern.String()
-	if c.Guard != nil {
-		result += " if " + c.Guard.String()
-	}
-	result += " => " + c.Body.String()
-	return result
+func (l *LabeledPatternMember) String() string {
+	return l.Label.String() + ": " + l.Pattern.String()
 }
 
-type MatchExpression struct {
+type LabeledPattern struct {
 	BaseNode
-	Subject Node         // The expression being matched
-	Cases   []*MatchCase // The match cases
+	Members []*LabeledPatternMember
 }
 
-func NewMatchExpression(subject Node, cases []*MatchCase) *MatchExpression {
-	return &MatchExpression{
-		BaseNode: BaseNode{Type: NodeMatchExpression},
-		Subject:  subject,
-		Cases:    cases,
+func NewLabeledPattern(members []*LabeledPatternMember) *LabeledPattern {
+	return &LabeledPattern{
+		BaseNode: BaseNode{Type: NodeLabeledPattern},
+		Members:  members,
 	}
 }
 
-func (m *MatchExpression) String() string {
-	result := "match " + m.Subject.String() + " {\n"
-	for _, c := range m.Cases {
-		result += "  " + c.String() + "\n"
+func (l *LabeledPattern) String() string {
+	var builder strings.Builder
+	builder.WriteString("(")
+	for i, member := range l.Members {
+		if i > 0 {
+			builder.WriteString(", ")
+		}
+		builder.WriteString(member.String())
 	}
-	result += "}"
-	return result
+	builder.WriteString(")")
+	return builder.String()
+}
+
+// array_pattern = "[" pattern { "," pattern } [ "," rest_operator ] "]" .
+
+type ArrayPattern struct {
+	BaseNode
+	Elements []Pattern
+	HasRest  bool
+}
+
+func NewArrayPattern(elements []Pattern, hasRest bool) *ArrayPattern {
+	return &ArrayPattern{
+		BaseNode: BaseNode{Type: NodeArrayPattern},
+		Elements: elements,
+		HasRest:  hasRest,
+	}
+}
+
+func (p *ArrayPattern) String() string {
+	var builder strings.Builder
+	builder.WriteString("[")
+	for i, elem := range p.Elements {
+		if i > 0 {
+			builder.WriteString(", ")
+		}
+		builder.WriteString(elem.String())
+	}
+	if p.HasRest {
+		if len(p.Elements) > 0 {
+			builder.WriteString(", ")
+		}
+		builder.WriteString("...")
+	}
+	builder.WriteString("]")
+	return builder.String()
+}
+
+// typed_pattern = type_reference pattern .
+
+type TypedPattern struct {
+	BaseNode
+	Type    *TypeReference
+	Pattern Pattern
+}
+
+func NewTypedPattern(typeRef *TypeReference, pattern Pattern) *TypedPattern {
+	return &TypedPattern{
+		BaseNode: BaseNode{Type: NodeTypedPattern},
+		Type:     typeRef,
+		Pattern:  pattern,
+	}
+}
+
+func (t *TypedPattern) String() string {
+	return t.Type.String() + t.Pattern.String()
 }

@@ -14,6 +14,7 @@ var _ Expression = &ItExpression{}
 var _ Expression = &FunctionIdentifier{}
 var _ Expression = &Block{}
 var _ Expression = &IfExpression{}
+var _ Expression = &SwitchExpression{}
 var _ Expression = &ForExpression{}
 var _ Expression = &InlineForExpression{}
 var _ Expression = &ArrayFunctionCall{}

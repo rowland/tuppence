@@ -52,5 +52,8 @@ func NewRestOperator(identifier *Identifier) *RestOperator {
 }
 
 func (r *RestOperator) String() string {
+	if r.Identifier == nil {
+		return "..."
+	}
 	return "..." + r.Identifier.String()
 }

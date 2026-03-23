@@ -31,6 +31,7 @@ func (n *ItExpression) expressionNode()          {}
 func (n *FunctionIdentifier) expressionNode()    {}
 func (n *Block) expressionNode()                 {}
 func (n *IfExpression) expressionNode()          {}
+func (n *SwitchExpression) expressionNode()      {}
 func (n *ForExpression) expressionNode()         {}
 func (n *InlineForExpression) expressionNode()   {}
 func (n *ArrayFunctionCall) expressionNode()     {}
