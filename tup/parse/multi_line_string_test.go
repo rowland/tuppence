@@ -165,7 +165,7 @@ func TestMultiLineStringLiteral(t *testing.T) {
 	}
 }
 
-func contents(parts ...ast.Node) *ast.InterpolatedStringLiteral {
+func contents(parts ...ast.InterpolatedStringPart) *ast.InterpolatedStringLiteral {
 	return &ast.InterpolatedStringLiteral{
 		BaseNode: ast.BaseNode{Type: ast.NodeInterpolatedStringLiteral},
 		Parts:    parts,

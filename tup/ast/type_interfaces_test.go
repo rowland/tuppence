@@ -81,6 +81,9 @@ var _ ContractFieldType = &TupleType{}
 var _ ContractFieldType = &GenericType{}
 var _ ContractFieldType = &InlineUnion{}
 
+var _ InterpolatedStringPart = &StringLiteral{}
+var _ InterpolatedStringPart = &Interpolation{}
+
 var _ ConstantValue = &FloatLiteral{}
 var _ ConstantValue = &IntegerLiteral{}
 var _ ConstantValue = &BooleanLiteral{}

@@ -67,8 +67,8 @@ func InterpolatedStringLiteral(tokens []tok.Token) (*ast.InterpolatedStringLiter
 	}, remainder[1:], nil
 }
 
-func parseInterpolatedStringParts(src *source.Source, startOffset int32, content string) ([]ast.Node, error) {
-	parts := []ast.Node{}
+func parseInterpolatedStringParts(src *source.Source, startOffset int32, content string) ([]ast.InterpolatedStringPart, error) {
+	parts := []ast.InterpolatedStringPart{}
 	segmentStart := 0
 
 	for i := 0; i < len(content); i++ {

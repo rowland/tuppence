@@ -49,6 +49,14 @@ func (r *RawStringLiteral) String() string {
 
 // interpolation = "\\(" expression ")" .
 
+type InterpolatedStringPart interface {
+	Node
+	interpolatedStringPartNode()
+}
+
+func (s *StringLiteral) interpolatedStringPartNode() {}
+func (i *Interpolation) interpolatedStringPartNode() {}
+
 // Interpolation represents an interpolated expression within a string
 type Interpolation struct {
 	BaseNode
@@ -72,11 +80,11 @@ func (i *Interpolation) String() string {
 // InterpolatedStringLiteral represents a string literal with interpolated expressions
 type InterpolatedStringLiteral struct {
 	BaseNode
-	Parts []Node
+	Parts []InterpolatedStringPart
 }
 
 // NewInterpolatedStringLiteral creates a new InterpolatedStringLiteral node
-func NewInterpolatedStringLiteral(parts []Node, source *source.Source) *InterpolatedStringLiteral {
+func NewInterpolatedStringLiteral(parts []InterpolatedStringPart, source *source.Source) *InterpolatedStringLiteral {
 	return &InterpolatedStringLiteral{
 		BaseNode: BaseNode{Type: NodeInterpolatedStringLiteral, Source: source, StartOffset: int32(parts[0].Pos().Offset), Length: int32(parts[len(parts)-1].End().Offset - parts[0].Pos().Offset)},
 		Parts:    parts,

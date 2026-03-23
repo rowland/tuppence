@@ -52,7 +52,7 @@ func TestInterpolatedStringLiteral(t *testing.T) {
 			name:  "single interpolation",
 			input: `"Hello \(name)!"`,
 			want: &ast.InterpolatedStringLiteral{
-				Parts: []ast.Node{
+				Parts: []ast.InterpolatedStringPart{
 					ast.NewStringLiteral("Hello ", "Hello ", nil, 0, 6),
 					&ast.Interpolation{Expression: ast.NewIdentifier("name", nil, 0, 4)},
 					ast.NewStringLiteral("!", "!", nil, 0, 1),
@@ -63,7 +63,7 @@ func TestInterpolatedStringLiteral(t *testing.T) {
 			name:  "multiple interpolations",
 			input: `"\(first) \(last)"`,
 			want: &ast.InterpolatedStringLiteral{
-				Parts: []ast.Node{
+				Parts: []ast.InterpolatedStringPart{
 					&ast.Interpolation{Expression: ast.NewIdentifier("first", nil, 0, 5)},
 					ast.NewStringLiteral(" ", " ", nil, 0, 1),
 					&ast.Interpolation{Expression: ast.NewIdentifier("last", nil, 0, 4)},
@@ -74,7 +74,7 @@ func TestInterpolatedStringLiteral(t *testing.T) {
 			name:  "expression interpolation",
 			input: `"Sum: \(a + b)"`,
 			want: &ast.InterpolatedStringLiteral{
-				Parts: []ast.Node{
+				Parts: []ast.InterpolatedStringPart{
 					ast.NewStringLiteral("Sum: ", "Sum: ", nil, 0, 5),
 					&ast.Interpolation{
 						Expression: ast.NewAddSubExpression(
@@ -90,7 +90,7 @@ func TestInterpolatedStringLiteral(t *testing.T) {
 			name:  "adjacent interpolations",
 			input: `"\(a)\(b)"`,
 			want: &ast.InterpolatedStringLiteral{
-				Parts: []ast.Node{
+				Parts: []ast.InterpolatedStringPart{
 					&ast.Interpolation{Expression: ast.NewIdentifier("a", nil, 0, 1)},
 					&ast.Interpolation{Expression: ast.NewIdentifier("b", nil, 0, 1)},
 				},
