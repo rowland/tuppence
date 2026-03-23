@@ -2,7 +2,7 @@ package ast
 
 import "strings"
 
-// type_argument = type | generic_type .
+// type_argument = type .
 
 type TypeArgumentType interface {
 	Node

@@ -70,6 +70,105 @@ func TestTypeParameters(t *testing.T) {
 	}
 }
 
+func TestType(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    ast.TypeArgumentType
+		wantErr bool
+	}{
+		{
+			name:  "fixed size array",
+			input: "[4]Byte",
+			want: ast.NewFixedSizeArrayType(
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Byte", nil, 0, 4), nil, 0, 4),
+				ast.NewDecimalLiteral("4", 4, nil, 0, 1),
+			),
+		},
+		{
+			name:  "dynamic array",
+			input: "[]Byte",
+			want: ast.NewDynamicArrayType(
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Byte", nil, 0, 4), nil, 0, 4),
+			),
+		},
+		{
+			name:  "generic type",
+			input: "Numeric[a]",
+			want: ast.NewGenericType(
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Numeric", nil, 0, 7), nil, 0, 7),
+				ast.NewTypeArgumentList([]*ast.TypeArgument{
+					ast.NewTypeArgument(ast.NewIdentifier("a", nil, 0, 1)),
+				}),
+			),
+		},
+		{
+			name:  "function type",
+			input: "fn(a) String",
+			want: ast.NewFunctionType(
+				false,
+				[]ast.FunctionTypeParameter{
+					ast.NewParameter(ast.NewAnnotations(nil), ast.NewIdentifier("a", nil, 0, 1)),
+				},
+				ast.NewReturnType(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+				),
+			),
+		},
+		{
+			name:  "error tuple",
+			input: "error(code: Int)",
+			want: ast.NewErrorTuple(
+				ast.NewTupleType([]ast.TupleTypeMemberNode{
+					ast.NewLabeledTupleTypeMember(
+						nil,
+						ast.NewIdentifier("code", nil, 0, 4),
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					),
+				}),
+			),
+		},
+		{
+			name:  "tuple type",
+			input: "(name: String)",
+			want: ast.NewTupleType([]ast.TupleTypeMemberNode{
+				ast.NewLabeledTupleTypeMember(
+					nil,
+					ast.NewIdentifier("name", nil, 0, 4),
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+				),
+			}),
+		},
+		{
+			name:  "inline union",
+			input: "(Int | String)",
+			want: ast.NewInlineUnion(
+				ast.NewUnionType([]ast.UnionMemberType{
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+				}),
+			),
+		},
+		{
+			name:  "type reference",
+			input: "Foo",
+			want:  ast.NewTypeReference(nil, ast.NewTypeIdentifier("Foo", nil, 0, 3), nil, 0, 3),
+		},
+		{
+			name:  "local type reference",
+			input: "a",
+			want:  ast.NewIdentifier("a", nil, 0, 1),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"Type", Type, StringerCheck[ast.TypeArgumentType])
+		})
+	}
+}
+
 func TestNilableType(t *testing.T) {
 	tests := []struct {
 		name    string

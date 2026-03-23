@@ -124,7 +124,7 @@
                         - [x] parameters
                             - [x] parameter
                                 - [x] nilable_type
-                                - [ ] type
+                                - [x] type
                                     - [x] fixed_size_array
                                         - [x] array_type
                                     - [x] dynamic_array

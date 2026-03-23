@@ -232,7 +232,7 @@ func RestParameter(tokens []tok.Token) (*ast.RestParameter, []tok.Token, error) 
 		return nil, remainder, err
 	}
 
-	paramType, remainder, err := functionTypeType(remainder)
+	paramType, remainder, err := Type(remainder)
 	if err == ErrNoMatch {
 		return nil, remainder, errorExpecting("type", remainder)
 	} else if err != nil {
@@ -301,12 +301,6 @@ func functionTypeParameterValue(tokens []tok.Token) (ast.FunctionTypeParameterTy
 		return nil, remainder, err
 	}
 
-	if tupleType, remainder, err := TupleType(tokens); err == nil {
-		return tupleType, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
 	if genericType, remainder, err := GenericType(tokens); err == nil {
 		return genericType, remainder, nil
 	} else if err != ErrNoMatch {
@@ -315,6 +309,12 @@ func functionTypeParameterValue(tokens []tok.Token) (ast.FunctionTypeParameterTy
 
 	if inlineUnion, remainder, err := InlineUnion(tokens); err == nil {
 		return inlineUnion, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if tupleType, remainder, err := TupleType(tokens); err == nil {
+		return tupleType, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
@@ -357,7 +357,16 @@ func functionTypeParameterValue(tokens []tok.Token) (ast.FunctionTypeParameterTy
 	return nil, tokens, ErrNoMatch
 }
 
-func functionTypeType(tokens []tok.Token) (ast.TypeArgumentType, []tok.Token, error) {
+// type = fixed_size_array
+//      | dynamic_array
+//      | function_type
+//      | error_tuple
+//      | generic_type
+//      | inline_union
+//      | tuple_type
+//      | local_type_reference .
+
+func Type(tokens []tok.Token) (ast.TypeArgumentType, []tok.Token, error) {
 	if functionType, remainder, err := FunctionType(tokens); err == nil {
 		return functionType, remainder, nil
 	} else if err != ErrNoMatch {
@@ -382,22 +391,29 @@ func functionTypeType(tokens []tok.Token) (ast.TypeArgumentType, []tok.Token, er
 		return nil, remainder, err
 	}
 
-	if tupleType, remainder, err := TupleType(tokens); err == nil {
-		return tupleType, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
 	if genericType, remainder, err := GenericType(tokens); err == nil {
 		return genericType, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
-	if inlineUnion, remainder, err := InlineUnion(tokens); err == nil {
-		return inlineUnion, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
+	remainder := skipTrivia(tokens)
+	if peek(remainder).Type == tok.TokOpenParen {
+		inlineUnion, inlineRemainder, inlineErr := InlineUnion(tokens)
+		if inlineErr == nil {
+			return inlineUnion, inlineRemainder, nil
+		}
+
+		tupleType, tupleRemainder, tupleErr := TupleType(tokens)
+		if tupleErr == nil {
+			return tupleType, tupleRemainder, nil
+		} else if tupleErr != ErrNoMatch {
+			return nil, tupleRemainder, tupleErr
+		}
+
+		if inlineErr != ErrNoMatch {
+			return nil, inlineRemainder, inlineErr
+		}
 	}
 
 	// local_type_reference = type_reference | identifier .

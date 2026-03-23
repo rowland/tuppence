@@ -456,56 +456,11 @@ func GenericType(tokens []tok.Token) (*ast.GenericType, []tok.Token, error) {
 	return ast.NewGenericType(typeReference, typeArguments), remainder, nil
 }
 
-// type_argument = type
-//               | generic_type .
-//
-// The parser currently implements the already-supported subset of type:
-// function_type, generic_type, array types, error_tuple, tuple_type, and
-// local_type_reference.
+// type_argument = type .
 
 func TypeArgument(tokens []tok.Token) (*ast.TypeArgument, []tok.Token, error) {
-	if functionType, remainder, err := FunctionType(tokens); err == nil {
-		return ast.NewTypeArgument(functionType), remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if genericType, remainder, err := GenericType(tokens); err == nil {
-		return ast.NewTypeArgument(genericType), remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if dynamicArray, remainder, err := DynamicArray(tokens); err == nil {
-		return ast.NewTypeArgument(dynamicArray), remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if fixedSizeArray, remainder, err := FixedSizeArray(tokens); err == nil {
-		return ast.NewTypeArgument(fixedSizeArray), remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if errorTuple, remainder, err := ErrorTuple(tokens); err == nil {
-		return ast.NewTypeArgument(errorTuple), remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if tupleType, remainder, err := TupleType(tokens); err == nil {
-		return ast.NewTypeArgument(tupleType), remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if localTypeReference, remainder, err := LocalTypeReference(tokens); err == nil {
-		typeArgumentType, ok := localTypeReference.(ast.TypeArgumentType)
-		if !ok {
-			return nil, remainder, errorExpecting("type argument type", remainder)
-		}
-		return ast.NewTypeArgument(typeArgumentType), remainder, nil
+	if typeNode, remainder, err := Type(tokens); err == nil {
+		return ast.NewTypeArgument(typeNode), remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
@@ -556,12 +511,8 @@ func TypeArgumentList(tokens []tok.Token) (*ast.TypeArgumentList, []tok.Token, e
 // return_type = union_with_error
 //             | union_declaration_with_error
 //             | nilable_type
-//             | type
-//             | "error" .
-//
-// The parser currently implements the already-supported subset of type:
-// function_type, generic_type, array types, error_tuple, tuple_type,
-// local_type_reference, and inline_union.
+//             | "error"
+//             | type .
 
 func ReturnType(tokens []tok.Token) (*ast.ReturnType, []tok.Token, error) {
 	if unionWithError, remainder, err := UnionWithError(tokens); err == nil {
@@ -582,60 +533,30 @@ func ReturnType(tokens []tok.Token) (*ast.ReturnType, []tok.Token, error) {
 		return nil, remainder, err
 	}
 
-	if functionType, remainder, err := FunctionType(tokens); err == nil {
-		return ast.NewReturnType(functionType), remainder, nil
+	if inferredErrorType, remainder, err := InferredErrorType(tokens); err == nil {
+		return ast.NewReturnType(inferredErrorType), remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
-	if genericType, remainder, err := GenericType(tokens); err == nil {
-		return ast.NewReturnType(genericType), remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if dynamicArray, remainder, err := DynamicArray(tokens); err == nil {
-		return ast.NewReturnType(dynamicArray), remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if fixedSizeArray, remainder, err := FixedSizeArray(tokens); err == nil {
-		return ast.NewReturnType(fixedSizeArray), remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	remainder := skipTrivia(tokens)
-	if peek(remainder).Type == tok.TokKwError {
-		return ast.NewReturnType(ast.NewInferredErrorType()), remainder[1:], nil
-	}
-
-	if errorTuple, remainder, err := ErrorTuple(tokens); err == nil {
-		return ast.NewReturnType(errorTuple), remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if inlineUnion, remainder, err := InlineUnion(tokens); err == nil {
-		return ast.NewReturnType(inlineUnion), remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if tupleType, remainder, err := TupleType(tokens); err == nil {
-		return ast.NewReturnType(tupleType), remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if localTypeReference, remainder, err := LocalTypeReference(tokens); err == nil {
-		return ast.NewReturnType(localTypeReference), remainder, nil
+	if typeNode, remainder, err := Type(tokens); err == nil {
+		return ast.NewReturnType(typeNode), remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
 	return nil, tokens, ErrNoMatch
+}
+
+// inferred_error_type = "error" .
+
+func InferredErrorType(tokens []tok.Token) (*ast.InferredErrorType, []tok.Token, error) {
+	remainder := skipTrivia(tokens)
+	if peek(remainder).Type != tok.TokKwError {
+		return nil, tokens, ErrNoMatch
+	}
+
+	return ast.NewInferredErrorType(), remainder[1:], nil
 }
 
 // union_declaration = "union" "(" eol union_members ")" .
@@ -931,7 +852,7 @@ func ContractField(tokens []tok.Token) (*ast.ContractField, []tok.Token, error) 
 		return nil, tokens, ErrNoMatch
 	}
 
-	fieldType, remainder, err := contractFieldType(remainder)
+	fieldType, remainder, err := ContractFieldType(remainder)
 	if err == ErrNoMatch {
 		return nil, remainder, errorExpecting("contract field type", remainder)
 	} else if err != nil {
@@ -1320,75 +1241,15 @@ func tupleTypeMemberType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
 	return nil, tokens, ErrNoMatch
 }
 
-func contractFieldType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
+func ContractFieldType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
 	if nilableType, remainder, err := NilableType(tokens); err == nil {
 		return nilableType, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
-	if functionType, remainder, err := FunctionType(tokens); err == nil {
-		return functionType, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if dynamicArray, remainder, err := DynamicArray(tokens); err == nil {
-		return dynamicArray, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if fixedSizeArray, remainder, err := FixedSizeArray(tokens); err == nil {
-		return fixedSizeArray, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if errorTuple, remainder, err := ErrorTuple(tokens); err == nil {
-		return errorTuple, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if tupleType, remainder, err := TupleType(tokens); err == nil {
-		return tupleType, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if genericType, remainder, err := GenericType(tokens); err == nil {
-		return genericType, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if inlineUnion, remainder, err := InlineUnion(tokens); err == nil {
-		return inlineUnion, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if unionDeclaration, remainder, err := UnionDeclaration(tokens); err == nil {
-		return unionDeclaration, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if unionType, remainder, err := UnionType(tokens); err == nil {
-		return unionType, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if typeReference, remainder, err := TypeReference(tokens); err == nil {
-		return typeReference, remainder, nil
-	} else if err != ErrNoMatch {
-		return nil, remainder, err
-	}
-
-	if identifier, remainder, err := Identifier(tokens); err == nil {
-		return identifier, remainder, nil
+	if fieldType, remainder, err := Type(tokens); err == nil {
+		return fieldType, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
