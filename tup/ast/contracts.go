@@ -15,17 +15,17 @@ type ContractFieldType interface {
 	contractFieldTypeNode()
 }
 
-func (n *NilableType) contractFieldTypeNode()      {}
-func (n *TypeReference) contractFieldTypeNode()    {}
-func (n *Identifier) contractFieldTypeNode()       {}
-func (n *DynamicArrayType) contractFieldTypeNode() {}
-func (n *FixedSizeArrayType) contractFieldTypeNode() {
+func (n *NilableType) contractFieldTypeNode()   {}
+func (n *TypeReference) contractFieldTypeNode() {}
+func (n *Identifier) contractFieldTypeNode()    {}
+func (n *DynamicArrayType) contractFieldTypeNode() {
 }
-func (n *FunctionType) contractFieldTypeNode() {}
-func (n *ErrorTuple) contractFieldTypeNode()   {}
-func (n *TupleType) contractFieldTypeNode()    {}
-func (n *GenericType) contractFieldTypeNode()  {}
-func (n *InlineUnion) contractFieldTypeNode()  {}
+func (n *FixedSizeArrayType) contractFieldTypeNode() {}
+func (n *FunctionType) contractFieldTypeNode()       {}
+func (n *ErrorTuple) contractFieldTypeNode()         {}
+func (n *TupleType) contractFieldTypeNode()          {}
+func (n *GenericType) contractFieldTypeNode()        {}
+func (n *InlineUnion) contractFieldTypeNode()        {}
 
 // contract_function = function_declaration_lhs "=" function_type .
 

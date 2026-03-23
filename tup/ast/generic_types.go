@@ -4,27 +4,28 @@ import "strings"
 
 // type_argument = type .
 
-type TypeArgumentType interface {
-	Node
-	typeArgumentTypeNode()
+type TypeNode interface {
+	ContractFieldType
+	ReturnTypeValue
+	typeNode()
 }
 
-func (n *TypeReference) typeArgumentTypeNode()      {}
-func (n *Identifier) typeArgumentTypeNode()         {}
-func (n *DynamicArrayType) typeArgumentTypeNode()   {}
-func (n *FixedSizeArrayType) typeArgumentTypeNode() {}
-func (n *FunctionType) typeArgumentTypeNode()       {}
-func (n *ErrorTuple) typeArgumentTypeNode()         {}
-func (n *TupleType) typeArgumentTypeNode()          {}
-func (n *GenericType) typeArgumentTypeNode()        {}
-func (n *InlineUnion) typeArgumentTypeNode()        {}
+func (n *TypeReference) typeNode()      {}
+func (n *Identifier) typeNode()         {}
+func (n *DynamicArrayType) typeNode()   {}
+func (n *FixedSizeArrayType) typeNode() {}
+func (n *FunctionType) typeNode()       {}
+func (n *ErrorTuple) typeNode()         {}
+func (n *TupleType) typeNode()          {}
+func (n *GenericType) typeNode()        {}
+func (n *InlineUnion) typeNode()        {}
 
 type TypeArgument struct {
 	BaseNode
-	Type TypeArgumentType
+	Type TypeNode
 }
 
-func NewTypeArgument(item TypeArgumentType) *TypeArgument {
+func NewTypeArgument(item TypeNode) *TypeArgument {
 	return &TypeArgument{
 		BaseNode: BaseNode{Type: NodeTypeArgument},
 		Type:     item,

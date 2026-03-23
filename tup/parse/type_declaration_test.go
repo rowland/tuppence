@@ -74,7 +74,7 @@ func TestType(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    ast.TypeArgumentType
+		want    ast.TypeNode
 		wantErr bool
 	}{
 		{
@@ -164,7 +164,7 @@ func TestType(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
-				"Type", Type, StringerCheck[ast.TypeArgumentType])
+				"Type", Type, StringerCheck[ast.TypeNode])
 		})
 	}
 }

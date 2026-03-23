@@ -1257,11 +1257,7 @@ func ContractFieldType(tokens []tok.Token) (ast.ContractFieldType, []tok.Token, 
 	}
 
 	if fieldType, remainder, err := Type(tokens); err == nil {
-		contractFieldType, ok := any(fieldType).(ast.ContractFieldType)
-		if !ok {
-			return nil, remainder, errorExpecting("contract field type", remainder)
-		}
-		return contractFieldType, remainder, nil
+		return fieldType, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}

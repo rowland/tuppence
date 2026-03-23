@@ -115,10 +115,10 @@ func (l *LabeledParameter) String() string {
 
 type RestParameter struct {
 	BaseNode
-	Type TypeArgumentType // Parameter type
+	Type TypeNode // Parameter type
 }
 
-func NewRestParameter(paramType TypeArgumentType) *RestParameter {
+func NewRestParameter(paramType TypeNode) *RestParameter {
 	return &RestParameter{
 		BaseNode: BaseNode{Type: NodeRestParameter},
 		Type:     paramType,
@@ -180,15 +180,34 @@ func (i *InferredErrorType) String() string {
 // return_type = union_with_error
 //             | union_declaration_with_error
 //             | nilable_type
-//             | type
-//             | "error" .
+//             | "error"
+//             | type .
+
+type ReturnTypeValue interface {
+	Node
+	returnTypeValueNode()
+}
+
+func (n *UnionWithError) returnTypeValueNode()            {}
+func (n *UnionDeclarationWithError) returnTypeValueNode() {}
+func (n *NilableType) returnTypeValueNode()               {}
+func (n *InferredErrorType) returnTypeValueNode()         {}
+func (n *TypeReference) returnTypeValueNode()             {}
+func (n *Identifier) returnTypeValueNode()                {}
+func (n *DynamicArrayType) returnTypeValueNode()          {}
+func (n *FixedSizeArrayType) returnTypeValueNode()        {}
+func (n *FunctionType) returnTypeValueNode()              {}
+func (n *ErrorTuple) returnTypeValueNode()                {}
+func (n *TupleType) returnTypeValueNode()                 {}
+func (n *GenericType) returnTypeValueNode()               {}
+func (n *InlineUnion) returnTypeValueNode()               {}
 
 type ReturnType struct {
 	BaseNode
-	Type Node // Return type
+	Type ReturnTypeValue // Return type
 }
 
-func NewReturnType(returnType Node) *ReturnType {
+func NewReturnType(returnType ReturnTypeValue) *ReturnType {
 	return &ReturnType{
 		BaseNode: BaseNode{Type: NodeReturnType},
 		Type:     returnType,

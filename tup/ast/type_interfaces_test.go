@@ -57,15 +57,15 @@ var _ FunctionTypeParameterType = &RuneLiteral{}
 var _ TupleTypeMemberNode = &TupleTypeMember{}
 var _ TupleTypeMemberNode = &LabeledTupleTypeMember{}
 
-var _ TypeArgumentType = &TypeReference{}
-var _ TypeArgumentType = &Identifier{}
-var _ TypeArgumentType = &DynamicArrayType{}
-var _ TypeArgumentType = &FixedSizeArrayType{}
-var _ TypeArgumentType = &FunctionType{}
-var _ TypeArgumentType = &ErrorTuple{}
-var _ TypeArgumentType = &TupleType{}
-var _ TypeArgumentType = &GenericType{}
-var _ TypeArgumentType = &InlineUnion{}
+var _ TypeNode = &TypeReference{}
+var _ TypeNode = &Identifier{}
+var _ TypeNode = &DynamicArrayType{}
+var _ TypeNode = &FixedSizeArrayType{}
+var _ TypeNode = &FunctionType{}
+var _ TypeNode = &ErrorTuple{}
+var _ TypeNode = &TupleType{}
+var _ TypeNode = &GenericType{}
+var _ TypeNode = &InlineUnion{}
 
 var _ TypePredicate = &TypeReference{}
 var _ TypePredicate = &InlineUnion{}
@@ -80,6 +80,20 @@ var _ ContractFieldType = &ErrorTuple{}
 var _ ContractFieldType = &TupleType{}
 var _ ContractFieldType = &GenericType{}
 var _ ContractFieldType = &InlineUnion{}
+
+var _ ReturnTypeValue = &UnionWithError{}
+var _ ReturnTypeValue = &UnionDeclarationWithError{}
+var _ ReturnTypeValue = &NilableType{}
+var _ ReturnTypeValue = &InferredErrorType{}
+var _ ReturnTypeValue = &TypeReference{}
+var _ ReturnTypeValue = &Identifier{}
+var _ ReturnTypeValue = &DynamicArrayType{}
+var _ ReturnTypeValue = &FixedSizeArrayType{}
+var _ ReturnTypeValue = &FunctionType{}
+var _ ReturnTypeValue = &ErrorTuple{}
+var _ ReturnTypeValue = &TupleType{}
+var _ ReturnTypeValue = &GenericType{}
+var _ ReturnTypeValue = &InlineUnion{}
 
 var _ InterpolatedStringPart = &StringLiteral{}
 var _ InterpolatedStringPart = &Interpolation{}

@@ -366,7 +366,7 @@ func functionTypeParameterValue(tokens []tok.Token) (ast.FunctionTypeParameterTy
 //      | tuple_type
 //      | local_type_reference .
 
-func Type(tokens []tok.Token) (ast.TypeArgumentType, []tok.Token, error) {
+func Type(tokens []tok.Token) (ast.TypeNode, []tok.Token, error) {
 	if functionType, remainder, err := FunctionType(tokens); err == nil {
 		return functionType, remainder, nil
 	} else if err != ErrNoMatch {
