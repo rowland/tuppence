@@ -55,10 +55,10 @@ func (n *LabeledTupleTypeMember) tupleTypeMemberNode() {}
 type TupleTypeMember struct {
 	BaseNode
 	Annotations *Annotations // Optional annotations
-	Type        Node         // Member type
+	Type        FunctionTypeParameterType
 }
 
-func NewTupleTypeMember(annotations *Annotations, memberType Node) *TupleTypeMember {
+func NewTupleTypeMember(annotations *Annotations, memberType FunctionTypeParameterType) *TupleTypeMember {
 	return &TupleTypeMember{
 		BaseNode:    BaseNode{Type: NodeTupleTypeMember},
 		Annotations: annotations,
@@ -83,10 +83,10 @@ type LabeledTupleTypeMember struct {
 	BaseNode
 	Annotations *Annotations // Optional annotations
 	Identifier  *Identifier  // Field name
-	Type        Node         // Field type
+	Type        FunctionTypeParameterType
 }
 
-func NewLabeledTupleTypeMember(annotations *Annotations, identifier *Identifier, memberType Node) *LabeledTupleTypeMember {
+func NewLabeledTupleTypeMember(annotations *Annotations, identifier *Identifier, memberType FunctionTypeParameterType) *LabeledTupleTypeMember {
 	return &LabeledTupleTypeMember{
 		BaseNode:    BaseNode{Type: NodeLabeledTupleTypeMember},
 		Annotations: annotations,

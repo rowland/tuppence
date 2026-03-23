@@ -1170,7 +1170,7 @@ func TupleTypeMember(tokens []tok.Token) (*ast.TupleTypeMember, []tok.Token, err
 		return nil, remainder, err
 	}
 
-	var memberType ast.Node
+	var memberType ast.FunctionTypeParameterType
 	if memberType, remainder, err = tupleTypeMemberType(remainder); err != nil {
 		return nil, remainder, err
 	}
@@ -1207,7 +1207,7 @@ func TupleTypeMembers(tokens []tok.Token) ([]ast.TupleTypeMemberNode, []tok.Toke
 	return members, remainder, nil
 }
 
-func tupleTypeMemberType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
+func tupleTypeMemberType(tokens []tok.Token) (ast.FunctionTypeParameterType, []tok.Token, error) {
 	if nilableType, remainder, err := NilableType(tokens); err == nil {
 		return nilableType, remainder, nil
 	} else if err != ErrNoMatch {
@@ -1227,13 +1227,21 @@ func tupleTypeMemberType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
 	}
 
 	if localTypeReference, remainder, err := LocalTypeReference(tokens); err == nil {
-		return localTypeReference, remainder, nil
+		memberType, ok := any(localTypeReference).(ast.FunctionTypeParameterType)
+		if !ok {
+			return nil, remainder, errorExpecting("tuple type member type", remainder)
+		}
+		return memberType, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
 
 	if literal, remainder, err := Literal(tokens); err == nil {
-		return literal, remainder, nil
+		memberType, ok := any(literal).(ast.FunctionTypeParameterType)
+		if !ok {
+			return nil, remainder, errorExpecting("tuple type member type", remainder)
+		}
+		return memberType, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
