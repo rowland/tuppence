@@ -142,11 +142,11 @@
                                             - [x] union_member_no_annotations
                                 - [x] union_member
                                     - [x] named_tuple
-                                    - [ ] contract_declaration
-                                        - [ ] contract_members
-                                            - [ ] contract_member
-                                                - [ ] contract_function
-                                                - [ ] contract_field
+                                    - [x] contract_declaration
+                                        - [x] contract_members
+                                            - [x] contract_member
+                                                - [x] contract_function
+                                                - [x] contract_field
                         - [x] return_type
                             - [x] union_with_error
                             - [x] union_declaration_with_error
@@ -267,11 +267,11 @@
 - [x] indented_closing
 - [x] leading_whitespace
 - [x] not_eol
-- [ ] contract_declaration
-- [ ] contract_members
-- [ ] contract_member
-- [ ] contract_function
-- [ ] contract_field
+- [x] contract_declaration
+- [x] contract_members
+- [x] contract_member
+- [x] contract_function
+- [x] contract_field
 - [ ] switch_statement
 - [ ] case_block
 - [ ] pattern

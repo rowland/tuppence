@@ -309,7 +309,7 @@ Annotation values may be strings, numbers, booleans, or type references:
     @bool:true true
     @type:implements core.Numeric
 
-Annotations may appear before declarations and before tuple, union, enum, and contract members where
+Annotations may appear before declarations and before tuple, union, and enum members where
 the grammar permits them.
 
 ## Assignments
@@ -1023,20 +1023,20 @@ The example above is equivalent to:
 
 A `contract` declares a required interface for types that satisfy it:
 
-    Stringer[a] = contract (
+    Stringer[a] = contract(
         string[a] = fn(a) String
     )
 
 Contracts may require functions:
 
-    Numeric[a] = contract (
+    Numeric[a] = contract(
         add[a] = fn(a, a) a
         sub[a] = fn(a, a) a
     )
 
 and fields:
 
-    HasIntID = contract (
+    HasIntID = contract(
         id: Int
     )
 

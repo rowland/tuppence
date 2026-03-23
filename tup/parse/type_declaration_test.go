@@ -397,6 +397,56 @@ func TestTypeDeclaration(t *testing.T) {
 			),
 		},
 		{
+			name:  "function-only contract rhs",
+			input: "Stringer[a] = contract(\n    string[a] = fn(a) String\n)",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(
+					nil,
+					ast.NewTypeIdentifier("Stringer", nil, 0, 8),
+					ast.NewTypeParameters([]*ast.TypeParameter{
+						ast.NewTypeParameter(ast.NewIdentifier("a", nil, 0, 1)),
+					}),
+				),
+				ast.NewContractDeclaration(
+					ast.NewContractMembers([]ast.ContractMemberNode{
+						ast.NewContractFunction(
+							ast.NewFunctionDeclarationLHS(
+								ast.NewFunctionIdentifier("string", nil, 0, 6),
+								ast.NewFunctionParameterTypes([]ast.FunctionParameterType{
+									ast.NewIdentifier("a", nil, 0, 1),
+								}),
+							),
+							ast.NewFunctionType(
+								false,
+								[]ast.FunctionTypeParameter{
+									ast.NewParameter(ast.NewAnnotations(nil), ast.NewIdentifier("a", nil, 0, 1)),
+								},
+								ast.NewReturnType(
+									ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+								),
+							),
+						),
+					}),
+				),
+			),
+		},
+		{
+			name:  "field-only contract rhs",
+			input: "HasIntID = contract(\n    id: Int\n)",
+			want: ast.NewTypeDeclaration(
+				ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("HasIntID", nil, 0, 8), nil),
+				ast.NewContractDeclaration(
+					ast.NewContractMembers([]ast.ContractMemberNode{
+						ast.NewContractField(
+							ast.NewIdentifier("id", nil, 0, 2),
+							nil,
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+						),
+					}),
+				),
+			),
+		},
+		{
 			name:  "fixed size array rhs",
 			input: "IPv4 = [4]Byte",
 			want: ast.NewTypeDeclaration(
@@ -518,6 +568,244 @@ func TestEnumDeclaration(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
 				"EnumDeclaration", EnumDeclaration, StringerCheck[*ast.EnumDeclaration])
+		})
+	}
+}
+
+func TestContractFunction(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.ContractFunction
+		wantErr bool
+	}{
+		{
+			name:  "contract function with selector types",
+			input: "add[a] = fn(a, a) a",
+			want: ast.NewContractFunction(
+				ast.NewFunctionDeclarationLHS(
+					ast.NewFunctionIdentifier("add", nil, 0, 3),
+					ast.NewFunctionParameterTypes([]ast.FunctionParameterType{
+						ast.NewIdentifier("a", nil, 0, 1),
+					}),
+				),
+				ast.NewFunctionType(
+					false,
+					[]ast.FunctionTypeParameter{
+						ast.NewParameter(ast.NewAnnotations(nil), ast.NewIdentifier("a", nil, 0, 1)),
+						ast.NewParameter(ast.NewAnnotations(nil), ast.NewIdentifier("a", nil, 0, 1)),
+					},
+					ast.NewReturnType(ast.NewIdentifier("a", nil, 0, 1)),
+				),
+			),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"ContractFunction", ContractFunction, StringerCheck[*ast.ContractFunction])
+		})
+	}
+}
+
+func TestContractField(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.ContractField
+		wantErr bool
+	}{
+		{
+			name:  "field without type parameter",
+			input: "id: Int",
+			want: ast.NewContractField(
+				ast.NewIdentifier("id", nil, 0, 2),
+				nil,
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+			),
+		},
+		{
+			name:  "field with type parameter",
+			input: "id[a]: Numeric[a]",
+			want: ast.NewContractField(
+				ast.NewIdentifier("id", nil, 0, 2),
+				ast.NewTypeParameter(ast.NewIdentifier("a", nil, 0, 1)),
+				ast.NewGenericType(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Numeric", nil, 0, 7), nil, 0, 7),
+					ast.NewTypeArgumentList([]*ast.TypeArgument{
+						ast.NewTypeArgument(ast.NewIdentifier("a", nil, 0, 1)),
+					}),
+				),
+			),
+		},
+		{
+			name:  "field with nilable type",
+			input: "id[a]: ?Numeric[a]",
+			want: ast.NewContractField(
+				ast.NewIdentifier("id", nil, 0, 2),
+				ast.NewTypeParameter(ast.NewIdentifier("a", nil, 0, 1)),
+				ast.NewNilableType(
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Numeric", nil, 0, 7), nil, 0, 7),
+				),
+			),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"ContractField", ContractField, StringerCheck[*ast.ContractField])
+		})
+	}
+}
+
+func TestContractMember(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    ast.ContractMemberNode
+		wantErr bool
+	}{
+		{
+			name:  "function member",
+			input: "string[a] = fn(a) String",
+			want: ast.NewContractFunction(
+				ast.NewFunctionDeclarationLHS(
+					ast.NewFunctionIdentifier("string", nil, 0, 6),
+					ast.NewFunctionParameterTypes([]ast.FunctionParameterType{
+						ast.NewIdentifier("a", nil, 0, 1),
+					}),
+				),
+				ast.NewFunctionType(
+					false,
+					[]ast.FunctionTypeParameter{
+						ast.NewParameter(ast.NewAnnotations(nil), ast.NewIdentifier("a", nil, 0, 1)),
+					},
+					ast.NewReturnType(
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+					),
+				),
+			),
+		},
+		{
+			name:  "field member",
+			input: "id: Int",
+			want: ast.NewContractField(
+				ast.NewIdentifier("id", nil, 0, 2),
+				nil,
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+			),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"ContractMember", ContractMember, StringerCheck[ast.ContractMemberNode])
+		})
+	}
+}
+
+func TestContractMembers(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.ContractMembers
+		wantErr bool
+	}{
+		{
+			name:  "mixed members",
+			input: "add[a] = fn(a, a) a\nid: Int\n",
+			want: ast.NewContractMembers([]ast.ContractMemberNode{
+				ast.NewContractFunction(
+					ast.NewFunctionDeclarationLHS(
+						ast.NewFunctionIdentifier("add", nil, 0, 3),
+						ast.NewFunctionParameterTypes([]ast.FunctionParameterType{
+							ast.NewIdentifier("a", nil, 0, 1),
+						}),
+					),
+					ast.NewFunctionType(
+						false,
+						[]ast.FunctionTypeParameter{
+							ast.NewParameter(ast.NewAnnotations(nil), ast.NewIdentifier("a", nil, 0, 1)),
+							ast.NewParameter(ast.NewAnnotations(nil), ast.NewIdentifier("a", nil, 0, 1)),
+						},
+						ast.NewReturnType(ast.NewIdentifier("a", nil, 0, 1)),
+					),
+				),
+				ast.NewContractField(
+					ast.NewIdentifier("id", nil, 0, 2),
+					nil,
+					ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+				),
+			}),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"ContractMembers", ContractMembers, StringerCheck[*ast.ContractMembers])
+		})
+	}
+}
+
+func TestContractDeclaration(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    *ast.ContractDeclaration
+		wantErr bool
+	}{
+		{
+			name: "function-only contract",
+			input: "contract(\n" +
+				"string[a] = fn(a) String\n" +
+				")",
+			want: ast.NewContractDeclaration(
+				ast.NewContractMembers([]ast.ContractMemberNode{
+					ast.NewContractFunction(
+						ast.NewFunctionDeclarationLHS(
+							ast.NewFunctionIdentifier("string", nil, 0, 6),
+							ast.NewFunctionParameterTypes([]ast.FunctionParameterType{
+								ast.NewIdentifier("a", nil, 0, 1),
+							}),
+						),
+						ast.NewFunctionType(
+							false,
+							[]ast.FunctionTypeParameter{
+								ast.NewParameter(ast.NewAnnotations(nil), ast.NewIdentifier("a", nil, 0, 1)),
+							},
+							ast.NewReturnType(
+								ast.NewTypeReference(nil, ast.NewTypeIdentifier("String", nil, 0, 6), nil, 0, 6),
+							),
+						),
+					),
+				}),
+			),
+		},
+		{
+			name: "field-only contract",
+			input: "contract(\n" +
+				"id: Int\n" +
+				")",
+			want: ast.NewContractDeclaration(
+				ast.NewContractMembers([]ast.ContractMemberNode{
+					ast.NewContractField(
+						ast.NewIdentifier("id", nil, 0, 2),
+						nil,
+						ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+					),
+				}),
+			),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			RunParseTest(t, test.name, test.input, test.want, test.wantErr,
+				"ContractDeclaration", ContractDeclaration, StringerCheck[*ast.ContractDeclaration])
 		})
 	}
 }
@@ -1029,6 +1317,24 @@ func TestUnionType(t *testing.T) {
 					}),
 				),
 				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Card", nil, 0, 4), nil, 0, 4),
+			}),
+		},
+		{
+			name: "contract declaration member union type",
+			input: "Int | contract(\n" +
+				"    id: Int\n" +
+				")",
+			want: ast.NewUnionType([]ast.UnionMemberType{
+				ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+				ast.NewContractDeclaration(
+					ast.NewContractMembers([]ast.ContractMemberNode{
+						ast.NewContractField(
+							ast.NewIdentifier("id", nil, 0, 2),
+							nil,
+							ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 0, 3), nil, 0, 3),
+						),
+					}),
+				),
 			}),
 		},
 		{

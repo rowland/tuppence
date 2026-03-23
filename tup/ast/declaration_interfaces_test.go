@@ -24,12 +24,16 @@ var _ ExportDeclaration = &ExportTypeDeclaration{}
 var _ ExportDeclaration = &ExportFunctionDeclaration{}
 var _ ExportDeclaration = &ExportAssignment{}
 
+var _ ContractMemberNode = &ContractFunction{}
+var _ ContractMemberNode = &ContractField{}
+
 var _ UnionMemberType = &NamedTuple{}
 var _ UnionMemberType = &GenericType{}
 var _ UnionMemberType = &DynamicArrayType{}
 var _ UnionMemberType = &FixedSizeArrayType{}
 var _ UnionMemberType = &TypeReference{}
 var _ UnionMemberType = &Identifier{}
+var _ UnionMemberType = &ContractDeclaration{}
 
 var _ UnionDeclarationMemberType = &NamedTuple{}
 var _ UnionDeclarationMemberType = &GenericType{}

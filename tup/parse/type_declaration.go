@@ -750,8 +750,34 @@ func EnumDeclaration(tokens []tok.Token) (*ast.EnumDeclaration, []tok.Token, err
 
 // contract_declaration = "contract" "(" eol contract_members ")" .
 
-func ContractDeclaration(tokens []tok.Token) (ast.TypeDeclarationRHS, []tok.Token, error) {
-	return nil, tokens, ErrNoMatch // TODO: Implement
+func ContractDeclaration(tokens []tok.Token) (*ast.ContractDeclaration, []tok.Token, error) {
+	remainder := skipTrivia(tokens)
+	if peek(remainder).Type != tok.TokKwContract {
+		return nil, tokens, ErrNoMatch
+	}
+	remainder = remainder[1:]
+
+	var found bool
+	if remainder, found = OpenParen(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokOpenParen, remainder)
+	}
+
+	if remainder, found = EOL(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokEOL, remainder)
+	}
+
+	members, remainder, err := ContractMembers(remainder)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("contract members", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	if remainder, found = CloseParen(remainder); !found {
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseParen, remainder)
+	}
+
+	return ast.NewContractDeclaration(members), remainder, nil
 }
 
 // enum_members = enum_member_declaration { eol enum_member_declaration } eol .
@@ -806,6 +832,113 @@ func EnumMemberDeclaration(tokens []tok.Token) (*ast.EnumMember, []tok.Token, er
 	}
 
 	return ast.NewEnumMember(annotations, name, value), remainder, nil
+}
+
+// contract_members = contract_member { eol contract_member } eol .
+
+func ContractMembers(tokens []tok.Token) (*ast.ContractMembers, []tok.Token, error) {
+	first, remainder, err := ContractMember(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	members := []ast.ContractMemberNode{first}
+	for {
+		remainder2, found := EOL(remainder)
+		if !found {
+			return nil, remainder, errorExpectingTokenType(tok.TokEOL, remainder)
+		}
+
+		next, remainder3, err := ContractMember(remainder2)
+		if err == ErrNoMatch {
+			return ast.NewContractMembers(members), remainder2, nil
+		} else if err != nil {
+			return nil, remainder3, err
+		}
+
+		members = append(members, next)
+		remainder = remainder3
+	}
+}
+
+// contract_member = contract_function | contract_field .
+
+func ContractMember(tokens []tok.Token) (ast.ContractMemberNode, []tok.Token, error) {
+	if contractFunction, remainder, err := ContractFunction(tokens); err == nil {
+		return contractFunction, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if contractField, remainder, err := ContractField(tokens); err == nil {
+		return contractField, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
+}
+
+// contract_function = function_declaration_lhs "=" function_type .
+
+func ContractFunction(tokens []tok.Token) (*ast.ContractFunction, []tok.Token, error) {
+	lhs, remainder, err := FunctionDeclarationLHS(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	var found bool
+	if remainder, found = AssignOp(remainder); !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	functionType, remainder, err := FunctionType(remainder)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("function type", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewContractFunction(lhs, functionType), remainder, nil
+}
+
+// contract_field = identifier [ "[" type_parameter "]" ] ":" ( nilable_type | type ) .
+
+func ContractField(tokens []tok.Token) (*ast.ContractField, []tok.Token, error) {
+	name, remainder, err := Identifier(tokens)
+	if err != nil {
+		return nil, remainder, err
+	}
+
+	var typeParameter *ast.TypeParameter
+	if remainder2, found := OpenBracket(remainder); found {
+		typeParameter, remainder2, err = TypeParameter(remainder2)
+		if err == ErrNoMatch {
+			return nil, remainder2, errorExpecting("type parameter", remainder2)
+		} else if err != nil {
+			return nil, remainder2, err
+		}
+
+		if remainder2, found = CloseBracket(remainder2); !found {
+			return nil, remainder2, errorExpectingTokenType(tok.TokCloseBracket, remainder2)
+		}
+
+		remainder = remainder2
+	}
+
+	var found bool
+	if remainder, found = Colon(remainder); !found {
+		return nil, tokens, ErrNoMatch
+	}
+
+	fieldType, remainder, err := contractFieldType(remainder)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("contract field type", remainder)
+	} else if err != nil {
+		return nil, remainder, err
+	}
+
+	return ast.NewContractField(name, typeParameter, fieldType), remainder, nil
 }
 
 // union_member_declaration = annotations named_tuple
@@ -951,11 +1084,7 @@ func UnionMember(tokens []tok.Token) (ast.UnionMemberType, []tok.Token, error) {
 	}
 
 	if contractDeclaration, remainder, err := ContractDeclaration(tokens); err == nil {
-		member, ok := contractDeclaration.(ast.UnionMemberType)
-		if !ok {
-			return nil, remainder, errorExpecting("union member type", remainder)
-		}
-		return member, remainder, nil
+		return contractDeclaration, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}
@@ -1184,6 +1313,82 @@ func tupleTypeMemberType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
 
 	if literal, remainder, err := Literal(tokens); err == nil {
 		return literal, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	return nil, tokens, ErrNoMatch
+}
+
+func contractFieldType(tokens []tok.Token) (ast.Node, []tok.Token, error) {
+	if nilableType, remainder, err := NilableType(tokens); err == nil {
+		return nilableType, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if functionType, remainder, err := FunctionType(tokens); err == nil {
+		return functionType, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if dynamicArray, remainder, err := DynamicArray(tokens); err == nil {
+		return dynamicArray, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if fixedSizeArray, remainder, err := FixedSizeArray(tokens); err == nil {
+		return fixedSizeArray, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if errorTuple, remainder, err := ErrorTuple(tokens); err == nil {
+		return errorTuple, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if tupleType, remainder, err := TupleType(tokens); err == nil {
+		return tupleType, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if genericType, remainder, err := GenericType(tokens); err == nil {
+		return genericType, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if inlineUnion, remainder, err := InlineUnion(tokens); err == nil {
+		return inlineUnion, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if unionDeclaration, remainder, err := UnionDeclaration(tokens); err == nil {
+		return unionDeclaration, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if unionType, remainder, err := UnionType(tokens); err == nil {
+		return unionType, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if typeReference, remainder, err := TypeReference(tokens); err == nil {
+		return typeReference, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
+	}
+
+	if identifier, remainder, err := Identifier(tokens); err == nil {
+		return identifier, remainder, nil
 	} else if err != ErrNoMatch {
 		return nil, remainder, err
 	}

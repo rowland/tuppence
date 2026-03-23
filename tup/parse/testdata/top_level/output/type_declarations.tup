@@ -56,6 +56,16 @@ Result[a] = union (
     Err(a)
 )
 
+# function-only contract rhs
+Stringer[a] = contract(
+    string[a] = fn(a) String
+)
+
+# field-only contract rhs
+HasIntID = contract(
+    id: Int
+)
+
 # enum declaration rhs
 Fruit = enum(
     apple
