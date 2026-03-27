@@ -19,5 +19,5 @@ expecting "block", got "" at row 1, col 12
 # if expression with block condition missing then branch
 expecting "block", got "" at row 1, col 13
 
-# chained call missing closing paren
+# function call missing closing paren
 expecting ")", got "" at row 1, col 13
