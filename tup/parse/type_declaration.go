@@ -1145,7 +1145,7 @@ func LabeledTupleTypeMembers(tokens []tok.Token) ([]ast.TupleTypeMemberNode, []t
 
 		next, remainder2, err := LabeledTupleTypeMember(remainder)
 		if err == ErrNoMatch {
-			return nil, remainder2, errorExpecting("labeled tuple type member", remainder2)
+			return nil, remainder2, errorExpecting("field name", remainder2)
 		} else if err != nil {
 			return nil, remainder2, err
 		}

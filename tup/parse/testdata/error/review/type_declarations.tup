@@ -6,7 +6,7 @@ expecting "tuple type", got "" at row 1, col 13
 # unclosed tuple type
 Point = type (x: Float,
 
-expecting "labeled tuple type member", got "" at row 1, col 24
+expecting "field name", got "" at row 1, col 24
 
 # type keyword not followed by tuple body
 Shape = type Circle | Triangle |
@@ -21,4 +21,4 @@ expecting "union member", got "" at row 1, col 28
 # tuple type mixed labeled and unlabeled members
 Point = type (name: String, Int)
 
-expecting "labeled tuple type member", got "Int" at row 1, col 29
+expecting "field name", got "Int" at row 1, col 29
