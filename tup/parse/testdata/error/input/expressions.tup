@@ -13,7 +13,7 @@ _ = {
     x
 
 # if expression missing condition
-_ = if { 1 }
+_ = if
 
 # if expression missing then branch
 _ = if true

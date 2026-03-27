@@ -11,7 +11,7 @@ expecting "expression", got "" at row 1, col 8
 expecting "}", got "" at row 3, col 6
 
 # if expression missing condition
-expecting "block", got "" at row 1, col 13
+expecting "expression", got "" at row 1, col 7
 
 # if expression missing then branch
 expecting "block", got "" at row 1, col 12

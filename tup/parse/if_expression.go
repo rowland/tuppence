@@ -41,7 +41,7 @@ func IfExpression(tokens []tok.Token) (*ast.IfExpression, []tok.Token, error) {
 
 	condition, remainder, err := Condition(remainder)
 	if err == ErrNoMatch {
-		return nil, remainder, errorExpecting("condition", remainder)
+		return nil, remainder, errorExpecting("expression", remainder)
 	} else if err != nil {
 		return nil, remainder, err
 	}
@@ -80,7 +80,7 @@ func IfExpression(tokens []tok.Token) (*ast.IfExpression, []tok.Token, error) {
 
 		elseIfCondition, remainder3, err := Condition(remainder2)
 		if err == ErrNoMatch {
-			return nil, remainder3, errorExpecting("condition", remainder3)
+			return nil, remainder3, errorExpecting("expression", remainder3)
 		} else if err != nil {
 			return nil, remainder3, err
 		}
