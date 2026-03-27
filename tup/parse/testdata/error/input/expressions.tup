@@ -18,5 +18,8 @@ _ = if
 # if expression missing then branch
 _ = if true
 
+# if expression with block condition missing then branch
+_ = if { 1 }
+
 # chained call missing closing paren
 _ = foo(1, 2
