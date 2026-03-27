@@ -5,4 +5,4 @@ Point = type
 Point = type (x: Float,
 
 # union type missing variant after pipe
-Shape = type Circle | Triangle |
+Shape = Circle | Triangle |

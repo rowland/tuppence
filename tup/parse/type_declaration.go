@@ -223,7 +223,9 @@ func TypeTuple(tokens []tok.Token) (*ast.TypeTuple, []tok.Token, error) {
 	remainder = remainder[1:]
 
 	tupleType, remainder, err := TupleType(remainder)
-	if err != nil {
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("tuple type", remainder)
+	} else if err != nil {
 		return nil, remainder, err
 	}
 

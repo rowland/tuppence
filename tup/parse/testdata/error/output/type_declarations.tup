@@ -1,8 +1,8 @@
 # missing type body
-expecting "export declaration", got "Point" at row 1, col 1
+expecting "tuple type", got "" at row 1, col 13
 
 # unclosed tuple type
 expecting "labeled tuple type member", got "" at row 1, col 24
 
 # union type missing variant after pipe
-expecting "export declaration", got "Shape" at row 1, col 1
+expecting "union member", got "" at row 1, col 28
