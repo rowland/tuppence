@@ -1,12 +1,16 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/url"
 	"os"
 	"path/filepath"
 
+	"github.com/rowland/tuppence/tup/ast"
+	"github.com/rowland/tuppence/tup/parse"
+	"github.com/rowland/tuppence/tup/source"
 	"github.com/rowland/tuppence/tup/tok"
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -185,11 +189,49 @@ func validateDocument(ctx *glsp.Context, uri protocol.DocumentUri, content strin
 		}
 	}
 
+	// If there are lexer errors, publish them and skip the parser — parse errors
+	// would be misleading when the token stream is already broken.
+	if len(diagnostics) > 0 {
+		logger.Printf("Publishing %d lexer diagnostics", len(diagnostics))
+		ctx.Notify(protocol.ServerTextDocumentPublishDiagnostics, protocol.PublishDiagnosticsParams{
+			URI:         uri,
+			Diagnostics: diagnostics,
+		})
+		return nil
+	}
+
+	// No lexer errors — run the full parser.
+	src := source.NewSource([]byte(content), filename)
+	mod := ast.NewModule(filename)
+	if _, err := parse.Module(src, mod); err != nil {
+		var parseErr *parse.Error
+		if errors.As(err, &parseErr) {
+			logger.Printf("Parse error: %s", parseErr.Error())
+			diagnostics = append(diagnostics, parseErrorToDiagnostic(parseErr))
+		} else {
+			logger.Printf("Unexpected error type from parser: %v", err)
+		}
+	}
+
 	logger.Printf("Publishing %d diagnostics", len(diagnostics))
-	// Publish diagnostics
 	ctx.Notify(protocol.ServerTextDocumentPublishDiagnostics, protocol.PublishDiagnosticsParams{
 		URI:         uri,
 		Diagnostics: diagnostics,
 	})
 	return nil
+}
+
+func parseErrorToDiagnostic(err *parse.Error) protocol.Diagnostic {
+	severity := protocol.DiagnosticSeverityError
+	source := languageName
+	pos := protocol.Position{
+		Line:      protocol.UInteger(err.Line),
+		Character: protocol.UInteger(err.Column),
+	}
+	return protocol.Diagnostic{
+		Range:    protocol.Range{Start: pos, End: pos},
+		Severity: &severity,
+		Source:   &source,
+		Message:  fmt.Sprintf("expecting %s, got %s", err.Expecting, err.Got),
+	}
 }

@@ -16,6 +16,9 @@ INSTALL_DIR = $(HOME)/bin
 VSCODE_DIR = $(LS_DIR)/vscode
 VSCODE_EXT_DIR = $(HOME)/.vscode/extensions/rowland.tuppence-language-server-0.0.1
 
+# Cursor extension variables (same source, different install path)
+CURSOR_EXT_DIR = $(HOME)/.cursor/extensions/rowland.tuppence-language-server-0.0.1
+
 # Default target.
 all: $(HTML)
 
@@ -70,10 +73,34 @@ vscode-install: vscode-build
 	cp -r $(VSCODE_DIR)/package.json $(VSCODE_EXT_DIR)/
 	cp -r $(VSCODE_DIR)/icons $(VSCODE_EXT_DIR)/
 
-# Build and install everything
-dev-setup: ls-install vscode-install
-	@echo "Development environment setup complete."
-	@echo "Please restart VS Code to activate the extension."
+# Install the Cursor extension
+cursor-install: vscode-build
+	@echo "Installing Cursor extension..."
+	rm -rf $(CURSOR_EXT_DIR)
+	mkdir -p $(CURSOR_EXT_DIR)
+	cp -r $(VSCODE_DIR)/out/* $(CURSOR_EXT_DIR)/
+	cp -r $(VSCODE_DIR)/syntaxes $(CURSOR_EXT_DIR)/
+	cp -r $(VSCODE_DIR)/language-configuration.json $(CURSOR_EXT_DIR)/
+	cp -r $(VSCODE_DIR)/package.json $(CURSOR_EXT_DIR)/
+	cp -r $(VSCODE_DIR)/icons $(CURSOR_EXT_DIR)/
+
+# Build and install everything for whichever editors are present
+dev-setup: ls-install
+	@installed=""; \
+	if [ -d "$(HOME)/.vscode" ]; then \
+		$(MAKE) vscode-install; \
+		installed="$$installed VS Code"; \
+	fi; \
+	if [ -d "$(HOME)/.cursor" ]; then \
+		$(MAKE) cursor-install; \
+		installed="$$installed Cursor"; \
+	fi; \
+	if [ -z "$$installed" ]; then \
+		echo "No supported editors detected (looked for ~/.vscode, ~/.cursor)."; \
+	else \
+		echo "Development environment setup complete for:$$installed."; \
+		echo "Please restart any open editors to activate the extension."; \
+	fi
 
 # Clean up the generated files
 clean: clean-ls clean-vscode
@@ -91,4 +118,4 @@ clean-vscode:
 test:
 	cd tup && go test ./...
 
-.PHONY: all grammar goldens test-goldens error-goldens test-error-goldens clean clean-ls clean-vscode ls-build ls-install vscode-build vscode-install dev-setup test
+.PHONY: all grammar goldens test-goldens error-goldens test-error-goldens clean clean-ls clean-vscode ls-build ls-install vscode-build vscode-install cursor-install dev-setup test
