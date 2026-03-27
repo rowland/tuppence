@@ -1,14 +1,14 @@
 # missing type body
-expecting "tuple type", got "" at row 1, col 13
+/home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:13: error: expecting "tuple type", got ""
 
 # unclosed tuple type
-expecting "field name", got "" at row 1, col 24
+/home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:24: error: expecting "field name", got ""
 
 # type keyword not followed by tuple body
-expecting "tuple type", got "Circle" at row 1, col 14
+/home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:14: error: expecting "tuple type", got "Circle"
 
 # union type missing variant after pipe
-expecting "union member", got "" at row 1, col 28
+/home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:28: error: expecting "union member", got ""
 
 # tuple type mixed labeled and unlabeled members
-expecting "field name", got "Int" at row 1, col 29
+/home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:29: error: expecting "field name", got "Int"

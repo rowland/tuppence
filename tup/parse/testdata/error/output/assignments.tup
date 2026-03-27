@@ -1,8 +1,8 @@
 # missing right-hand side
-expecting "expression", got "" at row 1, col 9
+/home/user/tuppence/tup/parse/testdata/error/input/assignments.tup:1:9: error: expecting "expression", got ""
 
 # unclosed labeled destructuring
-expecting ")", got "=" at row 1, col 12
+/home/user/tuppence/tup/parse/testdata/error/input/assignments.tup:1:12: error: expecting ")", got "="
 
 # missing expression after mut
-expecting "expression", got "" at row 1, col 13
+/home/user/tuppence/tup/parse/testdata/error/input/assignments.tup:1:13: error: expecting "expression", got ""
