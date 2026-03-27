@@ -1,0 +1,120 @@
+# simple type alias
+Result = Foo
+
+Result = Foo
+
+# annotated type alias
+@serializable
+Saved = Foo
+
+@serializable
+Saved = Foo
+
+# generic nilable type
+Maybe[a] = ?a
+
+Maybe[a] = ?a
+
+# tuple type rhs
+Person = type(name: String, age: Int)
+
+Person = type(
+    name: String,
+    age: Int,
+)
+
+# nested tuple type rhs
+Nested = type(id: Int, data: (name: String, value: Float))
+
+Nested = type(
+    id: Int,
+    data: (
+        name: String,
+        value: Float,
+    ),
+)
+
+# dynamic array rhs
+Bytes = []Byte
+
+Bytes = []Byte
+
+# nested dynamic array rhs
+Grid = [][]Int
+
+Grid = [][]Int
+
+# error tuple rhs
+HttpError = error(code: Int, message: String)
+
+HttpError = error(
+    code: Int,
+    message: String,
+)
+
+# fixed size array rhs
+IPv4 = [4]Byte
+
+IPv4 = [4]Byte
+
+# nested fixed size array rhs
+Matrix = [3][3]Int
+
+Matrix = [3][3]Int
+
+# union type rhs
+Key = Int | String
+
+Key = Int | String
+
+# named tuple union rhs
+ComplexKey = Int | String | ComplexTuple(primary: Int, secondary: String)
+
+ComplexKey = Int | String | ComplexTuple(
+    primary: Int,
+    secondary: String,
+)
+
+# union declaration rhs
+Result[a] = union(
+    Ok()
+    Err(a)
+)
+
+Result[a] = union (
+    Ok()
+    Err(a)
+)
+
+# function-only contract rhs
+Stringer[a] = contract(
+    string[a] = fn(a) String
+)
+
+Stringer[a] = contract(
+    string[a] = fn(a) String
+)
+
+# field-only contract rhs
+HasIntID = contract(
+    id: Int
+)
+
+HasIntID = contract(
+    id: Int
+)
+
+# enum declaration rhs
+Fruit = enum(
+    apple
+    banana = 2
+    @deprecated
+    cantaloupe
+)
+
+Fruit = enum(
+    apple
+    banana = 2
+    @deprecated
+    cantaloupe
+)

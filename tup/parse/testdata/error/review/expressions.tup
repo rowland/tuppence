@@ -1,41 +1,71 @@
 # unclosed tuple literal
+_ = (1, 2
+
 expecting ")", got "" at row 1, col 10
 
 # unclosed array literal
+_ = [1, 2, 3
+
 expecting "]", got "" at row 1, col 13
 
 # binary expression missing right operand
+_ = 1 +
+
 expecting "expression", got "" at row 1, col 8
 
 # unclosed block
+_ = {
+    x = 1
+    x
+
 expecting "}", got "" at row 3, col 6
 
 # if expression missing condition
+_ = if
+
 expecting "expression", got "" at row 1, col 7
 
 # if expression missing then branch
+_ = if true
+
 expecting "block", got "" at row 1, col 12
 
 # if expression with block condition missing then branch
+_ = if { 1 }
+
 expecting "block", got "" at row 1, col 13
 
 # function call missing closing paren
+_ = foo(1, 2
+
 expecting ")", got "" at row 1, col 13
 
 # labeled tuple literal missing colon
+_ = (a 1, b: 2, c: 3)
+
 expecting "expression", got "(" at row 1, col 5
 
 # labeled tuple literal trailing unlabeled member
+_ = (a: 1, b: 2, c)
+
 expecting ")", got "c" at row 1, col 18
 
 # member access missing field name
+_ = user.
+
 expecting "field name", got "" at row 1, col 10
 
 # tuple update with unlabeled tuple
+_ = user.(1, 2)
+
 expecting "field name", got "1" at row 1, col 11
 
 # import with identifier instead of string
+_ = import(io)
+
 expecting "string literal", got "io" at row 1, col 12
 
 # meta expression missing labeled arguments
+_ = $()
+
 expecting "labeled argument", got ")" at row 1, col 7

@@ -1,0 +1,9 @@
+# simple function type declaration
+Transformer = fn(Int) String
+
+Transformer = fn(Int) String
+
+# function type declaration with parameter types
+Transformer[?String, !Int] = fn(input: Int) String
+
+Transformer[?String, !Int] = fn(input: Int) String

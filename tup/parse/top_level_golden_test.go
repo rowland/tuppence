@@ -29,6 +29,7 @@ func TestTopLevelGoldenFixtures(t *testing.T) {
 	baseDir := filepath.Join(filepath.Dir(thisFile), "testdata", "top_level")
 	inputDir := filepath.Join(baseDir, "input")
 	outputDir := filepath.Join(baseDir, "output")
+	reviewDir := filepath.Join(baseDir, "review")
 	update := os.Getenv(updateTopLevelGoldensEnv) != ""
 
 	files, err := os.ReadDir(inputDir)
@@ -92,6 +93,13 @@ func TestTopLevelGoldenFixtures(t *testing.T) {
 				}
 				if err := os.WriteFile(outputPath, renderTopLevelFixtureFile(gotEntries), 0o644); err != nil {
 					t.Fatalf("WriteFile(%q): %v", outputPath, err)
+				}
+				reviewPath := filepath.Join(reviewDir, file.Name())
+				if err := os.MkdirAll(reviewDir, 0o755); err != nil {
+					t.Fatalf("MkdirAll(%q): %v", reviewDir, err)
+				}
+				if err := os.WriteFile(reviewPath, renderReviewFile(inputEntries, gotEntries), 0o644); err != nil {
+					t.Fatalf("WriteFile(%q): %v", reviewPath, err)
 				}
 			}
 		})
@@ -171,6 +179,23 @@ func renderTopLevelFixtureFile(entries []topLevelFixtureEntry) []byte {
 		buf.WriteString(entry.name)
 		buf.WriteString("\n")
 		buf.WriteString(entry.input)
+	}
+	buf.WriteString("\n")
+	return buf.Bytes()
+}
+
+func renderReviewFile(inputEntries, outputEntries []topLevelFixtureEntry) []byte {
+	var buf bytes.Buffer
+	for i, inputEntry := range inputEntries {
+		if i > 0 {
+			buf.WriteString("\n\n")
+		}
+		buf.WriteString("# ")
+		buf.WriteString(inputEntry.name)
+		buf.WriteString("\n")
+		buf.WriteString(inputEntry.input)
+		buf.WriteString("\n\n")
+		buf.WriteString(outputEntries[i].input)
 	}
 	buf.WriteString("\n")
 	return buf.Bytes()

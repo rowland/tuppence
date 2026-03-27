@@ -28,7 +28,7 @@ func tupleUpdateTail(object ast.Expression, tokens []tok.Token) (expr *ast.Tuple
 
 	var updateMembers []*ast.TupleMember
 	if updateMembers, remainder, err = labeledTupleMembers(remainder); err == ErrNoMatch {
-		return nil, remainder, errorExpecting("labeled tuple", remainder)
+		return nil, remainder, errorExpecting("field name", remainder)
 	} else if err != nil {
 		return nil, remainder, err
 	}

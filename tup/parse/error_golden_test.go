@@ -22,6 +22,7 @@ func TestErrorGoldenFixtures(t *testing.T) {
 	baseDir := filepath.Join(filepath.Dir(thisFile), "testdata", "error")
 	inputDir := filepath.Join(baseDir, "input")
 	outputDir := filepath.Join(baseDir, "output")
+	reviewDir := filepath.Join(baseDir, "review")
 	update := os.Getenv(updateErrorGoldensEnv) != ""
 
 	files, err := os.ReadDir(inputDir)
@@ -84,6 +85,13 @@ func TestErrorGoldenFixtures(t *testing.T) {
 				}
 				if err := os.WriteFile(outputPath, renderErrorFixtureFile(gotEntries), 0o644); err != nil {
 					t.Fatalf("WriteFile(%q): %v", outputPath, err)
+				}
+				reviewPath := filepath.Join(reviewDir, file.Name())
+				if err := os.MkdirAll(reviewDir, 0o755); err != nil {
+					t.Fatalf("MkdirAll(%q): %v", reviewDir, err)
+				}
+				if err := os.WriteFile(reviewPath, renderReviewFile(inputEntries, gotEntries), 0o644); err != nil {
+					t.Fatalf("WriteFile(%q): %v", reviewPath, err)
 				}
 			}
 		})

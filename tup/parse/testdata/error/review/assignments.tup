@@ -1,0 +1,14 @@
+# missing right-hand side
+answer =
+
+expecting "expression", got "" at row 1, col 9
+
+# unclosed labeled destructuring
+(name, age = (name: "Brent", age: 42)
+
+expecting ")", got "=" at row 1, col 12
+
+# missing expression after mut
+coords = mut
+
+expecting "expression", got "" at row 1, col 13

@@ -1,0 +1,33 @@
+# export assignment
+value: 1
+
+value: 1
+
+# export function declaration
+sqr: fn(i: Int) Int { i * i }
+
+sqr: fn(i: Int) Int {
+    i * i
+}
+
+# export function type declaration
+Transformer: fn(Int) String
+
+Transformer: fn(Int) String
+
+# export type declaration
+Person: type(name: String)
+
+Person: type(name: String)
+
+# export type qualified declaration
+Person.name: "Brent"
+
+Person.name: "Brent"
+
+# export type qualified function declaration
+Person.greet: fn() String { "Hello" }
+
+Person.greet: fn() String {
+    "Hello"
+}
