@@ -74,7 +74,7 @@ func ExportFunctionTypeDeclaration(tokens []tok.Token) (*ast.ExportFunctionTypeD
 
 	functionType, remainder, err := FunctionType(remainder)
 	if err == ErrNoMatch {
-		return nil, remainder, errorExpecting("function type", remainder)
+		return nil, tokens, ErrNoMatch
 	} else if err != nil {
 		return nil, remainder, err
 	}
@@ -199,43 +199,41 @@ func ExportTypeQualifiedFunctionDeclaration(tokens []tok.Token) (*ast.ExportType
 // 	                    | export_assignment ) .
 
 func ExportDeclaration(tokens []tok.Token) (ast.ExportDeclaration, []tok.Token, error) {
-	var errors []error
-
 	if declaration, remainder, err := ExportTypeQualifiedFunctionDeclaration(tokens); err == nil {
 		return declaration, remainder, nil
-	} else {
-		errors = append(errors, err)
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
 	if declaration, remainder, err := ExportTypeQualifiedDeclaration(tokens); err == nil {
 		return declaration, remainder, nil
-	} else {
-		errors = append(errors, err)
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
 	if declaration, remainder, err := ExportFunctionTypeDeclaration(tokens); err == nil {
 		return declaration, remainder, nil
-	} else {
-		errors = append(errors, err)
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
 	if declaration, remainder, err := ExportTypeDeclaration(tokens); err == nil {
 		return declaration, remainder, nil
-	} else {
-		errors = append(errors, err)
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
 	if declaration, remainder, err := ExportFunctionDeclaration(tokens); err == nil {
 		return declaration, remainder, nil
-	} else {
-		errors = append(errors, err)
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
 	if declaration, remainder, err := ExportAssignment(tokens); err == nil {
 		return declaration, remainder, nil
-	} else {
-		errors = append(errors, err)
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
-	return nil, nil, errorExpectingOneOf("export declaration", tokens, errors)
+	return nil, nil, errorExpecting("export declaration", tokens)
 }

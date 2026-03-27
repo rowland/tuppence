@@ -15,12 +15,12 @@ func FunctionTypeDeclaration(tokens []tok.Token) (*ast.FunctionTypeDeclaration, 
 
 	var found bool
 	if remainder, found = AssignOp(remainder); !found {
-		return nil, remainder, errorExpectingTokenType(tok.TokOpAssign, remainder)
+		return nil, tokens, ErrNoMatch
 	}
 
 	functionType, remainder, err := FunctionType(remainder)
 	if err == ErrNoMatch {
-		return nil, remainder, errorExpecting("function type", remainder)
+		return nil, tokens, ErrNoMatch
 	} else if err != nil {
 		return nil, remainder, err
 	}

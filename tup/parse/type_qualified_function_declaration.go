@@ -29,7 +29,7 @@ func TypeQualifiedFunctionDeclaration(tokens []tok.Token) (*ast.TypeQualifiedFun
 	}
 
 	if remainder, found = AssignOp(remainder); !found {
-		return nil, remainder, errorExpectingTokenType(tok.TokOpAssign, remainder)
+		return nil, tokens, ErrNoMatch
 	}
 
 	functionType, remainder, err := FunctionDeclarationType(remainder)

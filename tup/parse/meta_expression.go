@@ -20,7 +20,9 @@ func MetaExpression(tokens []tok.Token) (expr *ast.MetaExpression, remainder []t
 	}
 
 	var labeledArgs *ast.LabeledArguments
-	if labeledArgs, remainder, err = LabeledArguments(remainder); err != nil {
+	if labeledArgs, remainder, err = LabeledArguments(remainder); err == ErrNoMatch {
+		return nil, remainder, errorExpecting("labeled argument", remainder)
+	} else if err != nil {
 		return nil, remainder, err
 	}
 

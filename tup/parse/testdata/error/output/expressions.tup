@@ -1,0 +1,41 @@
+# unclosed tuple literal
+expecting ")", got "" at row 1, col 10
+
+# unclosed array literal
+expecting "]", got "" at row 1, col 13
+
+# binary expression missing right operand
+expecting "expression", got "" at row 1, col 8
+
+# unclosed block
+expecting "}", got "" at row 3, col 6
+
+# if expression missing condition
+expecting "expression", got "" at row 1, col 7
+
+# if expression missing then branch
+expecting "block", got "" at row 1, col 12
+
+# if expression with block condition missing then branch
+expecting "block", got "" at row 1, col 13
+
+# function call missing closing paren
+expecting ")", got "" at row 1, col 13
+
+# labeled tuple literal missing colon
+expecting "expression", got "(" at row 1, col 5
+
+# labeled tuple literal trailing unlabeled member
+expecting ")", got "c" at row 1, col 18
+
+# member access missing field name
+expecting "field name", got "" at row 1, col 10
+
+# tuple update with unlabeled tuple
+expecting "labeled tuple", got "1" at row 1, col 11
+
+# import with identifier instead of string
+expecting "string literal", got "io" at row 1, col 12
+
+# meta expression missing labeled arguments
+expecting "labeled argument", got ")" at row 1, col 7

@@ -1,0 +1,16 @@
+# missing function body
+add = fn(x: Int, y: Int) Int
+
+# missing return type for fn
+add = fn(x: Int, y: Int) {
+    x + y
+}
+
+# unclosed parameter list
+add = fn(x: Int, y: Int {
+    x + y
+}
+
+# function body missing closing brace
+add = fn(x: Int, y: Int) Int {
+    x + y

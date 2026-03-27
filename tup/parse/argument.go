@@ -14,8 +14,11 @@ func Argument(tokens []tok.Token) (arg *ast.Argument, remainder []tok.Token, err
 	var spread bool
 	remainder, spread = SpreadOp(tokens)
 
-	if expression, remainder, err := Expression(remainder); err == nil {
+	var expression ast.Expression
+	if expression, remainder, err = Expression(remainder); err == nil {
 		return ast.NewArgument(expression, spread), remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
 	return nil, remainder, ErrNoMatch
@@ -45,6 +48,9 @@ func Arguments(tokens []tok.Token) (args *ast.Arguments, remainder []tok.Token, 
 			break // argument label found, so we're done
 		}
 		if _, _, err = Argument(remainder2); err != nil {
+			if err != ErrNoMatch {
+				return nil, tokens, err
+			}
 			break
 		}
 		remainder = remainder2

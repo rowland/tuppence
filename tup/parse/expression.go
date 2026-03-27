@@ -124,7 +124,9 @@ func LogicalOrExpression(tokens []tok.Token) (expr ast.Expression, remainder []t
 		}
 
 		var operand ast.Expression
-		if operand, remainder, err = LogicalAndExpression(remainder); err != nil {
+		if operand, remainder, err = LogicalAndExpression(remainder); err == ErrNoMatch {
+			return nil, remainder, errorExpecting("expression", remainder)
+		} else if err != nil {
 			return nil, remainder, err
 		}
 
@@ -157,7 +159,9 @@ func LogicalAndExpression(tokens []tok.Token) (expr ast.Expression, remainder []
 		}
 
 		var operand ast.Expression
-		if operand, remainder, err = ComparisonExpression(remainder); err != nil {
+		if operand, remainder, err = ComparisonExpression(remainder); err == ErrNoMatch {
+			return nil, remainder, errorExpecting("expression", remainder)
+		} else if err != nil {
 			return nil, remainder, err
 		}
 
@@ -219,7 +223,7 @@ func AddSubExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.
 
 		var right ast.Expression
 		if right, remainder, err = MulDivExpression(remainder2); err == ErrNoMatch {
-			return nil, remainder, errorExpecting("mul_div expression", remainder2)
+			return nil, remainder, errorExpecting("expression", remainder2)
 		} else if err != nil {
 			return nil, remainder, err
 		}
@@ -248,7 +252,7 @@ func MulDivExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.
 
 		var right ast.Expression
 		if right, remainder, err = PowExpression(remainder2); err == ErrNoMatch {
-			return nil, remainder, errorExpecting("pow expression", remainder2)
+			return nil, remainder, errorExpecting("expression", remainder2)
 		} else if err != nil {
 			return nil, remainder, err
 		}
@@ -277,7 +281,9 @@ func PowExpression(tokens []tok.Token) (expr ast.Expression, remainder []tok.Tok
 		}
 
 		var operand ast.Expression
-		if operand, remainder, err = UnaryExpression(remainder); err != nil {
+		if operand, remainder, err = UnaryExpression(remainder); err == ErrNoMatch {
+			return nil, remainder, errorExpecting("expression", remainder)
+		} else if err != nil {
 			return nil, remainder, err
 		}
 
@@ -693,7 +699,7 @@ func memberAccessTail(object ast.Node, tokens []tok.Token) (expr *ast.MemberAcce
 			if peek(remainder).Type == tok.TokOpenParen {
 				return nil, tokens, ErrNoMatch
 			}
-			return nil, remainder, errorExpecting("member access member", remainder)
+			return nil, remainder, errorExpecting("field name", remainder)
 		}
 		return nil, remainder, err
 	}

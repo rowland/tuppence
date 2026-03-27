@@ -1,0 +1,8 @@
+# missing right-hand side
+answer =
+
+# unclosed labeled destructuring
+(name, age = (name: "Brent", age: 42)
+
+# missing expression after mut
+coords = mut

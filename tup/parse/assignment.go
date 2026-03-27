@@ -27,7 +27,9 @@ func Assignment(tokens []tok.Token) (assignment *ast.Assignment, remainder []tok
 	}
 
 	var right ast.Expression
-	if right, remainder, err = Expression(remainder); err != nil {
+	if right, remainder, err = Expression(remainder); err == ErrNoMatch {
+		return nil, remainder, errorExpecting("expression", remainder)
+	} else if err != nil {
 		return nil, remainder, err
 	}
 
@@ -41,6 +43,8 @@ func AssignmentLHS(tokens []tok.Token) (lhs ast.AssignmentLHS, remainder []tok.T
 	var labeledLHS *ast.LabeledAssignmentLHS
 	if labeledLHS, remainder, err = labeledAssignmentLHS(tokens); err == nil {
 		return labeledLHS, remainder, nil
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
 	var ordinalLHS *ast.OrdinalAssignmentLHS
@@ -147,7 +151,7 @@ func labeledAssignmentLHS(tokens []tok.Token) (lhs *ast.LabeledAssignmentLHS, re
 	}
 
 	if remainder, found = CloseParen(remainder); !found {
-		return nil, remainder, ErrNoMatch
+		return nil, remainder, errorExpectingTokenType(tok.TokCloseParen, remainder)
 	}
 
 	return ast.NewLabeledAssignmentLHS(renames), remainder, nil

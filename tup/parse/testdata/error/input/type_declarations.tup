@@ -1,0 +1,14 @@
+# missing type body
+Point = type
+
+# unclosed tuple type
+Point = type (x: Float,
+
+# type keyword not followed by tuple body
+Shape = type Circle | Triangle |
+
+# union type missing variant after pipe
+Shape = Circle | Triangle |
+
+# tuple type mixed labeled and unlabeled members
+Point = type (name: String, Int)
