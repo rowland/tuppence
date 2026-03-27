@@ -1,6 +1,6 @@
 module github.com/rowland/tuppence/tools/tupls
 
-go 1.24.2
+go 1.24.7
 
 replace github.com/rowland/tuppence/tup => ../../tup
 
