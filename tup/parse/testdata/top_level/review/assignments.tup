@@ -1,0 +1,42 @@
+# simple integer assignment
+answer = 42
+
+answer = 42
+
+# simple tuple assignment
+coords = (1, 2)
+
+coords = (1, 2)
+
+# mutable tuple assignment
+coords = mut (1, 2)
+
+coords = mut (1, 2)
+
+# ordinal destructuring assignment
+x, y = (1, 2)
+
+x, y = (1, 2)
+
+# labeled assignment
+(name, age) = (name: "Brent", age: 42)
+
+(name, age) = (name: "Brent", age: 42)
+
+# block assignment
+value = {
+    ready = true
+    total += 1
+    ready
+}
+
+value = {
+    ready = true
+    total += 1
+    ready
+}
+
+# array assignment
+items = [1, 2, 3]
+
+items = [1, 2, 3]

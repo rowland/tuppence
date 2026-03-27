@@ -1,0 +1,24 @@
+# missing function body
+add = fn(x: Int, y: Int) Int
+
+expecting "function body", got "" at row 1, col 29
+
+# missing return type for fn
+add = fn(x: Int, y: Int) {
+    x + y
+}
+
+expecting "return type or _", got "{" at row 1, col 26
+
+# unclosed parameter list
+add = fn(x: Int, y: Int {
+    x + y
+}
+
+expecting ")", got "" at row 3, col 2
+
+# function body missing closing brace
+add = fn(x: Int, y: Int) Int {
+    x + y
+
+expecting "}", got "" at row 2, col 10

@@ -1,0 +1,24 @@
+# missing type body
+Point = type
+
+expecting "tuple type", got "" at row 1, col 13
+
+# unclosed tuple type
+Point = type (x: Float,
+
+expecting "labeled tuple type member", got "" at row 1, col 24
+
+# type keyword not followed by tuple body
+Shape = type Circle | Triangle |
+
+expecting "tuple type", got "Circle" at row 1, col 14
+
+# union type missing variant after pipe
+Shape = Circle | Triangle |
+
+expecting "union member", got "" at row 1, col 28
+
+# tuple type mixed labeled and unlabeled members
+Point = type (name: String, Int)
+
+expecting "labeled tuple type member", got "Int" at row 1, col 29

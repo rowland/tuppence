@@ -1,0 +1,327 @@
+# wrapped add expression
+_ = 1 + 2
+
+_ = 1 + 2
+
+# wrapped symbol literal
+_ = :ok
+
+_ = :ok
+
+# wrapped interpolated string literal
+_ = "Hello \(name)!"
+
+_ = "Hello \(name)!"
+
+# wrapped multi-line string literal
+_ = ```
+    This text
+    will have
+    leading whitespace
+    removed.
+```
+
+_ = ```
+This text
+will have
+leading whitespace
+removed.
+```
+
+# wrapped multi-line string literal with interpolation
+_ = ```
+    Girls: \(girls.join(", "))
+    Boys: \(boys.join(", "))
+```
+
+_ = ```
+Girls: \(girls.join(", "))
+Boys: \(boys.join(", "))
+```
+
+# wrapped multi-line string literal with interpolation spanning lines
+_ = ```
+    Value: \(
+        a +
+        b
+    )
+```
+
+_ = ```
+Value: \(a + b)
+```
+
+# wrapped multi-line string literal with processor
+_ = ```mustache(context)
+    Hello, {{name}}
+```
+
+_ = ```mustache(context)
+Hello, {{name}}
+```
+
+# wrapped multi-line string literal with scoped processor
+_ = ```templating.mustache(context)
+    Hello, {{name}}
+```
+
+_ = ```templating.mustache(context)
+Hello, {{name}}
+```
+
+# wrapped tuple expression
+_ = (a: :x, b: :y)
+
+_ = (a: :x, b: :y)
+
+# wrapped typed array expression
+_ = Int[1, 2]
+
+_ = Int[1, 2]
+
+# wrapped fixed-size array expression
+_ = [3]Int[1, 2, 3]
+
+_ = [3]Int[1, 2, 3]
+
+# wrapped fixed-size array block initializer
+_ = [n]Int { |index| index }
+
+_ = [n]Int { |index| index }
+
+# wrapped fixed-size array block initializer with explicit size
+_ = [4]Int { |i| i + 1 }
+
+_ = [4]Int { |i| i + 1 }
+
+# wrapped named fixed-size array expression
+_ = IPv4Address[1, 2, 3, 4]
+
+_ = IPv4Address[1, 2, 3, 4]
+
+# wrapped named fixed-size array block initializer
+_ = IPv4Address { |i| i + 1 }
+
+_ = IPv4Address { |i| i + 1 }
+
+# wrapped namespaced fixed-size array expression
+_ = ipv4.Address[1, 2, 3, 4]
+
+_ = ipv4.Address[1, 2, 3, 4]
+
+# wrapped namespaced fixed-size array block initializer
+_ = ipv4.Address { |i| i + 1 }
+
+_ = ipv4.Address { |i| i + 1 }
+
+# wrapped import expression
+_ = import("math")
+
+_ = import("math")
+
+# wrapped typeof expression
+_ = typeof(answer)
+
+_ = typeof(answer)
+
+# wrapped meta expression
+_ = $(name: "Brent")
+
+_ = $(name: "Brent")
+
+# wrapped type constructor call
+_ = Person(name: "Brent")
+
+_ = Person(name: "Brent")
+
+# wrapped type constructor call with function block
+_ = Reader[[]Byte](handle) { |bytes| bytes }
+
+_ = Reader[[]Byte](handle) { |bytes| bytes }
+
+# wrapped type comparison expression
+_ = value is (Int | String)
+
+_ = value is (Int | String)
+
+# wrapped range expression
+_ = foo.bar..foo.qux
+
+_ = foo.bar..foo.qux
+
+# wrapped unary on member chain
+_ = !foo.bar.flag
+
+_ = !foo.bar.flag
+
+# wrapped member access chain with indexing
+_ = a.b.c[d]
+
+_ = a.b.c[d]
+
+# wrapped ordinal member access
+_ = pair.0
+
+_ = pair.0
+
+# wrapped safe indexed access on member chain
+_ = users.list[0]!
+
+_ = users.list[0]!
+
+# wrapped indexed function call
+_ = some_funcs[5](x + 1)
+
+_ = some_funcs[5](x + 1)
+
+# wrapped tuple update followed by member access
+_ = user.(name: "Brent").name
+
+_ = user.(name: "Brent").name
+
+# wrapped block expression
+_ = {
+    ready = true
+    ready
+}
+
+_ = {
+    ready = true
+    ready
+}
+
+# wrapped block expression with local type declaration
+_ = {
+    Person = type(name: String)
+    ready
+}
+
+_ = {
+    Person = type(name: String)
+    ready
+}
+
+# wrapped block expression with return in if
+_ = {
+    if !ready { return }
+    fallback
+}
+
+_ = {
+    if !ready {
+        return
+    }
+    fallback
+}
+
+# wrapped if expression
+_ = if ready { value } else { fallback }
+
+_ = if ready {
+    value
+} else {
+    fallback
+}
+
+# wrapped switch expression
+_ = switch value {
+    1 { "one" }
+    2, 3, 4 { "small" }
+    5..9 { "medium" }
+    else { "large" }
+}
+
+_ = switch value {
+  1 { "one" }
+  2, 3, 4 { "small" }
+  5..9 { "medium" }
+  else { "large" }
+}
+
+# wrapped switch expression with type cases and implicit it
+_ = switch value {
+    Int, Int8 { |i| i }
+    String { it }
+    else { value }
+}
+
+_ = switch value {
+  Int, Int8 { |i| i }
+  String { it }
+  else { value }
+}
+
+# wrapped switch expression with structural and typed patterns
+_ = switch value {
+    Point(x: 0, y: 0) { "origin" }
+    (0, 0) { "origin tuple" }
+    [_, ...] { |head, ...tail| head }
+}
+
+_ = switch value {
+  Point(x: 0, y: 0) { "origin" }
+  (0, 0) { "origin tuple" }
+  [_, ...] { |head, ...tail| head }
+}
+
+# wrapped switch expression in lowered try style
+_ = {
+    switch result {
+        error { return it }
+        else { it }
+    }
+}
+
+_ = {
+    switch result {
+      error { return it }
+      else { it }
+    }
+}
+
+# wrapped for expression with break in if
+_ = for i = 0 {
+    if i >= 10 { break i }
+    i + 1
+}
+
+_ = for i = 0 {
+    if i >= 10 {
+        break i
+    }
+    i + 1
+}
+
+# wrapped for expression with continue in if
+_ = for i = 0; i < 10 {
+    if i % 2 == 0 { continue i + 1 }
+    i + 1
+}
+
+_ = for i = 0; i < 10 {
+    if i % 2 == 0 {
+        continue i + 1
+    }
+    i + 1
+}
+
+# wrapped for-in expression
+_ = for acc = 0; i in items { acc + i }
+
+_ = for acc = 0; i in items {
+    acc + i
+}
+
+# wrapped inline for expression
+_ = inline for acc = (d: 0, e: ""); name, value in (a: 1, b: "Hello") {
+    if name == :a { acc.(d: value + 1) }
+    else { acc.(e: value + " World") }
+}
+
+_ = inline for acc = (d: 0, e: ""); name, value in (a: 1, b: "Hello") {
+    if name == :a {
+        acc.(d: value + 1)
+    } else {
+        acc.(e: value + " World")
+    }
+}

@@ -1,0 +1,6 @@
+# type-qualified function declaration
+Person.greet = fn(name: String) String { "hello" }
+
+Person.greet = fn(name: String) String {
+    "hello"
+}
