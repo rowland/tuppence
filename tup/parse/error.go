@@ -72,12 +72,11 @@ func errorNotExpecting(tokens []tok.Token) *Error {
 }
 
 func errorGot(tokens []tok.Token) (got string, line int, column int) {
+	tokens = skipTrivia(tokens)
 	if len(tokens) > 0 {
 		got = tokens[0].Value()
 		line = tokens[0].Line()
 		column = tokens[0].Column()
-	} else {
-		got = "EOF"
 	}
 	return got, line, column
 }

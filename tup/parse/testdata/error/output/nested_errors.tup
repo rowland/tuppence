@@ -1,0 +1,17 @@
+# binary expression missing operand in function body
+expecting "expression", got "}" at row 1, col 36
+
+# binary expression missing operand in block expression
+expecting "expression", got "}" at row 5, col 1
+
+# binary expression missing operand in function call argument
+expecting "expression", got ")" at row 1, col 13
+
+# nested call missing closing paren
+expecting ")", got "" at row 1, col 22
+
+# binary expression missing operand in array initializer closure
+expecting "expression", got "}" at row 1, col 22
+
+# if expression missing then branch inside function body
+expecting "block", got "}" at row 1, col 36

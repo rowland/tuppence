@@ -1,0 +1,21 @@
+# binary expression missing operand in function body
+add = fn(x: Int, y: Int) Int { x + }
+
+# binary expression missing operand in block expression
+result = {
+    x = 1
+    y = 2
+    x +
+}
+
+# binary expression missing operand in function call argument
+_ = foo(1 + )
+
+# nested call missing closing paren
+_ = outer(inner(1, 2)
+
+# binary expression missing operand in array initializer closure
+_ = [4]Int { |i| i * }
+
+# if expression missing then branch inside function body
+check = fn(x: Int) Bool { if x > 0 }
