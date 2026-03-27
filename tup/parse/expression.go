@@ -699,7 +699,7 @@ func memberAccessTail(object ast.Node, tokens []tok.Token) (expr *ast.MemberAcce
 			if peek(remainder).Type == tok.TokOpenParen {
 				return nil, tokens, ErrNoMatch
 			}
-			return nil, remainder, errorExpecting("member access member", remainder)
+			return nil, remainder, errorExpecting("field name", remainder)
 		}
 		return nil, remainder, err
 	}

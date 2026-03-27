@@ -9,3 +9,6 @@ Shape = type Circle | Triangle |
 
 # union type missing variant after pipe
 Shape = Circle | Triangle |
+
+# tuple type mixed labeled and unlabeled members
+Point = type (name: String, Int)

@@ -9,3 +9,6 @@ expecting "tuple type", got "Circle" at row 1, col 14
 
 # union type missing variant after pipe
 expecting "union member", got "" at row 1, col 28
+
+# tuple type mixed labeled and unlabeled members
+expecting "labeled tuple type member", got "Int" at row 1, col 29

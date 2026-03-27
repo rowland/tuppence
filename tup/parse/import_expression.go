@@ -21,7 +21,9 @@ func ImportExpression(tokens []tok.Token) (expr *ast.ImportExpression, remainder
 	}
 
 	var path *ast.StringLiteral
-	if path, remainder, err = StringLiteral(remainder); err != nil {
+	if path, remainder, err = StringLiteral(remainder); err == ErrNoMatch {
+		return nil, remainder, errorExpecting("string literal", remainder)
+	} else if err != nil {
 		return nil, remainder, err
 	}
 

@@ -23,3 +23,21 @@ _ = if { 1 }
 
 # function call missing closing paren
 _ = foo(1, 2
+
+# labeled tuple literal missing colon
+_ = (a 1, b: 2, c: 3)
+
+# labeled tuple literal trailing unlabeled member
+_ = (a: 1, b: 2, c)
+
+# member access missing field name
+_ = user.
+
+# tuple update with unlabeled tuple
+_ = user.(1, 2)
+
+# import with identifier instead of string
+_ = import(io)
+
+# meta expression missing labeled arguments
+_ = $()
