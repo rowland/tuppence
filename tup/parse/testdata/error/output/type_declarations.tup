@@ -4,5 +4,8 @@ expecting "tuple type", got "" at row 1, col 13
 # unclosed tuple type
 expecting "labeled tuple type member", got "" at row 1, col 24
 
+# type keyword not followed by tuple body
+expecting "tuple type", got "Circle" at row 1, col 14
+
 # union type missing variant after pipe
 expecting "union member", got "" at row 1, col 28

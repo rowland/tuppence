@@ -4,5 +4,8 @@ Point = type
 # unclosed tuple type
 Point = type (x: Float,
 
+# type keyword not followed by tuple body
+Shape = type Circle | Triangle |
+
 # union type missing variant after pipe
 Shape = Circle | Triangle |
