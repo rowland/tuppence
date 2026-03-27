@@ -1,0 +1,22 @@
+# unclosed tuple literal
+_ = (1, 2
+
+# unclosed array literal
+_ = [1, 2, 3
+
+# binary expression missing right operand
+_ = 1 +
+
+# unclosed block
+_ = {
+    x = 1
+    x
+
+# if expression missing condition
+_ = if { 1 }
+
+# if expression missing then branch
+_ = if true
+
+# chained call missing closing paren
+_ = foo(1, 2

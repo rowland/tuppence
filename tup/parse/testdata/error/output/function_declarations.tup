@@ -1,0 +1,11 @@
+# missing function body
+expecting "top-level item", got "add" at row 1, col 1: [no match no match no match no match no match no match expecting "export declaration", got "add" at row 1, col 1: [no match no match no match no match no match no match]]
+
+# missing return type for fn
+expecting "top-level item", got "add" at row 1, col 1: [no match no match no match no match expecting "return type or _", got "{" at row 1, col 26 no match expecting "export declaration", got "add" at row 1, col 1: [no match no match no match no match no match no match]]
+
+# unclosed parameter list
+expecting "top-level item", got "add" at row 1, col 1: [no match no match no match no match expecting ")", got "" at row 3, col 2 no match expecting "export declaration", got "add" at row 1, col 1: [no match no match no match no match no match no match]]
+
+# function body missing closing brace
+expecting "top-level item", got "add" at row 1, col 1: [no match no match no match no match expecting "}", got "" at row 2, col 10 no match expecting "export declaration", got "add" at row 1, col 1: [no match no match no match no match no match no match]]

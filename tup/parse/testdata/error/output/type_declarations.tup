@@ -1,0 +1,8 @@
+# missing type body
+expecting "top-level item", got "Point" at row 1, col 1: [no match no match expecting "type declaration right-hand side", got "type" at row 1, col 9 expecting "function type", got "type" at row 1, col 9 no match no match expecting "export declaration", got "Point" at row 1, col 1: [no match no match no match no match no match no match]]
+
+# unclosed tuple type
+expecting "top-level item", got "Point" at row 1, col 1: [no match no match expecting "labeled tuple type member", got "" at row 1, col 24 expecting "function type", got "type" at row 1, col 9 no match no match expecting "export declaration", got "Point" at row 1, col 1: [no match no match no match no match no match no match]]
+
+# union type missing variant after pipe
+expecting "top-level item", got "Shape" at row 1, col 1: [no match no match expecting "type declaration right-hand side", got "type" at row 1, col 9 expecting "function type", got "type" at row 1, col 9 no match no match expecting "export declaration", got "Shape" at row 1, col 1: [no match no match no match no match no match no match]]

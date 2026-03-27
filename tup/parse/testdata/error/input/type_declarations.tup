@@ -1,0 +1,8 @@
+# missing type body
+Point = type
+
+# unclosed tuple type
+Point = type (x: Float,
+
+# union type missing variant after pipe
+Shape = type Circle | Triangle |

@@ -1,0 +1,8 @@
+# missing right-hand side
+expecting "top-level item", got "answer" at row 1, col 1: [no match no match no match no match no match no match expecting "export declaration", got "answer" at row 1, col 1: [no match no match no match no match no match no match]]
+
+# unclosed labeled destructuring
+expecting "top-level item", got "(" at row 1, col 1: [no match no match no match no match no match no match expecting "export declaration", got "(" at row 1, col 1: [no match no match no match no match no match no match]]
+
+# missing expression after mut
+expecting "top-level item", got "coords" at row 1, col 1: [no match no match no match no match no match no match expecting "export declaration", got "coords" at row 1, col 1: [no match no match no match no match no match no match]]

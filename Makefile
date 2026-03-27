@@ -35,6 +35,14 @@ goldens:
 test-goldens:
 	cd tup && go test ./parse -run TestTopLevelGoldenFixtures
 
+# Refresh the curated parser error golden outputs.
+error-goldens:
+	cd tup && UPDATE_ERROR_GOLDENS=1 go test ./parse -run TestErrorGoldenFixtures
+
+# Validate the curated parser error golden outputs without rewriting them.
+test-error-goldens:
+	cd tup && go test ./parse -run TestErrorGoldenFixtures
+
 # Build the language server
 ls-build:
 	@echo "Building language server..."
@@ -83,4 +91,4 @@ clean-vscode:
 test:
 	cd tup && go test ./...
 
-.PHONY: all grammar goldens test-goldens clean clean-ls clean-vscode ls-build ls-install vscode-build vscode-install dev-setup test
+.PHONY: all grammar goldens test-goldens error-goldens test-error-goldens clean clean-ls clean-vscode ls-build ls-install vscode-build vscode-install dev-setup test
