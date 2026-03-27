@@ -32,7 +32,7 @@ expecting ")", got "c" at row 1, col 18
 expecting "field name", got "" at row 1, col 10
 
 # tuple update with unlabeled tuple
-expecting "labeled tuple", got "1" at row 1, col 11
+expecting "field name", got "1" at row 1, col 11
 
 # import with identifier instead of string
 expecting "string literal", got "io" at row 1, col 12
