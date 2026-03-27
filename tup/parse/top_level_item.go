@@ -15,55 +15,68 @@ import (
 // 	                ) .
 
 func TopLevelItem(tokens []tok.Token) (item ast.TopLevelItem, remainder []tok.Token, err error) {
-	var errors []error
 	var tqfd *ast.TypeQualifiedFunctionDeclaration
-	if tqfd, remainder, err = TypeQualifiedFunctionDeclaration(tokens); err != nil {
-		errors = append(errors, err)
-	} else if tqfd != nil {
-		return tqfd, remainder, nil
+	if tqfd, remainder, err = TypeQualifiedFunctionDeclaration(tokens); err == nil {
+		if tqfd != nil {
+			return tqfd, remainder, nil
+		}
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
 	var tqd *ast.TypeQualifiedDeclaration
-	if tqd, remainder, err = TypeQualifiedDeclaration(tokens); err != nil {
-		errors = append(errors, err)
-	} else if tqd != nil {
-		return tqd, remainder, nil
+	if tqd, remainder, err = TypeQualifiedDeclaration(tokens); err == nil {
+		if tqd != nil {
+			return tqd, remainder, nil
+		}
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
 	var td *ast.TypeDeclaration
-	if td, remainder, err = TypeDeclaration(tokens); err != nil {
-		errors = append(errors, err)
-	} else if td != nil {
-		return td, remainder, nil
+	if td, remainder, err = TypeDeclaration(tokens); err == nil {
+		if td != nil {
+			return td, remainder, nil
+		}
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
 	var ftd *ast.FunctionTypeDeclaration
-	if ftd, remainder, err = FunctionTypeDeclaration(tokens); err != nil {
-		errors = append(errors, err)
-	} else if ftd != nil {
-		return ftd, remainder, nil
+	if ftd, remainder, err = FunctionTypeDeclaration(tokens); err == nil {
+		if ftd != nil {
+			return ftd, remainder, nil
+		}
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
 	var fd *ast.FunctionDeclaration
-	if fd, remainder, err = FunctionDeclaration(tokens); err != nil {
-		errors = append(errors, err)
-	} else if fd != nil {
-		return fd, remainder, nil
+	if fd, remainder, err = FunctionDeclaration(tokens); err == nil {
+		if fd != nil {
+			return fd, remainder, nil
+		}
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
 	var a *ast.Assignment
-	if a, remainder, err = Assignment(tokens); err != nil {
-		errors = append(errors, err)
-	} else if a != nil {
-		return a, remainder, nil
+	if a, remainder, err = Assignment(tokens); err == nil {
+		if a != nil {
+			return a, remainder, nil
+		}
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
 	var ed ast.TopLevelItem
-	if ed, remainder, err = ExportDeclaration(tokens); err != nil {
-		errors = append(errors, err)
-	} else if ed != nil {
-		return ed, remainder, nil
+	if ed, remainder, err = ExportDeclaration(tokens); err == nil {
+		if ed != nil {
+			return ed, remainder, nil
+		}
+	} else if err != ErrNoMatch {
+		return nil, remainder, err
 	}
 
-	return nil, nil, errorExpectingOneOf("top-level item", tokens, errors)
+	return nil, nil, errorExpecting("top-level item", tokens)
 }

@@ -24,7 +24,7 @@ func TypeQualifiedDeclaration(tokens []tok.Token) (*ast.TypeQualifiedDeclaration
 	}
 
 	if remainder, found = AssignOp(remainder); !found {
-		return nil, remainder, errorExpectingTokenType(tok.TokOpAssign, remainder)
+		return nil, tokens, ErrNoMatch
 	}
 
 	expression, remainder, err := Expression(remainder)

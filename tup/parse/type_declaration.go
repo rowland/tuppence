@@ -18,12 +18,12 @@ func TypeDeclaration(tokens []tok.Token) (*ast.TypeDeclaration, []tok.Token, err
 
 	var found bool
 	if remainder, found = AssignOp(remainder); !found {
-		return nil, remainder, errorExpectingTokenType(tok.TokOpAssign, remainder)
+		return nil, tokens, ErrNoMatch
 	}
 
 	var rhs ast.TypeDeclarationRHS
 	if rhs, remainder, err = TypeDeclarationRHS(remainder); err == ErrNoMatch {
-		return nil, remainder, errorExpecting("type declaration right-hand side", remainder)
+		return nil, tokens, ErrNoMatch
 	} else if err != nil {
 		return nil, remainder, err
 	}
@@ -189,7 +189,7 @@ func TypeParameters(tokens []tok.Token) (*ast.TypeParameters, []tok.Token, error
 		parameter, remainder2, err := TypeParameter(remainder)
 		if err == ErrNoMatch {
 			if len(parameters) == 0 {
-				return nil, remainder, errorExpecting("type parameter", remainder)
+				return nil, tokens, ErrNoMatch
 			}
 			break
 		} else if err != nil {

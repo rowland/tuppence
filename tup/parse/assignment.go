@@ -27,7 +27,9 @@ func Assignment(tokens []tok.Token) (assignment *ast.Assignment, remainder []tok
 	}
 
 	var right ast.Expression
-	if right, remainder, err = Expression(remainder); err != nil {
+	if right, remainder, err = Expression(remainder); err == ErrNoMatch {
+		return nil, remainder, errorExpecting("expression", remainder)
+	} else if err != nil {
 		return nil, remainder, err
 	}
 

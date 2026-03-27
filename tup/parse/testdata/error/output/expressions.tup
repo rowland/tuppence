@@ -1,20 +1,20 @@
 # unclosed tuple literal
-expecting "top-level item", got "_" at row 1, col 1: [no match no match no match no match no match expecting ")", got "" at row 1, col 10 expecting "export declaration", got "_" at row 1, col 1: [no match no match no match no match no match no match]]
+expecting ")", got "" at row 1, col 10
 
 # unclosed array literal
-expecting "top-level item", got "_" at row 1, col 1: [no match no match no match no match no match expecting "]", got "" at row 1, col 13 expecting "export declaration", got "_" at row 1, col 1: [no match no match no match no match no match no match]]
+expecting "]", got "" at row 1, col 13
 
 # binary expression missing right operand
-expecting "top-level item", got "_" at row 1, col 1: [no match no match no match no match no match expecting "mul_div expression", got "" at row 1, col 8 expecting "export declaration", got "_" at row 1, col 1: [no match no match no match no match no match no match]]
+expecting "mul_div expression", got "" at row 1, col 8
 
 # unclosed block
-expecting "top-level item", got "_" at row 1, col 1: [no match no match no match no match no match expecting "}", got "" at row 3, col 6 expecting "export declaration", got "_" at row 1, col 1: [no match no match no match no match no match no match]]
+expecting "}", got "" at row 3, col 6
 
 # if expression missing condition
-expecting "top-level item", got "_" at row 1, col 1: [no match no match no match no match no match expecting "block", got "" at row 1, col 13 expecting "export declaration", got "_" at row 1, col 1: [no match no match no match no match no match no match]]
+expecting "block", got "" at row 1, col 13
 
 # if expression missing then branch
-expecting "top-level item", got "_" at row 1, col 1: [no match no match no match no match no match expecting "block", got "" at row 1, col 12 expecting "export declaration", got "_" at row 1, col 1: [no match no match no match no match no match no match]]
+expecting "block", got "" at row 1, col 12
 
 # chained call missing closing paren
-expecting "top-level item", got "_" at row 1, col 1: [no match no match no match no match no match expecting ")", got "" at row 1, col 13 expecting "export declaration", got "_" at row 1, col 1: [no match no match no match no match no match no match]]
+expecting ")", got "" at row 1, col 13

@@ -29,6 +29,9 @@ func FunctionDeclaration(tokens []tok.Token) (*ast.FunctionDeclaration, []tok.To
 	}
 
 	body, remainder, err := Block(remainder)
+	if err == ErrNoMatch {
+		return nil, remainder, errorExpecting("function body", remainder)
+	}
 	if err != nil {
 		return nil, remainder, err
 	}
