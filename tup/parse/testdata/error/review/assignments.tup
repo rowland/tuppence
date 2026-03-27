@@ -1,14 +1,17 @@
 # missing right-hand side
 answer =
 
-/home/user/tuppence/tup/parse/testdata/error/input/assignments.tup:1:9: error: expecting "expression", got ""
+error: expecting "expression", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/assignments.tup:1:9
 
 # unclosed labeled destructuring
 (name, age = (name: "Brent", age: 42)
 
-/home/user/tuppence/tup/parse/testdata/error/input/assignments.tup:1:12: error: expecting ")", got "="
+error: expecting ")", got "="
+--> /home/user/tuppence/tup/parse/testdata/error/input/assignments.tup:1:12
 
 # missing expression after mut
 coords = mut
 
-/home/user/tuppence/tup/parse/testdata/error/input/assignments.tup:1:13: error: expecting "expression", got ""
+error: expecting "expression", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/assignments.tup:1:13

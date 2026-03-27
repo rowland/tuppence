@@ -1,71 +1,85 @@
 # unclosed tuple literal
 _ = (1, 2
 
-/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:10: error: expecting ")", got ""
+error: expecting ")", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:10
 
 # unclosed array literal
 _ = [1, 2, 3
 
-/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:13: error: expecting "]", got ""
+error: expecting "]", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:13
 
 # binary expression missing right operand
 _ = 1 +
 
-/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:8: error: expecting "expression", got ""
+error: expecting "expression", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:8
 
 # unclosed block
 _ = {
     x = 1
     x
 
-/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:3:6: error: expecting "}", got ""
+error: expecting "}", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:3:6
 
 # if expression missing condition
 _ = if
 
-/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:7: error: expecting "expression", got ""
+error: expecting "expression", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:7
 
 # if expression missing then branch
 _ = if true
 
-/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:12: error: expecting "block", got ""
+error: expecting "block", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:12
 
 # if expression with block condition missing then branch
 _ = if { 1 }
 
-/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:13: error: expecting "block", got ""
+error: expecting "block", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:13
 
 # function call missing closing paren
 _ = foo(1, 2
 
-/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:13: error: expecting ")", got ""
+error: expecting ")", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:13
 
 # labeled tuple literal missing colon
 _ = (a 1, b: 2, c: 3)
 
-/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:5: error: expecting "expression", got "("
+error: expecting "expression", got "("
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:5
 
 # labeled tuple literal trailing unlabeled member
 _ = (a: 1, b: 2, c)
 
-/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:18: error: expecting ")", got "c"
+error: expecting ")", got "c"
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:18
 
 # member access missing field name
 _ = user.
 
-/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:10: error: expecting "field name", got ""
+error: expecting "field name", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:10
 
 # tuple update with unlabeled tuple
 _ = user.(1, 2)
 
-/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:11: error: expecting "field name", got "1"
+error: expecting "field name", got "1"
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:11
 
 # import with identifier instead of string
 _ = import(io)
 
-/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:12: error: expecting "string literal", got "io"
+error: expecting "string literal", got "io"
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:12
 
 # meta expression missing labeled arguments
 _ = $()
 
-/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:7: error: expecting "labeled argument", got ")"
+error: expecting "labeled argument", got ")"
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:7

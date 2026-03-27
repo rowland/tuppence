@@ -1,17 +1,23 @@
 # binary expression missing operand in function body
-/home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:36: error: expecting "expression", got "}"
+error: expecting "expression", got "}"
+--> /home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:36
 
 # binary expression missing operand in block expression
-/home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:5:1: error: expecting "expression", got "}"
+error: expecting "expression", got "}"
+--> /home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:5:1
 
 # binary expression missing operand in function call argument
-/home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:13: error: expecting "expression", got ")"
+error: expecting "expression", got ")"
+--> /home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:13
 
 # nested call missing closing paren
-/home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:22: error: expecting ")", got ""
+error: expecting ")", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:22
 
 # binary expression missing operand in array initializer closure
-/home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:22: error: expecting "expression", got "}"
+error: expecting "expression", got "}"
+--> /home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:22
 
 # if expression missing then branch inside function body
-/home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:36: error: expecting "block", got "}"
+error: expecting "block", got "}"
+--> /home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:36

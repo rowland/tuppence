@@ -1,14 +1,19 @@
 # missing type body
-/home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:13: error: expecting "tuple type", got ""
+error: expecting "tuple type", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:13
 
 # unclosed tuple type
-/home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:24: error: expecting "field name", got ""
+error: expecting "field name", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:24
 
 # type keyword not followed by tuple body
-/home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:14: error: expecting "tuple type", got "Circle"
+error: expecting "tuple type", got "Circle"
+--> /home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:14
 
 # union type missing variant after pipe
-/home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:28: error: expecting "union member", got ""
+error: expecting "union member", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:28
 
 # tuple type mixed labeled and unlabeled members
-/home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:29: error: expecting "field name", got "Int"
+error: expecting "field name", got "Int"
+--> /home/user/tuppence/tup/parse/testdata/error/input/type_declarations.tup:1:29

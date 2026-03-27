@@ -1,11 +1,15 @@
 # missing function body
-/home/user/tuppence/tup/parse/testdata/error/input/function_declarations.tup:1:29: error: expecting "function body", got ""
+error: expecting "function body", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/function_declarations.tup:1:29
 
 # missing return type for fn
-/home/user/tuppence/tup/parse/testdata/error/input/function_declarations.tup:1:26: error: expecting "return type or _", got "{"
+error: expecting "return type or _", got "{"
+--> /home/user/tuppence/tup/parse/testdata/error/input/function_declarations.tup:1:26
 
 # unclosed parameter list
-/home/user/tuppence/tup/parse/testdata/error/input/function_declarations.tup:3:2: error: expecting ")", got ""
+error: expecting ")", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/function_declarations.tup:3:2
 
 # function body missing closing brace
-/home/user/tuppence/tup/parse/testdata/error/input/function_declarations.tup:2:10: error: expecting "}", got ""
+error: expecting "}", got ""
+--> /home/user/tuppence/tup/parse/testdata/error/input/function_declarations.tup:2:10

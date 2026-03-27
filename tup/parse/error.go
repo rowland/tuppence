@@ -22,13 +22,13 @@ type Error struct {
 func (err *Error) Error() string {
 	loc := fmt.Sprintf("%d:%d", err.Line+1, err.Column+1)
 	if err.Filename != "" {
-		loc = fmt.Sprintf("%s:%d:%d", err.Filename, err.Line+1, err.Column+1)
+		loc = fmt.Sprintf("--> %s:%d:%d", err.Filename, err.Line+1, err.Column+1)
 	}
-	msg := fmt.Sprintf("expecting %#v, got %#v", err.Expecting, err.Got)
+	msg := fmt.Sprintf("error: expecting %#v, got %#v", err.Expecting, err.Got)
 	if len(err.SubErrors) > 0 {
-		return fmt.Sprintf("%s: error: %s: %v", loc, msg, err.SubErrors)
+		return fmt.Sprintf("%s: %v\n%s", msg, err.SubErrors, loc)
 	}
-	return fmt.Sprintf("%s: error: %s", loc, msg)
+	return fmt.Sprintf("%s\n%s", msg, loc)
 }
 
 func errorExpecting(expecting string, tokens []tok.Token) *Error {
