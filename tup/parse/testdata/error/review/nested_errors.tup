@@ -1,7 +1,7 @@
 # binary expression missing operand in function body
 add = fn(x: Int, y: Int) Int { x + }
 
-expecting "expression", got "}" at row 1, col 36
+/home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:36: error: expecting "expression", got "}"
 
 # binary expression missing operand in block expression
 result = {
@@ -10,24 +10,24 @@ result = {
     x +
 }
 
-expecting "expression", got "}" at row 5, col 1
+/home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:5:1: error: expecting "expression", got "}"
 
 # binary expression missing operand in function call argument
 _ = foo(1 + )
 
-expecting "expression", got ")" at row 1, col 13
+/home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:13: error: expecting "expression", got ")"
 
 # nested call missing closing paren
 _ = outer(inner(1, 2)
 
-expecting ")", got "" at row 1, col 22
+/home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:22: error: expecting ")", got ""
 
 # binary expression missing operand in array initializer closure
 _ = [4]Int { |i| i * }
 
-expecting "expression", got "}" at row 1, col 22
+/home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:22: error: expecting "expression", got "}"
 
 # if expression missing then branch inside function body
 check = fn(x: Int) Bool { if x > 0 }
 
-expecting "block", got "}" at row 1, col 36
+/home/user/tuppence/tup/parse/testdata/error/input/nested_errors.tup:1:36: error: expecting "block", got "}"

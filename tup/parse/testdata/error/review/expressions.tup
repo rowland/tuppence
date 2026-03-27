@@ -1,71 +1,71 @@
 # unclosed tuple literal
 _ = (1, 2
 
-expecting ")", got "" at row 1, col 10
+/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:10: error: expecting ")", got ""
 
 # unclosed array literal
 _ = [1, 2, 3
 
-expecting "]", got "" at row 1, col 13
+/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:13: error: expecting "]", got ""
 
 # binary expression missing right operand
 _ = 1 +
 
-expecting "expression", got "" at row 1, col 8
+/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:8: error: expecting "expression", got ""
 
 # unclosed block
 _ = {
     x = 1
     x
 
-expecting "}", got "" at row 3, col 6
+/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:3:6: error: expecting "}", got ""
 
 # if expression missing condition
 _ = if
 
-expecting "expression", got "" at row 1, col 7
+/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:7: error: expecting "expression", got ""
 
 # if expression missing then branch
 _ = if true
 
-expecting "block", got "" at row 1, col 12
+/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:12: error: expecting "block", got ""
 
 # if expression with block condition missing then branch
 _ = if { 1 }
 
-expecting "block", got "" at row 1, col 13
+/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:13: error: expecting "block", got ""
 
 # function call missing closing paren
 _ = foo(1, 2
 
-expecting ")", got "" at row 1, col 13
+/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:13: error: expecting ")", got ""
 
 # labeled tuple literal missing colon
 _ = (a 1, b: 2, c: 3)
 
-expecting "expression", got "(" at row 1, col 5
+/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:5: error: expecting "expression", got "("
 
 # labeled tuple literal trailing unlabeled member
 _ = (a: 1, b: 2, c)
 
-expecting ")", got "c" at row 1, col 18
+/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:18: error: expecting ")", got "c"
 
 # member access missing field name
 _ = user.
 
-expecting "field name", got "" at row 1, col 10
+/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:10: error: expecting "field name", got ""
 
 # tuple update with unlabeled tuple
 _ = user.(1, 2)
 
-expecting "field name", got "1" at row 1, col 11
+/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:11: error: expecting "field name", got "1"
 
 # import with identifier instead of string
 _ = import(io)
 
-expecting "string literal", got "io" at row 1, col 12
+/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:12: error: expecting "string literal", got "io"
 
 # meta expression missing labeled arguments
 _ = $()
 
-expecting "labeled argument", got ")" at row 1, col 7
+/home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:7: error: expecting "labeled argument", got ")"
