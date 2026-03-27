@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { workspace, ExtensionContext } from 'vscode';
 import {
     LanguageClient,
@@ -8,12 +9,12 @@ import {
 
 let client: LanguageClient;
 
-export function activate(_context: ExtensionContext) {
-    // The server is implemented in Go
-    const serverCommand = 'tupls';
+export function activate(context: ExtensionContext) {
+    // Resolve the server binary relative to the extension's install directory.
+    // This avoids any dependency on the user's PATH, which is unreliable when
+    // VS Code is launched from the Dock or a GUI launcher on macOS.
+    const serverCommand = context.asAbsolutePath(path.join('bin', 'tupls'));
 
-    // If the extension is launched in debug mode then the debug server options are used
-    // Otherwise the run options are used
     const serverOptions: ServerOptions = {
         run: {
             command: serverCommand,
@@ -25,17 +26,13 @@ export function activate(_context: ExtensionContext) {
         }
     };
 
-    // Options to control the language client
     const clientOptions: LanguageClientOptions = {
-        // Register the server for Tuppence documents
         documentSelector: [{ scheme: 'file', language: 'tuppence' }],
         synchronize: {
-            // Notify the server about file changes to .tup files contained in the workspace
             fileEvents: workspace.createFileSystemWatcher('**/*.tup')
         }
     };
 
-    // Create the language client and start the client.
     client = new LanguageClient(
         'tuppenceLanguageServer',
         'Tuppence Language Server',
@@ -43,7 +40,6 @@ export function activate(_context: ExtensionContext) {
         clientOptions
     );
 
-    // Start the client. This will also launch the server
     client.start();
 }
 
@@ -52,4 +48,4 @@ export function deactivate(): Thenable<void> | undefined {
         return undefined;
     }
     return client.stop();
-} 
+}

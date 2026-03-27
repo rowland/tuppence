@@ -2,47 +2,38 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/rowland/tuppence/tup/ast"
+	"github.com/rowland/tuppence/tup/parse"
 	"github.com/rowland/tuppence/tup/source"
-	"github.com/rowland/tuppence/tup/tok"
-	"github.com/spf13/pflag"
 )
 
 func main() {
-	var input string
-	var output string
-	pflag.StringVarP(&input, "input", "i", "", "Input file")
-	pflag.StringVarP(&output, "output", "o", "", "Output file")
-	pflag.Parse()
-
-	if input != "" {
-		fmt.Printf("Input file: '%s'\n", input)
-		contents, err := os.ReadFile(input)
-		if err != nil {
-			log.Fatal(err)
-		}
-		tokens, err := tok.Tokenize(contents, input)
-		if err != nil {
-			log.Fatal(err)
-		}
-		for _, token := range tokens {
-			fmt.Printf("%s %s\n", token.Type, token.Value())
-		}
-		source := source.NewSource(contents, input)
-		module := ast.NewModule(input)
-		module.AddSource(source)
+	paths := os.Args[1:]
+	if len(paths) == 0 {
+		fmt.Fprintln(os.Stderr, "usage: tup <file> [file...]")
+		os.Exit(1)
 	}
 
-	if output != "" {
-		fmt.Printf("Output file: '%s'\n", output)
+	exitCode := 0
+	for _, path := range paths {
+		if err := checkFile(path); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			exitCode = 1
+		}
+	}
+	os.Exit(exitCode)
+}
+
+func checkFile(path string) error {
+	contents, err := os.ReadFile(path)
+	if err != nil {
+		return err
 	}
 
-	// Print any extra (positional) arguments.
-	for i, arg := range pflag.Args() {
-		fmt.Printf("%d: %s\n", i, arg)
-	}
-
+	src := source.NewSource(contents, path)
+	mod := ast.NewModule(path)
+	_, err = parse.Module(src, mod)
+	return err
 }

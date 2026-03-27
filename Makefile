@@ -51,9 +51,13 @@ ls-build:
 	@echo "Building language server..."
 	cd $(LS_DIR) && go build -o tupls ./cmd/tupls
 
-# Install the language server
-ls-install: ls-build
-	@echo "Installing language server to $(INSTALL_DIR)/$(LS_BIN)..."
+# Kill any running language server process so the new binary takes effect immediately
+ls-kill:
+	@pkill -x tupls && echo "Stopped running tupls process." || true
+
+# Install the language server, stopping any running instance first
+ls-install: ls-build ls-kill
+	@echo "Installing language server to $(INSTALL_DIR)/..."
 	mkdir -p $(INSTALL_DIR)
 	cp $(LS_BIN) $(INSTALL_DIR)/
 
@@ -63,22 +67,26 @@ vscode-build:
 	cd $(VSCODE_DIR) && npm install && npm run compile
 
 # Install the VS Code extension
-vscode-install: vscode-build
+vscode-install: ls-install vscode-build
 	@echo "Installing VS Code extension..."
 	rm -rf $(VSCODE_EXT_DIR)
-	mkdir -p $(VSCODE_EXT_DIR)
-	cp -r $(VSCODE_DIR)/out/* $(VSCODE_EXT_DIR)/
+	mkdir -p $(VSCODE_EXT_DIR)/bin
+	cp $(LS_BIN) $(VSCODE_EXT_DIR)/bin/tupls
+	cp -r $(VSCODE_DIR)/out $(VSCODE_EXT_DIR)/
+	cp -r $(VSCODE_DIR)/node_modules $(VSCODE_EXT_DIR)/
 	cp -r $(VSCODE_DIR)/syntaxes $(VSCODE_EXT_DIR)/
 	cp -r $(VSCODE_DIR)/language-configuration.json $(VSCODE_EXT_DIR)/
 	cp -r $(VSCODE_DIR)/package.json $(VSCODE_EXT_DIR)/
 	cp -r $(VSCODE_DIR)/icons $(VSCODE_EXT_DIR)/
 
 # Install the Cursor extension
-cursor-install: vscode-build
+cursor-install: ls-install vscode-build
 	@echo "Installing Cursor extension..."
 	rm -rf $(CURSOR_EXT_DIR)
-	mkdir -p $(CURSOR_EXT_DIR)
-	cp -r $(VSCODE_DIR)/out/* $(CURSOR_EXT_DIR)/
+	mkdir -p $(CURSOR_EXT_DIR)/bin
+	cp $(LS_BIN) $(CURSOR_EXT_DIR)/bin/tupls
+	cp -r $(VSCODE_DIR)/out $(CURSOR_EXT_DIR)/
+	cp -r $(VSCODE_DIR)/node_modules $(CURSOR_EXT_DIR)/
 	cp -r $(VSCODE_DIR)/syntaxes $(CURSOR_EXT_DIR)/
 	cp -r $(VSCODE_DIR)/language-configuration.json $(CURSOR_EXT_DIR)/
 	cp -r $(VSCODE_DIR)/package.json $(CURSOR_EXT_DIR)/
@@ -118,4 +126,4 @@ clean-vscode:
 test:
 	cd tup && go test ./...
 
-.PHONY: all grammar goldens test-goldens error-goldens test-error-goldens clean clean-ls clean-vscode ls-build ls-install vscode-build vscode-install cursor-install dev-setup test
+.PHONY: all grammar goldens test-goldens error-goldens test-error-goldens clean clean-ls clean-vscode ls-build ls-kill ls-install vscode-build vscode-install cursor-install dev-setup test
