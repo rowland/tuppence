@@ -2,7 +2,7 @@
 expecting "expression", got "" at row 1, col 9
 
 # unclosed labeled destructuring
-expecting "export declaration", got "(" at row 1, col 1
+expecting ")", got "=" at row 1, col 12
 
 # missing expression after mut
 expecting "expression", got "" at row 1, col 13
