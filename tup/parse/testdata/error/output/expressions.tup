@@ -5,7 +5,7 @@ expecting ")", got "" at row 1, col 10
 expecting "]", got "" at row 1, col 13
 
 # binary expression missing right operand
-expecting "mul_div expression", got "" at row 1, col 8
+expecting "expression", got "" at row 1, col 8
 
 # unclosed block
 expecting "}", got "" at row 3, col 6
