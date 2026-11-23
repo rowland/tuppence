@@ -18,13 +18,22 @@ func (k ScopeKind) Valid() bool {
 // Scope is the identity and parentage of one lexical scope. A zero Parent is
 // valid for a module root; parent ownership is checked by the enclosing table.
 type Scope struct {
-	ID     ScopeID
-	Parent ScopeID
-	Module ModuleID
-	Kind   ScopeKind
+	ID      ScopeID
+	Parent  ScopeID
+	Module  ModuleID
+	Kind    ScopeKind
+	Entries []ScopeEntry
 }
 
 // Valid reports whether the scope has the required identity and kind.
 func (s Scope) Valid() bool {
-	return s.ID.Valid() && s.Module.Valid() && s.Kind.Valid()
+	if !s.ID.Valid() || !s.Module.Valid() || !s.Kind.Valid() {
+		return false
+	}
+	for _, entry := range s.Entries {
+		if !entry.Valid() {
+			return false
+		}
+	}
+	return true
 }

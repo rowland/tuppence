@@ -7,12 +7,29 @@ func TestScopeValidity(t *testing.T) {
 		ID:     ScopeID(1),
 		Module: ModuleID(2),
 		Kind:   ScopeModule,
+		Entries: []ScopeEntry{
+			{Name: "answer", Declaration: DeclID(3), Offset: 4},
+		},
 	}
 	if !scope.Valid() {
 		t.Fatal("complete scope must be valid")
 	}
 	if scope.Parent.Valid() {
 		t.Fatal("root scope should not require a parent")
+	}
+}
+
+func TestScopeRejectsInvalidEntries(t *testing.T) {
+	scope := Scope{
+		ID:     ScopeID(1),
+		Module: ModuleID(2),
+		Kind:   ScopeBlock,
+		Entries: []ScopeEntry{
+			{Name: "", Declaration: DeclID(3)},
+		},
+	}
+	if scope.Valid() {
+		t.Fatal("scope with an invalid entry must be invalid")
 	}
 }
 
