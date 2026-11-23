@@ -111,7 +111,7 @@ func (a *ArrayFunctionCall) String() string {
 	return builder.String()
 }
 
-// member_access_tail = "." ( decimal_literal | identifier ) .
+// member_access_tail = "." field_selector .
 
 type MemberAccessMember interface {
 	Node
@@ -182,23 +182,25 @@ func (s *SafeIndexedAccess) String() string {
 	return s.Object.String() + "[" + s.Index.String() + "]!"
 }
 
-// tuple_update_expression = expression "." labeled_tuple_members .
-
-// TupleUpdateExpression represents a tuple update expression (e.g., obj.(field: value))
-type TupleUpdateExpression struct {
-	BaseNode
-	Object Expression    // The expression being updated
-	Update *TupleLiteral // The labeled tuple literal with updated fields
+type TupleUpdateMember struct {
+	Selector MemberAccessMember
+	Value    Expression
 }
 
-func NewTupleUpdateExpression(object Expression, update *TupleLiteral) *TupleUpdateExpression {
-	return &TupleUpdateExpression{
-		BaseNode: BaseNode{Type: NodeTupleUpdateExpression},
-		Object:   object,
-		Update:   update,
-	}
+type TupleUpdateExpression struct {
+	BaseNode
+	Object  Expression
+	Members []TupleUpdateMember
+}
+
+func NewTupleUpdateExpression(object Expression, members []TupleUpdateMember) *TupleUpdateExpression {
+	return &TupleUpdateExpression{BaseNode: BaseNode{Type: NodeTupleUpdateExpression}, Object: object, Members: members}
 }
 
 func (t *TupleUpdateExpression) String() string {
-	return t.Object.String() + "." + t.Update.String()
+	members := make([]string, len(t.Members))
+	for i, m := range t.Members {
+		members[i] = m.Selector.String() + ": " + m.Value.String()
+	}
+	return t.Object.String() + ".(" + strings.Join(members, ", ") + ")"
 }

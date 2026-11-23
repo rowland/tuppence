@@ -19,3 +19,5 @@ multi_line_labeled2 = (
     e: 3,
     f: 4,
 )
+
+swapped = double_number.(0: double_number.1, 1: double_number.0)

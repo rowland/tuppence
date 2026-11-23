@@ -64,12 +64,9 @@ func TestPostfixTails(t *testing.T) {
 			},
 			want: ast.NewTupleUpdateExpression(
 				ast.NewIdentifier("user", nil, 0, 4),
-				ast.NewTupleLiteral(true, []*ast.TupleMember{
-					ast.NewTupleMember(
-						ast.NewIdentifier("name", nil, 0, 4),
-						ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7),
-					),
-				}),
+				[]ast.TupleUpdateMember{
+					{Selector: ast.NewIdentifier("name", nil, 0, 4), Value: ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7)},
+				},
 			),
 		},
 		{

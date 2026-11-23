@@ -1293,12 +1293,17 @@ The dot (`.`) operator accesses tuple fields, module members, and function calls
     point = (x: 3, y: 5)
     print(point.x)  # 3
 
-A labeled tuple after the dot produces a tuple with the specified fields
-replaced. Other fields keep their values.
+An update after the dot replaces fields by name or zero-based decimal index in
+declaration order. Each selector must identify a distinct existing field at compile
+time. An identifier denotes the literal field name, even if a variable has the same
+name. The result preserves field labels and the values of all other fields.
 
     moved = point.(x: 8)
     print(moved.x)  # 8
     print(point.x)  # 3
+    moved = point.(0: 8)  # equivalent to point.(x: 8)
+    pair = (3, 5)
+    swapped = pair.(0: pair.1, 1: pair.0)  # (5, 3)
 
 ### Logical and Bitwise Negation (! and ~)
 

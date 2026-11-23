@@ -3,6 +3,7 @@ package parse
 import (
 	"bytes"
 	"os"
+	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -56,10 +57,12 @@ func TestErrorGoldenFixtures(t *testing.T) {
 				}
 			}
 
+			// Keep the diagnostic filename stable across checkout locations and platforms.
+			diagnosticPath := path.Join("/home/user/tuppence/tup/parse/testdata/error/input", file.Name())
 			var gotEntries []topLevelFixtureEntry
 			for i, entry := range inputEntries {
 				t.Run(entry.name, func(t *testing.T) {
-					got := parseErrorFixtureEntry(t, inputPath, entry)
+					got := parseErrorFixtureEntry(t, diagnosticPath, entry)
 					gotEntries = append(gotEntries, topLevelFixtureEntry{
 						name:  entry.name,
 						input: got,

@@ -69,8 +69,8 @@ error: expecting "field name", got ""
 # tuple update with unlabeled tuple
 _ = user.(1, 2)
 
-error: expecting "field name", got "1"
---> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:11
+error: expecting ":", got ","
+--> /home/user/tuppence/tup/parse/testdata/error/input/expressions.tup:1:12
 
 # import with identifier instead of string
 _ = import(io)

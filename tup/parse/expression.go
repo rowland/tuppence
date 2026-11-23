@@ -683,7 +683,7 @@ func typeMemberAccessExpression(tokens []tok.Token) (expr ast.Expression, remain
 	return memberAccessTail(typeIdentifier, remainder)
 }
 
-// member_access_tail = "." ( decimal_literal | identifier ) .
+// member_access_tail = "." field_selector .
 
 func memberAccessTail(object ast.Node, tokens []tok.Token) (expr *ast.MemberAccess, remainder []tok.Token, err error) {
 	remainder = skipTrivia(tokens)
@@ -694,7 +694,7 @@ func memberAccessTail(object ast.Node, tokens []tok.Token) (expr *ast.MemberAcce
 	}
 
 	var member ast.MemberAccessMember
-	if member, remainder, err = memberAccessMember(remainder); err != nil {
+	if member, remainder, err = fieldSelector(remainder); err != nil {
 		if err == ErrNoMatch {
 			if peek(remainder).Type == tok.TokOpenParen {
 				return nil, tokens, ErrNoMatch
@@ -707,9 +707,9 @@ func memberAccessTail(object ast.Node, tokens []tok.Token) (expr *ast.MemberAcce
 	return ast.NewMemberAccess(object, member), remainder, nil
 }
 
-// member_access_member = decimal_literal | identifier .
+// field_selector = identifier | decimal_literal .
 
-func memberAccessMember(tokens []tok.Token) (member ast.MemberAccessMember, remainder []tok.Token, err error) {
+func fieldSelector(tokens []tok.Token) (member ast.MemberAccessMember, remainder []tok.Token, err error) {
 	if decimalLiteral, remainder, err := DecimalLiteral(tokens); err == nil {
 		return decimalLiteral, remainder, nil
 	} else if err != ErrNoMatch {

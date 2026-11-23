@@ -179,6 +179,11 @@ _ = user.(name: "Brent").name
 
 _ = user.(name: "Brent").name
 
+# mixed selectors and trailing comma
+_ = point.(x: 3, 1: 5,).1
+
+_ = point.(x: 3, 1: 5).1
+
 # wrapped block expression
 _ = {
     ready = true

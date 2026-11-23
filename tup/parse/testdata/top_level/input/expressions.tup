@@ -105,6 +105,9 @@ _ = some_funcs[5](x + 1)
 # wrapped tuple update followed by member access
 _ = user.(name: "Brent").name
 
+# mixed selectors and trailing comma
+_ = point.(x: 3, 1: 5,).1
+
 # wrapped block expression
 _ = {
     ready = true

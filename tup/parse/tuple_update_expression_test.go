@@ -18,12 +18,9 @@ func TestTupleUpdateExpression(t *testing.T) {
 			input: "user.(name: \"Brent\")",
 			want: ast.NewTupleUpdateExpression(
 				ast.NewIdentifier("user", nil, 0, 4),
-				ast.NewTupleLiteral(true, []*ast.TupleMember{
-					ast.NewTupleMember(
-						ast.NewIdentifier("name", nil, 0, 4),
-						ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7),
-					),
-				}),
+				[]ast.TupleUpdateMember{
+					{Selector: ast.NewIdentifier("name", nil, 0, 4), Value: ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7)},
+				},
 			),
 		},
 		{
@@ -36,16 +33,10 @@ func TestTupleUpdateExpression(t *testing.T) {
 					ast.NewFunctionArguments(ast.NewArguments([]*ast.Argument{}), nil, false),
 					nil,
 				),
-				ast.NewTupleLiteral(true, []*ast.TupleMember{
-					ast.NewTupleMember(
-						ast.NewIdentifier("name", nil, 0, 4),
-						ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7),
-					),
-					ast.NewTupleMember(
-						ast.NewIdentifier("active", nil, 0, 6),
-						ast.NewBooleanLiteral("true", true, nil, 0, 4),
-					),
-				}),
+				[]ast.TupleUpdateMember{
+					{Selector: ast.NewIdentifier("name", nil, 0, 4), Value: ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7)},
+					{Selector: ast.NewIdentifier("active", nil, 0, 6), Value: ast.NewBooleanLiteral("true", true, nil, 0, 4)},
+				},
 			),
 		},
 		{
@@ -56,12 +47,9 @@ func TestTupleUpdateExpression(t *testing.T) {
 					ast.NewIdentifier("users", nil, 0, 5),
 					ast.NewDecimalLiteral("0", 0, nil, 0, 0),
 				),
-				ast.NewTupleLiteral(true, []*ast.TupleMember{
-					ast.NewTupleMember(
-						ast.NewIdentifier("name", nil, 0, 4),
-						ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7),
-					),
-				}),
+				[]ast.TupleUpdateMember{
+					{Selector: ast.NewIdentifier("name", nil, 0, 4), Value: ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7)},
+				},
 			),
 		},
 		{
@@ -75,14 +63,15 @@ func TestTupleUpdateExpression(t *testing.T) {
 					),
 					ast.NewDecimalLiteral("0", 0, nil, 0, 0),
 				),
-				ast.NewTupleLiteral(true, []*ast.TupleMember{
-					ast.NewTupleMember(
-						ast.NewIdentifier("name", nil, 0, 4),
-						ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7),
-					),
-				}),
+				[]ast.TupleUpdateMember{
+					{Selector: ast.NewIdentifier("name", nil, 0, 4), Value: ast.NewStringLiteral(`"Brent"`, "Brent", nil, 0, 7)},
+				},
 			),
 		},
+		{name: "computed selector", input: "pair.(i + 1: x)", wantErr: true},
+		{name: "nondecimal selector", input: "pair.(0x1: x)", wantErr: true},
+		{name: "empty updates", input: "pair.()", wantErr: true},
+		{name: "missing replacement", input: "pair.(1: )", wantErr: true},
 		{
 			name:    "unlabeled tuple update is rejected",
 			input:   "user.(1, 2)",
