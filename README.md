@@ -7,6 +7,7 @@ The Tuppence Programming Language
 ## Repository Guide
 
 - [SPECIFICATION.md](SPECIFICATION.md) is the human-readable language guide.
+- [IR_DESIGN.md](IR_DESIGN.md) is the draft compiler IR proposal; [IR_OWNERSHIP.md](IR_OWNERSHIP.md) explores ownership and storage.
 - [tup.ebnf](tup.ebnf) is the formal grammar.
 - [tup.ebnf.html](tup.ebnf.html) is the generated HTML view of the grammar.
 - [examples](examples) contains valid and intentionally invalid examples; pay attention to the comments.

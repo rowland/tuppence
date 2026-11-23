@@ -1293,6 +1293,13 @@ The dot (`.`) operator accesses tuple fields, module members, and function calls
     point = (x: 3, y: 5)
     print(point.x)  # 3
 
+A labeled tuple after the dot produces a tuple with the specified fields
+replaced. Other fields keep their values.
+
+    moved = point.(x: 8)
+    print(moved.x)  # 8
+    print(point.x)  # 3
+
 ### Logical and Bitwise Negation (! and ~)
 
 #### Boolean Negation (!)
@@ -1474,7 +1481,10 @@ Tuppence provides both signed and unsigned integer types of various bit widths. 
   ```
 
 ### Type System Properties
-- All types in Tuppence are immutable.
+- Values are immutable. Passing the same value to two parameters gives both the
+  original value. Computing an updated value leaves every still-accessible copy
+  of the original unchanged. The implementation may share or reuse storage
+  whenever it preserves these observations.
 - Integer types are fixed-width, except for Int and UInt, which adjust to the architecture's natural word size.
 
 - Type aliases (such as `Byte` and `Rune`) provide better readability but do not introduce new underlying types.

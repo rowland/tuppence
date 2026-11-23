@@ -48,20 +48,14 @@ Error = type()
 
 ## Function Parameter Packaging
 
-In Tuppence, all formal function parameters declared in the function signature are automatically packaged into a tuple at runtime. This tuple serves as a structured representation of the function’s input arguments. However, additional implicit parameters are also appended to this tuple to provide contextual and environmental information required for the function’s execution.
+Formal parameters form a logical tuple. The target ABI can split its fields into
+registers or stack slots, or materialize a tuple when needed. Runtime context
+such as a heap handle can be passed separately when required.
 
-Implicit Contextual Parameters:
-  * Additional parameters are automatically added to the tuple. These include, but are not limited to:
-    * Context: Information about the current execution context (e.g., current module, scope).
-    * Process Information: Details about the process or thread of execution.
-    * Heap/Memory Management: A reference to memory or heap resources accessible to the function.
-  * These implicit parameters ensure that functions have the metadata required for efficient execution, debugging, and resource management.
-
-Accessing Implicit Parameters:
-  * These implicit parameters are generally not directly accessible in the function body but are used internally by the runtime or standard library. If needed, specific parameters may be exposed through utilities or annotations.
-
-Optimization:
-  * If a function does not require certain implicit parameters, the compiler may optimize their inclusion, reducing overhead for simple functions.
+The proposed storage lowering assigns borrowed or consumed modes to logical
+inputs and delivers owned results. A consumed heap reference transfers one
+strong owner to the callee. See [IR_OWNERSHIP.md](IR_OWNERSHIP.md) for the
+counting invariant, duplicate arguments, and the conditions for storage reuse.
 
 ## Symbols
 
