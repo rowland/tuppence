@@ -10,12 +10,13 @@ type IndexedProgram struct {
 	Bindings     BindingTable
 	Functions    FunctionTable
 	Aliases      TypeAliasTable
+	Expressions  ExpressionTable
 	Diagnostics  []Diagnostic
 }
 
 // Valid reports whether every indexed table, cross-reference, and diagnostic is valid.
 func (p IndexedProgram) Valid() bool {
-	if !p.Modules.Valid() || !p.Types.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() || !p.Aliases.Valid() {
+	if !p.Modules.Valid() || !p.Types.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() || !p.Aliases.Valid() || !p.Expressions.Valid() {
 		return false
 	}
 	for _, scope := range p.Scopes {
@@ -77,6 +78,9 @@ func (p IndexedProgram) Valid() bool {
 	}
 	for _, binding := range p.Bindings {
 		if _, ok := p.Scopes.Find(binding.Scope); !ok {
+			return false
+		}
+		if _, ok := p.Expressions.Find(binding.Value); !ok {
 			return false
 		}
 		if binding.Previous.Valid() {

@@ -52,6 +52,11 @@ func (p IndexedProgram) Dump() string {
 		fmt.Fprintf(&out, "  declaration=%d target=%d\n", alias.Declaration, alias.Target)
 	}
 
+	out.WriteString("expressions:\n")
+	for _, expression := range p.Expressions {
+		fmt.Fprintf(&out, "  %d declaration=%d function=%d value=%d\n", expression.ID, expression.Declaration, expression.Function, expression.Value)
+	}
+
 	out.WriteString("diagnostics:\n")
 	for _, diagnostic := range p.Diagnostics {
 		fmt.Fprintf(&out, "  severity=%d code=%s message=%s\n", diagnostic.Severity, diagnostic.Code, diagnostic.Message)
