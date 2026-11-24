@@ -12,7 +12,7 @@ func (p IndexedProgram) Dump() string {
 
 	out.WriteString("modules:\n")
 	for _, module := range p.Modules {
-		fmt.Fprintf(&out, "  %d name=%s\n", module.ID, module.Name)
+		fmt.Fprintf(&out, "  %d name=%s files=%v\n", module.ID, module.Name, module.Files)
 	}
 
 	out.WriteString("types:\n")
