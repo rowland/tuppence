@@ -75,6 +75,14 @@ func (p IndexedProgram) Valid() bool {
 		if !ok {
 			return false
 		}
+		referenceScope, ok := p.Scopes.Find(expression.Scope)
+		if !ok {
+			return false
+		}
+		declarationScope, ok := p.Scopes.Find(declaration.Scope)
+		if !ok || (referenceScope.Module != declarationScope.Module && (!declaration.Exported || !moduleImports(p.Modules, referenceScope.Module, declarationScope.Module))) {
+			return false
+		}
 		if expression.Function.Valid() {
 			function, ok := p.Functions.Find(expression.Function)
 			if !ok || function.Declaration != expression.Declaration || declaration.Kind != DeclFunction {
@@ -126,6 +134,19 @@ func (p IndexedProgram) Valid() bool {
 		}
 	}
 	return true
+}
+
+func moduleImports(modules ModuleTable, source, target ModuleID) bool {
+	module, ok := modules.Find(source)
+	if !ok {
+		return false
+	}
+	for _, binding := range module.Imports {
+		if binding.Target == target {
+			return true
+		}
+	}
+	return false
 }
 
 func scopeParentsAcyclic(scopes ScopeTable) bool {

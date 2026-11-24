@@ -61,7 +61,7 @@ func (p IndexedProgram) Dump() string {
 
 	out.WriteString("expressions:\n")
 	for _, expression := range p.Expressions {
-		fmt.Fprintf(&out, "  %d declaration=%d function=%d value=%d\n", expression.ID, expression.Declaration, expression.Function, expression.Value)
+		fmt.Fprintf(&out, "  %d scope=%d declaration=%d function=%d value=%d\n", expression.ID, expression.Scope, expression.Declaration, expression.Function, expression.Value)
 	}
 
 	out.WriteString("diagnostics:\n")

@@ -28,7 +28,7 @@ func TestIndexedProgramValidity(t *testing.T) {
 			{ID: BindingID(1), Scope: ScopeID(1), Name: "answer", TypeSlot: TypeVarID(1), Value: ExprID(1), Origin: testOrigin()},
 		},
 		Expressions: ExpressionTable{
-			{ID: ExprID(1), Declaration: DeclID(1), Origin: testOrigin()},
+			{ID: ExprID(1), Scope: ScopeID(1), Declaration: DeclID(1), Origin: testOrigin()},
 		},
 		Diagnostics: []Diagnostic{
 			{Severity: SeverityWarning, Code: "IR001", Message: "example warning", Origin: testOrigin()},
