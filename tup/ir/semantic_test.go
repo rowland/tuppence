@@ -199,3 +199,21 @@ func TestIndexedProgramRejectsDanglingScopeEntries(t *testing.T) {
 		t.Fatal("scope entry referring to an absent declaration must be invalid")
 	}
 }
+
+func TestIndexedProgramRejectsMisownedScopeEntries(t *testing.T) {
+	program := IndexedProgram{
+		Modules: ModuleTable{
+			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+		},
+		Scopes: ScopeTable{
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Entries: []ScopeEntry{{Name: "answer", Declaration: DeclID(1)}}},
+			{ID: ScopeID(2), Module: ModuleID(1), Kind: ScopeBlock},
+		},
+		Declarations: DeclarationTable{
+			{ID: DeclID(1), Scope: ScopeID(2), Name: "answer", Kind: DeclValue, Origin: testOrigin()},
+		},
+	}
+	if program.Valid() {
+		t.Fatal("scope entry owned by another scope must be invalid")
+	}
+}
