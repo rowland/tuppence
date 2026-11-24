@@ -25,6 +25,21 @@ func TestModuleRejectsDuplicateOrInvalidFiles(t *testing.T) {
 	}
 }
 
+func TestModuleRejectsDuplicateImports(t *testing.T) {
+	module := Module{
+		ID:   ModuleID(1),
+		Name: "main",
+		Imports: []ImportBinding{
+			{LocalName: "io", Target: ModuleID(2), Origin: testOrigin()},
+			{LocalName: "io", Target: ModuleID(3), Origin: testOrigin()},
+		},
+		Origin: testOrigin(),
+	}
+	if module.Valid() {
+		t.Fatal("module with duplicate import names must be invalid")
+	}
+}
+
 func TestModuleRejectsMissingFields(t *testing.T) {
 	for name, module := range map[string]Module{
 		"missing id":     {Name: "main", Origin: testOrigin()},

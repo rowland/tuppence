@@ -30,6 +30,13 @@ func (p IndexedProgram) Valid() bool {
 			}
 		}
 	}
+	for _, module := range p.Modules {
+		for _, importBinding := range module.Imports {
+			if _, ok := p.Modules.Find(importBinding.Target); !ok {
+				return false
+			}
+		}
+	}
 	if !scopeParentsAcyclic(p.Scopes) {
 		return false
 	}
