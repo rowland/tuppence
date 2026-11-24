@@ -35,6 +35,9 @@ func (p IndexedProgram) Valid() bool {
 			if _, ok := p.Modules.Find(importBinding.Target); !ok {
 				return false
 			}
+			if moduleImportCollides(p.Scopes, module.ID, importBinding.LocalName) {
+				return false
+			}
 		}
 	}
 	if !scopeParentsAcyclic(p.Scopes) {
@@ -134,6 +137,20 @@ func (p IndexedProgram) Valid() bool {
 		}
 	}
 	return true
+}
+
+func moduleImportCollides(scopes ScopeTable, module ModuleID, name string) bool {
+	for _, scope := range scopes {
+		if scope.Module != module || scope.Kind != ScopeModule || scope.Parent.Valid() {
+			continue
+		}
+		for _, entry := range scope.Entries {
+			if entry.Name == name {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func moduleImports(modules ModuleTable, source, target ModuleID) bool {
