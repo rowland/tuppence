@@ -58,6 +58,18 @@ func (p IndexedProgram) Valid() bool {
 			return false
 		}
 	}
+	for _, expression := range p.Expressions {
+		declaration, ok := p.Declarations.Find(expression.Declaration)
+		if !ok {
+			return false
+		}
+		if expression.Function.Valid() {
+			function, ok := p.Functions.Find(expression.Function)
+			if !ok || function.Declaration != expression.Declaration || declaration.Kind != DeclFunction {
+				return false
+			}
+		}
+	}
 	for _, declaration := range p.Declarations {
 		if _, ok := p.Scopes.Find(declaration.Scope); !ok {
 			return false
