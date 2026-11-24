@@ -34,6 +34,13 @@ func (p IndexedProgram) Valid() bool {
 			return false
 		}
 	}
+	for _, scope := range p.Scopes {
+		for _, entry := range scope.Entries {
+			if _, ok := p.Declarations.Find(entry.Declaration); !ok {
+				return false
+			}
+		}
+	}
 	for _, binding := range p.Bindings {
 		if _, ok := p.Scopes.Find(binding.Scope); !ok {
 			return false

@@ -185,3 +185,17 @@ func TestIndexedProgramRejectsScopeParentCycles(t *testing.T) {
 		}
 	}
 }
+
+func TestIndexedProgramRejectsDanglingScopeEntries(t *testing.T) {
+	program := IndexedProgram{
+		Modules: ModuleTable{
+			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+		},
+		Scopes: ScopeTable{
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Entries: []ScopeEntry{{Name: "answer", Declaration: DeclID(9)}}},
+		},
+	}
+	if program.Valid() {
+		t.Fatal("scope entry referring to an absent declaration must be invalid")
+	}
+}
