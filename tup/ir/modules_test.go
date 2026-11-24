@@ -14,6 +14,17 @@ func TestModuleValidity(t *testing.T) {
 	}
 }
 
+func TestModuleRejectsOriginOutsideFiles(t *testing.T) {
+	module := Module{
+		ID:     ModuleID(1),
+		Name:   "main",
+		Files:  []FileID{FileID(1)},
+		Origin: Origin{Primary: Span{File: FileID(2), Start: 0, End: 1}},
+	}
+	if module.Valid() {
+		t.Fatal("module origin outside its files must be invalid")
+	}
+}
 func TestModuleRejectsDuplicateOrInvalidFiles(t *testing.T) {
 	for name, module := range map[string]Module{
 		"invalid file":   {ID: ModuleID(1), Name: "main", Files: []FileID{FileID(0)}, Origin: testOrigin()},

@@ -11,9 +11,21 @@ type Module struct {
 	Origin  Origin
 }
 
+func moduleHasFile(files []FileID, file FileID) bool {
+	for _, candidate := range files {
+		if candidate == file {
+			return true
+		}
+	}
+	return false
+}
+
 // Valid reports whether the module has the required identity, source data, and unique files/imports.
 func (m Module) Valid() bool {
 	if !m.ID.Valid() || strings.TrimSpace(m.Name) == "" || !m.Origin.Valid() {
+		return false
+	}
+	if len(m.Files) > 0 && !moduleHasFile(m.Files, m.Origin.Primary.File) {
 		return false
 	}
 	seenFiles := make(map[FileID]struct{}, len(m.Files))

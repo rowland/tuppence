@@ -59,7 +59,7 @@ func (p IndexedProgram) Valid() bool {
 			return false
 		}
 		declarationScope, ok := p.Scopes.Find(declaration.Scope)
-		if !ok {
+		if !ok || !moduleOwnsOrigin(p.Modules, declarationScope.Module, declaration.Origin) {
 			return false
 		}
 		for _, typ := range p.Types {
@@ -92,7 +92,10 @@ func (p IndexedProgram) Valid() bool {
 			return false
 		}
 		declarationScope, ok := p.Scopes.Find(declaration.Scope)
-		if !ok || (referenceScope.Module != declarationScope.Module && (!declaration.Exported || !moduleImports(p.Modules, referenceScope.Module, declarationScope.Module))) {
+		if !ok || !moduleOwnsOrigin(p.Modules, declarationScope.Module, declaration.Origin) || (referenceScope.Module != declarationScope.Module && (!declaration.Exported || !moduleImports(p.Modules, referenceScope.Module, declarationScope.Module))) {
+			return false
+		}
+		if !moduleOwnsOrigin(p.Modules, referenceScope.Module, expression.Origin) {
 			return false
 		}
 		if expression.Function.Valid() {
@@ -103,7 +106,8 @@ func (p IndexedProgram) Valid() bool {
 		}
 	}
 	for _, declaration := range p.Declarations {
-		if _, ok := p.Scopes.Find(declaration.Scope); !ok {
+		scope, ok := p.Scopes.Find(declaration.Scope)
+		if !ok || !moduleOwnsOrigin(p.Modules, scope.Module, declaration.Origin) {
 			return false
 		}
 		if declaration.OwnerType.Valid() {
@@ -146,6 +150,11 @@ func (p IndexedProgram) Valid() bool {
 		}
 	}
 	return true
+}
+
+func moduleOwnsOrigin(modules ModuleTable, moduleID ModuleID, origin Origin) bool {
+	module, ok := modules.Find(moduleID)
+	return ok && (len(module.Files) == 0 || moduleHasFile(module.Files, origin.Primary.File))
 }
 
 func moduleImportCollides(scopes ScopeTable, module ModuleID, name string) bool {
