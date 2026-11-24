@@ -19,11 +19,12 @@ func (k DeclKind) Valid() bool {
 
 // Declaration records the source identity and lexical owner of one declaration.
 type Declaration struct {
-	ID     DeclID
-	Scope  ScopeID
-	Name   string
-	Kind   DeclKind
-	Origin Origin
+	ID        DeclID
+	Scope     ScopeID
+	Name      string
+	Kind      DeclKind
+	OwnerType DeclID
+	Origin    Origin
 }
 
 // Valid reports whether the declaration has the required identity and source data.

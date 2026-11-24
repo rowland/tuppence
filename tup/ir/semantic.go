@@ -79,6 +79,12 @@ func (p IndexedProgram) Valid() bool {
 		if _, ok := p.Scopes.Find(declaration.Scope); !ok {
 			return false
 		}
+		if declaration.OwnerType.Valid() {
+			owner, ok := p.Declarations.Find(declaration.OwnerType)
+			if !ok || owner.Kind != DeclType || owner.Scope != declaration.Scope {
+				return false
+			}
+		}
 	}
 	for _, scope := range p.Scopes {
 		seenNames := make(map[string]DeclKind, len(scope.Entries))
