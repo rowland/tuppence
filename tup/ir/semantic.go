@@ -20,6 +20,11 @@ func (p IndexedProgram) Valid() bool {
 			return false
 		}
 	}
+	for _, declaration := range p.Declarations {
+		if _, ok := p.Scopes.Find(declaration.Scope); !ok {
+			return false
+		}
+	}
 	for _, diagnostic := range p.Diagnostics {
 		if !diagnostic.Valid() {
 			return false
