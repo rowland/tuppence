@@ -42,6 +42,11 @@ func (p IndexedProgram) Dump() string {
 		fmt.Fprintf(&out, "  %d scope=%d previous=%d name=%s type=%d value=%d mutable=%t\n", binding.ID, binding.Scope, binding.Previous, binding.Name, binding.TypeSlot, binding.Value, binding.Mutable)
 	}
 
+	out.WriteString("functions:\n")
+	for _, function := range p.Functions {
+		fmt.Fprintf(&out, "  %d declaration=%d effect=%d generic=%t\n", function.ID, function.Declaration, function.Effect, function.Generic)
+	}
+
 	out.WriteString("diagnostics:\n")
 	for _, diagnostic := range p.Diagnostics {
 		fmt.Fprintf(&out, "  severity=%d code=%s message=%s\n", diagnostic.Severity, diagnostic.Code, diagnostic.Message)

@@ -8,12 +8,13 @@ type IndexedProgram struct {
 	Scopes       ScopeTable
 	Declarations DeclarationTable
 	Bindings     BindingTable
+	Functions    FunctionTable
 	Diagnostics  []Diagnostic
 }
 
 // Valid reports whether every indexed table, cross-reference, and diagnostic is valid.
 func (p IndexedProgram) Valid() bool {
-	if !p.Modules.Valid() || !p.Types.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() {
+	if !p.Modules.Valid() || !p.Types.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() {
 		return false
 	}
 	for _, scope := range p.Scopes {
@@ -37,6 +38,12 @@ func (p IndexedProgram) Valid() bool {
 		}
 		scope, ok := p.Scopes.Find(declaration.Scope)
 		if !ok || scope.Module != typ.HomeModule {
+			return false
+		}
+	}
+	for _, function := range p.Functions {
+		declaration, ok := p.Declarations.Find(function.Declaration)
+		if !ok || declaration.Kind != DeclFunction {
 			return false
 		}
 	}
