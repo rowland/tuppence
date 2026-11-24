@@ -48,6 +48,11 @@ func (p IndexedProgram) Valid() bool {
 		if !ok || declaration.Kind != DeclType {
 			return false
 		}
+		for _, typ := range p.Types {
+			if typ.Declaration == alias.Declaration {
+				return false
+			}
+		}
 		if _, ok := p.Types.Find(alias.Target); !ok {
 			return false
 		}

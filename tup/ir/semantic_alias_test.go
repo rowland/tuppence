@@ -29,3 +29,16 @@ func TestIndexedProgramRejectsDanglingAliasTarget(t *testing.T) {
 		t.Fatal("alias with an absent target must be invalid")
 	}
 }
+
+func TestIndexedProgramRejectsAliasAlsoRepresentedAsType(t *testing.T) {
+	program := IndexedProgram{
+		Modules:      ModuleTable{{ID: ModuleID(1), Name: "main", Origin: testOrigin()}},
+		Types:        TypeTable{{ID: TypeID(1), Name: "Alias", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()}},
+		Scopes:       ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule}},
+		Declarations: DeclarationTable{{ID: DeclID(1), Scope: ScopeID(1), Name: "Alias", Kind: DeclType, Origin: testOrigin()}},
+		Aliases:      TypeAliasTable{{Declaration: DeclID(1), Target: TypeID(1), Origin: testOrigin()}},
+	}
+	if program.Valid() {
+		t.Fatal("declaration represented as both alias and type must be invalid")
+	}
+}
