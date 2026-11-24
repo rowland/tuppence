@@ -81,6 +81,10 @@ func (p IndexedProgram) Valid() bool {
 		if !ok || declaration.Kind != DeclFunction {
 			return false
 		}
+		declarationScope, ok := p.Scopes.Find(declaration.Scope)
+		if !ok || !moduleOwnsOrigin(p.Modules, declarationScope.Module, function.Origin) {
+			return false
+		}
 	}
 	for _, expression := range p.Expressions {
 		declaration, ok := p.Declarations.Find(expression.Declaration)
