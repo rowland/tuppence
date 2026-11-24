@@ -18,13 +18,21 @@ func (k TypeKind) Valid() bool {
 // Type is the minimal named semantic type record. Structural types and type
 // variables will be added separately.
 type Type struct {
-	ID     TypeID
-	Name   string
-	Kind   TypeKind
-	Origin Origin
+	ID          TypeID
+	Name        string
+	Kind        TypeKind
+	Declaration DeclID
+	HomeModule  ModuleID
+	Origin      Origin
 }
 
 // Valid reports whether the type has the required identity and source data.
 func (t Type) Valid() bool {
-	return t.ID.Valid() && strings.TrimSpace(t.Name) != "" && t.Kind.Valid() && t.Origin.Valid()
+	if !t.ID.Valid() || strings.TrimSpace(t.Name) == "" || !t.Kind.Valid() || !t.Origin.Valid() {
+		return false
+	}
+	if t.Kind == TypeNominal && (!t.Declaration.Valid() || !t.HomeModule.Valid()) {
+		return false
+	}
+	return true
 }

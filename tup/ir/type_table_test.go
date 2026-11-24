@@ -5,7 +5,7 @@ import "testing"
 func TestTypeTableFindsTypesByID(t *testing.T) {
 	table := TypeTable{
 		{ID: TypeID(1), Name: "int", Kind: TypePrimitive, Origin: testOrigin()},
-		{ID: TypeID(2), Name: "User", Kind: TypeNominal, Origin: testOrigin()},
+		{ID: TypeID(2), Name: "User", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()},
 	}
 	if !table.Valid() {
 		t.Fatal("complete type table must be valid")
