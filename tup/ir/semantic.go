@@ -46,16 +46,16 @@ func (p IndexedProgram) Valid() bool {
 		}
 	}
 	for _, scope := range p.Scopes {
-		seenNames := make(map[string]struct{}, len(scope.Entries))
+		seenNames := make(map[string]DeclKind, len(scope.Entries))
 		for _, entry := range scope.Entries {
-			if _, exists := seenNames[entry.Name]; exists {
-				return false
-			}
-			seenNames[entry.Name] = struct{}{}
 			declaration, ok := p.Declarations.Find(entry.Declaration)
 			if !ok || declaration.Scope != scope.ID || declaration.Name != entry.Name {
 				return false
 			}
+			if previousKind, exists := seenNames[entry.Name]; exists && (previousKind != DeclFunction || declaration.Kind != DeclFunction) {
+				return false
+			}
+			seenNames[entry.Name] = declaration.Kind
 		}
 	}
 	for _, binding := range p.Bindings {
