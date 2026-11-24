@@ -19,6 +19,11 @@ func (p IndexedProgram) Valid() bool {
 		if _, ok := p.Modules.Find(scope.Module); !ok {
 			return false
 		}
+		if scope.Parent.Valid() {
+			if _, ok := p.Scopes.Find(scope.Parent); !ok {
+				return false
+			}
+		}
 	}
 	for _, declaration := range p.Declarations {
 		if _, ok := p.Scopes.Find(declaration.Scope); !ok {

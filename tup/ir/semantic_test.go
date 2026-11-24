@@ -132,3 +132,17 @@ func TestIndexedProgramRejectsInconsistentBindingVersions(t *testing.T) {
 		}
 	}
 }
+
+func TestIndexedProgramRejectsDanglingScopeParents(t *testing.T) {
+	program := IndexedProgram{
+		Modules: ModuleTable{
+			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+		},
+		Scopes: ScopeTable{
+			{ID: ScopeID(1), Parent: ScopeID(9), Module: ModuleID(1), Kind: ScopeBlock},
+		},
+	}
+	if program.Valid() {
+		t.Fatal("scope referring to an absent parent must be invalid")
+	}
+}
