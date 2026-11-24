@@ -16,6 +16,10 @@ func TestIndexedProgramValidity(t *testing.T) {
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "Answer", Kind: DeclType, Origin: testOrigin()},
 			{ID: DeclID(2), Scope: ScopeID(1), Name: "compute", Kind: DeclFunction, Origin: testOrigin()},
+			{ID: DeclID(3), Scope: ScopeID(1), Name: "Alias", Kind: DeclType, Origin: testOrigin()},
+		},
+		Aliases: TypeAliasTable{
+			{Declaration: DeclID(3), Target: TypeID(1), Origin: testOrigin()},
 		},
 		Functions: FunctionTable{
 			{ID: FunctionID(1), Declaration: DeclID(2), Effect: EffectPure, Origin: testOrigin()},

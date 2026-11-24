@@ -47,6 +47,11 @@ func (p IndexedProgram) Dump() string {
 		fmt.Fprintf(&out, "  %d declaration=%d effect=%d generic=%t\n", function.ID, function.Declaration, function.Effect, function.Generic)
 	}
 
+	out.WriteString("aliases:\n")
+	for _, alias := range p.Aliases {
+		fmt.Fprintf(&out, "  declaration=%d target=%d\n", alias.Declaration, alias.Target)
+	}
+
 	out.WriteString("diagnostics:\n")
 	for _, diagnostic := range p.Diagnostics {
 		fmt.Fprintf(&out, "  severity=%d code=%s message=%s\n", diagnostic.Severity, diagnostic.Code, diagnostic.Message)
