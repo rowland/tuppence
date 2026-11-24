@@ -4,15 +4,16 @@ package ir
 // collected into validated lexical tables, but expressions are not analyzed yet.
 type IndexedProgram struct {
 	Modules      ModuleTable
+	Types        TypeTable
 	Scopes       ScopeTable
 	Declarations DeclarationTable
 	Bindings     BindingTable
 	Diagnostics  []Diagnostic
 }
 
-// Valid reports whether every indexed table and diagnostic is valid.
+// Valid reports whether every indexed table, cross-reference, and diagnostic is valid.
 func (p IndexedProgram) Valid() bool {
-	if !p.Modules.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() {
+	if !p.Modules.Valid() || !p.Types.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() {
 		return false
 	}
 	for _, scope := range p.Scopes {
@@ -28,6 +29,16 @@ func (p IndexedProgram) Valid() bool {
 	}
 	if !scopeParentsAcyclic(p.Scopes) {
 		return false
+	}
+	for _, typ := range p.Types {
+		declaration, ok := p.Declarations.Find(typ.Declaration)
+		if !ok || declaration.Kind != DeclType {
+			return false
+		}
+		scope, ok := p.Scopes.Find(declaration.Scope)
+		if !ok || scope.Module != typ.HomeModule {
+			return false
+		}
 	}
 	for _, declaration := range p.Declarations {
 		if _, ok := p.Scopes.Find(declaration.Scope); !ok {

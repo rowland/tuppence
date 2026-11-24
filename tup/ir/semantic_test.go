@@ -7,11 +7,14 @@ func TestIndexedProgramValidity(t *testing.T) {
 		Modules: ModuleTable{
 			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
 		},
+		Types: TypeTable{
+			{ID: TypeID(1), Name: "Answer", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()},
+		},
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
 		},
 		Declarations: DeclarationTable{
-			{ID: DeclID(1), Scope: ScopeID(1), Name: "answer", Kind: DeclValue, Origin: testOrigin()},
+			{ID: DeclID(1), Scope: ScopeID(1), Name: "Answer", Kind: DeclType, Origin: testOrigin()},
 		},
 		Bindings: BindingTable{
 			{ID: BindingID(1), Scope: ScopeID(1), Name: "answer", TypeSlot: TypeVarID(1), Value: ExprID(1), Origin: testOrigin()},

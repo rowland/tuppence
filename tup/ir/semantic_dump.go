@@ -15,6 +15,11 @@ func (p IndexedProgram) Dump() string {
 		fmt.Fprintf(&out, "  %d name=%s\n", module.ID, module.Name)
 	}
 
+	out.WriteString("types:\n")
+	for _, typ := range p.Types {
+		fmt.Fprintf(&out, "  %d kind=%d name=%s declaration=%d home_module=%d\n", typ.ID, typ.Kind, typ.Name, typ.Declaration, typ.HomeModule)
+	}
+
 	out.WriteString("scopes:\n")
 	for _, scope := range p.Scopes {
 		fmt.Fprintf(&out, "  %d module=%d parent=%d kind=%d entries=[", scope.ID, scope.Module, scope.Parent, scope.Kind)
