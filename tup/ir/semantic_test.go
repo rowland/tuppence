@@ -4,6 +4,9 @@ import "testing"
 
 func TestIndexedProgramValidity(t *testing.T) {
 	program := IndexedProgram{
+		Modules: ModuleTable{
+			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+		},
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
 		},
@@ -24,6 +27,13 @@ func TestIndexedProgramValidity(t *testing.T) {
 
 func TestIndexedProgramRejectsInvalidTables(t *testing.T) {
 	program := IndexedProgram{
+		Modules: ModuleTable{{ID: ModuleID(1), Name: "main"}},
+	}
+	if program.Valid() {
+		t.Fatal("indexed program with an invalid module table must be invalid")
+	}
+
+	program = IndexedProgram{
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Module: ModuleID(1)},
 		},

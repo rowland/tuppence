@@ -3,6 +3,7 @@ package ir
 // IndexedProgram is the first semantic snapshot: source identities have been
 // collected into validated lexical tables, but expressions are not analyzed yet.
 type IndexedProgram struct {
+	Modules      ModuleTable
 	Scopes       ScopeTable
 	Declarations DeclarationTable
 	Bindings     BindingTable
@@ -11,7 +12,7 @@ type IndexedProgram struct {
 
 // Valid reports whether every indexed table and diagnostic is valid.
 func (p IndexedProgram) Valid() bool {
-	if !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() {
+	if !p.Modules.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() {
 		return false
 	}
 	for _, diagnostic := range p.Diagnostics {
