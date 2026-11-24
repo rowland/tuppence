@@ -24,6 +24,7 @@ type Declaration struct {
 	Name      string
 	Kind      DeclKind
 	OwnerType DeclID
+	Exported  bool
 	Origin    Origin
 }
 

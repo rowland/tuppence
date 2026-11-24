@@ -15,6 +15,20 @@ func TestDeclarationValidity(t *testing.T) {
 	}
 }
 
+func TestExportedDeclarationRemainsValid(t *testing.T) {
+	declaration := Declaration{
+		ID:       DeclID(1),
+		Scope:    ScopeID(2),
+		Name:     "answer",
+		Kind:     DeclValue,
+		Exported: true,
+		Origin:   Origin{Primary: Span{File: FileID(1), Start: 0, End: 6}},
+	}
+	if !declaration.Valid() {
+		t.Fatal("exported declaration must be valid")
+	}
+}
+
 func TestDeclarationRejectsMissingFields(t *testing.T) {
 	origin := Origin{Primary: Span{File: FileID(1), Start: 0, End: 1}}
 	for name, declaration := range map[string]Declaration{

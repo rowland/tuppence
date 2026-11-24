@@ -34,7 +34,7 @@ func (p IndexedProgram) Dump() string {
 
 	out.WriteString("declarations:\n")
 	for _, declaration := range p.Declarations {
-		fmt.Fprintf(&out, "  %d scope=%d kind=%d name=%s owner_type=%d\n", declaration.ID, declaration.Scope, declaration.Kind, declaration.Name, declaration.OwnerType)
+		fmt.Fprintf(&out, "  %d scope=%d kind=%d name=%s owner_type=%d exported=%t\n", declaration.ID, declaration.Scope, declaration.Kind, declaration.Name, declaration.OwnerType, declaration.Exported)
 	}
 
 	out.WriteString("bindings:\n")
