@@ -4,7 +4,7 @@ import "testing"
 
 func TestTypeTableFindsTypesByID(t *testing.T) {
 	table := TypeTable{
-		{ID: TypeID(1), Name: "int", Kind: TypePrimitive, Origin: testOrigin()},
+		{ID: TypeID(1), Name: "Int64", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()},
 		{ID: TypeID(2), Name: "User", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()},
 	}
 	if !table.Valid() {
@@ -20,14 +20,14 @@ func TestTypeTableFindsTypesByID(t *testing.T) {
 }
 
 func TestTypeTableRejectsInvalidOrDuplicateTypes(t *testing.T) {
-	invalid := TypeTable{{ID: TypeID(1), Name: "int", Kind: TypePrimitive}}
+	invalid := TypeTable{{ID: TypeID(1), Name: "Int64", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1)}}
 	if invalid.Valid() {
 		t.Fatal("type table with an invalid type must be invalid")
 	}
 
 	duplicate := TypeTable{
-		{ID: TypeID(1), Name: "int", Kind: TypePrimitive, Origin: testOrigin()},
-		{ID: TypeID(1), Name: "other", Kind: TypeNominal, Origin: testOrigin()},
+		{ID: TypeID(1), Name: "Int64", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()},
+		{ID: TypeID(1), Name: "other", Kind: TypeNominal, Declaration: DeclID(2), HomeModule: ModuleID(1), Origin: testOrigin()},
 	}
 	if duplicate.Valid() {
 		t.Fatal("type table with duplicate IDs must be invalid")

@@ -3,12 +3,7 @@ package ir
 import "testing"
 
 func TestTypeValidity(t *testing.T) {
-	primitive := Type{ID: TypeID(1), Name: "int", Kind: TypePrimitive, Origin: testOrigin()}
-	if !primitive.Valid() {
-		t.Fatal("complete primitive type must be valid")
-	}
-
-	nominal := Type{ID: TypeID(2), Name: "User", Kind: TypeNominal, Declaration: DeclID(3), HomeModule: ModuleID(4), Origin: testOrigin()}
+	nominal := Type{ID: TypeID(1), Name: "User", Kind: TypeNominal, Declaration: DeclID(3), HomeModule: ModuleID(4), Origin: testOrigin()}
 	if !nominal.Valid() {
 		t.Fatal("complete nominal type must be valid")
 	}
@@ -16,10 +11,10 @@ func TestTypeValidity(t *testing.T) {
 
 func TestTypeRejectsMissingFields(t *testing.T) {
 	for name, typ := range map[string]Type{
-		"missing id":     {Name: "int", Kind: TypePrimitive, Origin: testOrigin()},
-		"missing name":   {ID: TypeID(1), Kind: TypePrimitive, Origin: testOrigin()},
-		"missing kind":   {ID: TypeID(1), Name: "int", Origin: testOrigin()},
-		"missing origin": {ID: TypeID(1), Name: "int", Kind: TypePrimitive},
+		"missing id":     {Name: "User", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()},
+		"missing name":   {ID: TypeID(1), Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()},
+		"missing kind":   {ID: TypeID(1), Name: "User", Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()},
+		"missing origin": {ID: TypeID(1), Name: "User", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1)},
 	} {
 		if typ.Valid() {
 			t.Errorf("%s type must be invalid", name)
@@ -35,5 +30,23 @@ func TestNominalTypeRequiresDeclarationAndHomeModule(t *testing.T) {
 		if typ.Valid() {
 			t.Errorf("%s nominal type must be invalid", name)
 		}
+	}
+}
+
+func TestStorageKinds(t *testing.T) {
+	for _, kind := range []StorageKind{
+		StorageI8, StorageI16, StorageI32, StorageI64,
+		StorageU8, StorageU16, StorageU32, StorageU64,
+		StorageF16, StorageF32, StorageF64, StorageV128, StoragePTR,
+	} {
+		if !kind.Valid() {
+			t.Errorf("storage kind %d must be valid", kind)
+		}
+	}
+	if !(StorageType{Kind: StoragePTR}).Valid() {
+		t.Fatal("pointer storage type must be valid")
+	}
+	if (StorageType{}).Valid() {
+		t.Fatal("empty storage type must be invalid")
 	}
 }
