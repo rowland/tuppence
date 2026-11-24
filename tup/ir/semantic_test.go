@@ -107,3 +107,28 @@ func TestIndexedProgramRejectsDanglingBindingVersions(t *testing.T) {
 		t.Fatal("binding referring to an absent previous version must be invalid")
 	}
 }
+
+func TestIndexedProgramRejectsInconsistentBindingVersions(t *testing.T) {
+	base := IndexedProgram{
+		Modules: ModuleTable{
+			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+		},
+		Scopes: ScopeTable{
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
+			{ID: ScopeID(2), Module: ModuleID(1), Kind: ScopeBlock},
+		},
+	}
+	for name, current := range map[string]Binding{
+		"different name":  {ID: BindingID(2), Scope: ScopeID(1), Name: "other", Previous: BindingID(1), TypeSlot: TypeVarID(1), Value: ExprID(2), Origin: testOrigin()},
+		"different scope": {ID: BindingID(2), Scope: ScopeID(2), Name: "answer", Previous: BindingID(1), TypeSlot: TypeVarID(1), Value: ExprID(2), Origin: testOrigin()},
+	} {
+		program := base
+		program.Bindings = BindingTable{
+			{ID: BindingID(1), Scope: ScopeID(1), Name: "answer", TypeSlot: TypeVarID(1), Value: ExprID(1), Origin: testOrigin()},
+			current,
+		}
+		if program.Valid() {
+			t.Errorf("%s binding version must be invalid", name)
+		}
+	}
+}

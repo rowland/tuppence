@@ -30,7 +30,8 @@ func (p IndexedProgram) Valid() bool {
 			return false
 		}
 		if binding.Previous.Valid() {
-			if _, ok := p.Bindings.Find(binding.Previous); !ok {
+			previous, ok := p.Bindings.Find(binding.Previous)
+			if !ok || previous.Scope != binding.Scope || previous.Name != binding.Name {
 				return false
 			}
 		}
