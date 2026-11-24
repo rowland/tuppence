@@ -58,12 +58,21 @@ func (p IndexedProgram) Valid() bool {
 		if !ok || declaration.Kind != DeclType {
 			return false
 		}
+		declarationScope, ok := p.Scopes.Find(declaration.Scope)
+		if !ok {
+			return false
+		}
 		for _, typ := range p.Types {
 			if typ.Declaration == alias.Declaration {
 				return false
 			}
 		}
-		if _, ok := p.Types.Find(alias.Target); !ok {
+		target, ok := p.Types.Find(alias.Target)
+		if !ok {
+			return false
+		}
+		targetDeclaration, ok := p.Declarations.Find(target.Declaration)
+		if !ok || (declarationScope.Module != target.HomeModule && (!targetDeclaration.Exported || !moduleImports(p.Modules, declarationScope.Module, target.HomeModule))) {
 			return false
 		}
 	}
