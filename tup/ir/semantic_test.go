@@ -51,3 +51,14 @@ func TestIndexedProgramRejectsInvalidDiagnostics(t *testing.T) {
 		t.Fatal("indexed program with an invalid diagnostic must be invalid")
 	}
 }
+
+func TestIndexedProgramRejectsDanglingScopeModules(t *testing.T) {
+	program := IndexedProgram{
+		Scopes: ScopeTable{
+			{ID: ScopeID(1), Module: ModuleID(9), Kind: ScopeModule},
+		},
+	}
+	if program.Valid() {
+		t.Fatal("scope referring to an absent module must be invalid")
+	}
+}

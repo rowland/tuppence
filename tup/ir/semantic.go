@@ -15,6 +15,11 @@ func (p IndexedProgram) Valid() bool {
 	if !p.Modules.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() {
 		return false
 	}
+	for _, scope := range p.Scopes {
+		if _, ok := p.Modules.Find(scope.Module); !ok {
+			return false
+		}
+	}
 	for _, diagnostic := range p.Diagnostics {
 		if !diagnostic.Valid() {
 			return false
