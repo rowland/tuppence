@@ -29,6 +29,11 @@ func (p IndexedProgram) Valid() bool {
 		if _, ok := p.Scopes.Find(binding.Scope); !ok {
 			return false
 		}
+		if binding.Previous.Valid() {
+			if _, ok := p.Bindings.Find(binding.Previous); !ok {
+				return false
+			}
+		}
 	}
 	for _, diagnostic := range p.Diagnostics {
 		if !diagnostic.Valid() {

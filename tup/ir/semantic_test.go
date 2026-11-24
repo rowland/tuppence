@@ -90,3 +90,20 @@ func TestIndexedProgramRejectsDanglingBindingScopes(t *testing.T) {
 		t.Fatal("binding referring to an absent scope must be invalid")
 	}
 }
+
+func TestIndexedProgramRejectsDanglingBindingVersions(t *testing.T) {
+	program := IndexedProgram{
+		Modules: ModuleTable{
+			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+		},
+		Scopes: ScopeTable{
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
+		},
+		Bindings: BindingTable{
+			{ID: BindingID(1), Scope: ScopeID(1), Name: "answer", Previous: BindingID(9), TypeSlot: TypeVarID(1), Value: ExprID(1), Origin: testOrigin()},
+		},
+	}
+	if program.Valid() {
+		t.Fatal("binding referring to an absent previous version must be invalid")
+	}
+}
