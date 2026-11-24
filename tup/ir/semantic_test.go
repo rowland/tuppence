@@ -217,3 +217,20 @@ func TestIndexedProgramRejectsMisownedScopeEntries(t *testing.T) {
 		t.Fatal("scope entry owned by another scope must be invalid")
 	}
 }
+
+func TestIndexedProgramRejectsMismatchedScopeEntryNames(t *testing.T) {
+	program := IndexedProgram{
+		Modules: ModuleTable{
+			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+		},
+		Scopes: ScopeTable{
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Entries: []ScopeEntry{{Name: "other", Declaration: DeclID(1)}}},
+		},
+		Declarations: DeclarationTable{
+			{ID: DeclID(1), Scope: ScopeID(1), Name: "answer", Kind: DeclValue, Origin: testOrigin()},
+		},
+	}
+	if program.Valid() {
+		t.Fatal("scope entry with a mismatched name must be invalid")
+	}
+}

@@ -37,7 +37,7 @@ func (p IndexedProgram) Valid() bool {
 	for _, scope := range p.Scopes {
 		for _, entry := range scope.Entries {
 			declaration, ok := p.Declarations.Find(entry.Declaration)
-			if !ok || declaration.Scope != scope.ID {
+			if !ok || declaration.Scope != scope.ID || declaration.Name != entry.Name {
 				return false
 			}
 		}
