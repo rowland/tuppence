@@ -49,7 +49,7 @@ func (p IndexedProgram) Valid() bool {
 			return false
 		}
 		scope, ok := p.Scopes.Find(declaration.Scope)
-		if !ok || scope.Module != typ.HomeModule {
+		if !ok || scope.Module != typ.HomeModule || !moduleOwnsOrigin(p.Modules, typ.HomeModule, typ.Origin) {
 			return false
 		}
 	}
