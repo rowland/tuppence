@@ -76,3 +76,17 @@ func TestIndexedProgramRejectsDanglingDeclarationScopes(t *testing.T) {
 		t.Fatal("declaration referring to an absent scope must be invalid")
 	}
 }
+
+func TestIndexedProgramRejectsDanglingBindingScopes(t *testing.T) {
+	program := IndexedProgram{
+		Modules: ModuleTable{
+			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+		},
+		Bindings: BindingTable{
+			{ID: BindingID(1), Scope: ScopeID(9), Name: "answer", TypeSlot: TypeVarID(1), Value: ExprID(1), Origin: testOrigin()},
+		},
+	}
+	if program.Valid() {
+		t.Fatal("binding referring to an absent scope must be invalid")
+	}
+}
