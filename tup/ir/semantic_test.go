@@ -146,3 +146,19 @@ func TestIndexedProgramRejectsDanglingScopeParents(t *testing.T) {
 		t.Fatal("scope referring to an absent parent must be invalid")
 	}
 }
+
+func TestIndexedProgramRejectsCrossModuleScopeParents(t *testing.T) {
+	program := IndexedProgram{
+		Modules: ModuleTable{
+			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+			{ID: ModuleID(2), Name: "lib", Origin: testOrigin()},
+		},
+		Scopes: ScopeTable{
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
+			{ID: ScopeID(2), Parent: ScopeID(1), Module: ModuleID(2), Kind: ScopeBlock},
+		},
+	}
+	if program.Valid() {
+		t.Fatal("scope with a parent from another module must be invalid")
+	}
+}

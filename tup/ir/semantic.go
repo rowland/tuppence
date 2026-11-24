@@ -20,7 +20,8 @@ func (p IndexedProgram) Valid() bool {
 			return false
 		}
 		if scope.Parent.Valid() {
-			if _, ok := p.Scopes.Find(scope.Parent); !ok {
+			parent, ok := p.Scopes.Find(scope.Parent)
+			if !ok || parent.Module != scope.Module {
 				return false
 			}
 		}
