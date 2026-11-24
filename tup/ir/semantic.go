@@ -35,7 +35,12 @@ func (p IndexedProgram) Valid() bool {
 		}
 	}
 	for _, scope := range p.Scopes {
+		seenNames := make(map[string]struct{}, len(scope.Entries))
 		for _, entry := range scope.Entries {
+			if _, exists := seenNames[entry.Name]; exists {
+				return false
+			}
+			seenNames[entry.Name] = struct{}{}
 			declaration, ok := p.Declarations.Find(entry.Declaration)
 			if !ok || declaration.Scope != scope.ID || declaration.Name != entry.Name {
 				return false
