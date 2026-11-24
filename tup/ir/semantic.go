@@ -26,6 +26,9 @@ func (p IndexedProgram) Valid() bool {
 			}
 		}
 	}
+	if !scopeParentsAcyclic(p.Scopes) {
+		return false
+	}
 	for _, declaration := range p.Declarations {
 		if _, ok := p.Scopes.Find(declaration.Scope); !ok {
 			return false
@@ -45,6 +48,25 @@ func (p IndexedProgram) Valid() bool {
 	for _, diagnostic := range p.Diagnostics {
 		if !diagnostic.Valid() {
 			return false
+		}
+	}
+	return true
+}
+
+func scopeParentsAcyclic(scopes ScopeTable) bool {
+	for _, start := range scopes {
+		seen := make(map[ScopeID]struct{})
+		current := start
+		for current.Parent.Valid() {
+			if _, exists := seen[current.ID]; exists {
+				return false
+			}
+			seen[current.ID] = struct{}{}
+			next, ok := scopes.Find(current.Parent)
+			if !ok {
+				return false
+			}
+			current = next
 		}
 	}
 	return true

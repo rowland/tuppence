@@ -162,3 +162,26 @@ func TestIndexedProgramRejectsCrossModuleScopeParents(t *testing.T) {
 		t.Fatal("scope with a parent from another module must be invalid")
 	}
 }
+
+func TestIndexedProgramRejectsScopeParentCycles(t *testing.T) {
+	base := IndexedProgram{
+		Modules: ModuleTable{
+			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+		},
+	}
+	for name, scopes := range map[string]ScopeTable{
+		"self cycle": {
+			{ID: ScopeID(1), Parent: ScopeID(1), Module: ModuleID(1), Kind: ScopeBlock},
+		},
+		"two-scope cycle": {
+			{ID: ScopeID(1), Parent: ScopeID(2), Module: ModuleID(1), Kind: ScopeBlock},
+			{ID: ScopeID(2), Parent: ScopeID(1), Module: ModuleID(1), Kind: ScopeBlock},
+		},
+	} {
+		program := base
+		program.Scopes = scopes
+		if program.Valid() {
+			t.Errorf("%s must be invalid", name)
+		}
+	}
+}
