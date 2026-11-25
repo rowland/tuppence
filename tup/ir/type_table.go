@@ -16,6 +16,7 @@ func (t TypeTable) Find(id TypeID) (Type, bool) {
 // Valid reports whether every type is valid and IDs are unique.
 func (t TypeTable) Valid() bool {
 	seen := make(map[TypeID]struct{}, len(t))
+	seenDeclarations := make(map[DeclID]struct{}, len(t))
 	for _, typ := range t {
 		if !typ.Valid() {
 			return false
@@ -23,7 +24,11 @@ func (t TypeTable) Valid() bool {
 		if _, exists := seen[typ.ID]; exists {
 			return false
 		}
+		if _, exists := seenDeclarations[typ.Declaration]; exists {
+			return false
+		}
 		seen[typ.ID] = struct{}{}
+		seenDeclarations[typ.Declaration] = struct{}{}
 	}
 	return true
 }
