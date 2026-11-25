@@ -135,7 +135,8 @@ func (p IndexedProgram) Valid() bool {
 		}
 	}
 	for _, binding := range p.Bindings {
-		if _, ok := p.Scopes.Find(binding.Scope); !ok {
+		scope, ok := p.Scopes.Find(binding.Scope)
+		if !ok || !moduleOwnsOrigin(p.Modules, scope.Module, binding.Origin) {
 			return false
 		}
 		if _, ok := p.Expressions.Find(binding.Value); !ok {
