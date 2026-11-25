@@ -10,11 +10,12 @@ const (
 	TypeNominal TypeKind = iota + 1
 	TypeArray
 	TypeTuple
+	TypeUnion
 )
 
 // Valid reports whether the type kind is recognized.
 func (k TypeKind) Valid() bool {
-	return k >= TypeNominal && k <= TypeTuple
+	return k >= TypeNominal && k <= TypeUnion
 }
 
 // StorageKind identifies backend-relevant representation characteristics, not
@@ -78,6 +79,9 @@ func (t Type) Valid() bool {
 	}
 	if t.Kind == TypeTuple {
 		return t.Elements != nil && !t.Element.Valid() && !t.Declaration.Valid() && !t.HomeModule.Valid()
+	}
+	if t.Kind == TypeUnion {
+		return len(t.Elements) > 0 && !t.Element.Valid() && !t.Declaration.Valid() && !t.HomeModule.Valid()
 	}
 	return strings.TrimSpace(t.Name) != "" && t.Elements == nil && t.Declaration.Valid() && t.HomeModule.Valid()
 }

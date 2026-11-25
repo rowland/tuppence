@@ -68,7 +68,7 @@ func (p IndexedProgram) Valid() bool {
 			}
 			continue
 		}
-		if typ.Kind == TypeTuple {
+		if typ.Kind == TypeTuple || typ.Kind == TypeUnion {
 			for _, element := range typ.Elements {
 				if _, ok := p.Types.Find(element); !ok {
 					return false

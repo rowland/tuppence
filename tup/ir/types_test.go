@@ -29,6 +29,19 @@ func TestTupleTypeAllowsEmptyTuple(t *testing.T) {
 		t.Fatal("empty tuple type must be valid")
 	}
 }
+func TestUnionTypeValidity(t *testing.T) {
+	union := Type{ID: TypeID(1), Kind: TypeUnion, Elements: []TypeID{TypeID(2), TypeID(3)}, Origin: testOrigin()}
+	if !union.Valid() {
+		t.Fatal("complete union type must be valid")
+	}
+}
+
+func TestUnionTypeRejectsEmptyAlternatives(t *testing.T) {
+	union := Type{ID: TypeID(1), Kind: TypeUnion, Elements: []TypeID{}, Origin: testOrigin()}
+	if union.Valid() {
+		t.Fatal("union without alternatives must be invalid")
+	}
+}
 func TestArrayTypeRequiresElement(t *testing.T) {
 	array := Type{ID: TypeID(1), Kind: TypeArray, Origin: testOrigin()}
 	if array.Valid() {
