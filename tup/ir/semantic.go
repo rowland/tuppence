@@ -19,6 +19,15 @@ func (p IndexedProgram) Valid() bool {
 	if !p.Modules.Valid() || !p.Types.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() || !p.Aliases.Valid() || !p.Expressions.Valid() {
 		return false
 	}
+	fileOwners := make(map[FileID]ModuleID)
+	for _, module := range p.Modules {
+		for _, file := range module.Files {
+			if owner, exists := fileOwners[file]; exists && owner != module.ID {
+				return false
+			}
+			fileOwners[file] = module.ID
+		}
+	}
 	for _, scope := range p.Scopes {
 		if _, ok := p.Modules.Find(scope.Module); !ok {
 			return false
