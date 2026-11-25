@@ -108,7 +108,7 @@ func (p IndexedProgram) Valid() bool {
 			return false
 		}
 	}
-	for _, function := range p.Functions {
+	for i, function := range p.Functions {
 		declaration, ok := p.Declarations.Find(function.Declaration)
 		if !ok || declaration.Kind != DeclFunction {
 			return false
@@ -124,6 +124,15 @@ func (p IndexedProgram) Valid() bool {
 		}
 		if function.Result.Valid() {
 			if _, ok := p.Types.Find(function.Result); !ok {
+				return false
+			}
+		}
+		for _, other := range p.Functions[i+1:] {
+			otherDeclaration, ok := p.Declarations.Find(other.Declaration)
+			if !ok {
+				return false
+			}
+			if declaration.Scope == otherDeclaration.Scope && declaration.Name == otherDeclaration.Name && sameTypeIDs(function.Parameters, other.Parameters) {
 				return false
 			}
 		}
@@ -193,6 +202,18 @@ func (p IndexedProgram) Valid() bool {
 	}
 	for _, diagnostic := range p.Diagnostics {
 		if !diagnostic.Valid() {
+			return false
+		}
+	}
+	return true
+}
+
+func sameTypeIDs(left, right []TypeID) bool {
+	if len(left) != len(right) {
+		return false
+	}
+	for i := range left {
+		if left[i] != right[i] {
 			return false
 		}
 	}
