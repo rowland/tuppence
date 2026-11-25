@@ -19,6 +19,20 @@ func TestBindingTableFindsBindingsByID(t *testing.T) {
 	}
 }
 
+func TestBindingTableRejectsPreviousCycles(t *testing.T) {
+	self := BindingTable{{ID: BindingID(1), Scope: ScopeID(2), Name: "counter", Previous: BindingID(1), TypeSlot: TypeVarID(3), Value: ExprID(4), Origin: testOrigin()}}
+	if self.Valid() {
+		t.Fatal("binding table with a self-cycle must be invalid")
+	}
+
+	two := BindingTable{
+		{ID: BindingID(1), Scope: ScopeID(2), Name: "counter", Previous: BindingID(2), TypeSlot: TypeVarID(3), Value: ExprID(4), Origin: testOrigin()},
+		{ID: BindingID(2), Scope: ScopeID(2), Name: "counter", Previous: BindingID(1), TypeSlot: TypeVarID(3), Value: ExprID(5), Origin: testOrigin()},
+	}
+	if two.Valid() {
+		t.Fatal("binding table with a two-binding cycle must be invalid")
+	}
+}
 func TestBindingTableRejectsInvalidOrDuplicateBindings(t *testing.T) {
 	invalid := BindingTable{{ID: BindingID(1), Scope: ScopeID(2), Name: "counter", TypeSlot: TypeVarID(3), Value: ExprID(4)}}
 	if invalid.Valid() {

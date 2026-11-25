@@ -25,5 +25,20 @@ func (t BindingTable) Valid() bool {
 		}
 		seen[binding.ID] = struct{}{}
 	}
+	for _, start := range t {
+		seenChain := make(map[BindingID]struct{})
+		current := start
+		for current.Previous.Valid() {
+			if _, exists := seenChain[current.ID]; exists {
+				return false
+			}
+			seenChain[current.ID] = struct{}{}
+			previous, ok := t.Find(current.Previous)
+			if !ok {
+				break
+			}
+			current = previous
+		}
+	}
 	return true
 }
