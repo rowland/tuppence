@@ -23,6 +23,9 @@ func (p IndexedProgram) Valid() bool {
 		if _, ok := p.Modules.Find(scope.Module); !ok {
 			return false
 		}
+		if scope.Origin.Primary.File.Valid() && !moduleOwnsOrigin(p.Modules, scope.Module, scope.Origin) {
+			return false
+		}
 		if scope.Parent.Valid() {
 			parent, ok := p.Scopes.Find(scope.Parent)
 			if !ok || parent.Module != scope.Module {

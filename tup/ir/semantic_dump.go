@@ -29,7 +29,7 @@ func (p IndexedProgram) Dump() string {
 
 	out.WriteString("scopes:\n")
 	for _, scope := range p.Scopes {
-		fmt.Fprintf(&out, "  %d module=%d parent=%d kind=%d entries=[", scope.ID, scope.Module, scope.Parent, scope.Kind)
+		fmt.Fprintf(&out, "  %d module=%d parent=%d kind=%d origin_file=%d entries=[", scope.ID, scope.Module, scope.Parent, scope.Kind, scope.Origin.Primary.File)
 		for i, entry := range scope.Entries {
 			if i > 0 {
 				out.WriteString(",")
