@@ -44,6 +44,9 @@ func (p IndexedProgram) Valid() bool {
 	}
 	for _, module := range p.Modules {
 		for _, importBinding := range module.Imports {
+			if !moduleOwnsOrigin(p.Modules, module.ID, importBinding.Origin) {
+				return false
+			}
 			if _, ok := p.Modules.Find(importBinding.Target); !ok {
 				return false
 			}
