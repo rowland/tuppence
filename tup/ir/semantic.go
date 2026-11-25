@@ -11,12 +11,13 @@ type IndexedProgram struct {
 	Functions    FunctionTable
 	Aliases      TypeAliasTable
 	Expressions  ExpressionTable
+	Calls        CallTable
 	Diagnostics  []Diagnostic
 }
 
 // Valid reports whether every indexed table, cross-reference, and diagnostic is valid.
 func (p IndexedProgram) Valid() bool {
-	if !p.Modules.Valid() || !p.Types.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() || !p.Aliases.Valid() || !p.Expressions.Valid() {
+	if !p.Modules.Valid() || !p.Types.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() || !p.Aliases.Valid() || !p.Expressions.Valid() || !p.Calls.Valid() {
 		return false
 	}
 	fileOwners := make(map[FileID]ModuleID)
@@ -156,6 +157,17 @@ func (p IndexedProgram) Valid() bool {
 		if expression.Function.Valid() {
 			function, ok := p.Functions.Find(expression.Function)
 			if !ok || function.Declaration != expression.Declaration || declaration.Kind != DeclFunction {
+				return false
+			}
+		}
+	}
+	for _, call := range p.Calls {
+		scope, ok := p.Scopes.Find(call.Scope)
+		if !ok || !moduleOwnsOrigin(p.Modules, scope.Module, call.Origin) {
+			return false
+		}
+		for _, argument := range call.Arguments {
+			if _, ok := p.Types.Find(argument); !ok {
 				return false
 			}
 		}

@@ -64,6 +64,11 @@ func (p IndexedProgram) Dump() string {
 		fmt.Fprintf(&out, "  %d scope=%d declaration=%d function=%d value=%d\n", expression.ID, expression.Scope, expression.Declaration, expression.Function, expression.Value)
 	}
 
+	out.WriteString("calls:\n")
+	for _, call := range p.Calls {
+		fmt.Fprintf(&out, "  %d scope=%d name=%s arguments=%v\n", call.ID, call.Scope, call.Name, call.Arguments)
+	}
+
 	out.WriteString("diagnostics:\n")
 	for _, diagnostic := range p.Diagnostics {
 		fmt.Fprintf(&out, "  severity=%d code=%s message=%s\n", diagnostic.Severity, diagnostic.Code, diagnostic.Message)
