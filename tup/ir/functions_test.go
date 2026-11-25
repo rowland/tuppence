@@ -2,6 +2,12 @@ package ir
 
 import "testing"
 
+func TestFunctionPreservesSignature(t *testing.T) {
+	function := Function{ID: FunctionID(1), Declaration: DeclID(2), Parameters: []TypeID{TypeID(3), TypeID(4)}, Result: TypeID(5), Effect: EffectPure, Origin: testOrigin()}
+	if !function.Valid() || len(function.Parameters) != 2 || function.Result != TypeID(5) {
+		t.Fatal("function signature must be preserved")
+	}
+}
 func TestFunctionValidity(t *testing.T) {
 	for _, effect := range []EffectKind{EffectPure, Effectful} {
 		function := Function{

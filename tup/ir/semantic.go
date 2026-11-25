@@ -117,6 +117,16 @@ func (p IndexedProgram) Valid() bool {
 		if !ok || !moduleOwnsOrigin(p.Modules, declarationScope.Module, function.Origin) {
 			return false
 		}
+		for _, parameter := range function.Parameters {
+			if _, ok := p.Types.Find(parameter); !ok {
+				return false
+			}
+		}
+		if function.Result.Valid() {
+			if _, ok := p.Types.Find(function.Result); !ok {
+				return false
+			}
+		}
 	}
 	for _, expression := range p.Expressions {
 		declaration, ok := p.Declarations.Find(expression.Declaration)

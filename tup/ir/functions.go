@@ -18,6 +18,8 @@ func (e EffectKind) Valid() bool {
 type Function struct {
 	ID          FunctionID
 	Declaration DeclID
+	Parameters  []TypeID
+	Result      TypeID
 	Effect      EffectKind
 	Generic     bool
 	Origin      Origin
