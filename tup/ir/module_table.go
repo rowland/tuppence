@@ -16,6 +16,7 @@ func (t ModuleTable) Find(id ModuleID) (Module, bool) {
 // Valid reports whether every module is valid and IDs are unique.
 func (t ModuleTable) Valid() bool {
 	seen := make(map[ModuleID]struct{}, len(t))
+	seenNames := make(map[string]struct{}, len(t))
 	for _, module := range t {
 		if !module.Valid() {
 			return false
@@ -23,7 +24,11 @@ func (t ModuleTable) Valid() bool {
 		if _, exists := seen[module.ID]; exists {
 			return false
 		}
+		if _, exists := seenNames[module.Name]; exists {
+			return false
+		}
 		seen[module.ID] = struct{}{}
+		seenNames[module.Name] = struct{}{}
 	}
 	return true
 }
