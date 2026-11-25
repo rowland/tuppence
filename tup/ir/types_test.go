@@ -16,6 +16,19 @@ func TestArrayTypeValidity(t *testing.T) {
 	}
 }
 
+func TestTupleTypeValidity(t *testing.T) {
+	tuple := Type{ID: TypeID(1), Kind: TypeTuple, Elements: []TypeID{TypeID(2), TypeID(3)}, Origin: testOrigin()}
+	if !tuple.Valid() {
+		t.Fatal("complete tuple type must be valid")
+	}
+}
+
+func TestTupleTypeAllowsEmptyTuple(t *testing.T) {
+	tuple := Type{ID: TypeID(1), Kind: TypeTuple, Elements: []TypeID{}, Origin: testOrigin()}
+	if !tuple.Valid() {
+		t.Fatal("empty tuple type must be valid")
+	}
+}
 func TestArrayTypeRequiresElement(t *testing.T) {
 	array := Type{ID: TypeID(1), Kind: TypeArray, Origin: testOrigin()}
 	if array.Valid() {

@@ -9,11 +9,12 @@ type TypeKind uint8
 const (
 	TypeNominal TypeKind = iota + 1
 	TypeArray
+	TypeTuple
 )
 
 // Valid reports whether the type kind is recognized.
 func (k TypeKind) Valid() bool {
-	return k >= TypeNominal && k <= TypeArray
+	return k >= TypeNominal && k <= TypeTuple
 }
 
 // StorageKind identifies backend-relevant representation characteristics, not
@@ -61,6 +62,7 @@ type Type struct {
 	Declaration DeclID
 	HomeModule  ModuleID
 	Element     TypeID
+	Elements    []TypeID
 	FixedLength bool
 	Length      uint64
 	Origin      Origin
@@ -72,7 +74,10 @@ func (t Type) Valid() bool {
 		return false
 	}
 	if t.Kind == TypeArray {
-		return t.Element.Valid() && !t.Declaration.Valid() && !t.HomeModule.Valid()
+		return t.Element.Valid() && t.Elements == nil && !t.Declaration.Valid() && !t.HomeModule.Valid()
 	}
-	return strings.TrimSpace(t.Name) != "" && t.Declaration.Valid() && t.HomeModule.Valid()
+	if t.Kind == TypeTuple {
+		return t.Elements != nil && !t.Element.Valid() && !t.Declaration.Valid() && !t.HomeModule.Valid()
+	}
+	return strings.TrimSpace(t.Name) != "" && t.Elements == nil && t.Declaration.Valid() && t.HomeModule.Valid()
 }
