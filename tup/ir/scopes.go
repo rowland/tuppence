@@ -28,10 +28,7 @@ type Scope struct {
 
 // Valid reports whether the scope has the required identity and kind.
 func (s Scope) Valid() bool {
-	if !s.ID.Valid() || !s.Module.Valid() || !s.Kind.Valid() {
-		return false
-	}
-	if s.Origin.Primary.File.Valid() && !s.Origin.Valid() {
+	if !s.ID.Valid() || !s.Module.Valid() || !s.Kind.Valid() || !s.Origin.Valid() {
 		return false
 	}
 	for _, entry := range s.Entries {

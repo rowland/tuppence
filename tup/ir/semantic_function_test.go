@@ -8,7 +8,7 @@ func TestIndexedProgramRejectsFunctionWithWrongDeclarationKind(t *testing.T) {
 			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
 		},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "answer", Kind: DeclValue, Origin: testOrigin()},

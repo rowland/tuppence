@@ -11,7 +11,7 @@ func TestIndexedProgramValidity(t *testing.T) {
 			{ID: TypeID(1), Name: "Answer", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
 		},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "Answer", Kind: DeclType, Origin: testOrigin()},
@@ -69,7 +69,7 @@ func TestIndexedProgramRejectsInvalidDiagnostics(t *testing.T) {
 func TestIndexedProgramRejectsDanglingScopeModules(t *testing.T) {
 	program := IndexedProgram{
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(9), Kind: ScopeModule},
+			{ID: ScopeID(1), Module: ModuleID(9), Kind: ScopeModule, Origin: testOrigin()},
 		},
 	}
 	if program.Valid() {
@@ -111,7 +111,7 @@ func TestIndexedProgramRejectsDanglingBindingVersions(t *testing.T) {
 			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
 		},
 		Bindings: BindingTable{
 			{ID: BindingID(1), Scope: ScopeID(1), Name: "answer", Previous: BindingID(9), TypeSlot: TypeVarID(1), Value: ExprID(1), Origin: testOrigin()},
@@ -128,8 +128,8 @@ func TestIndexedProgramRejectsInconsistentBindingVersions(t *testing.T) {
 			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
-			{ID: ScopeID(2), Module: ModuleID(1), Kind: ScopeBlock},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
+			{ID: ScopeID(2), Module: ModuleID(1), Kind: ScopeBlock, Origin: testOrigin()},
 		},
 	}
 	for name, current := range map[string]Binding{
@@ -153,7 +153,7 @@ func TestIndexedProgramRejectsDanglingScopeParents(t *testing.T) {
 			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Parent: ScopeID(9), Module: ModuleID(1), Kind: ScopeBlock},
+			{ID: ScopeID(1), Parent: ScopeID(9), Module: ModuleID(1), Kind: ScopeBlock, Origin: testOrigin()},
 		},
 	}
 	if program.Valid() {
@@ -168,8 +168,8 @@ func TestIndexedProgramRejectsCrossModuleScopeParents(t *testing.T) {
 			{ID: ModuleID(2), Name: "lib", Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
-			{ID: ScopeID(2), Parent: ScopeID(1), Module: ModuleID(2), Kind: ScopeBlock},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
+			{ID: ScopeID(2), Parent: ScopeID(1), Module: ModuleID(2), Kind: ScopeBlock, Origin: testOrigin()},
 		},
 	}
 	if program.Valid() {
@@ -185,11 +185,11 @@ func TestIndexedProgramRejectsScopeParentCycles(t *testing.T) {
 	}
 	for name, scopes := range map[string]ScopeTable{
 		"self cycle": {
-			{ID: ScopeID(1), Parent: ScopeID(1), Module: ModuleID(1), Kind: ScopeBlock},
+			{ID: ScopeID(1), Parent: ScopeID(1), Module: ModuleID(1), Kind: ScopeBlock, Origin: testOrigin()},
 		},
 		"two-scope cycle": {
-			{ID: ScopeID(1), Parent: ScopeID(2), Module: ModuleID(1), Kind: ScopeBlock},
-			{ID: ScopeID(2), Parent: ScopeID(1), Module: ModuleID(1), Kind: ScopeBlock},
+			{ID: ScopeID(1), Parent: ScopeID(2), Module: ModuleID(1), Kind: ScopeBlock, Origin: testOrigin()},
+			{ID: ScopeID(2), Parent: ScopeID(1), Module: ModuleID(1), Kind: ScopeBlock, Origin: testOrigin()},
 		},
 	} {
 		program := base
@@ -206,7 +206,7 @@ func TestIndexedProgramRejectsDanglingScopeEntries(t *testing.T) {
 			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Entries: []ScopeEntry{{Name: "answer", Declaration: DeclID(9)}}},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin(), Entries: []ScopeEntry{{Name: "answer", Declaration: DeclID(9)}}},
 		},
 	}
 	if program.Valid() {
@@ -220,8 +220,8 @@ func TestIndexedProgramRejectsMisownedScopeEntries(t *testing.T) {
 			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Entries: []ScopeEntry{{Name: "answer", Declaration: DeclID(1)}}},
-			{ID: ScopeID(2), Module: ModuleID(1), Kind: ScopeBlock},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin(), Entries: []ScopeEntry{{Name: "answer", Declaration: DeclID(1)}}},
+			{ID: ScopeID(2), Module: ModuleID(1), Kind: ScopeBlock, Origin: testOrigin()},
 		},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(2), Name: "answer", Kind: DeclValue, Origin: testOrigin()},
@@ -238,7 +238,7 @@ func TestIndexedProgramRejectsMismatchedScopeEntryNames(t *testing.T) {
 			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Entries: []ScopeEntry{{Name: "other", Declaration: DeclID(1)}}},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin(), Entries: []ScopeEntry{{Name: "other", Declaration: DeclID(1)}}},
 		},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "answer", Kind: DeclValue, Origin: testOrigin()},
@@ -255,7 +255,7 @@ func TestIndexedProgramAllowsOverloadedFunctionNames(t *testing.T) {
 			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Entries: []ScopeEntry{
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin(), Entries: []ScopeEntry{
 				{Name: "convert", Declaration: DeclID(1)},
 				{Name: "convert", Declaration: DeclID(2)},
 			}},
@@ -276,7 +276,7 @@ func TestIndexedProgramRejectsDuplicateNonFunctionNames(t *testing.T) {
 			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Entries: []ScopeEntry{
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin(), Entries: []ScopeEntry{
 				{Name: "answer", Declaration: DeclID(1)},
 				{Name: "answer", Declaration: DeclID(2)},
 			}},

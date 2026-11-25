@@ -5,7 +5,7 @@ import "testing"
 func TestIndexedProgramRejectsDanglingFunctionReferences(t *testing.T) {
 	program := IndexedProgram{
 		Modules:      ModuleTable{{ID: ModuleID(1), Name: "main", Origin: testOrigin()}},
-		Scopes:       ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule}},
+		Scopes:       ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}},
 		Declarations: DeclarationTable{{ID: DeclID(1), Scope: ScopeID(1), Name: "compute", Kind: DeclFunction, Origin: testOrigin()}},
 		Expressions:  ExpressionTable{{ID: ExprID(1), Scope: ScopeID(1), Declaration: DeclID(1), Function: FunctionID(9), Origin: testOrigin()}},
 	}
@@ -17,7 +17,7 @@ func TestIndexedProgramRejectsDanglingFunctionReferences(t *testing.T) {
 func TestIndexedProgramRejectsMismatchedFunctionReferences(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{{ID: ModuleID(1), Name: "main", Origin: testOrigin()}},
-		Scopes:  ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule}},
+		Scopes:  ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "first", Kind: DeclFunction, Origin: testOrigin()},
 			{ID: DeclID(2), Scope: ScopeID(1), Name: "second", Kind: DeclFunction, Origin: testOrigin()},
@@ -33,7 +33,7 @@ func TestIndexedProgramRejectsMismatchedFunctionReferences(t *testing.T) {
 func TestIndexedProgramRejectsFunctionReferenceToNonFunction(t *testing.T) {
 	program := IndexedProgram{
 		Modules:      ModuleTable{{ID: ModuleID(1), Name: "main", Origin: testOrigin()}},
-		Scopes:       ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule}},
+		Scopes:       ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}},
 		Declarations: DeclarationTable{{ID: DeclID(1), Scope: ScopeID(1), Name: "answer", Kind: DeclValue, Origin: testOrigin()}},
 		Functions:    FunctionTable{{ID: FunctionID(1), Declaration: DeclID(1), Effect: EffectPure, Origin: testOrigin()}},
 		Expressions:  ExpressionTable{{ID: ExprID(1), Scope: ScopeID(1), Declaration: DeclID(1), Function: FunctionID(1), Origin: testOrigin()}},

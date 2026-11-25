@@ -20,7 +20,7 @@ func TestIndexedProgramRejectsImportNameCollision(t *testing.T) {
 			{ID: ModuleID(2), Name: "io", Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Entries: []ScopeEntry{{Name: "io", Declaration: DeclID(1)}}},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin(), Entries: []ScopeEntry{{Name: "io", Declaration: DeclID(1)}}},
 		},
 		Declarations: DeclarationTable{{ID: DeclID(1), Scope: ScopeID(1), Name: "io", Kind: DeclValue, Origin: testOrigin()}},
 	}

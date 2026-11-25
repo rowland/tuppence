@@ -4,8 +4,8 @@ import "testing"
 
 func TestScopeTableFindsScopesByID(t *testing.T) {
 	table := ScopeTable{
-		{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
-		{ID: ScopeID(2), Parent: ScopeID(1), Module: ModuleID(1), Kind: ScopeBlock},
+		{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
+		{ID: ScopeID(2), Parent: ScopeID(1), Module: ModuleID(1), Kind: ScopeBlock, Origin: testOrigin()},
 	}
 	if !table.Valid() {
 		t.Fatal("complete scope table must be valid")
@@ -26,8 +26,8 @@ func TestScopeTableRejectsInvalidOrDuplicateScopes(t *testing.T) {
 	}
 
 	duplicate := ScopeTable{
-		{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
-		{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeBlock},
+		{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
+		{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeBlock, Origin: testOrigin()},
 	}
 	if duplicate.Valid() {
 		t.Fatal("scope table with duplicate IDs must be invalid")

@@ -9,8 +9,8 @@ func TestIndexedProgramRejectsPrivateCrossModuleTypeAliases(t *testing.T) {
 			{ID: ModuleID(2), Name: "lib", Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
-			{ID: ScopeID(2), Module: ModuleID(2), Kind: ScopeModule},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
+			{ID: ScopeID(2), Module: ModuleID(2), Kind: ScopeModule, Origin: testOrigin()},
 		},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "Alias", Kind: DeclType, Origin: testOrigin()},
@@ -31,8 +31,8 @@ func TestIndexedProgramAllowsImportedExportedTypeAliases(t *testing.T) {
 			{ID: ModuleID(2), Name: "lib", Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
-			{ID: ScopeID(2), Module: ModuleID(2), Kind: ScopeModule},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
+			{ID: ScopeID(2), Module: ModuleID(2), Kind: ScopeModule, Origin: testOrigin()},
 		},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "Alias", Kind: DeclType, Origin: testOrigin()},

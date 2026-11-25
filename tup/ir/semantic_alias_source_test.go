@@ -5,7 +5,7 @@ import "testing"
 func TestIndexedProgramRejectsAliasFromForeignModuleFile(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()}},
-		Scopes:  ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule}},
+		Scopes:  ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "Alias", Kind: DeclType, Origin: testOrigin()},
 			{ID: DeclID(2), Scope: ScopeID(1), Name: "Target", Kind: DeclType, Origin: testOrigin()},

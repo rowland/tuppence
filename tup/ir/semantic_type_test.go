@@ -11,7 +11,7 @@ func TestIndexedProgramRejectsNominalTypeWithWrongDeclarationKind(t *testing.T) 
 			{ID: TypeID(1), Name: "T", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
 		},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "T", Kind: DeclValue, Origin: testOrigin()},
@@ -32,7 +32,7 @@ func TestIndexedProgramRejectsNominalTypeWithWrongHomeModule(t *testing.T) {
 			{ID: TypeID(1), Name: "T", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(2), Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
 		},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "T", Kind: DeclType, Origin: testOrigin()},

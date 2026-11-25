@@ -5,7 +5,7 @@ import "testing"
 func TestIndexedProgramAllowsSameScopeTypeQualifiedDeclaration(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{{ID: ModuleID(1), Name: "main", Origin: testOrigin()}},
-		Scopes:  ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule}},
+		Scopes:  ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "Foo", Kind: DeclType, Origin: testOrigin()},
 			{ID: DeclID(2), Scope: ScopeID(1), Name: "default", Kind: DeclFunction, OwnerType: DeclID(1), Origin: testOrigin()},
@@ -21,8 +21,8 @@ func TestIndexedProgramRejectsMisownedTypeQualifiedDeclaration(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{{ID: ModuleID(1), Name: "main", Origin: testOrigin()}},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule},
-			{ID: ScopeID(2), Module: ModuleID(1), Kind: ScopeFunction},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
+			{ID: ScopeID(2), Module: ModuleID(1), Kind: ScopeFunction, Origin: testOrigin()},
 		},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "Foo", Kind: DeclType, Origin: testOrigin()},
@@ -38,7 +38,7 @@ func TestIndexedProgramRejectsMisownedTypeQualifiedDeclaration(t *testing.T) {
 func TestIndexedProgramRejectsNonTypeQualifiedOwner(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{{ID: ModuleID(1), Name: "main", Origin: testOrigin()}},
-		Scopes:  ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule}},
+		Scopes:  ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "value", Kind: DeclValue, Origin: testOrigin()},
 			{ID: DeclID(2), Scope: ScopeID(1), Name: "default", Kind: DeclFunction, OwnerType: DeclID(1), Origin: testOrigin()},

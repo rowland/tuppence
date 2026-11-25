@@ -7,6 +7,7 @@ func TestScopeValidity(t *testing.T) {
 		ID:     ScopeID(1),
 		Module: ModuleID(2),
 		Kind:   ScopeModule,
+		Origin: testOrigin(),
 		Entries: []ScopeEntry{
 			{Name: "answer", Declaration: DeclID(3), Offset: 4},
 		},
@@ -35,8 +36,8 @@ func TestScopeRejectsInvalidEntries(t *testing.T) {
 
 func TestScopeRejectsMissingIdentityOrKind(t *testing.T) {
 	for name, invalid := range map[string]Scope{
-		"missing id":     {Module: ModuleID(2), Kind: ScopeBlock},
-		"missing module": {ID: ScopeID(1), Kind: ScopeBlock},
+		"missing id":     {Module: ModuleID(2), Kind: ScopeBlock, Origin: testOrigin()},
+		"missing module": {ID: ScopeID(1), Kind: ScopeBlock, Origin: testOrigin()},
 		"missing kind":   {ID: ScopeID(1), Module: ModuleID(2)},
 	} {
 		if invalid.Valid() {
