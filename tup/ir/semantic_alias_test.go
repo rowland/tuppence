@@ -4,7 +4,7 @@ import "testing"
 
 func TestIndexedProgramRejectsAliasWithWrongDeclarationKind(t *testing.T) {
 	program := IndexedProgram{
-		Modules: ModuleTable{{ID: ModuleID(1), Name: "main", Origin: testOrigin()}},
+		Modules: ModuleTable{{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()}},
 		Types:   TypeTable{{ID: TypeID(1), Name: "Target", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()}},
 		Scopes:  ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}},
 		Declarations: DeclarationTable{
@@ -20,7 +20,7 @@ func TestIndexedProgramRejectsAliasWithWrongDeclarationKind(t *testing.T) {
 
 func TestIndexedProgramRejectsDanglingAliasTarget(t *testing.T) {
 	program := IndexedProgram{
-		Modules:      ModuleTable{{ID: ModuleID(1), Name: "main", Origin: testOrigin()}},
+		Modules:      ModuleTable{{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()}},
 		Scopes:       ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}},
 		Declarations: DeclarationTable{{ID: DeclID(1), Scope: ScopeID(1), Name: "Alias", Kind: DeclType, Origin: testOrigin()}},
 		Aliases:      TypeAliasTable{{Declaration: DeclID(1), Target: TypeID(9), Origin: testOrigin()}},
@@ -32,7 +32,7 @@ func TestIndexedProgramRejectsDanglingAliasTarget(t *testing.T) {
 
 func TestIndexedProgramRejectsAliasAlsoRepresentedAsType(t *testing.T) {
 	program := IndexedProgram{
-		Modules:      ModuleTable{{ID: ModuleID(1), Name: "main", Origin: testOrigin()}},
+		Modules:      ModuleTable{{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()}},
 		Types:        TypeTable{{ID: TypeID(1), Name: "Alias", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()}},
 		Scopes:       ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}},
 		Declarations: DeclarationTable{{ID: DeclID(1), Scope: ScopeID(1), Name: "Alias", Kind: DeclType, Origin: testOrigin()}},

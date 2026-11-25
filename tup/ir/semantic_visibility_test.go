@@ -5,8 +5,8 @@ import "testing"
 func TestIndexedProgramRejectsPrivateCrossModuleReferences(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Imports: []ImportBinding{{LocalName: "lib", Target: ModuleID(2), Origin: testOrigin()}}, Origin: testOrigin()},
-			{ID: ModuleID(2), Name: "lib", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Imports: []ImportBinding{{LocalName: "lib", Target: ModuleID(2), Origin: testOrigin()}}, Origin: testOrigin()},
+			{ID: ModuleID(2), Name: "lib", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
@@ -26,8 +26,8 @@ func TestIndexedProgramRejectsPrivateCrossModuleReferences(t *testing.T) {
 func TestIndexedProgramAllowsImportedExportedReferences(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Imports: []ImportBinding{{LocalName: "lib", Target: ModuleID(2), Origin: testOrigin()}}, Origin: testOrigin()},
-			{ID: ModuleID(2), Name: "lib", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Imports: []ImportBinding{{LocalName: "lib", Target: ModuleID(2), Origin: testOrigin()}}, Origin: testOrigin()},
+			{ID: ModuleID(2), Name: "lib", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},

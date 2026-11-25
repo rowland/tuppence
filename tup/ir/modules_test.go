@@ -53,7 +53,7 @@ func TestModuleRejectsDuplicateImports(t *testing.T) {
 
 func TestModuleRejectsMissingFields(t *testing.T) {
 	for name, module := range map[string]Module{
-		"missing id":     {Name: "main", Origin: testOrigin()},
+		"missing id":     {Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		"missing name":   {ID: ModuleID(1), Origin: testOrigin()},
 		"missing origin": {ID: ModuleID(1), Name: "main"},
 	} {

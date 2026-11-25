@@ -5,7 +5,7 @@ import "testing"
 func TestIndexedProgramValidity(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 		Types: TypeTable{
 			{ID: TypeID(1), Name: "Answer", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()},
@@ -80,7 +80,7 @@ func TestIndexedProgramRejectsDanglingScopeModules(t *testing.T) {
 func TestIndexedProgramRejectsDanglingDeclarationScopes(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(9), Name: "answer", Kind: DeclValue, Origin: testOrigin()},
@@ -94,7 +94,7 @@ func TestIndexedProgramRejectsDanglingDeclarationScopes(t *testing.T) {
 func TestIndexedProgramRejectsDanglingBindingScopes(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 		Bindings: BindingTable{
 			{ID: BindingID(1), Scope: ScopeID(9), Name: "answer", TypeSlot: TypeVarID(1), Value: ExprID(1), Origin: testOrigin()},
@@ -108,7 +108,7 @@ func TestIndexedProgramRejectsDanglingBindingScopes(t *testing.T) {
 func TestIndexedProgramRejectsDanglingBindingVersions(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
@@ -125,7 +125,7 @@ func TestIndexedProgramRejectsDanglingBindingVersions(t *testing.T) {
 func TestIndexedProgramRejectsInconsistentBindingVersions(t *testing.T) {
 	base := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
@@ -150,7 +150,7 @@ func TestIndexedProgramRejectsInconsistentBindingVersions(t *testing.T) {
 func TestIndexedProgramRejectsDanglingScopeParents(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Parent: ScopeID(9), Module: ModuleID(1), Kind: ScopeBlock, Origin: testOrigin()},
@@ -164,8 +164,8 @@ func TestIndexedProgramRejectsDanglingScopeParents(t *testing.T) {
 func TestIndexedProgramRejectsCrossModuleScopeParents(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
-			{ID: ModuleID(2), Name: "lib", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
+			{ID: ModuleID(2), Name: "lib", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
@@ -180,7 +180,7 @@ func TestIndexedProgramRejectsCrossModuleScopeParents(t *testing.T) {
 func TestIndexedProgramRejectsScopeParentCycles(t *testing.T) {
 	base := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 	}
 	for name, scopes := range map[string]ScopeTable{
@@ -203,7 +203,7 @@ func TestIndexedProgramRejectsScopeParentCycles(t *testing.T) {
 func TestIndexedProgramRejectsDanglingScopeEntries(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin(), Entries: []ScopeEntry{{Name: "answer", Declaration: DeclID(9)}}},
@@ -217,7 +217,7 @@ func TestIndexedProgramRejectsDanglingScopeEntries(t *testing.T) {
 func TestIndexedProgramRejectsMisownedScopeEntries(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin(), Entries: []ScopeEntry{{Name: "answer", Declaration: DeclID(1)}}},
@@ -235,7 +235,7 @@ func TestIndexedProgramRejectsMisownedScopeEntries(t *testing.T) {
 func TestIndexedProgramRejectsMismatchedScopeEntryNames(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin(), Entries: []ScopeEntry{{Name: "other", Declaration: DeclID(1)}}},
@@ -252,7 +252,7 @@ func TestIndexedProgramRejectsMismatchedScopeEntryNames(t *testing.T) {
 func TestIndexedProgramAllowsOverloadedFunctionNames(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin(), Entries: []ScopeEntry{
@@ -273,7 +273,7 @@ func TestIndexedProgramAllowsOverloadedFunctionNames(t *testing.T) {
 func TestIndexedProgramRejectsDuplicateNonFunctionNames(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		},
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin(), Entries: []ScopeEntry{

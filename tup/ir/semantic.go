@@ -162,7 +162,7 @@ func (p IndexedProgram) Valid() bool {
 
 func moduleOwnsOrigin(modules ModuleTable, moduleID ModuleID, origin Origin) bool {
 	module, ok := modules.Find(moduleID)
-	return ok && (len(module.Files) == 0 || moduleHasFile(module.Files, origin.Primary.File))
+	return ok && moduleHasFile(module.Files, origin.Primary.File)
 }
 
 func moduleImportCollides(scopes ScopeTable, module ModuleID, name string) bool {

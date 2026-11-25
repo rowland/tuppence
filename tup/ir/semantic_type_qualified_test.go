@@ -4,7 +4,7 @@ import "testing"
 
 func TestIndexedProgramAllowsSameScopeTypeQualifiedDeclaration(t *testing.T) {
 	program := IndexedProgram{
-		Modules: ModuleTable{{ID: ModuleID(1), Name: "main", Origin: testOrigin()}},
+		Modules: ModuleTable{{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()}},
 		Scopes:  ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "Foo", Kind: DeclType, Origin: testOrigin()},
@@ -19,7 +19,7 @@ func TestIndexedProgramAllowsSameScopeTypeQualifiedDeclaration(t *testing.T) {
 
 func TestIndexedProgramRejectsMisownedTypeQualifiedDeclaration(t *testing.T) {
 	program := IndexedProgram{
-		Modules: ModuleTable{{ID: ModuleID(1), Name: "main", Origin: testOrigin()}},
+		Modules: ModuleTable{{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()}},
 		Scopes: ScopeTable{
 			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
 			{ID: ScopeID(2), Module: ModuleID(1), Kind: ScopeFunction, Origin: testOrigin()},
@@ -37,7 +37,7 @@ func TestIndexedProgramRejectsMisownedTypeQualifiedDeclaration(t *testing.T) {
 
 func TestIndexedProgramRejectsNonTypeQualifiedOwner(t *testing.T) {
 	program := IndexedProgram{
-		Modules: ModuleTable{{ID: ModuleID(1), Name: "main", Origin: testOrigin()}},
+		Modules: ModuleTable{{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()}},
 		Scopes:  ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}},
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "value", Kind: DeclValue, Origin: testOrigin()},

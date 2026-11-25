@@ -4,8 +4,8 @@ import "testing"
 
 func TestModuleTableFindsModulesByID(t *testing.T) {
 	table := ModuleTable{
-		{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
-		{ID: ModuleID(2), Name: "lib", Origin: testOrigin()},
+		{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
+		{ID: ModuleID(2), Name: "lib", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 	}
 	if !table.Valid() {
 		t.Fatal("complete module table must be valid")
@@ -26,7 +26,7 @@ func TestModuleTableRejectsInvalidOrDuplicateModules(t *testing.T) {
 	}
 
 	duplicate := ModuleTable{
-		{ID: ModuleID(1), Name: "main", Origin: testOrigin()},
+		{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Origin: testOrigin()},
 		{ID: ModuleID(1), Name: "other", Origin: testOrigin()},
 	}
 	if duplicate.Valid() {
