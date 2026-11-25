@@ -75,13 +75,13 @@ func (t Type) Valid() bool {
 		return false
 	}
 	if t.Kind == TypeArray {
-		return t.Element.Valid() && t.Elements == nil && (!t.FixedLength && t.Length == 0 || t.FixedLength) && !t.Declaration.Valid() && !t.HomeModule.Valid()
+		return strings.TrimSpace(t.Name) == "" && t.Element.Valid() && t.Elements == nil && (!t.FixedLength && t.Length == 0 || t.FixedLength) && !t.Declaration.Valid() && !t.HomeModule.Valid()
 	}
 	if t.Kind == TypeTuple {
-		return t.Elements != nil && !t.Element.Valid() && !t.Declaration.Valid() && !t.HomeModule.Valid()
+		return strings.TrimSpace(t.Name) == "" && t.Elements != nil && !t.Element.Valid() && !t.FixedLength && t.Length == 0 && !t.Declaration.Valid() && !t.HomeModule.Valid()
 	}
 	if t.Kind == TypeUnion {
-		return len(t.Elements) > 0 && !t.Element.Valid() && !t.Declaration.Valid() && !t.HomeModule.Valid()
+		return strings.TrimSpace(t.Name) == "" && len(t.Elements) > 0 && !t.Element.Valid() && !t.FixedLength && t.Length == 0 && !t.Declaration.Valid() && !t.HomeModule.Valid()
 	}
-	return strings.TrimSpace(t.Name) != "" && t.Elements == nil && t.Declaration.Valid() && t.HomeModule.Valid()
+	return strings.TrimSpace(t.Name) != "" && t.Element == 0 && t.Elements == nil && !t.FixedLength && t.Length == 0 && t.Declaration.Valid() && t.HomeModule.Valid()
 }

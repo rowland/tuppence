@@ -54,6 +54,29 @@ func TestArrayTypeRequiresElement(t *testing.T) {
 		t.Fatal("array without an element type must be invalid")
 	}
 }
+func TestStructuralTypesRejectNominalMetadata(t *testing.T) {
+	cases := []Type{
+		{ID: TypeID(1), Name: "Array", Kind: TypeArray, Element: TypeID(2), Origin: testOrigin()},
+		{ID: TypeID(1), Name: "Tuple", Kind: TypeTuple, Elements: []TypeID{TypeID(2)}, Origin: testOrigin()},
+		{ID: TypeID(1), Name: "Union", Kind: TypeUnion, Elements: []TypeID{TypeID(2)}, Origin: testOrigin()},
+	}
+	for _, typ := range cases {
+		if typ.Valid() {
+			t.Errorf("structural type with a nominal name must be invalid: %#v", typ)
+		}
+	}
+}
+
+func TestStructuralTypesRejectIrrelevantMetadata(t *testing.T) {
+	tuple := Type{ID: TypeID(1), Kind: TypeTuple, Elements: []TypeID{TypeID(2)}, FixedLength: true, Origin: testOrigin()}
+	if tuple.Valid() {
+		t.Fatal("tuple with array length metadata must be invalid")
+	}
+	union := Type{ID: TypeID(1), Kind: TypeUnion, Elements: []TypeID{TypeID(2)}, Length: 1, Origin: testOrigin()}
+	if union.Valid() {
+		t.Fatal("union with array length metadata must be invalid")
+	}
+}
 func TestTypeRejectsMissingFields(t *testing.T) {
 	for name, typ := range map[string]Type{
 		"missing id":     {Name: "User", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()},
