@@ -75,7 +75,7 @@ func (t Type) Valid() bool {
 		return false
 	}
 	if t.Kind == TypeArray {
-		return t.Element.Valid() && t.Elements == nil && !t.Declaration.Valid() && !t.HomeModule.Valid()
+		return t.Element.Valid() && t.Elements == nil && (!t.FixedLength && t.Length == 0 || t.FixedLength) && !t.Declaration.Valid() && !t.HomeModule.Valid()
 	}
 	if t.Kind == TypeTuple {
 		return t.Elements != nil && !t.Element.Valid() && !t.Declaration.Valid() && !t.HomeModule.Valid()

@@ -16,6 +16,12 @@ func TestArrayTypeValidity(t *testing.T) {
 	}
 }
 
+func TestArrayTypeRejectsDynamicLength(t *testing.T) {
+	array := Type{ID: TypeID(1), Kind: TypeArray, Element: TypeID(2), Length: 4, Origin: testOrigin()}
+	if array.Valid() {
+		t.Fatal("dynamic array with a fixed length must be invalid")
+	}
+}
 func TestTupleTypeValidity(t *testing.T) {
 	tuple := Type{ID: TypeID(1), Kind: TypeTuple, Elements: []TypeID{TypeID(2), TypeID(3)}, Origin: testOrigin()}
 	if !tuple.Valid() {
