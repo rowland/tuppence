@@ -59,7 +59,7 @@ func (p IndexedProgram) Valid() bool {
 			return false
 		}
 		declarationScope, ok := p.Scopes.Find(declaration.Scope)
-		if !ok || !moduleOwnsOrigin(p.Modules, declarationScope.Module, declaration.Origin) {
+		if !ok || !moduleOwnsOrigin(p.Modules, declarationScope.Module, declaration.Origin) || !moduleOwnsOrigin(p.Modules, declarationScope.Module, alias.Origin) {
 			return false
 		}
 		for _, typ := range p.Types {
