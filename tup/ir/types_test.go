@@ -9,6 +9,19 @@ func TestTypeValidity(t *testing.T) {
 	}
 }
 
+func TestArrayTypeValidity(t *testing.T) {
+	array := Type{ID: TypeID(1), Kind: TypeArray, Element: TypeID(2), FixedLength: true, Length: 4, Origin: testOrigin()}
+	if !array.Valid() {
+		t.Fatal("complete array type must be valid")
+	}
+}
+
+func TestArrayTypeRequiresElement(t *testing.T) {
+	array := Type{ID: TypeID(1), Kind: TypeArray, Origin: testOrigin()}
+	if array.Valid() {
+		t.Fatal("array without an element type must be invalid")
+	}
+}
 func TestTypeRejectsMissingFields(t *testing.T) {
 	for name, typ := range map[string]Type{
 		"missing id":     {Name: "User", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()},

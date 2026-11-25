@@ -24,7 +24,7 @@ func (p IndexedProgram) Dump() string {
 
 	out.WriteString("types:\n")
 	for _, typ := range p.Types {
-		fmt.Fprintf(&out, "  %d kind=%d name=%s declaration=%d home_module=%d\n", typ.ID, typ.Kind, typ.Name, typ.Declaration, typ.HomeModule)
+		fmt.Fprintf(&out, "  %d kind=%d name=%s declaration=%d home_module=%d element=%d fixed_length=%t length=%d\n", typ.ID, typ.Kind, typ.Name, typ.Declaration, typ.HomeModule, typ.Element, typ.FixedLength, typ.Length)
 	}
 
 	out.WriteString("scopes:\n")

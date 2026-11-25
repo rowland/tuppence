@@ -24,11 +24,13 @@ func (t TypeTable) Valid() bool {
 		if _, exists := seen[typ.ID]; exists {
 			return false
 		}
-		if _, exists := seenDeclarations[typ.Declaration]; exists {
-			return false
+		if typ.Kind == TypeNominal {
+			if _, exists := seenDeclarations[typ.Declaration]; exists {
+				return false
+			}
+			seenDeclarations[typ.Declaration] = struct{}{}
 		}
 		seen[typ.ID] = struct{}{}
-		seenDeclarations[typ.Declaration] = struct{}{}
 	}
 	return true
 }

@@ -62,6 +62,12 @@ func (p IndexedProgram) Valid() bool {
 		return false
 	}
 	for _, typ := range p.Types {
+		if typ.Kind == TypeArray {
+			if _, ok := p.Types.Find(typ.Element); !ok {
+				return false
+			}
+			continue
+		}
 		declaration, ok := p.Declarations.Find(typ.Declaration)
 		if !ok || declaration.Kind != DeclType {
 			return false
