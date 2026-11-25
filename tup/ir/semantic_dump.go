@@ -66,7 +66,14 @@ func (p IndexedProgram) Dump() string {
 
 	out.WriteString("calls:\n")
 	for _, call := range p.Calls {
-		fmt.Fprintf(&out, "  %d scope=%d name=%s arguments=%v\n", call.ID, call.Scope, call.Name, call.Arguments)
+		fmt.Fprintf(&out, "  %d scope=%d callee=%d name=%s curry=%t arguments=[", call.ID, call.Scope, call.Callee, call.Name, call.Curry)
+		for i, argument := range call.Arguments {
+			if i > 0 {
+				out.WriteString(",")
+			}
+			fmt.Fprintf(&out, "%s:%d", argument.Name, argument.Type)
+		}
+		out.WriteString("]\n")
 	}
 
 	out.WriteString("diagnostics:\n")

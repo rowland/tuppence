@@ -4,7 +4,7 @@ package ir
 type FunctionKey struct {
 	Scope      ScopeID
 	Name       string
-	Parameters []TypeID
+	Parameters []FunctionParameter
 }
 
 // FunctionKey returns the overload key for a function declaration.
@@ -25,7 +25,7 @@ func (p IndexedProgram) FindFunctions(key FunctionKey) []FunctionID {
 	var matches []FunctionID
 	for _, function := range p.Functions {
 		candidate, ok := p.FunctionKey(function.ID)
-		if ok && candidate.Scope == key.Scope && candidate.Name == key.Name && sameTypeIDs(candidate.Parameters, key.Parameters) {
+		if ok && candidate.Scope == key.Scope && candidate.Name == key.Name && sameParameterTypes(candidate.Parameters, key.Parameters) {
 			matches = append(matches, function.ID)
 		}
 	}

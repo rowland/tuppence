@@ -1,5 +1,7 @@
 package ir
 
+import "strings"
+
 // EffectKind identifies whether a function may perform effects.
 type EffectKind uint8
 
@@ -13,12 +15,23 @@ func (e EffectKind) Valid() bool {
 	return e >= EffectPure && e <= Effectful
 }
 
+// FunctionParameter describes one named parameter in declaration order.
+type FunctionParameter struct {
+	Name string
+	Type TypeID
+}
+
+// Valid reports whether the parameter has a name and type.
+func (p FunctionParameter) Valid() bool {
+	return strings.TrimSpace(p.Name) != "" && p.Type.Valid()
+}
+
 // Function records source-level callable metadata. Parameter schemas and
 // specialization keys are added separately.
 type Function struct {
 	ID          FunctionID
 	Declaration DeclID
-	Parameters  []TypeID
+	Parameters  []FunctionParameter
 	Result      TypeID
 	Effect      EffectKind
 	Generic     bool

@@ -11,7 +11,7 @@ func TestIndexedProgramAllowsFunctionTypesDeclaredLater(t *testing.T) {
 			{ID: DeclID(2), Scope: ScopeID(1), Name: "Item", Kind: DeclType, Origin: testOrigin()},
 		},
 		Types:     TypeTable{{ID: TypeID(1), Name: "Item", Kind: TypeNominal, Declaration: DeclID(2), HomeModule: ModuleID(1), Origin: testOrigin()}},
-		Functions: FunctionTable{{ID: FunctionID(1), Declaration: DeclID(1), Parameters: []TypeID{TypeID(1)}, Result: TypeID(1), Effect: EffectPure, Origin: testOrigin()}},
+		Functions: FunctionTable{{ID: FunctionID(1), Declaration: DeclID(1), Parameters: []FunctionParameter{{Name: "item", Type: TypeID(1)}}, Result: TypeID(1), Effect: EffectPure, Origin: testOrigin()}},
 	}
 	if !program.Valid() {
 		t.Fatal("function may reference types declared later in the snapshot")
@@ -29,8 +29,8 @@ func TestIndexedProgramRejectsDuplicateFunctionSignatures(t *testing.T) {
 		},
 		Types: TypeTable{{ID: TypeID(1), Name: "Item", Kind: TypeNominal, Declaration: DeclID(3), HomeModule: ModuleID(1), Origin: testOrigin()}},
 		Functions: FunctionTable{
-			{ID: FunctionID(1), Declaration: DeclID(1), Parameters: []TypeID{TypeID(1)}, Effect: EffectPure, Origin: testOrigin()},
-			{ID: FunctionID(2), Declaration: DeclID(2), Parameters: []TypeID{TypeID(1)}, Effect: EffectPure, Origin: testOrigin()},
+			{ID: FunctionID(1), Declaration: DeclID(1), Parameters: []FunctionParameter{{Name: "item", Type: TypeID(1)}}, Effect: EffectPure, Origin: testOrigin()},
+			{ID: FunctionID(2), Declaration: DeclID(2), Parameters: []FunctionParameter{{Name: "item", Type: TypeID(1)}}, Effect: EffectPure, Origin: testOrigin()},
 		},
 	}
 	if program.Valid() {

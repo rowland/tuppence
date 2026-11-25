@@ -118,8 +118,16 @@ func (p IndexedProgram) Valid() bool {
 		if !ok || !moduleOwnsOrigin(p.Modules, declarationScope.Module, function.Origin) {
 			return false
 		}
+		seenParameterNames := make(map[string]struct{}, len(function.Parameters))
 		for _, parameter := range function.Parameters {
-			if _, ok := p.Types.Find(parameter); !ok {
+			if !parameter.Valid() {
+				return false
+			}
+			if _, exists := seenParameterNames[parameter.Name]; exists {
+				return false
+			}
+			seenParameterNames[parameter.Name] = struct{}{}
+			if _, ok := p.Types.Find(parameter.Type); !ok {
 				return false
 			}
 		}
@@ -133,7 +141,7 @@ func (p IndexedProgram) Valid() bool {
 			if !ok {
 				return false
 			}
-			if declaration.Scope == otherDeclaration.Scope && declaration.Name == otherDeclaration.Name && sameTypeIDs(function.Parameters, other.Parameters) {
+			if declaration.Scope == otherDeclaration.Scope && declaration.Name == otherDeclaration.Name && sameParameterTypes(function.Parameters, other.Parameters) {
 				return false
 			}
 		}
@@ -166,8 +174,13 @@ func (p IndexedProgram) Valid() bool {
 		if !ok || !moduleOwnsOrigin(p.Modules, scope.Module, call.Origin) {
 			return false
 		}
+		if call.Callee.Valid() {
+			if _, ok := p.Calls.Find(call.Callee); !ok {
+				return false
+			}
+		}
 		for _, argument := range call.Arguments {
-			if _, ok := p.Types.Find(argument); !ok {
+			if _, ok := p.Types.Find(argument.Type); !ok {
 				return false
 			}
 		}
@@ -214,6 +227,18 @@ func (p IndexedProgram) Valid() bool {
 	}
 	for _, diagnostic := range p.Diagnostics {
 		if !diagnostic.Valid() {
+			return false
+		}
+	}
+	return true
+}
+
+func sameParameterTypes(left, right []FunctionParameter) bool {
+	if len(left) != len(right) {
+		return false
+	}
+	for i := range left {
+		if left[i].Type != right[i].Type {
 			return false
 		}
 	}
