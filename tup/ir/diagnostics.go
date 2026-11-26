@@ -21,6 +21,8 @@ type Diagnostic struct {
 	Related              []OriginID
 	CanonicalModule      ModuleID
 	CanonicalDeclaration DeclID
+	ImportPath           string
+	ImportCandidates     []string
 }
 
 // Valid reports whether the diagnostic has the required stable identity,
@@ -37,6 +39,19 @@ func (d Diagnostic) Valid() bool {
 	}
 	if d.CanonicalModule.Valid() != d.CanonicalDeclaration.Valid() {
 		return false
+	}
+	if strings.TrimSpace(d.ImportPath) == "" && len(d.ImportCandidates) != 0 {
+		return false
+	}
+	seenCandidates := make(map[string]struct{}, len(d.ImportCandidates))
+	for _, candidate := range d.ImportCandidates {
+		if strings.TrimSpace(candidate) == "" {
+			return false
+		}
+		if _, exists := seenCandidates[candidate]; exists {
+			return false
+		}
+		seenCandidates[candidate] = struct{}{}
 	}
 	for _, id := range d.Related {
 		if !id.Valid() {

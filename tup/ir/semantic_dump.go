@@ -97,7 +97,7 @@ func (p IndexedProgram) Dump() string {
 
 	out.WriteString("diagnostics:\n")
 	for _, diagnostic := range p.Diagnostics {
-		fmt.Fprintf(&out, "  severity=%d code=%s message=%s\n", diagnostic.Severity, diagnostic.Code, diagnostic.Message)
+		fmt.Fprintf(&out, "  severity=%d code=%s message=%s canonical_module=%d canonical_declaration=%d import_path=%s import_candidates=%v\n", diagnostic.Severity, diagnostic.Code, diagnostic.Message, diagnostic.CanonicalModule, diagnostic.CanonicalDeclaration, diagnostic.ImportPath, diagnostic.ImportCandidates)
 	}
 
 	return out.String()

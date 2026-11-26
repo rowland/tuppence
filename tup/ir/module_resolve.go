@@ -5,15 +5,15 @@ import (
 	"strings"
 )
 
-// ResolveImport resolves a requested module path against the indexed module
-// identities without touching the filesystem.
-func (t ModuleTable) ResolveImport(current ModuleID, requested string, config ModuleResolutionConfig) (ModuleID, bool) {
+// ResolveImportCandidates returns the ordered module identities considered for
+// a requested path, without touching the filesystem.
+func (t ModuleTable) ResolveImportCandidates(current ModuleID, requested string, config ModuleResolutionConfig) []string {
 	if !current.Valid() || requested == "" || !config.Valid() {
-		return 0, false
+		return nil
 	}
 	currentModule, ok := t.Find(current)
 	if !ok {
-		return 0, false
+		return nil
 	}
 	candidates := make([]string, 0, len(config.SearchPaths)+2)
 	if strings.HasPrefix(requested, "/") {
@@ -35,11 +35,21 @@ func (t ModuleTable) ResolveImport(current ModuleID, requested string, config Mo
 		}
 	}
 	seen := make(map[string]struct{}, len(candidates))
+	result := candidates[:0]
 	for _, candidate := range candidates {
 		if _, exists := seen[candidate]; exists {
 			continue
 		}
 		seen[candidate] = struct{}{}
+		result = append(result, candidate)
+	}
+	return result
+}
+
+// ResolveImport resolves a requested module path against the indexed module
+// identities without touching the filesystem.
+func (t ModuleTable) ResolveImport(current ModuleID, requested string, config ModuleResolutionConfig) (ModuleID, bool) {
+	for _, candidate := range t.ResolveImportCandidates(current, requested, config) {
 		for _, module := range t {
 			if module.Name == candidate {
 				return module.ID, true

@@ -16,6 +16,16 @@ func TestModuleTableResolveImportUsesRelativeThenProgramThenSearchPaths(t *testi
 	if got, ok := table.ResolveImport(ModuleID(1), "missing", config); ok || got != 0 {
 		t.Fatalf("missing module must not resolve, got %d, %t", got, ok)
 	}
+	candidates := table.ResolveImportCandidates(ModuleID(1), "missing", config)
+	want := []string{"app/missing", "/program/missing", "/stdlib/missing"}
+	if len(candidates) != len(want) {
+		t.Fatalf("unexpected candidate count: got %v want %v", candidates, want)
+	}
+	for i := range want {
+		if candidates[i] != want[i] {
+			t.Fatalf("unexpected candidate order: got %v want %v", candidates, want)
+		}
+	}
 }
 
 func TestModuleTableResolveImportAbsoluteUsesSearchRoots(t *testing.T) {

@@ -39,6 +39,19 @@ func TestDiagnosticRejectsInvalidRelatedOrigins(t *testing.T) {
 	}
 }
 
+func TestDiagnosticRejectsImportCandidatesWithoutPath(t *testing.T) {
+	diagnostic := Diagnostic{
+		Severity:         SeverityError,
+		Code:             "IR004",
+		Message:          "module not found",
+		Origin:           testOrigin(),
+		ImportCandidates: []string{"app/foo"},
+	}
+	if diagnostic.Valid() {
+		t.Fatal("import candidates require a requested import path")
+	}
+}
+
 func TestDiagnosticCanonicalIdentityMustBeComplete(t *testing.T) {
 	diagnostic := Diagnostic{
 		Severity:        SeverityError,
