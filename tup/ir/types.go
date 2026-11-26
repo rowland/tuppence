@@ -36,11 +36,12 @@ const (
 	StorageF64
 	StorageV128
 	StoragePTR
+	StorageBytes
 )
 
 // Valid reports whether the storage kind is recognized.
 func (k StorageKind) Valid() bool {
-	return k >= StorageI8 && k <= StoragePTR
+	return k >= StorageI8 && k <= StorageBytes
 }
 
 // StorageType describes representation only. Arithmetic, comparison, and

@@ -22,6 +22,7 @@ func TestArrayTypeRejectsDynamicLength(t *testing.T) {
 		t.Fatal("dynamic array with a fixed length must be invalid")
 	}
 }
+
 func TestTupleTypeValidity(t *testing.T) {
 	tuple := Type{ID: TypeID(1), Kind: TypeTuple, Elements: []TypeID{TypeID(2), TypeID(3)}, Origin: testOrigin()}
 	if !tuple.Valid() {
@@ -35,6 +36,7 @@ func TestTupleTypeAllowsEmptyTuple(t *testing.T) {
 		t.Fatal("empty tuple type must be valid")
 	}
 }
+
 func TestUnionTypeValidity(t *testing.T) {
 	union := Type{ID: TypeID(1), Kind: TypeUnion, Elements: []TypeID{TypeID(2), TypeID(3)}, Origin: testOrigin()}
 	if !union.Valid() {
@@ -48,12 +50,14 @@ func TestUnionTypeRejectsEmptyAlternatives(t *testing.T) {
 		t.Fatal("union without alternatives must be invalid")
 	}
 }
+
 func TestArrayTypeRequiresElement(t *testing.T) {
 	array := Type{ID: TypeID(1), Kind: TypeArray, Origin: testOrigin()}
 	if array.Valid() {
 		t.Fatal("array without an element type must be invalid")
 	}
 }
+
 func TestStructuralTypesRejectNominalMetadata(t *testing.T) {
 	cases := []Type{
 		{ID: TypeID(1), Name: "Array", Kind: TypeArray, Element: TypeID(2), Origin: testOrigin()},
@@ -77,6 +81,7 @@ func TestStructuralTypesRejectIrrelevantMetadata(t *testing.T) {
 		t.Fatal("union with array length metadata must be invalid")
 	}
 }
+
 func TestTypeRejectsMissingFields(t *testing.T) {
 	for name, typ := range map[string]Type{
 		"missing id":     {Name: "User", Kind: TypeNominal, Declaration: DeclID(1), HomeModule: ModuleID(1), Origin: testOrigin()},
@@ -105,7 +110,7 @@ func TestStorageKinds(t *testing.T) {
 	for _, kind := range []StorageKind{
 		StorageI8, StorageI16, StorageI32, StorageI64,
 		StorageU8, StorageU16, StorageU32, StorageU64,
-		StorageF16, StorageF32, StorageF64, StorageV128, StoragePTR,
+		StorageF16, StorageF32, StorageF64, StorageV128, StoragePTR, StorageBytes,
 	} {
 		if !kind.Valid() {
 			t.Errorf("storage kind %d must be valid", kind)
@@ -116,5 +121,37 @@ func TestStorageKinds(t *testing.T) {
 	}
 	if (StorageType{}).Valid() {
 		t.Fatal("empty storage type must be invalid")
+	}
+}
+
+func TestLiteralStoragePriority(t *testing.T) {
+	got := LiteralStoragePriority(LiteralInteger)
+	want := []StorageKind{
+		StorageI8, StorageI16, StorageI32, StorageI64,
+		StorageU8, StorageU16, StorageU32, StorageU64,
+		StorageF16, StorageF32, StorageF64, StorageBytes,
+	}
+	if len(got) != len(want) {
+		t.Fatalf("integer literal priority length = %d, want %d", len(got), len(want))
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Fatalf("integer literal priority[%d] = %d, want %d", i, got[i], want[i])
+		}
+	}
+	if got, ok := SelectLiteralStorage(LiteralInteger, []StorageKind{StorageF32, StorageI32}); !ok || got != StorageI32 {
+		t.Fatalf("literal storage selection = %d, %t; want I32, true", got, ok)
+	}
+}
+
+func TestAmbiguousLiteralDefaults(t *testing.T) {
+	if got, ok := DefaultLiteralKind(LiteralInteger, false); !ok || got != LiteralDefaultInt {
+		t.Fatal("ambiguous in-range integer literal must default to Int")
+	}
+	if got, ok := DefaultLiteralKind(LiteralInteger, true); !ok || got != LiteralDefaultFloat {
+		t.Fatal("out-of-range integer literal must default to Float")
+	}
+	if got, ok := DefaultLiteralKind(LiteralFloat, false); !ok || got != LiteralDefaultFloat {
+		t.Fatal("float literal must default to Float")
 	}
 }
