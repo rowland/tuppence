@@ -35,6 +35,7 @@ type Function struct {
 	Result      TypeID
 	Effect      EffectKind
 	Generic     bool
+	Cast        bool
 	Origin      Origin
 }
 

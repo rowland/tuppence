@@ -65,3 +65,22 @@ func TestIndexedProgramMatchesLiteralThroughTypeConstructor(t *testing.T) {
 		t.Fatal("literal argument must match a parameter with an admissible storage constructor")
 	}
 }
+
+func TestIndexedProgramFindsNonLossyCastFunctions(t *testing.T) {
+	program := IndexedProgram{
+		Declarations: DeclarationTable{
+			{ID: DeclID(1), Scope: ScopeID(1), Name: "cast", Kind: DeclFunction, Origin: testOrigin()},
+			{ID: DeclID(2), Scope: ScopeID(1), Name: "not_cast", Kind: DeclFunction, Origin: testOrigin()},
+			{ID: DeclID(3), Scope: ScopeID(2), Name: "cast", Kind: DeclFunction, Origin: testOrigin()},
+		},
+		Functions: FunctionTable{
+			{ID: FunctionID(1), Declaration: DeclID(1), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(10)}}, Result: TypeID(11), Effect: EffectPure, Cast: true, Origin: testOrigin()},
+			{ID: FunctionID(2), Declaration: DeclID(2), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(10)}}, Result: TypeID(11), Effect: EffectPure, Origin: testOrigin()},
+			{ID: FunctionID(3), Declaration: DeclID(3), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(10)}}, Result: TypeID(11), Effect: EffectPure, Cast: true, Origin: testOrigin()},
+		},
+	}
+	matches := program.FindCastFunctions(ScopeID(1), TypeID(10), TypeID(11))
+	if len(matches) != 1 || matches[0] != FunctionID(1) {
+		t.Fatal("cast lookup must return only marked casts in the requested scope")
+	}
+}

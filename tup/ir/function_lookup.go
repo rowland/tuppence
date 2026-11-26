@@ -32,6 +32,25 @@ func (p IndexedProgram) FindFunctions(key FunctionKey) []FunctionID {
 	return matches
 }
 
+// FindCastFunctions returns marked, non-lossy cast functions in lexical scope
+// order for an exact source and target type pair.
+func (p IndexedProgram) FindCastFunctions(scope ScopeID, source TypeID, target TypeID) []FunctionID {
+	if !scope.Valid() || !source.Valid() || !target.Valid() {
+		return nil
+	}
+	var matches []FunctionID
+	for _, function := range p.Functions {
+		if !function.Cast || function.Effect != EffectPure || len(function.Parameters) != 1 || function.Parameters[0].Type != source || function.Result != target {
+			continue
+		}
+		declaration, ok := p.Declarations.Find(function.Declaration)
+		if ok && declaration.Scope == scope {
+			matches = append(matches, function.ID)
+		}
+	}
+	return matches
+}
+
 // FindCallCandidates returns exact-type overload candidates for a direct call.
 // It preserves function-table order and does not rank candidates.
 func (p IndexedProgram) FindCallCandidates(call CallExpr) []FunctionID {
