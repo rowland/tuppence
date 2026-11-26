@@ -13,6 +13,14 @@ func (t ModuleTable) Find(id ModuleID) (Module, bool) {
 	return Module{}, false
 }
 
+func (t ModuleTable) ResolutionPath(id ModuleID) string {
+	module, ok := t.Find(id)
+	if !ok {
+		return ""
+	}
+	return module.ResolutionPath()
+}
+
 // Valid reports whether every module is valid and IDs are unique.
 func (t ModuleTable) Valid() bool {
 	seen := make(map[ModuleID]struct{}, len(t))

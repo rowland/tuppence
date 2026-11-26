@@ -23,6 +23,8 @@ type Diagnostic struct {
 	CanonicalDeclaration DeclID
 	ImportPath           string
 	ImportCandidates     []string
+	ImportSearchRoots    []string
+	ImportResolvedPath   string
 }
 
 // Valid reports whether the diagnostic has the required stable identity,
@@ -40,8 +42,18 @@ func (d Diagnostic) Valid() bool {
 	if d.CanonicalModule.Valid() != d.CanonicalDeclaration.Valid() {
 		return false
 	}
-	if strings.TrimSpace(d.ImportPath) == "" && len(d.ImportCandidates) != 0 {
+	if strings.TrimSpace(d.ImportPath) == "" && (len(d.ImportCandidates) != 0 || len(d.ImportSearchRoots) != 0 || d.ImportResolvedPath != "") {
 		return false
+	}
+	seenRoots := make(map[string]struct{}, len(d.ImportSearchRoots))
+	for _, root := range d.ImportSearchRoots {
+		if strings.TrimSpace(root) == "" {
+			return false
+		}
+		if _, exists := seenRoots[root]; exists {
+			return false
+		}
+		seenRoots[root] = struct{}{}
 	}
 	seenCandidates := make(map[string]struct{}, len(d.ImportCandidates))
 	for _, candidate := range d.ImportCandidates {

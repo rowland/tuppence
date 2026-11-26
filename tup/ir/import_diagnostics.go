@@ -31,18 +31,26 @@ func (p IndexedProgram) ImportResolutionDiagnostics() []Diagnostic {
 			}
 			candidates := p.Modules.ResolveImportCandidates(module.ID, binding.Path, p.ModuleResolution)
 			resolved, ok := p.Modules.ResolveImport(module.ID, binding.Path, p.ModuleResolution)
+			roots := append([]string(nil), p.ModuleResolution.SearchPaths...)
+			if p.ModuleResolution.ProgramRoot != "" {
+				roots = append([]string{p.ModuleResolution.ProgramRoot}, roots...)
+			}
 			if !ok {
-				diagnostics = append(diagnostics, NewUnresolvedImportDiagnostic(binding.Origin, binding.Path, candidates))
+				diagnostic := NewUnresolvedImportDiagnostic(binding.Origin, binding.Path, candidates)
+				diagnostic.ImportSearchRoots = roots
+				diagnostics = append(diagnostics, diagnostic)
 				continue
 			}
 			if resolved != binding.Target {
 				diagnostics = append(diagnostics, Diagnostic{
-					Severity:         SeverityError,
-					Code:             "IMPORT_TARGET_MISMATCH",
-					Message:          fmt.Sprintf("import %s resolves to module %d, not module %d", binding.Path, resolved, binding.Target),
-					Origin:           binding.Origin,
-					ImportPath:       binding.Path,
-					ImportCandidates: candidates,
+					Severity:           SeverityError,
+					Code:               "IMPORT_TARGET_MISMATCH",
+					Message:            fmt.Sprintf("import %s resolves to module %d, not module %d", binding.Path, resolved, binding.Target),
+					Origin:             binding.Origin,
+					ImportPath:         binding.Path,
+					ImportCandidates:   candidates,
+					ImportSearchRoots:  roots,
+					ImportResolvedPath: p.Modules.ResolutionPath(resolved),
 				})
 			}
 		}
