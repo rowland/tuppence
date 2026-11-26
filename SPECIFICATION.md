@@ -120,6 +120,47 @@ via trailing block syntax:
 This is a semantic constraint. The formal grammar may accept more parameter-list shapes than the type
 checker ultimately permits.
 
+### Explicit conversions
+
+A value with a known concrete type is not converted merely because another
+parameter type would fit. If a suitable, non-lossy cast function is in scope, the
+compiler may insert a call to that existing function; it does not synthesize the
+cast function itself:
+
+    cast[Int64]: fn(value: Int32) Int64 { ... }
+    use_int64(value) # equivalent to use_int64(cast[Int64](value))
+
+No such implicit cast is available unless the corresponding cast function exists.
+Lossy cast functions are not part of the supported conversion set. An explicit cast
+call remains valid when the source wishes to select the conversion directly.
+Structural adaptation explicitly permitted by the type rules is separate from
+concrete value conversion.
+
+### Call matching priority
+
+Within one lookup location, applicable candidates are considered in this order:
+
+1. exact concrete matches;
+2. generic matches whose requirements can be satisfied;
+3. `any` matches.
+
+For a literal or an immutable direct literal binding, the value initially has the
+superset of admissible storage types for its literal category. Integer and float
+literals may use the applicable signed, unsigned, or floating storage types, or an
+array of bytes, subject to range and representation rules. If one non-generic
+function candidate remains applicable, the compiler tries the candidate's
+parameter type constructor (for example, `Int32()` for storage type `I8`) in the
+specified storage-type priority order. If multiple function candidates remain,
+the literal assumes `Int`, or `Float` when the value is out of integer range, and
+ordinary cast-function insertion is then considered.
+
+A variable whose concrete type is already known is an exact match only when its
+type equals the parameter type. It may use an existing suitable cast function as
+described above, but it does not become an exact match through that cast. A
+lower-priority candidate cannot displace an applicable higher-priority candidate;
+outer lookup locations are considered only when the current location has no
+applicable candidate.
+
 ### Tuple Types
 
 A tuple type is a heterogenous collection of values, addressable by ordinal position and, optionally, by name.
@@ -396,10 +437,19 @@ corresponding to internal types F16, F32 or F64.
 
 It could even be represented by an array of bytes.
 
+For literal matching, these storage types are considered in the following priority
+order, subject to the value's range and representation: `I8`, `I16`, `I32`, `I64`,
+`U8`, `U16`, `U32`, `U64`, `F16`, `F32`, `F64`, then an array of bytes.
+
 It is only at the point of use where there is sufficient information to determine
-which variant is called for. If there is ambiguity, such as in the cases of overloaded
-and generic functions, it will default to type `Int`, unless it is out of range,
-in which case it will default to type `Float`.
+which variant is called for. An immutable direct binding to such a literal has the
+same storage-type superset as the literal itself. If one non-generic function
+candidate is applicable, the compiler tries the candidate's type constructor for
+each admissible storage type in storage-type priority order. For example, a
+parameter of `Int32` may be reached through `Int32()` applied to an `I8` literal
+representation. If multiple function candidates remain, the literal defaults to
+type `Int`, unless it is out of integer range, in which case it defaults to type
+`Float`.
 
 The literal `-1` cannot be represented by the unsigned internal types, so it canot be
 used in a context like `Bool`. The literal `1000` cannot be represented by an
@@ -446,9 +496,11 @@ Underscores may be included anywhere after any prefix and the first digit to aid
 
 #### Floats
 
-The literal `1.0` constrains internal representations to floating point types
-and byte arrays. If there is ambiguity, such as in the cases of overloaded
-and generic functions, it will default to type `Float`.
+The literal `1.0` and an immutable direct binding to that literal begin with the
+same superset of admissible floating storage types and byte arrays. If one
+non-generic function candidate remains applicable, its parameter type constructor
+is tried over those storage types in priority order. If multiple candidates remain,
+the literal defaults to type `Float`.
 
 Float literals larger than `65504.0` will not coerce to `Float16`. Other limits
 will apply at higher precisions.
@@ -486,7 +538,12 @@ used to construct user-defined types other than the standard library `String`, b
 `String` is the default.
 
 Again, an identifier may be bound to a string literal without assuming a type
-until the point of use.
+until the point of use. An immutable binding to a direct literal is therefore
+used like the literal itself at each use site: `s = "text"` may satisfy a concrete
+string parameter without first fixing `s` to one internal representation. This
+exception does not apply to mutable bindings, function-call results, or values
+whose concrete type has already been established. A known concrete value is never
+implicitly converted just because a target parameter has another concrete type.
 
 ##### Basic Strings
 
