@@ -5,6 +5,7 @@ package ir
 type IndexedProgram struct {
 	Modules      ModuleTable
 	Types        TypeTable
+	Constructors TypeConstructorTable
 	Scopes       ScopeTable
 	Declarations DeclarationTable
 	Bindings     BindingTable
@@ -17,7 +18,7 @@ type IndexedProgram struct {
 
 // Valid reports whether every indexed table, cross-reference, and diagnostic is valid.
 func (p IndexedProgram) Valid() bool {
-	if !p.Modules.Valid() || !p.Types.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() || !p.Aliases.Valid() || !p.Expressions.Valid() || !p.Calls.Valid() {
+	if !p.Modules.Valid() || !p.Types.Valid() || !p.Constructors.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() || !p.Aliases.Valid() || !p.Expressions.Valid() || !p.Calls.Valid() {
 		return false
 	}
 	fileOwners := make(map[FileID]ModuleID)
@@ -83,6 +84,12 @@ func (p IndexedProgram) Valid() bool {
 		}
 		scope, ok := p.Scopes.Find(declaration.Scope)
 		if !ok || scope.Module != typ.HomeModule || !moduleOwnsOrigin(p.Modules, typ.HomeModule, typ.Origin) {
+			return false
+		}
+	}
+	for _, constructor := range p.Constructors {
+		typ, ok := p.Types.Find(constructor.Type)
+		if !ok || typ.Kind != TypeNominal || !moduleOwnsOrigin(p.Modules, typ.HomeModule, constructor.Origin) {
 			return false
 		}
 	}

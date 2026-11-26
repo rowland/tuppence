@@ -4,13 +4,25 @@ import "strings"
 
 // CallArgument describes one positional or named argument in source order.
 type CallArgument struct {
-	Name string
-	Type TypeID
+	Name            string
+	Type            TypeID
+	Literal         LiteralKind
+	LiteralTemplate bool
 }
 
-// Valid reports whether the argument has a type and, when present, a name.
+// Valid reports whether the argument has either a known type or a numeric literal
+// category and, when present, a name.
 func (a CallArgument) Valid() bool {
-	return a.Type.Valid() && (a.Name == "" || strings.TrimSpace(a.Name) != "")
+	if a.Name != "" && strings.TrimSpace(a.Name) == "" {
+		return false
+	}
+	if a.Type.Valid() == a.Literal.Valid() {
+		return false
+	}
+	if a.LiteralTemplate && !a.Literal.Valid() {
+		return false
+	}
+	return true
 }
 
 // CallExpr records a call site before overload resolution selects a function.

@@ -52,3 +52,16 @@ func TestIndexedProgramFindsFunctionsBySignatureKey(t *testing.T) {
 		t.Fatal("function lookup must return the matching overload")
 	}
 }
+
+func TestIndexedProgramMatchesLiteralThroughTypeConstructor(t *testing.T) {
+	program := IndexedProgram{
+		Constructors: TypeConstructorTable{{Type: TypeID(20), Storage: StorageI32, Origin: testOrigin()}},
+		Declarations: DeclarationTable{{ID: DeclID(1), Scope: ScopeID(1), Name: "parse", Kind: DeclFunction, Origin: testOrigin()}},
+		Functions:    FunctionTable{{ID: FunctionID(1), Declaration: DeclID(1), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(20)}}, Effect: EffectPure, Origin: testOrigin()}},
+	}
+	call := CallExpr{ID: ExprID(1), Scope: ScopeID(1), Name: "parse", Arguments: []CallArgument{{Literal: LiteralInteger, LiteralTemplate: true}}, Origin: testOrigin()}
+	matches := program.FindCallCandidates(call)
+	if len(matches) != 1 || matches[0] != FunctionID(1) {
+		t.Fatal("literal argument must match a parameter with an admissible storage constructor")
+	}
+}

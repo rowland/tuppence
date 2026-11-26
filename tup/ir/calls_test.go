@@ -41,3 +41,45 @@ func TestCallExpressionRejectsMissingName(t *testing.T) {
 		t.Fatal("call expression without a name must be invalid")
 	}
 }
+
+func TestCallArgumentAllowsLiteralTemplate(t *testing.T) {
+	call := CallExpr{
+		ID:    ExprID(1),
+		Scope: ScopeID(2),
+		Name:  "parse",
+		Arguments: []CallArgument{{
+			Literal:         LiteralInteger,
+			LiteralTemplate: true,
+		}},
+		Origin: testOrigin(),
+	}
+	if !call.Valid() {
+		t.Fatal("immutable literal template argument must be valid")
+	}
+}
+
+func TestCallArgumentRejectsUnresolvedNonLiteral(t *testing.T) {
+	call := CallExpr{
+		ID:        ExprID(1),
+		Scope:     ScopeID(2),
+		Name:      "parse",
+		Arguments: []CallArgument{{}},
+		Origin:    testOrigin(),
+	}
+	if call.Valid() {
+		t.Fatal("argument without a type or literal category must be invalid")
+	}
+}
+
+func TestCallArgumentRejectsLiteralTemplateWithoutLiteral(t *testing.T) {
+	call := CallExpr{
+		ID:        ExprID(1),
+		Scope:     ScopeID(2),
+		Name:      "parse",
+		Arguments: []CallArgument{{LiteralTemplate: true}},
+		Origin:    testOrigin(),
+	}
+	if call.Valid() {
+		t.Fatal("literal template marker without a literal category must be invalid")
+	}
+}

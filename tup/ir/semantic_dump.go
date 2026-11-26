@@ -27,6 +27,11 @@ func (p IndexedProgram) Dump() string {
 		fmt.Fprintf(&out, "  %d kind=%d name=%s declaration=%d home_module=%d element=%d elements=%v fixed_length=%t length=%d\n", typ.ID, typ.Kind, typ.Name, typ.Declaration, typ.HomeModule, typ.Element, typ.Elements, typ.FixedLength, typ.Length)
 	}
 
+	out.WriteString("constructors:\n")
+	for _, constructor := range p.Constructors {
+		fmt.Fprintf(&out, "  type=%d storage=%d\n", constructor.Type, constructor.Storage)
+	}
+
 	out.WriteString("scopes:\n")
 	for _, scope := range p.Scopes {
 		fmt.Fprintf(&out, "  %d module=%d parent=%d kind=%d origin_file=%d entries=[", scope.ID, scope.Module, scope.Parent, scope.Kind, scope.Origin.Primary.File)
@@ -71,7 +76,7 @@ func (p IndexedProgram) Dump() string {
 			if i > 0 {
 				out.WriteString(",")
 			}
-			fmt.Fprintf(&out, "%s:%d", argument.Name, argument.Type)
+			fmt.Fprintf(&out, "%s:%d:literal=%d:template=%t", argument.Name, argument.Type, argument.Literal, argument.LiteralTemplate)
 		}
 		out.WriteString("]\n")
 	}

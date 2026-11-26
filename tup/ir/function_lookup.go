@@ -44,14 +44,14 @@ func (p IndexedProgram) FindCallCandidates(call CallExpr) []FunctionID {
 		if !ok || declaration.Scope != call.Scope || declaration.Name != call.Name {
 			continue
 		}
-		if callMatchesFunction(call, function) {
+		if callMatchesFunction(p, call, function) {
 			matches = append(matches, function.ID)
 		}
 	}
 	return matches
 }
 
-func callMatchesFunction(call CallExpr, function Function) bool {
+func callMatchesFunction(program IndexedProgram, call CallExpr, function Function) bool {
 	if !call.Curry && len(call.Arguments) != len(function.Parameters) {
 		return false
 	}
@@ -73,7 +73,7 @@ func callMatchesFunction(call CallExpr, function Function) bool {
 		} else {
 			positional++
 		}
-		if index < 0 || index >= len(function.Parameters) || matched[index] || function.Parameters[index].Type != argument.Type {
+		if index < 0 || index >= len(function.Parameters) || matched[index] || !program.argumentMatchesParameter(argument, function.Parameters[index]) {
 			return false
 		}
 		matched[index] = true
@@ -86,4 +86,21 @@ func callMatchesFunction(call CallExpr, function Function) bool {
 		}
 	}
 	return true
+}
+
+func (p IndexedProgram) argumentMatchesParameter(argument CallArgument, parameter FunctionParameter) bool {
+	if argument.Type.Valid() {
+		return argument.Type == parameter.Type
+	}
+	if !argument.Literal.Valid() {
+		return false
+	}
+	var admissible []StorageKind
+	for _, constructor := range p.Constructors {
+		if constructor.Type == parameter.Type {
+			admissible = append(admissible, constructor.Storage)
+		}
+	}
+	_, ok := SelectLiteralStorage(argument.Literal, admissible)
+	return ok
 }
