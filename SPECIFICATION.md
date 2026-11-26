@@ -270,16 +270,24 @@ followed by a ":", e.g.
 
 Only explicitly exported symbols are accessible outside the module.
 
-A module is imported using the `import` keyword.
+A module is imported using the `import` keyword. The result is normally bound to a
+local module symbol and used for qualified calls:
 
-    io = import("io")
-    hello = fx() { io.print("Hello!") }
+    foo = import("foo")
+    value = foo.bar(baz)
+
+Types and cast functions that must participate in unqualified implicit resolution
+are instead imported into local names explicitly:
+
+    (Foo, cast) = import("foo")
 
 The compiler normally provides a prolog import for the core standard library. The
 prolog may be disabled by a compile option, including while compiling the standard
 library itself, and its set of imported types and functions may vary by target
-architecture. Core names are therefore ordinary imported symbols in the semantic
-model, not unconditional global declarations.
+architecture. The prolog may use local aliases for core type constructors and cast
+functions so that literal construction and implicit cast insertion can find them.
+Core names are therefore ordinary imported symbols in the semantic model, not
+unconditional global declarations.
 
 ## Expressions
 

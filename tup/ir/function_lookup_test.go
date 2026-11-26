@@ -171,18 +171,18 @@ func TestIndexedProgramFindsOuterLexicalFunction(t *testing.T) {
 	}
 }
 
-func TestIndexedProgramFindsExportedImportedFunction(t *testing.T) {
+func TestIndexedProgramRejectsUnqualifiedImportedFunction(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
 			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Imports: []ImportBinding{{LocalName: "core", Target: ModuleID(2), Origin: testOrigin()}}, Origin: testOrigin()},
-			{ID: ModuleID(2), Name: "core", Files: []FileID{FileID(2)}, Origin: Origin{Primary: Span{File: FileID(2), Start: 0, End: 1}}},
+			{ID: ModuleID(2), Name: "core", Files: []FileID{FileID(2)}, Origin: testOrigin()},
 		},
-		Scopes:       ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}, {ID: ScopeID(2), Module: ModuleID(2), Kind: ScopeModule, Origin: Origin{Primary: Span{File: FileID(2), Start: 0, End: 1}}}},
-		Declarations: DeclarationTable{{ID: DeclID(1), Scope: ScopeID(2), Name: "take", Kind: DeclFunction, Exported: true, Origin: Origin{Primary: Span{File: FileID(2), Start: 0, End: 1}}}},
-		Functions:    FunctionTable{{ID: FunctionID(1), Declaration: DeclID(1), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(10)}}, Effect: EffectPure, Origin: Origin{Primary: Span{File: FileID(2), Start: 0, End: 1}}}},
+		Scopes:       ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}, {ID: ScopeID(2), Module: ModuleID(2), Kind: ScopeModule, Origin: testOrigin()}},
+		Declarations: DeclarationTable{{ID: DeclID(1), Scope: ScopeID(2), Name: "take", Kind: DeclFunction, Exported: true, Origin: testOrigin()}},
+		Functions:    FunctionTable{{ID: FunctionID(1), Declaration: DeclID(1), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(10)}}, Effect: EffectPure, Origin: testOrigin()}},
 	}
 	call := CallExpr{ID: ExprID(1), Scope: ScopeID(1), Name: "take", Arguments: []CallArgument{{Type: TypeID(10)}}, Origin: testOrigin()}
-	if matches := program.FindCallCandidates(call); len(matches) != 1 || matches[0] != FunctionID(1) {
-		t.Fatal("call lookup must include exported functions from imported modules")
+	if matches := program.FindCallCandidates(call); len(matches) != 0 {
+		t.Fatal("unqualified lookup must not expose functions from an imported module")
 	}
 }

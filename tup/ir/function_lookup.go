@@ -117,7 +117,7 @@ func (p IndexedProgram) functionVisible(callScope ScopeID, declaration Declarati
 			current = next
 		}
 	}
-	return declaration.Exported && moduleImports(p.Modules, caller.Module, declScope.Module)
+	return false
 }
 
 func (p IndexedProgram) selectCandidateTier(candidates []FunctionID) []FunctionID {
