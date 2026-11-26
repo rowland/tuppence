@@ -2,9 +2,9 @@ package ir
 
 import "strings"
 
-// PrologConfig records the compiler-provided core import configuration for a
-// semantic snapshot. The prolog itself is represented by ordinary module imports
-// and local aliases.
+// PrologConfig records the compiler-provided core include configuration for a
+// semantic snapshot. The selected exports and aliases behave as declarations in
+// the module's initial scope; the prolog is not a general blanket import.
 type PrologConfig struct {
 	Enabled      bool
 	Module       ModuleID

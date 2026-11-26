@@ -281,13 +281,19 @@ are instead imported into local names explicitly:
 
     (Foo, cast) = import("foo")
 
-The compiler normally provides a prolog import for the core standard library. The
-prolog may be disabled by a compile option, including while compiling the standard
-library itself, and its set of imported types and functions may vary by target
-architecture. The prolog may use local aliases for core type constructors and cast
-functions so that literal construction and implicit cast insertion can find them.
-Core names are therefore ordinary imported symbols in the semantic model, not
-unconditional global declarations.
+The compiler normally provides a prolog import for the core standard library. From
+source, this behaves like a controlled `include`: the selected core exports and
+aliases are available in the module's initial scope without a user-written import.
+This is an intentional exception for the core environment, not a general blanket
+symbol-import feature. Ordinary modules remain explicit: bind the module for
+qualified calls, or bind selected members locally when unqualified use is wanted.
+
+The prolog may be disabled by a compile option, including while compiling the
+standard library itself, and its set of imported types and functions may vary by
+target architecture. The prolog may use local aliases for core type constructors
+and cast functions so that literal construction and implicit cast insertion can
+find them. Core names are therefore ordinary semantic declarations in a controlled
+initial scope, not unconditional global declarations.
 
 ## Expressions
 
