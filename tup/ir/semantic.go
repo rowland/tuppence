@@ -3,17 +3,18 @@ package ir
 // IndexedProgram is the first semantic snapshot: source identities have been
 // collected into validated lexical tables, but expressions are not analyzed yet.
 type IndexedProgram struct {
-	Modules      ModuleTable
-	Types        TypeTable
-	Constructors TypeConstructorTable
-	Scopes       ScopeTable
-	Declarations DeclarationTable
-	Bindings     BindingTable
-	Functions    FunctionTable
-	Aliases      TypeAliasTable
-	Expressions  ExpressionTable
-	Calls        CallTable
-	Diagnostics  []Diagnostic
+	Modules         ModuleTable
+	Types           TypeTable
+	Constructors    TypeConstructorTable
+	Scopes          ScopeTable
+	Declarations    DeclarationTable
+	Bindings        BindingTable
+	Functions       FunctionTable
+	Aliases         TypeAliasTable
+	Expressions     ExpressionTable
+	Calls           CallTable
+	LiteralDefaults LiteralDefaults
+	Diagnostics     []Diagnostic
 }
 
 // Valid reports whether every indexed table, cross-reference, and diagnostic is valid.
@@ -91,6 +92,13 @@ func (p IndexedProgram) Valid() bool {
 		typ, ok := p.Types.Find(constructor.Type)
 		if !ok || typ.Kind != TypeNominal || !moduleOwnsOrigin(p.Modules, typ.HomeModule, constructor.Origin) {
 			return false
+		}
+	}
+	for _, defaultType := range []TypeID{p.LiteralDefaults.Int, p.LiteralDefaults.Float} {
+		if defaultType.Valid() {
+			if _, ok := p.Types.Find(defaultType); !ok {
+				return false
+			}
 		}
 	}
 	for _, alias := range p.Aliases {

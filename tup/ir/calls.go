@@ -4,10 +4,12 @@ import "strings"
 
 // CallArgument describes one positional or named argument in source order.
 type CallArgument struct {
-	Name            string
-	Type            TypeID
-	Literal         LiteralKind
-	LiteralTemplate bool
+	Name                     string
+	Type                     TypeID
+	Literal                  LiteralKind
+	LiteralTemplate          bool
+	LiteralAmbiguous         bool
+	LiteralOutOfIntegerRange bool
 }
 
 // Valid reports whether the argument has either a known type or a numeric literal
@@ -20,6 +22,9 @@ func (a CallArgument) Valid() bool {
 		return false
 	}
 	if a.LiteralTemplate && !a.Literal.Valid() {
+		return false
+	}
+	if (a.LiteralAmbiguous || a.LiteralOutOfIntegerRange) && !a.Literal.Valid() {
 		return false
 	}
 	return true

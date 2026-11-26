@@ -12,14 +12,21 @@ const (
 // ResolvedCallArgument records one source-to-parameter mapping after candidate
 // selection. Cast identifies an existing cast function inserted by the compiler.
 type ResolvedCallArgument struct {
-	Parameter  int
-	Source     CallArgument
-	Adaptation ArgumentAdaptation
-	Cast       FunctionID
-	Storage    StorageKind
+	Parameter    int
+	Source       CallArgument
+	Adaptation   ArgumentAdaptation
+	Cast         FunctionID
+	Storage      StorageKind
+	ResolvedType TypeID
 }
 
-// ResolvedCallPlan records one selected function and its argument adaptations.
+// LiteralDefaults identifies the architecture-selected semantic defaults for
+// ambiguous integer and float literals.
+type LiteralDefaults struct {
+	Int   TypeID
+	Float TypeID
+}
+
 type ResolvedCallPlan struct {
 	Function  FunctionID
 	Arguments []ResolvedCallArgument
@@ -72,6 +79,27 @@ func (p IndexedProgram) ResolveCallPlan(call CallExpr, functionID FunctionID) (R
 			}
 			resolved.Adaptation = AdaptCast
 			resolved.Cast = casts[0]
+		} else if argument.Literal.Valid() && argument.LiteralAmbiguous {
+			defaultType := p.LiteralDefaults.Int
+			if defaultKind, ok := DefaultLiteralKind(argument.Literal, argument.LiteralOutOfIntegerRange); !ok {
+				return ResolvedCallPlan{}, false
+			} else if defaultKind == LiteralDefaultFloat {
+				defaultType = p.LiteralDefaults.Float
+			}
+			if !defaultType.Valid() {
+				return ResolvedCallPlan{}, false
+			}
+			resolved.ResolvedType = defaultType
+			if defaultType == parameter.Type {
+				resolved.Adaptation = AdaptLiteral
+			} else {
+				casts := p.FindCastFunctions(call.Scope, defaultType, parameter.Type)
+				if len(casts) != 1 {
+					return ResolvedCallPlan{}, false
+				}
+				resolved.Adaptation = AdaptCast
+				resolved.Cast = casts[0]
+			}
 		} else if argument.Literal.Valid() {
 			var admissible []StorageKind
 			for _, constructor := range p.Constructors {
