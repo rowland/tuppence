@@ -3,25 +3,26 @@ package ir
 // IndexedProgram is the first semantic snapshot: source identities have been
 // collected into validated lexical tables, but expressions are not analyzed yet.
 type IndexedProgram struct {
-	Modules         ModuleTable
-	Types           TypeTable
-	Constructors    TypeConstructorTable
-	Scopes          ScopeTable
-	Declarations    DeclarationTable
-	Bindings        BindingTable
-	Functions       FunctionTable
-	Aliases         TypeAliasTable
-	Expressions     ExpressionTable
-	Calls           CallTable
-	ImportAliases   ImportAliasTable
-	LiteralDefaults LiteralDefaults
-	Prolog          PrologConfig
-	Diagnostics     []Diagnostic
+	Modules          ModuleTable
+	Types            TypeTable
+	Constructors     TypeConstructorTable
+	Scopes           ScopeTable
+	Declarations     DeclarationTable
+	Bindings         BindingTable
+	Functions        FunctionTable
+	Aliases          TypeAliasTable
+	Expressions      ExpressionTable
+	Calls            CallTable
+	ImportAliases    ImportAliasTable
+	LiteralDefaults  LiteralDefaults
+	Prolog           PrologConfig
+	ModuleResolution ModuleResolutionConfig
+	Diagnostics      []Diagnostic
 }
 
 // Valid reports whether every indexed table, cross-reference, and diagnostic is valid.
 func (p IndexedProgram) Valid() bool {
-	if !p.Modules.Valid() || !p.Prolog.Valid() || !p.Types.Valid() || !p.Constructors.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() || !p.Aliases.Valid() || !p.Expressions.Valid() || !p.Calls.Valid() || !p.ImportAliases.Valid() {
+	if !p.Modules.Valid() || !p.Prolog.Valid() || !p.ModuleResolution.Valid() || !p.Types.Valid() || !p.Constructors.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() || !p.Aliases.Valid() || !p.Expressions.Valid() || !p.Calls.Valid() || !p.ImportAliases.Valid() {
 		return false
 	}
 	fileOwners := make(map[FileID]ModuleID)

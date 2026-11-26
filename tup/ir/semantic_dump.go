@@ -89,6 +89,9 @@ func (p IndexedProgram) Dump() string {
 	out.WriteString("literal_defaults:\n")
 	fmt.Fprintf(&out, "  int=%d float=%d\n", p.LiteralDefaults.Int, p.LiteralDefaults.Float)
 
+	out.WriteString("module_resolution:\n")
+	fmt.Fprintf(&out, "  program_root=%s search_paths=%v\n", p.ModuleResolution.ProgramRoot, p.ModuleResolution.SearchPaths)
+
 	out.WriteString("prolog:\n")
 	fmt.Fprintf(&out, "  enabled=%t modules=%v architecture=%s\n", p.Prolog.Enabled, p.Prolog.Modules, p.Prolog.Architecture)
 
