@@ -79,6 +79,14 @@
 | Byte | Int | Float | Rune |
 | String | Range |
 
+`Int` and `Float` are core standard-library aliases introduced by the prolog, not
+fixed primitive identities. The current default core definitions map `Int` to
+`Int64` and `Float` to `Float64`. `Float64` remains the default `Float` target
+unless the selected architecture does not support it; an architecture-specific
+core selection may then map `Float` to a supported alternative. Code that requires
+a particular width should use `Int8`/`Int16`/`Int32`/`Int64` or
+`Float16`/`Float32`/`Float64` explicitly.
+
 ## Core Elements
 
 Tuppence is comprised of functions, tuple types and arrays.
@@ -266,6 +274,12 @@ A module is imported using the `import` keyword.
 
     io = import("io")
     hello = fx() { io.print("Hello!") }
+
+The compiler normally provides a prolog import for the core standard library. The
+prolog may be disabled by a compile option, including while compiling the standard
+library itself, and its set of imported types and functions may vary by target
+architecture. Core names are therefore ordinary imported symbols in the semantic
+model, not unconditional global declarations.
 
 ## Expressions
 
