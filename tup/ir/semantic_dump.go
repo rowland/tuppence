@@ -90,7 +90,7 @@ func (p IndexedProgram) Dump() string {
 	fmt.Fprintf(&out, "  int=%d float=%d\n", p.LiteralDefaults.Int, p.LiteralDefaults.Float)
 
 	out.WriteString("prolog:\n")
-	fmt.Fprintf(&out, "  enabled=%t module=%d architecture=%s\n", p.Prolog.Enabled, p.Prolog.Module, p.Prolog.Architecture)
+	fmt.Fprintf(&out, "  enabled=%t modules=%v architecture=%s\n", p.Prolog.Enabled, p.Prolog.Modules, p.Prolog.Architecture)
 
 	out.WriteString("diagnostics:\n")
 	for _, diagnostic := range p.Diagnostics {

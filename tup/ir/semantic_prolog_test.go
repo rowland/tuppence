@@ -16,7 +16,7 @@ func TestIndexedProgramAllowsEnabledPrologAliasInModuleScope(t *testing.T) {
 			{ID: DeclID(1), Scope: ScopeID(2), Name: "Int", Kind: DeclType, Exported: true, Origin: Origin{Primary: Span{File: FileID(2), Start: 0, End: 1}}},
 		},
 		ImportAliases: ImportAliasTable{{Scope: ScopeID(1), LocalName: "Int", Module: ModuleID(2), Declaration: DeclID(1), Source: ImportAliasSourceProlog, Origin: testOrigin()}},
-		Prolog:        PrologConfig{Enabled: true, Module: ModuleID(2), Architecture: "amd64"},
+		Prolog:        PrologConfig{Enabled: true, Modules: []ModuleID{ModuleID(2)}, Architecture: "amd64"},
 	}
 	if !program.Valid() {
 		t.Fatal("enabled prolog alias in a module scope must be valid")
