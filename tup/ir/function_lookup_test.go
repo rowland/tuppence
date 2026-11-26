@@ -190,7 +190,7 @@ func TestIndexedProgramFindsQualifiedAliasAsUnqualifiedFunction(t *testing.T) {
 func TestIndexedProgramRejectsUnqualifiedImportedFunction(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Imports: []ImportBinding{{LocalName: "core", Target: ModuleID(2), Origin: testOrigin()}}, Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Imports: []ImportBinding{{LocalName: "core", Path: "core", Target: ModuleID(2), Origin: testOrigin()}}, Origin: testOrigin()},
 			{ID: ModuleID(2), Name: "core", Files: []FileID{FileID(2)}, Origin: testOrigin()},
 		},
 		Scopes:       ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}, {ID: ScopeID(2), Module: ModuleID(2), Kind: ScopeModule, Origin: testOrigin()}},

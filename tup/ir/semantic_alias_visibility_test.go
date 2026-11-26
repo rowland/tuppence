@@ -5,7 +5,7 @@ import "testing"
 func TestIndexedProgramRejectsPrivateCrossModuleTypeAliases(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Imports: []ImportBinding{{LocalName: "lib", Target: ModuleID(2), Origin: testOrigin()}}, Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Imports: []ImportBinding{{LocalName: "lib", Path: "lib", Target: ModuleID(2), Origin: testOrigin()}}, Origin: testOrigin()},
 			{ID: ModuleID(2), Name: "lib", Files: []FileID{FileID(2)}, Origin: Origin{Primary: Span{File: FileID(2), Start: 0, End: 1}}},
 		},
 		Scopes: ScopeTable{
@@ -27,7 +27,7 @@ func TestIndexedProgramRejectsPrivateCrossModuleTypeAliases(t *testing.T) {
 func TestIndexedProgramAllowsImportedExportedTypeAliases(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Imports: []ImportBinding{{LocalName: "lib", Target: ModuleID(2), Origin: testOrigin()}}, Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Imports: []ImportBinding{{LocalName: "lib", Path: "lib", Target: ModuleID(2), Origin: testOrigin()}}, Origin: testOrigin()},
 			{ID: ModuleID(2), Name: "lib", Files: []FileID{FileID(2)}, Origin: Origin{Primary: Span{File: FileID(2), Start: 0, End: 1}}},
 		},
 		Scopes: ScopeTable{

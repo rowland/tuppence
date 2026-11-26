@@ -12,5 +12,5 @@ type ImportBinding struct {
 
 // Valid reports whether the import binding has a name, target, and provenance.
 func (i ImportBinding) Valid() bool {
-	return strings.TrimSpace(i.LocalName) != "" && i.Target.Valid() && i.Origin.Valid()
+	return strings.TrimSpace(i.LocalName) != "" && strings.TrimSpace(i.Path) != "" && i.Target.Valid() && i.Origin.Valid()
 }

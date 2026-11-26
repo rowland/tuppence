@@ -41,8 +41,8 @@ func TestModuleRejectsDuplicateImports(t *testing.T) {
 		ID:   ModuleID(1),
 		Name: "main",
 		Imports: []ImportBinding{
-			{LocalName: "io", Target: ModuleID(2), Origin: testOrigin()},
-			{LocalName: "io", Target: ModuleID(3), Origin: testOrigin()},
+			{LocalName: "io", Path: "io", Target: ModuleID(2), Origin: testOrigin()},
+			{LocalName: "io", Path: "other", Target: ModuleID(3), Origin: testOrigin()},
 		},
 		Origin: testOrigin(),
 	}

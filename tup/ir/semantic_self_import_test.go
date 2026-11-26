@@ -8,7 +8,7 @@ func TestIndexedProgramRejectsSelfImports(t *testing.T) {
 			ID:      ModuleID(1),
 			Name:    "main",
 			Files:   []FileID{FileID(1)},
-			Imports: []ImportBinding{{LocalName: "self", Target: ModuleID(1), Origin: testOrigin()}},
+			Imports: []ImportBinding{{LocalName: "self", Path: "self", Target: ModuleID(1), Origin: testOrigin()}},
 			Origin:  testOrigin(),
 		}},
 	}

@@ -11,8 +11,9 @@ func TestImportBindingValidity(t *testing.T) {
 
 func TestImportBindingRejectsMissingFields(t *testing.T) {
 	for name, binding := range map[string]ImportBinding{
-		"missing local name": {Target: ModuleID(2), Origin: testOrigin()},
-		"missing target":     {LocalName: "io", Origin: testOrigin()},
+		"missing local name": {Path: "io", Target: ModuleID(2), Origin: testOrigin()},
+		"missing path":       {LocalName: "io", Target: ModuleID(2), Origin: testOrigin()},
+		"missing target":     {LocalName: "io", Path: "io", Origin: testOrigin()},
 		"missing origin":     {LocalName: "io", Target: ModuleID(2)},
 	} {
 		if binding.Valid() {

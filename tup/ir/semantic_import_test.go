@@ -5,7 +5,7 @@ import "testing"
 func TestIndexedProgramRejectsDanglingModuleImports(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{
-			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Imports: []ImportBinding{{LocalName: "io", Target: ModuleID(9), Origin: testOrigin()}}, Origin: testOrigin()},
+			{ID: ModuleID(1), Name: "main", Files: []FileID{FileID(1)}, Imports: []ImportBinding{{LocalName: "io", Path: "io", Target: ModuleID(9), Origin: testOrigin()}}, Origin: testOrigin()},
 		},
 	}
 	if program.Valid() {

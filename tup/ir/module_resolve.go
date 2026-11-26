@@ -27,6 +27,8 @@ func (t ModuleTable) ResolveImport(current ModuleID, requested string, config Mo
 		}
 		if config.ProgramRoot != "" {
 			candidates = append(candidates, pathpkg.Join(config.ProgramRoot, requested))
+		} else {
+			candidates = append(candidates, requested)
 		}
 		for _, root := range config.SearchPaths {
 			candidates = append(candidates, pathpkg.Join(root, requested))
