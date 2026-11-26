@@ -19,6 +19,35 @@ func NewUnresolvedImportDiagnostic(origin Origin, requested string, candidates [
 	}
 }
 
+// ImportResolutionDiagnostics reports unresolved or mismatched recorded imports.
+func (p IndexedProgram) ImportResolutionDiagnostics() []Diagnostic {
+	var diagnostics []Diagnostic
+	for _, module := range p.Modules {
+		for _, binding := range module.Imports {
+			if binding.Path == "" {
+				continue
+			}
+			candidates := p.Modules.ResolveImportCandidates(module.ID, binding.Path, p.ModuleResolution)
+			resolved, ok := p.Modules.ResolveImport(module.ID, binding.Path, p.ModuleResolution)
+			if !ok {
+				diagnostics = append(diagnostics, NewUnresolvedImportDiagnostic(binding.Origin, binding.Path, candidates))
+				continue
+			}
+			if resolved != binding.Target {
+				diagnostics = append(diagnostics, Diagnostic{
+					Severity:         SeverityError,
+					Code:             "IMPORT_TARGET_MISMATCH",
+					Message:          fmt.Sprintf("import %s resolves to module %d, not module %d", binding.Path, resolved, binding.Target),
+					Origin:           binding.Origin,
+					ImportPath:       binding.Path,
+					ImportCandidates: candidates,
+				})
+			}
+		}
+	}
+	return diagnostics
+}
+
 // FormatImportResolution returns a compact explanation of the attempted paths.
 func FormatImportResolution(diagnostic Diagnostic) string {
 	if diagnostic.ImportPath == "" {

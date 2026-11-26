@@ -2,6 +2,19 @@ package ir
 
 import "testing"
 
+func TestImportResolutionDiagnosticsReportsUnresolvedPath(t *testing.T) {
+	program := IndexedProgram{
+		Modules: ModuleTable{{ID: ModuleID(1), Name: "app", Files: []FileID{FileID(1)}, Imports: []ImportBinding{{LocalName: "foo", Path: "foo", Target: ModuleID(9), Origin: testOrigin()}}, Origin: testOrigin()}},
+	}
+	diagnostics := program.ImportResolutionDiagnostics()
+	if len(diagnostics) != 1 || diagnostics[0].Code != "IMPORT_NOT_FOUND" {
+		t.Fatalf("unexpected import diagnostics: %#v", diagnostics)
+	}
+	if diagnostics[0].ImportPath != "foo" {
+		t.Fatal("unresolved diagnostic must preserve the requested path")
+	}
+}
+
 func TestNewUnresolvedImportDiagnosticPreservesResolution(t *testing.T) {
 	candidates := []string{"app/foo", "/program/foo", "/stdlib/foo"}
 	diagnostic := NewUnresolvedImportDiagnostic(testOrigin(), "foo", candidates)
