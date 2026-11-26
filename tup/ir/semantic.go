@@ -66,6 +66,12 @@ func (p IndexedProgram) Valid() bool {
 			if _, ok := p.Modules.Find(importBinding.Target); !ok {
 				return false
 			}
+			if importBinding.Path != "" {
+				resolved, ok := p.Modules.ResolveImport(module.ID, importBinding.Path, p.ModuleResolution)
+				if !ok || resolved != importBinding.Target {
+					return false
+				}
+			}
 			if moduleImportCollides(p.Scopes, module.ID, importBinding.LocalName) {
 				return false
 			}
