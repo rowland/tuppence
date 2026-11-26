@@ -23,20 +23,21 @@ func (t ModuleTable) ResolutionPath(id ModuleID) string {
 
 // Valid reports whether every module is valid and IDs are unique.
 func (t ModuleTable) Valid() bool {
-	seen := make(map[ModuleID]struct{}, len(t))
-	seenNames := make(map[string]struct{}, len(t))
+	seenIDs := make(map[ModuleID]struct{}, len(t))
+	seenPaths := make(map[string]struct{}, len(t))
 	for _, module := range t {
 		if !module.Valid() {
 			return false
 		}
-		if _, exists := seen[module.ID]; exists {
+		if _, exists := seenIDs[module.ID]; exists {
 			return false
 		}
-		if _, exists := seenNames[module.Name]; exists {
+		modulePath := module.ResolutionPath()
+		if _, exists := seenPaths[modulePath]; exists {
 			return false
 		}
-		seen[module.ID] = struct{}{}
-		seenNames[module.Name] = struct{}{}
+		seenIDs[module.ID] = struct{}{}
+		seenPaths[modulePath] = struct{}{}
 	}
 	return true
 }
