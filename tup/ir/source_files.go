@@ -10,6 +10,15 @@ type SourceFile struct {
 // SourceFileTable is an ordered collection of indexed source files.
 type SourceFileTable []SourceFile
 
+func (t SourceFileTable) Find(id FileID) (SourceFile, bool) {
+	for _, file := range t {
+		if file.ID == id {
+			return file, true
+		}
+	}
+	return SourceFile{}, false
+}
+
 // Valid reports whether file identities and paths are unique and metadata is valid.
 func (t SourceFileTable) Valid() bool {
 	seenIDs := make(map[FileID]struct{}, len(t))

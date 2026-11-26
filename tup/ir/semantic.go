@@ -4,6 +4,7 @@ package ir
 // collected into validated lexical tables, but expressions are not analyzed yet.
 type IndexedProgram struct {
 	Modules          ModuleTable
+	SourceFiles      SourceFileTable
 	Types            TypeTable
 	Constructors     TypeConstructorTable
 	Scopes           ScopeTable
@@ -22,7 +23,7 @@ type IndexedProgram struct {
 
 // Valid reports whether every indexed table, cross-reference, and diagnostic is valid.
 func (p IndexedProgram) Valid() bool {
-	if !p.Modules.Valid() || !p.Prolog.Valid() || !p.ModuleResolution.Valid() || !p.Types.Valid() || !p.Constructors.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() || !p.Aliases.Valid() || !p.Expressions.Valid() || !p.Calls.Valid() || !p.ImportAliases.Valid() {
+	if !p.Modules.Valid() || !p.SourceFiles.Valid() || !p.Prolog.Valid() || !p.ModuleResolution.Valid() || !p.Types.Valid() || !p.Constructors.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() || !p.Aliases.Valid() || !p.Expressions.Valid() || !p.Calls.Valid() || !p.ImportAliases.Valid() {
 		return false
 	}
 	fileOwners := make(map[FileID]ModuleID)
@@ -32,6 +33,16 @@ func (p IndexedProgram) Valid() bool {
 				return false
 			}
 			fileOwners[file] = module.ID
+		}
+	}
+	if len(p.SourceFiles) > 0 {
+		for _, module := range p.Modules {
+			for _, fileID := range module.Files {
+				file, ok := p.SourceFiles.Find(fileID)
+				if !ok || file.Module.ModuleName != module.Name {
+					return false
+				}
+			}
 		}
 	}
 	if p.Prolog.Enabled {

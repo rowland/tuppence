@@ -22,6 +22,11 @@ func (p IndexedProgram) Dump() string {
 		out.WriteString("]\n")
 	}
 
+	out.WriteString("source_files:\n")
+	for _, file := range p.SourceFiles {
+		fmt.Fprintf(&out, "  %d path=%s module=%s constraints=%v\n", file.ID, file.Path, file.Module.ModuleName, file.Module.Constraints)
+	}
+
 	out.WriteString("types:\n")
 	for _, typ := range p.Types {
 		fmt.Fprintf(&out, "  %d kind=%d name=%s declaration=%d home_module=%d element=%d elements=%v fixed_length=%t length=%d\n", typ.ID, typ.Kind, typ.Name, typ.Declaration, typ.HomeModule, typ.Element, typ.Elements, typ.FixedLength, typ.Length)
