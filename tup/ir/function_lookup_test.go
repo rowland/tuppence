@@ -66,6 +66,31 @@ func TestIndexedProgramMatchesLiteralThroughTypeConstructor(t *testing.T) {
 	}
 }
 
+func TestIndexedProgramMarksAmbiguousLiteralCandidates(t *testing.T) {
+	program := IndexedProgram{
+		Constructors: TypeConstructorTable{
+			{Type: TypeID(20), Storage: StorageI32, Origin: testOrigin()},
+			{Type: TypeID(21), Storage: StorageI64, Origin: testOrigin()},
+		},
+		Declarations: DeclarationTable{
+			{ID: DeclID(1), Scope: ScopeID(1), Name: "take", Kind: DeclFunction, Origin: testOrigin()},
+			{ID: DeclID(2), Scope: ScopeID(1), Name: "take", Kind: DeclFunction, Origin: testOrigin()},
+		},
+		Functions: FunctionTable{
+			{ID: FunctionID(1), Declaration: DeclID(1), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(20)}}, Effect: EffectPure, Origin: testOrigin()},
+			{ID: FunctionID(2), Declaration: DeclID(2), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(21)}}, Effect: EffectPure, Origin: testOrigin()},
+		},
+	}
+	call := CallExpr{ID: ExprID(1), Scope: ScopeID(1), Name: "take", Arguments: []CallArgument{{Literal: LiteralInteger}}, Origin: testOrigin()}
+	result := program.FindCallCandidatesWithResolution(call)
+	if len(result.Functions) != 2 || !result.Call.Arguments[0].LiteralAmbiguous {
+		t.Fatal("multiple literal candidates must mark the literal ambiguous")
+	}
+	if call.Arguments[0].LiteralAmbiguous {
+		t.Fatal("candidate discovery must not mutate the original call")
+	}
+}
+
 func TestIndexedProgramFindsNonLossyCastFunctions(t *testing.T) {
 	program := IndexedProgram{
 		Declarations: DeclarationTable{

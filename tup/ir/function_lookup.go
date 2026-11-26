@@ -51,9 +51,35 @@ func (p IndexedProgram) FindCastFunctions(scope ScopeID, source TypeID, target T
 	return matches
 }
 
+// CallCandidateResult preserves the call with literal-resolution metadata and
+// the viable functions discovered for it.
+type CallCandidateResult struct {
+	Call      CallExpr
+	Functions []FunctionID
+}
+
+// FindCallCandidatesWithResolution discovers candidates and marks literal
+// arguments ambiguous when more than one candidate remains.
+func (p IndexedProgram) FindCallCandidatesWithResolution(call CallExpr) CallCandidateResult {
+	matches := p.findCallCandidates(call)
+	if len(matches) > 1 {
+		call.Arguments = append([]CallArgument(nil), call.Arguments...)
+		for i := range call.Arguments {
+			if call.Arguments[i].Literal.Valid() {
+				call.Arguments[i].LiteralAmbiguous = true
+			}
+		}
+	}
+	return CallCandidateResult{Call: call, Functions: matches}
+}
+
 // FindCallCandidates returns exact-type overload candidates for a direct call.
 // It preserves function-table order and does not rank candidates.
 func (p IndexedProgram) FindCallCandidates(call CallExpr) []FunctionID {
+	return p.findCallCandidates(call)
+}
+
+func (p IndexedProgram) findCallCandidates(call CallExpr) []FunctionID {
 	if call.Name == "" {
 		return nil
 	}
