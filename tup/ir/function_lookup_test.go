@@ -84,3 +84,32 @@ func TestIndexedProgramFindsNonLossyCastFunctions(t *testing.T) {
 		t.Fatal("cast lookup must return only marked casts in the requested scope")
 	}
 }
+
+func TestIndexedProgramResolvesInsertedCast(t *testing.T) {
+	program := IndexedProgram{
+		Declarations: DeclarationTable{
+			{ID: DeclID(1), Scope: ScopeID(1), Name: "use_int64", Kind: DeclFunction, Origin: testOrigin()},
+			{ID: DeclID(2), Scope: ScopeID(1), Name: "cast", Kind: DeclFunction, Origin: testOrigin()},
+		},
+		Functions: FunctionTable{
+			{ID: FunctionID(1), Declaration: DeclID(1), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(11)}}, Effect: EffectPure, Origin: testOrigin()},
+			{ID: FunctionID(2), Declaration: DeclID(2), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(10)}}, Result: TypeID(11), Effect: EffectPure, Cast: true, Origin: testOrigin()},
+		},
+	}
+	call := CallExpr{ID: ExprID(1), Scope: ScopeID(1), Name: "use_int64", Arguments: []CallArgument{{Type: TypeID(10)}}, Origin: testOrigin()}
+	plan, ok := program.ResolveCallPlan(call, FunctionID(1))
+	if !ok || len(plan.Arguments) != 1 || plan.Arguments[0].Adaptation != AdaptCast || plan.Arguments[0].Cast != FunctionID(2) {
+		t.Fatal("resolved call plan must record the inserted cast function")
+	}
+}
+
+func TestIndexedProgramRejectsCallWithoutUniqueCast(t *testing.T) {
+	program := IndexedProgram{
+		Declarations: DeclarationTable{{ID: DeclID(1), Scope: ScopeID(1), Name: "use_int64", Kind: DeclFunction, Origin: testOrigin()}},
+		Functions:    FunctionTable{{ID: FunctionID(1), Declaration: DeclID(1), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(11)}}, Effect: EffectPure, Origin: testOrigin()}},
+	}
+	call := CallExpr{ID: ExprID(1), Scope: ScopeID(1), Name: "use_int64", Arguments: []CallArgument{{Type: TypeID(10)}}, Origin: testOrigin()}
+	if _, ok := program.ResolveCallPlan(call, FunctionID(1)); ok {
+		t.Fatal("call plan must reject a typed mismatch without a unique cast function")
+	}
+}
