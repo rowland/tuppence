@@ -19,6 +19,8 @@ func NewUnresolvedImportDiagnostic(origin Origin, requested string, candidates [
 	}
 }
 
+// TODO: Snapshot construction should append these diagnostics to IndexedProgram.Diagnostics
+// once import loading owns diagnostic materialization.
 // ImportResolutionDiagnostics reports unresolved or mismatched recorded imports.
 func (p IndexedProgram) ImportResolutionDiagnostics() []Diagnostic {
 	var diagnostics []Diagnostic
