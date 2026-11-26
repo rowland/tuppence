@@ -13,6 +13,10 @@ func BuildIndexedProgram(filenames []string, target CompilationTarget, prolog Pr
 	if prolog.Enabled && len(target.PrologPaths) > 0 {
 		program.Prolog.Modules = nil
 		program.Prolog.Architecture = target.Architecture
+		roots := append([]string(nil), target.ModuleRoots.SearchPaths...)
+		if target.ModuleRoots.ProgramRoot != "" {
+			roots = append([]string{target.ModuleRoots.ProgramRoot}, roots...)
+		}
 		for _, path := range target.PrologPaths {
 			found := false
 			for _, module := range modules {
@@ -24,6 +28,9 @@ func BuildIndexedProgram(filenames []string, target CompilationTarget, prolog Pr
 			}
 			if !found {
 				invalid = append(invalid, path)
+				if len(files) > 0 {
+					program.Diagnostics = append(program.Diagnostics, NewUnresolvedPrologDiagnostic(Origin{Primary: Span{File: files[0].ID}}, path, roots))
+				}
 			}
 		}
 	}

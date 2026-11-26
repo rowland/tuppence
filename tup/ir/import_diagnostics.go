@@ -19,8 +19,16 @@ func NewUnresolvedImportDiagnostic(origin Origin, requested string, candidates [
 	}
 }
 
-// TODO: Snapshot construction should append these diagnostics to IndexedProgram.Diagnostics
-// once import loading owns diagnostic materialization.
+// NewUnresolvedPrologDiagnostic creates a diagnostic for a configured prolog
+// module that was absent from the selected module inventory.
+func NewUnresolvedPrologDiagnostic(origin Origin, requested string, roots []string) Diagnostic {
+	diagnostic := NewUnresolvedImportDiagnostic(origin, requested, []string{requested})
+	diagnostic.Code = "PROLOG_MODULE_NOT_FOUND"
+	diagnostic.Message = fmt.Sprintf("prolog module not found: %s", requested)
+	diagnostic.ImportSearchRoots = append([]string(nil), roots...)
+	return diagnostic
+}
+
 // ImportResolutionDiagnostics reports unresolved or mismatched recorded imports.
 func (p IndexedProgram) ImportResolutionDiagnostics() []Diagnostic {
 	var diagnostics []Diagnostic

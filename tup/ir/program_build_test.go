@@ -8,6 +8,9 @@ func TestBuildIndexedProgramRejectsMissingPrologModule(t *testing.T) {
 	if len(invalid) != 1 || invalid[0] != "core/missing" || program.Valid() {
 		t.Fatalf("missing prolog path must be rejected: program=%#v invalid=%v", program, invalid)
 	}
+	if len(program.Diagnostics) != 1 || program.Diagnostics[0].Code != "PROLOG_MODULE_NOT_FOUND" {
+		t.Fatalf("missing prolog path must produce a diagnostic: %#v", program.Diagnostics)
+	}
 }
 
 func TestBuildIndexedProgramSelectsConfiguredPrologModules(t *testing.T) {
