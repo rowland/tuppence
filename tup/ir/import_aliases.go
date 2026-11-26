@@ -8,10 +8,11 @@ type ImportAlias struct {
 	LocalName   string
 	Module      ModuleID
 	Declaration DeclID
+	Source      ImportAliasSource
 	Origin      Origin
 }
 
 // Valid reports whether the alias has valid identity and provenance.
 func (a ImportAlias) Valid() bool {
-	return a.Scope.Valid() && strings.TrimSpace(a.LocalName) != "" && a.Module.Valid() && a.Declaration.Valid() && a.Origin.Valid()
+	return a.Scope.Valid() && strings.TrimSpace(a.LocalName) != "" && a.Module.Valid() && a.Declaration.Valid() && a.Source.Valid() && a.Origin.Valid()
 }

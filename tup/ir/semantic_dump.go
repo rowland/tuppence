@@ -83,7 +83,7 @@ func (p IndexedProgram) Dump() string {
 
 	out.WriteString("import_aliases:\n")
 	for _, alias := range p.ImportAliases {
-		fmt.Fprintf(&out, "  scope=%d name=%s module=%d declaration=%d\n", alias.Scope, alias.LocalName, alias.Module, alias.Declaration)
+		fmt.Fprintf(&out, "  scope=%d name=%s module=%d declaration=%d source=%d\n", alias.Scope, alias.LocalName, alias.Module, alias.Declaration, alias.Source)
 	}
 
 	out.WriteString("literal_defaults:\n")
