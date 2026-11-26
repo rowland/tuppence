@@ -2,6 +2,14 @@ package ir
 
 import "testing"
 
+func TestBuildIndexedProgramRejectsMissingPrologModule(t *testing.T) {
+	target := CompilationTarget{OS: "linux", Architecture: "amd64", PrologPaths: []string{"core/missing"}}
+	program, invalid := BuildIndexedProgram([]string{"app/main.tup"}, target, PrologConfig{Enabled: true})
+	if len(invalid) != 1 || invalid[0] != "core/missing" || program.Valid() {
+		t.Fatalf("missing prolog path must be rejected: program=%#v invalid=%v", program, invalid)
+	}
+}
+
 func TestBuildIndexedProgramSelectsConfiguredPrologModules(t *testing.T) {
 	target := CompilationTarget{OS: "linux", Architecture: "amd64", PrologPaths: []string{"core/math"}}
 	program, invalid := BuildIndexedProgram([]string{"core/math.tup", "app/main.tup"}, target, PrologConfig{Enabled: true})

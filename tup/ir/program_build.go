@@ -14,11 +14,16 @@ func BuildIndexedProgram(filenames []string, target CompilationTarget, prolog Pr
 		program.Prolog.Modules = nil
 		program.Prolog.Architecture = target.Architecture
 		for _, path := range target.PrologPaths {
+			found := false
 			for _, module := range modules {
 				if module.ResolutionPath() == path {
 					program.Prolog.Modules = append(program.Prolog.Modules, module.ID)
+					found = true
 					break
 				}
+			}
+			if !found {
+				invalid = append(invalid, path)
 			}
 		}
 	}
