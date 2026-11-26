@@ -35,6 +35,7 @@ type CallExpr struct {
 	ID        ExprID
 	Scope     ScopeID
 	Callee    ExprID
+	Qualifier string
 	Name      string
 	Arguments []CallArgument
 	Curry     bool
@@ -44,6 +45,9 @@ type CallExpr struct {
 // Valid reports whether the call site has identity, scope, name, and provenance.
 func (c CallExpr) Valid() bool {
 	if !c.ID.Valid() || !c.Scope.Valid() || !c.Origin.Valid() {
+		return false
+	}
+	if strings.TrimSpace(c.Qualifier) == "" && c.Qualifier != "" {
 		return false
 	}
 	if strings.TrimSpace(c.Name) == "" && !c.Callee.Valid() {

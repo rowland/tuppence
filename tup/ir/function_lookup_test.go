@@ -185,4 +185,9 @@ func TestIndexedProgramRejectsUnqualifiedImportedFunction(t *testing.T) {
 	if matches := program.FindCallCandidates(call); len(matches) != 0 {
 		t.Fatal("unqualified lookup must not expose functions from an imported module")
 	}
+	qualified := call
+	qualified.Qualifier = "core"
+	if matches := program.FindCallCandidates(qualified); len(matches) != 1 || matches[0] != FunctionID(1) {
+		t.Fatal("qualified lookup must resolve exported functions through the local module alias")
+	}
 }

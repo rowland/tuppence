@@ -35,6 +35,13 @@ func TestCallExpressionAllowsCalleeStage(t *testing.T) {
 		t.Fatal("call stage with a callee expression must be valid")
 	}
 }
+func TestCallExpressionAllowsQualifiedName(t *testing.T) {
+	call := CallExpr{ID: ExprID(1), Scope: ScopeID(2), Qualifier: "foo", Name: "bar", Arguments: []CallArgument{{Type: TypeID(3)}}, Origin: testOrigin()}
+	if !call.Valid() {
+		t.Fatal("qualified call expression must be valid")
+	}
+}
+
 func TestCallExpressionRejectsMissingName(t *testing.T) {
 	call := CallExpr{ID: ExprID(1), Scope: ScopeID(2), Origin: testOrigin()}
 	if call.Valid() {

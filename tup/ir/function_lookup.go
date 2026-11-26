@@ -86,7 +86,15 @@ func (p IndexedProgram) findCallCandidates(call CallExpr) []FunctionID {
 	var matches []FunctionID
 	for _, function := range p.Functions {
 		declaration, ok := p.Declarations.Find(function.Declaration)
-		if !ok || !p.functionVisible(call.Scope, declaration) || declaration.Name != call.Name {
+		visible := false
+		if ok {
+			if call.Qualifier == "" {
+				visible = p.functionVisible(call.Scope, declaration)
+			} else {
+				visible = p.qualifiedFunctionVisible(call.Scope, call.Qualifier, declaration)
+			}
+		}
+		if !ok || !visible || declaration.Name != call.Name {
 			continue
 		}
 		if callMatchesFunction(p, call, function) {
@@ -115,6 +123,27 @@ func (p IndexedProgram) functionVisible(callScope ScopeID, declaration Declarati
 				return false
 			}
 			current = next
+		}
+	}
+	return false
+}
+
+func (p IndexedProgram) qualifiedFunctionVisible(callScope ScopeID, qualifier string, declaration Declaration) bool {
+	caller, ok := p.Scopes.Find(callScope)
+	if !ok {
+		return false
+	}
+	declScope, ok := p.Scopes.Find(declaration.Scope)
+	if !ok || !declaration.Exported || caller.Module == declScope.Module {
+		return false
+	}
+	module, ok := p.Modules.Find(caller.Module)
+	if !ok {
+		return false
+	}
+	for _, binding := range module.Imports {
+		if binding.LocalName == qualifier && binding.Target == declScope.Module {
+			return true
 		}
 	}
 	return false
