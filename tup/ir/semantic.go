@@ -110,7 +110,14 @@ func (p IndexedProgram) Valid() bool {
 	}
 	for _, alias := range p.ImportAliases {
 		scope, ok := p.Scopes.Find(alias.Scope)
-		if !ok || !moduleImports(p.Modules, scope.Module, alias.Module) {
+		if !ok {
+			return false
+		}
+		if alias.Source == ImportAliasSourceProlog {
+			if !p.Prolog.Enabled || alias.Module != p.Prolog.Module || scope.Kind != ScopeModule {
+				return false
+			}
+		} else if !moduleImports(p.Modules, scope.Module, alias.Module) {
 			return false
 		}
 		declaration, ok := p.Declarations.Find(alias.Declaration)
