@@ -3,7 +3,7 @@ package ir
 import "testing"
 
 func TestImportBindingValidity(t *testing.T) {
-	binding := ImportBinding{LocalName: "io", Target: ModuleID(2), Origin: testOrigin()}
+	binding := ImportBinding{LocalName: "io", Path: "std/io", Target: ModuleID(2), Origin: testOrigin()}
 	if !binding.Valid() {
 		t.Fatal("complete import binding must be valid")
 	}

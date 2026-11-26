@@ -17,7 +17,7 @@ func (p IndexedProgram) Dump() string {
 			if i > 0 {
 				out.WriteString(",")
 			}
-			fmt.Fprintf(&out, "%s:%d", importBinding.LocalName, importBinding.Target)
+			fmt.Fprintf(&out, "%s:%s:%d", importBinding.LocalName, importBinding.Path, importBinding.Target)
 		}
 		out.WriteString("]\n")
 	}

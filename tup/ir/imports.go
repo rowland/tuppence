@@ -5,6 +5,7 @@ import "strings"
 // ImportBinding names an imported module within the importing module's scope.
 type ImportBinding struct {
 	LocalName string
+	Path      string
 	Target    ModuleID
 	Origin    Origin
 }
