@@ -21,7 +21,7 @@ func (t ModuleTable) ResolveImportCandidates(current ModuleID, requested string,
 			candidates = append(candidates, pathpkg.Join(root, strings.TrimPrefix(requested, "/")))
 		}
 	} else {
-		currentDir := pathpkg.Dir(currentModule.Name)
+		currentDir := pathpkg.Dir(currentModule.ResolutionPath())
 		if currentDir != "." {
 			candidates = append(candidates, pathpkg.Join(currentDir, requested))
 		}
@@ -51,7 +51,7 @@ func (t ModuleTable) ResolveImportCandidates(current ModuleID, requested string,
 func (t ModuleTable) ResolveImport(current ModuleID, requested string, config ModuleResolutionConfig) (ModuleID, bool) {
 	for _, candidate := range t.ResolveImportCandidates(current, requested, config) {
 		for _, module := range t {
-			if module.Name == candidate {
+			if module.ResolutionPath() == candidate {
 				return module.ID, true
 			}
 		}

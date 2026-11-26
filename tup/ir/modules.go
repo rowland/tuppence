@@ -6,9 +6,18 @@ import "strings"
 type Module struct {
 	ID      ModuleID
 	Name    string
+	Path    string
 	Files   []FileID
 	Imports []ImportBinding
 	Origin  Origin
+}
+
+// ResolutionPath returns the module path used by import resolution.
+func (m Module) ResolutionPath() string {
+	if m.Path != "" {
+		return m.Path
+	}
+	return m.Name
 }
 
 func moduleHasFile(files []FileID, file FileID) bool {
@@ -22,7 +31,7 @@ func moduleHasFile(files []FileID, file FileID) bool {
 
 // Valid reports whether the module has the required identity, source data, and unique files/imports.
 func (m Module) Valid() bool {
-	if !m.ID.Valid() || strings.TrimSpace(m.Name) == "" || !m.Origin.Valid() || len(m.Files) == 0 {
+	if !m.ID.Valid() || strings.TrimSpace(m.Name) == "" || (m.Path != "" && strings.TrimSpace(m.Path) == "") || !m.Origin.Valid() || len(m.Files) == 0 {
 		return false
 	}
 	if !moduleHasFile(m.Files, m.Origin.Primary.File) {

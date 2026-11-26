@@ -12,7 +12,7 @@ func (p IndexedProgram) Dump() string {
 
 	out.WriteString("modules:\n")
 	for _, module := range p.Modules {
-		fmt.Fprintf(&out, "  %d name=%s files=%v imports=[", module.ID, module.Name, module.Files)
+		fmt.Fprintf(&out, "  %d name=%s path=%s files=%v imports=[", module.ID, module.Name, module.Path, module.Files)
 		for i, importBinding := range module.Imports {
 			if i > 0 {
 				out.WriteString(",")

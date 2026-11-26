@@ -4,8 +4,8 @@ import "testing"
 
 func TestModuleTableResolveImportUsesRelativeThenProgramThenSearchPaths(t *testing.T) {
 	table := ModuleTable{
-		{ID: ModuleID(1), Name: "app/sub", Files: []FileID{FileID(1)}, Origin: testOrigin()},
-		{ID: ModuleID(2), Name: "app/foo", Files: []FileID{FileID(2)}, Origin: Origin{Primary: Span{File: FileID(2), Start: 0, End: 1}}},
+		{ID: ModuleID(1), Name: "main", Path: "app/sub", Files: []FileID{FileID(1)}, Origin: testOrigin()},
+		{ID: ModuleID(2), Name: "foo", Path: "app/foo", Files: []FileID{FileID(2)}, Origin: Origin{Primary: Span{File: FileID(2), Start: 0, End: 1}}},
 		{ID: ModuleID(3), Name: "/program/foo", Files: []FileID{FileID(3)}, Origin: Origin{Primary: Span{File: FileID(3), Start: 0, End: 1}}},
 		{ID: ModuleID(4), Name: "/stdlib/foo", Files: []FileID{FileID(4)}, Origin: Origin{Primary: Span{File: FileID(4), Start: 0, End: 1}}},
 	}
