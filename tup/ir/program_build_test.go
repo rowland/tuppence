@@ -2,6 +2,17 @@ package ir
 
 import "testing"
 
+func TestBuildIndexedProgramSelectsConfiguredPrologModules(t *testing.T) {
+	target := CompilationTarget{OS: "linux", Architecture: "amd64", PrologPaths: []string{"core/math"}}
+	program, invalid := BuildIndexedProgram([]string{"core/math.tup", "app/main.tup"}, target, PrologConfig{Enabled: true})
+	if len(invalid) != 0 || !program.Valid() || len(program.Prolog.Modules) != 1 {
+		t.Fatalf("configured prolog module must be selected: %#v invalid=%v", program, invalid)
+	}
+	if program.Prolog.Architecture != "amd64" {
+		t.Fatal("prolog architecture must come from the compilation target")
+	}
+}
+
 func TestBuildIndexedProgramUsesOneTargetConfiguration(t *testing.T) {
 	target := CompilationTarget{OS: "linux", Architecture: "amd64", ModuleRoots: ModuleResolutionConfig{ProgramRoot: "/program", SearchPaths: []string{"/stdlib"}}}
 	program, invalid := BuildIndexedProgram([]string{"app/main.tup", "app/main--linux.tup", "app/main--darwin.tup"}, target, PrologConfig{})
