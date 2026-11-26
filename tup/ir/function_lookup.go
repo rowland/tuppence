@@ -61,7 +61,7 @@ type CallCandidateResult struct {
 // FindCallCandidatesWithResolution discovers candidates and marks literal
 // arguments ambiguous when more than one candidate remains.
 func (p IndexedProgram) FindCallCandidatesWithResolution(call CallExpr) CallCandidateResult {
-	matches := p.findCallCandidates(call)
+	matches := p.selectCandidateTier(p.findCallCandidates(call))
 	if len(matches) > 1 {
 		call.Arguments = append([]CallArgument(nil), call.Arguments...)
 		for i := range call.Arguments {
@@ -96,6 +96,26 @@ func (p IndexedProgram) findCallCandidates(call CallExpr) []FunctionID {
 	return matches
 }
 
+func (p IndexedProgram) selectCandidateTier(candidates []FunctionID) []FunctionID {
+	for _, tier := range []func(Function) bool{
+		func(function Function) bool { return !function.Generic && !function.Any },
+		func(function Function) bool { return function.Generic },
+		func(function Function) bool { return function.Any },
+	} {
+		var selected []FunctionID
+		for _, id := range candidates {
+			function, ok := p.Functions.Find(id)
+			if ok && tier(function) {
+				selected = append(selected, id)
+			}
+		}
+		if len(selected) > 0 {
+			return selected
+		}
+	}
+	return nil
+}
+
 func callMatchesFunction(program IndexedProgram, call CallExpr, function Function) bool {
 	if !call.Curry && len(call.Arguments) != len(function.Parameters) {
 		return false
@@ -118,7 +138,7 @@ func callMatchesFunction(program IndexedProgram, call CallExpr, function Functio
 		} else {
 			positional++
 		}
-		if index < 0 || index >= len(function.Parameters) || matched[index] || !program.argumentMatchesParameter(argument, function.Parameters[index]) {
+		if index < 0 || index >= len(function.Parameters) || matched[index] || !program.argumentMatchesParameter(argument, function.Parameters[index], function) {
 			return false
 		}
 		matched[index] = true
@@ -133,7 +153,10 @@ func callMatchesFunction(program IndexedProgram, call CallExpr, function Functio
 	return true
 }
 
-func (p IndexedProgram) argumentMatchesParameter(argument CallArgument, parameter FunctionParameter) bool {
+func (p IndexedProgram) argumentMatchesParameter(argument CallArgument, parameter FunctionParameter, function Function) bool {
+	if function.Generic || function.Any {
+		return argument.Type.Valid() || argument.Literal.Valid()
+	}
 	if argument.Type.Valid() {
 		return argument.Type == parameter.Type
 	}

@@ -35,11 +35,12 @@ type Function struct {
 	Result      TypeID
 	Effect      EffectKind
 	Generic     bool
+	Any         bool
 	Cast        bool
 	Origin      Origin
 }
 
 // Valid reports whether the function has the required identity and provenance.
 func (f Function) Valid() bool {
-	return f.ID.Valid() && f.Declaration.Valid() && f.Effect.Valid() && f.Origin.Valid()
+	return f.ID.Valid() && f.Declaration.Valid() && f.Effect.Valid() && f.Origin.Valid() && !(f.Generic && f.Any)
 }

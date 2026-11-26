@@ -138,3 +138,23 @@ func TestIndexedProgramRejectsCallWithoutUniqueCast(t *testing.T) {
 		t.Fatal("call plan must reject a typed mismatch without a unique cast function")
 	}
 }
+
+func TestIndexedProgramPrefersExactCandidateTier(t *testing.T) {
+	program := IndexedProgram{
+		Declarations: DeclarationTable{
+			{ID: DeclID(1), Scope: ScopeID(1), Name: "take", Kind: DeclFunction, Origin: testOrigin()},
+			{ID: DeclID(2), Scope: ScopeID(1), Name: "take", Kind: DeclFunction, Origin: testOrigin()},
+			{ID: DeclID(3), Scope: ScopeID(1), Name: "take", Kind: DeclFunction, Origin: testOrigin()},
+		},
+		Functions: FunctionTable{
+			{ID: FunctionID(1), Declaration: DeclID(1), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(10)}}, Effect: EffectPure, Generic: true, Origin: testOrigin()},
+			{ID: FunctionID(2), Declaration: DeclID(2), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(10)}}, Effect: EffectPure, Any: true, Origin: testOrigin()},
+			{ID: FunctionID(3), Declaration: DeclID(3), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(10)}}, Effect: EffectPure, Origin: testOrigin()},
+		},
+	}
+	call := CallExpr{ID: ExprID(1), Scope: ScopeID(1), Name: "take", Arguments: []CallArgument{{Type: TypeID(10)}}, Origin: testOrigin()}
+	result := program.FindCallCandidatesWithResolution(call)
+	if len(result.Functions) != 1 || result.Functions[0] != FunctionID(3) {
+		t.Fatal("exact candidates must displace generic and any candidates")
+	}
+}

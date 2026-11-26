@@ -56,7 +56,7 @@ func (p IndexedProgram) Dump() string {
 
 	out.WriteString("functions:\n")
 	for _, function := range p.Functions {
-		fmt.Fprintf(&out, "  %d declaration=%d parameters=%v result=%d effect=%d generic=%t cast=%t\n", function.ID, function.Declaration, function.Parameters, function.Result, function.Effect, function.Generic, function.Cast)
+		fmt.Fprintf(&out, "  %d declaration=%d parameters=%v result=%d effect=%d generic=%t any=%t cast=%t\n", function.ID, function.Declaration, function.Parameters, function.Result, function.Effect, function.Generic, function.Any, function.Cast)
 	}
 
 	out.WriteString("aliases:\n")
