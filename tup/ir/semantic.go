@@ -13,13 +13,14 @@ type IndexedProgram struct {
 	Aliases         TypeAliasTable
 	Expressions     ExpressionTable
 	Calls           CallTable
+	ImportAliases   ImportAliasTable
 	LiteralDefaults LiteralDefaults
 	Diagnostics     []Diagnostic
 }
 
 // Valid reports whether every indexed table, cross-reference, and diagnostic is valid.
 func (p IndexedProgram) Valid() bool {
-	if !p.Modules.Valid() || !p.Types.Valid() || !p.Constructors.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() || !p.Aliases.Valid() || !p.Expressions.Valid() || !p.Calls.Valid() {
+	if !p.Modules.Valid() || !p.Types.Valid() || !p.Constructors.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() || !p.Aliases.Valid() || !p.Expressions.Valid() || !p.Calls.Valid() || !p.ImportAliases.Valid() {
 		return false
 	}
 	fileOwners := make(map[FileID]ModuleID)
@@ -99,6 +100,20 @@ func (p IndexedProgram) Valid() bool {
 			if _, ok := p.Types.Find(defaultType); !ok {
 				return false
 			}
+		}
+	}
+	for _, alias := range p.ImportAliases {
+		scope, ok := p.Scopes.Find(alias.Scope)
+		if !ok || !moduleImports(p.Modules, scope.Module, alias.Module) {
+			return false
+		}
+		declaration, ok := p.Declarations.Find(alias.Declaration)
+		if !ok || !declaration.Exported {
+			return false
+		}
+		declarationScope, ok := p.Scopes.Find(declaration.Scope)
+		if !ok || declarationScope.Module != alias.Module || !moduleOwnsOrigin(p.Modules, scope.Module, alias.Origin) {
+			return false
 		}
 	}
 	for _, alias := range p.Aliases {

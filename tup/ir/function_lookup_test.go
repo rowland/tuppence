@@ -171,6 +171,22 @@ func TestIndexedProgramFindsOuterLexicalFunction(t *testing.T) {
 	}
 }
 
+func TestIndexedProgramFindsQualifiedAliasAsUnqualifiedFunction(t *testing.T) {
+	program := IndexedProgram{
+		ImportAliases: ImportAliasTable{{Scope: ScopeID(1), LocalName: "cast", Module: ModuleID(2), Declaration: DeclID(1), Origin: testOrigin()}},
+		Scopes:        ScopeTable{{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()}, {ID: ScopeID(2), Module: ModuleID(2), Kind: ScopeModule, Origin: testOrigin()}},
+		Declarations:  DeclarationTable{{ID: DeclID(1), Scope: ScopeID(2), Name: "cast", Kind: DeclFunction, Exported: true, Origin: testOrigin()}},
+		Functions:     FunctionTable{{ID: FunctionID(1), Declaration: DeclID(1), Parameters: []FunctionParameter{{Name: "value", Type: TypeID(10)}}, Result: TypeID(11), Effect: EffectPure, Cast: true, Origin: testOrigin()}},
+	}
+	call := CallExpr{ID: ExprID(1), Scope: ScopeID(1), Name: "cast", Arguments: []CallArgument{{Type: TypeID(10)}}, Origin: testOrigin()}
+	if matches := program.FindCastFunctions(ScopeID(1), TypeID(10), TypeID(11)); len(matches) != 1 || matches[0] != FunctionID(1) {
+		t.Fatal("local import aliases must expose cast functions to the current scope")
+	}
+	if matches := program.FindCallCandidates(call); len(matches) != 1 || matches[0] != FunctionID(1) {
+		t.Fatal("local import aliases must expose functions to unqualified lookup")
+	}
+}
+
 func TestIndexedProgramRejectsUnqualifiedImportedFunction(t *testing.T) {
 	program := IndexedProgram{
 		Modules: ModuleTable{

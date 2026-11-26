@@ -44,7 +44,7 @@ func (p IndexedProgram) FindCastFunctions(scope ScopeID, source TypeID, target T
 			continue
 		}
 		declaration, ok := p.Declarations.Find(function.Declaration)
-		if ok && declaration.Scope == scope {
+		if ok && (declaration.Scope == scope || p.importAliasVisible(scope, declaration.ID)) {
 			matches = append(matches, function.ID)
 		}
 	}
@@ -104,11 +104,23 @@ func (p IndexedProgram) findCallCandidates(call CallExpr) []FunctionID {
 	return matches
 }
 
+func (p IndexedProgram) importAliasVisible(scope ScopeID, declaration DeclID) bool {
+	for _, alias := range p.ImportAliases {
+		if alias.Scope == scope && alias.Declaration == declaration {
+			return true
+		}
+	}
+	return false
+}
+
 func (p IndexedProgram) functionVisible(callScope ScopeID, declaration Declaration) bool {
 	caller, callerOK := p.Scopes.Find(callScope)
 	declScope, declOK := p.Scopes.Find(declaration.Scope)
 	if !callerOK || !declOK {
 		return declaration.Scope == callScope
+	}
+	if p.importAliasVisible(callScope, declaration.ID) {
+		return true
 	}
 	if caller.Module == declScope.Module {
 		for current := caller; ; {
@@ -191,7 +203,7 @@ func callMatchesFunction(program IndexedProgram, call CallExpr, function Functio
 		} else {
 			positional++
 		}
-		if index < 0 || index >= len(function.Parameters) || matched[index] || !program.argumentMatchesParameter(argument, function.Parameters[index], function) {
+		if index < 0 || index >= len(function.Parameters) || matched[index] || !program.argumentMatchesParameter(argument, function.Parameters[index], function, call.Scope) {
 			return false
 		}
 		matched[index] = true
@@ -206,7 +218,42 @@ func callMatchesFunction(program IndexedProgram, call CallExpr, function Functio
 	return true
 }
 
-func (p IndexedProgram) argumentMatchesParameter(argument CallArgument, parameter FunctionParameter, function Function) bool {
+func (p IndexedProgram) typeVisible(scope ScopeID, typeID TypeID) bool {
+	typ, ok := p.Types.Find(typeID)
+	if !ok {
+		return true
+	}
+	declaration, ok := p.Declarations.Find(typ.Declaration)
+	if !ok {
+		return false
+	}
+	if p.importAliasVisible(scope, declaration.ID) {
+		return true
+	}
+	caller, callerOK := p.Scopes.Find(scope)
+	declScope, declOK := p.Scopes.Find(declaration.Scope)
+	if !callerOK || !declOK {
+		return true
+	}
+	if caller.Module != declScope.Module {
+		return false
+	}
+	for current := caller; ; {
+		if current.ID == declScope.ID {
+			return true
+		}
+		if !current.Parent.Valid() {
+			return false
+		}
+		next, ok := p.Scopes.Find(current.Parent)
+		if !ok {
+			return false
+		}
+		current = next
+	}
+}
+
+func (p IndexedProgram) argumentMatchesParameter(argument CallArgument, parameter FunctionParameter, function Function, scope ScopeID) bool {
 	if function.Generic || function.Any {
 		return argument.Type.Valid() || argument.Literal.Valid()
 	}
@@ -214,6 +261,9 @@ func (p IndexedProgram) argumentMatchesParameter(argument CallArgument, paramete
 		return argument.Type == parameter.Type
 	}
 	if !argument.Literal.Valid() {
+		return false
+	}
+	if !p.typeVisible(scope, parameter.Type) {
 		return false
 	}
 	var admissible []StorageKind
