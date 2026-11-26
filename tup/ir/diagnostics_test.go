@@ -38,3 +38,16 @@ func TestDiagnosticRejectsInvalidRelatedOrigins(t *testing.T) {
 		t.Fatal("diagnostic with an invalid related origin must be invalid")
 	}
 }
+
+func TestDiagnosticCanonicalIdentityMustBeComplete(t *testing.T) {
+	diagnostic := Diagnostic{
+		Severity:        SeverityError,
+		Code:            "IR003",
+		Message:         "missing symbol",
+		Origin:          testOrigin(),
+		CanonicalModule: ModuleID(1),
+	}
+	if diagnostic.Valid() {
+		t.Fatal("diagnostic must provide both canonical module and declaration")
+	}
+}

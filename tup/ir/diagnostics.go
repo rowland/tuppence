@@ -14,11 +14,13 @@ const (
 // Diagnostic is a source-backed compiler diagnostic. Code is intended to be
 // stable for tooling; Message is human-readable and may evolve.
 type Diagnostic struct {
-	Severity DiagnosticSeverity
-	Code     string
-	Message  string
-	Origin   Origin
-	Related  []OriginID
+	Severity             DiagnosticSeverity
+	Code                 string
+	Message              string
+	Origin               Origin
+	Related              []OriginID
+	CanonicalModule      ModuleID
+	CanonicalDeclaration DeclID
 }
 
 // Valid reports whether the diagnostic has the required stable identity,
@@ -31,6 +33,9 @@ func (d Diagnostic) Valid() bool {
 		return false
 	}
 	if !d.Origin.Valid() {
+		return false
+	}
+	if d.CanonicalModule.Valid() != d.CanonicalDeclaration.Valid() {
 		return false
 	}
 	for _, id := range d.Related {

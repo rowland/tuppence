@@ -272,6 +272,14 @@ func (p IndexedProgram) Valid() bool {
 		if !diagnostic.Valid() {
 			return false
 		}
+		if diagnostic.CanonicalModule.Valid() {
+			module, ok := p.Modules.Find(diagnostic.CanonicalModule)
+			declaration, declarationOK := p.Declarations.Find(diagnostic.CanonicalDeclaration)
+			declarationScope, scopeOK := p.Scopes.Find(declaration.Scope)
+			if !ok || !declarationOK || !scopeOK || declarationScope.Module != module.ID {
+				return false
+			}
+		}
 	}
 	return true
 }
