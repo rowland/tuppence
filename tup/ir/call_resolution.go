@@ -6,6 +6,7 @@ type ArgumentAdaptation uint8
 const (
 	AdaptExact ArgumentAdaptation = iota + 1
 	AdaptCast
+	AdaptLiteral
 )
 
 // ResolvedCallArgument records one source-to-parameter mapping after candidate
@@ -15,6 +16,7 @@ type ResolvedCallArgument struct {
 	Source     CallArgument
 	Adaptation ArgumentAdaptation
 	Cast       FunctionID
+	Storage    StorageKind
 }
 
 // ResolvedCallPlan records one selected function and its argument adaptations.
@@ -70,6 +72,19 @@ func (p IndexedProgram) ResolveCallPlan(call CallExpr, functionID FunctionID) (R
 			}
 			resolved.Adaptation = AdaptCast
 			resolved.Cast = casts[0]
+		} else if argument.Literal.Valid() {
+			var admissible []StorageKind
+			for _, constructor := range p.Constructors {
+				if constructor.Type == parameter.Type {
+					admissible = append(admissible, constructor.Storage)
+				}
+			}
+			storage, ok := SelectLiteralStorage(argument.Literal, admissible)
+			if !ok {
+				return ResolvedCallPlan{}, false
+			}
+			resolved.Adaptation = AdaptLiteral
+			resolved.Storage = storage
 		} else {
 			return ResolvedCallPlan{}, false
 		}
