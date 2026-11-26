@@ -273,10 +273,10 @@ Only explicitly exported symbols are accessible outside the module.
 A module is imported using the `import` keyword. The import argument is a module
 path resolved relative to the current module. If that lookup fails, the compiler
 tries the program's module root and then each configured module search path. A path
-beginning with `/` bypasses those fallbacks and resolves directly from the configured
-absolute module path space. This permits a program to intercept a standard-library
-path with a local module while still allowing explicit delegation to the direct
-standard-library path.
+beginning with `/` goes directly to the configured absolute module-path roots
+instead of applying current-module or program-root-relative lookup. This permits a
+program to intercept a standard-library path with a local module while still
+allowing explicit delegation to the direct standard-library path.
 
 The resolved module identity is retained in the semantic IR. Two imports such as
 `bar/foo42` and `bar/foo43` remain distinct origin modules even when they are bound
