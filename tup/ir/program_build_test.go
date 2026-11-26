@@ -34,3 +34,16 @@ func TestBuildIndexedProgramUsesOneTargetConfiguration(t *testing.T) {
 		t.Fatalf("target configuration was not preserved: %#v", program)
 	}
 }
+
+func TestBuildIndexedProgramSelectsTargetSpecificPrologFiles(t *testing.T) {
+	linux := CompilationTarget{OS: "linux", Architecture: "amd64", PrologPaths: []string{"core/math"}}
+	program, invalid := BuildIndexedProgram([]string{"core/math--linux.tup"}, linux, PrologConfig{Enabled: true})
+	if len(invalid) != 0 || !program.Valid() || len(program.SourceFiles) != 1 {
+		t.Fatalf("linux prolog file must be selected: program=%#v invalid=%v", program, invalid)
+	}
+	darwin := CompilationTarget{OS: "darwin", Architecture: "arm64", PrologPaths: []string{"core/math"}}
+	program, invalid = BuildIndexedProgram([]string{"core/math--linux.tup"}, darwin, PrologConfig{Enabled: true})
+	if len(invalid) != 1 || invalid[0] != "core/math" || len(program.Diagnostics) != 0 {
+		t.Fatalf("non-matching prolog file must be rejected: program=%#v invalid=%v", program, invalid)
+	}
+}
