@@ -131,9 +131,9 @@ checker ultimately permits.
 ### Explicit conversions
 
 A value with a known concrete type is not converted merely because another
-parameter type would fit. If a suitable, non-lossy cast function is in scope, the
-compiler may insert a call to that existing function; it does not synthesize the
-cast function itself:
+parameter type would fit. If a suitable cast function is in scope, the compiler
+may insert a call to that existing function; it does not synthesize the cast
+function itself:
 
     cast[Int64]: fn(value: Int32) Int64 { ... }
     use_int64(value) # equivalent to use_int64(cast[Int64](value))

@@ -91,7 +91,7 @@ func TestIndexedProgramMarksAmbiguousLiteralCandidates(t *testing.T) {
 	}
 }
 
-func TestIndexedProgramFindsNonLossyCastFunctions(t *testing.T) {
+func TestIndexedProgramFindsCastFunctions(t *testing.T) {
 	program := IndexedProgram{
 		Declarations: DeclarationTable{
 			{ID: DeclID(1), Scope: ScopeID(1), Name: "cast", Kind: DeclFunction, Origin: testOrigin()},

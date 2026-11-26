@@ -49,7 +49,7 @@ versions, and diagnostics; executable SSA follows once a small typed subset work
 | Effect ordering | Invocations of `fx` inside `fx` preserve their source order. Pure calls may be deduplicated and reordered subject to dependencies and the eventual failure/divergence rules. |
 | Literals | An immutable binding whose value is a literal remains a reusable literal template: each use may instantiate it under the same rules as the literal written at that use. Integer and float literals/templates begin with their category's admissible storage-type superset, including byte arrays. Mutable bindings, function-call results, and values with an established concrete type do not behave this way. |
 | Literal defaults | If one non-generic candidate remains applicable, literal/template storage types are tried in the specified priority order through the candidate's type constructors. If multiple candidates remain, the literal/template assumes the configured default, such as `Int` or `Float` when out of range. |
-| Conversions | A known concrete value is not implicitly converted merely because another parameter type would fit. If a suitable existing, non-lossy cast function is in scope, the compiler may insert a call to it; the compiler does not synthesize the cast function. Anonymous structures may adapt to an expected named type; the reverse is not implicit. |
+| Conversions | A known concrete value is not implicitly converted merely because another parameter type would fit. If a suitable existing cast function is in scope, the compiler may insert a call to it; the compiler does not synthesize the cast function. Anonymous structures may adapt to an expected named type; the reverse is not implicit. |
 | Lookup | UFCS searches the receiver type's home module before lexical scopes. Ordinary calls search inward to outward. Within a location, candidates are considered in priority tiers: exact concrete matches, generic matches, then `any` matches. A lower tier cannot displace an applicable higher tier. |
 | Core imports | Core standard-library types and functions are introduced through a compiler-provided prolog by default. The prolog is the language's controlled include-like exception: its selected exports and aliases behave as if they were declared in the current module's initial scope. A compile option may suppress it, including when building the standard library itself; the selected core set is architecture-dependent. `Float` defaults to `Float64` unless the target does not support it, in which case the architecture-specific prolog selects a supported alternative. Ordinary module imports bind a module to a local symbol for qualified calls; type constructors and cast functions outside the prolog require explicit local aliases for unqualified implicit resolution. Core symbols therefore participate in an explicit, controlled prolog environment rather than blanket imports being generally available. |
 | Generic environment | Specializations retain the generic declaration's home module and lexical environment. Caller-local functions are not injected into that environment. |
@@ -431,9 +431,8 @@ type CallPlan struct {
 
 `TupleConstructionPlan` identifies its schema/constructor and maps source arguments
 to logical members. Its member plans have alternatives for supplied value, instantiated literal,
-default expression, rest packing, structural adaptation, and a cast-function call
-when a suitable existing non-lossy cast is in scope. The compiler may insert that
-call, but candidate discovery must not invent a cast function. Literal storage-type
+default expression, rest packing, structural adaptation, and a cast-function call when a suitable existing cast is in scope. The compiler
+may insert that call, but candidate discovery must not invent a cast function. Literal storage-type
 constructors are tried in the configured priority order. This does not permit
 arbitrary implicit numeric conversions.
 
@@ -445,8 +444,8 @@ Proposed resolution algorithm:
 2. Within one location, check arity, labels, selectors, literal/storage-type
    constraints, generic substitutions, contract requirements, and cast-function
    availability. A known concrete argument matches an exact parameter when its
-   type is already equal. It may also use an existing suitable non-lossy cast
-   function, but that cast is an inserted call rather than an exact match.
+   type is already equal. It may also use an existing suitable cast function, but
+   that cast is an inserted call rather than an exact match.
 3. Apply exact/concrete, generic-specialization, then `any` priority. An immutable
    literal template is eligible for contextual storage-type instantiation in the
    exact tier. If one non-generic candidate remains, try its type constructor over

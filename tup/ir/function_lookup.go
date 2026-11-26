@@ -32,8 +32,8 @@ func (p IndexedProgram) FindFunctions(key FunctionKey) []FunctionID {
 	return matches
 }
 
-// FindCastFunctions returns marked, non-lossy cast functions in lexical scope
-// order for an exact source and target type pair.
+// FindCastFunctions returns marked cast functions in lexical scope order
+// for an exact source and target type pair.
 func (p IndexedProgram) FindCastFunctions(scope ScopeID, source TypeID, target TypeID) []FunctionID {
 	if !scope.Valid() || !source.Valid() || !target.Valid() {
 		return nil
