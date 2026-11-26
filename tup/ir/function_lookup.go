@@ -86,7 +86,7 @@ func (p IndexedProgram) findCallCandidates(call CallExpr) []FunctionID {
 	var matches []FunctionID
 	for _, function := range p.Functions {
 		declaration, ok := p.Declarations.Find(function.Declaration)
-		if !ok || declaration.Scope != call.Scope || declaration.Name != call.Name {
+		if !ok || !p.functionVisible(call.Scope, declaration) || declaration.Name != call.Name {
 			continue
 		}
 		if callMatchesFunction(p, call, function) {
@@ -94,6 +94,30 @@ func (p IndexedProgram) findCallCandidates(call CallExpr) []FunctionID {
 		}
 	}
 	return matches
+}
+
+func (p IndexedProgram) functionVisible(callScope ScopeID, declaration Declaration) bool {
+	caller, callerOK := p.Scopes.Find(callScope)
+	declScope, declOK := p.Scopes.Find(declaration.Scope)
+	if !callerOK || !declOK {
+		return declaration.Scope == callScope
+	}
+	if caller.Module == declScope.Module {
+		for current := caller; ; {
+			if current.ID == declScope.ID {
+				return true
+			}
+			if !current.Parent.Valid() {
+				return false
+			}
+			next, ok := p.Scopes.Find(current.Parent)
+			if !ok {
+				return false
+			}
+			current = next
+		}
+	}
+	return declaration.Exported && moduleImports(p.Modules, caller.Module, declScope.Module)
 }
 
 func (p IndexedProgram) selectCandidateTier(candidates []FunctionID) []FunctionID {
