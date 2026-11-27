@@ -31,4 +31,10 @@ func TestIndexedProgramTypeLookupFallsThroughToPrologAndAllowsModuleShadowing(t 
 	if _, ok := program.ResolveTypeName(ScopeID(1), "Int"); ok {
 		t.Fatal("ambiguous type names must not resolve by table order")
 	}
+	if _, ok, diagnostic := program.ResolveTypeNameWithDiagnostic(ScopeID(1), "Missing", testOrigin()); ok || diagnostic.Code != "TYPE_NOT_FOUND" || !diagnostic.Valid() {
+		t.Fatal("missing type names must produce a valid not-found diagnostic")
+	}
+	if _, ok, diagnostic := program.ResolveTypeNameWithDiagnostic(ScopeID(1), "Int", testOrigin()); ok || diagnostic.Code != "TYPE_AMBIGUOUS" || !diagnostic.Valid() {
+		t.Fatal("ambiguous type names must produce a valid ambiguity diagnostic")
+	}
 }
