@@ -22,4 +22,7 @@ func TestIndexedProgramAddsPrologAliasOnlyToInitialScope(t *testing.T) {
 	if program.AddPrologAlias(alias) {
 		t.Fatal("prolog alias must not be installed in a non-initial scope")
 	}
+	if program.AddPrologAliases([]ImportAlias{{Scope: ScopeID(1), LocalName: "Float", Module: ModuleID(2), Declaration: DeclID(2), Origin: testOrigin()}, alias}) || len(program.ImportAliases) != 1 {
+		t.Fatal("prolog alias batches must be atomic")
+	}
 }
