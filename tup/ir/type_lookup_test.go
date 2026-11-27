@@ -23,4 +23,12 @@ func TestIndexedProgramTypeLookupFallsThroughToPrologAndAllowsModuleShadowing(t 
 	if matches := program.FindTypeCandidates(ScopeID(1), "Int"); len(matches) != 1 || matches[0] != TypeID(11) {
 		t.Fatal("module types must shadow prolog types")
 	}
+	if resolved, ok := program.ResolveTypeName(ScopeID(1), "Int"); !ok || resolved != TypeID(11) {
+		t.Fatal("type resolution must use lexical candidates")
+	}
+	program.Declarations = append(program.Declarations, Declaration{ID: DeclID(3), Scope: ScopeID(1), Name: "Int", Kind: DeclType, Origin: testOrigin()})
+	program.Types = append(program.Types, Type{ID: TypeID(12), Name: "Int", Kind: TypeNominal, Declaration: DeclID(3), HomeModule: ModuleID(1), Origin: testOrigin()})
+	if _, ok := program.ResolveTypeName(ScopeID(1), "Int"); ok {
+		t.Fatal("ambiguous type names must not resolve by table order")
+	}
 }
