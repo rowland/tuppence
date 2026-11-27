@@ -17,7 +17,8 @@ func (k ScopeKind) Valid() bool {
 }
 
 // Scope is the identity and parentage of one lexical scope. A zero Parent is
-// valid for a module root; parent ownership is checked by the enclosing table.
+// valid for a lexical root such as a module or prolog scope; parent ownership
+// is checked by the enclosing table.
 type Scope struct {
 	ID      ScopeID
 	Parent  ScopeID
