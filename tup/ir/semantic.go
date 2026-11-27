@@ -139,6 +139,11 @@ func (p IndexedProgram) Valid() bool {
 		if !ok {
 			return false
 		}
+		for _, entry := range scope.Entries {
+			if entry.Name == alias.LocalName {
+				return false
+			}
+		}
 		if alias.Source == ImportAliasSourceProlog {
 			if !p.Prolog.Enabled || !p.Prolog.Includes(alias.Module) || scope.Kind != ScopeModule || !scope.Initial {
 				return false
