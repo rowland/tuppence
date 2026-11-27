@@ -84,12 +84,19 @@ func (p IndexedProgram) findCallCandidates(call CallExpr) []FunctionID {
 		return nil
 	}
 	var matches []FunctionID
+	bestDistance := int(^uint(0) >> 1)
 	for _, function := range p.Functions {
 		declaration, ok := p.Declarations.Find(function.Declaration)
 		visible := false
 		if ok {
 			if call.Qualifier == "" {
-				visible = p.functionVisible(call.Scope, declaration)
+				var distance int
+				distance, visible = p.functionVisibilityDistance(call.Scope, declaration)
+				if visible && distance < bestDistance {
+					matches = matches[:0]
+					bestDistance = distance
+				}
+				visible = visible && distance == bestDistance
 			} else {
 				visible = p.qualifiedFunctionVisible(call.Scope, call.Qualifier, declaration)
 			}
@@ -120,31 +127,52 @@ func (p IndexedProgram) importAliasVisible(scope ScopeID, declaration DeclID) bo
 	return false
 }
 
-func (p IndexedProgram) functionVisible(callScope ScopeID, declaration Declaration) bool {
+func (p IndexedProgram) functionVisibilityDistance(callScope ScopeID, declaration Declaration) (int, bool) {
 	caller, callerOK := p.Scopes.Find(callScope)
 	declScope, declOK := p.Scopes.Find(declaration.Scope)
 	if !callerOK || !declOK {
-		return declaration.Scope == callScope
+		return 0, declaration.Scope == callScope
 	}
-	if p.importAliasVisible(callScope, declaration.ID) {
-		return true
-	}
-	if caller.Module == declScope.Module {
-		for current := caller; ; {
-			if current.ID == declScope.ID {
-				return true
+	if caller.Module != declScope.Module {
+		for distance := 0; ; distance++ {
+			for _, alias := range p.ImportAliases {
+				if alias.Scope == caller.ID && alias.Declaration == declaration.ID {
+					return distance, true
+				}
 			}
-			if !current.Parent.Valid() {
-				return false
+			if !caller.Parent.Valid() {
+				return 0, false
 			}
-			next, ok := p.Scopes.Find(current.Parent)
+			next, ok := p.Scopes.Find(caller.Parent)
 			if !ok {
-				return false
+				return 0, false
 			}
-			current = next
+			caller = next
 		}
 	}
-	return false
+	for distance := 0; ; distance++ {
+		if caller.ID == declScope.ID {
+			return distance, true
+		}
+		for _, alias := range p.ImportAliases {
+			if alias.Scope == caller.ID && alias.Declaration == declaration.ID {
+				return distance, true
+			}
+		}
+		if !caller.Parent.Valid() {
+			return 0, false
+		}
+		next, ok := p.Scopes.Find(caller.Parent)
+		if !ok {
+			return 0, false
+		}
+		caller = next
+	}
+}
+
+func (p IndexedProgram) functionVisible(scope ScopeID, declaration Declaration) bool {
+	_, ok := p.functionVisibilityDistance(scope, declaration)
+	return ok
 }
 
 func (p IndexedProgram) qualifiedFunctionVisible(callScope ScopeID, qualifier string, declaration Declaration) bool {
