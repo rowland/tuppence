@@ -1,5 +1,14 @@
 package ir
 
+// BuildInitialScopes creates one explicit initial scope for each module.
+func BuildInitialScopes(modules ModuleTable) ScopeTable {
+	scopes := make(ScopeTable, 0, len(modules))
+	for _, module := range modules {
+		scopes = append(scopes, Scope{ID: ScopeID(module.ID), Module: module.ID, Kind: ScopeModule, Initial: true, Origin: module.Origin})
+	}
+	return scopes
+}
+
 // BuildIndexedProgram constructs the initial semantic snapshot from one target
 // configuration, keeping source selection and import resolution consistent.
 func BuildIndexedProgram(filenames []string, target CompilationTarget, prolog PrologConfig) (IndexedProgram, []string) {
@@ -10,6 +19,7 @@ func BuildIndexedProgram(filenames []string, target CompilationTarget, prolog Pr
 	program := IndexedProgram{
 		Modules:          modules,
 		SourceFiles:      files,
+		Scopes:           BuildInitialScopes(modules),
 		ModuleResolution: target.ModuleRoots,
 		Prolog:           prolog,
 	}

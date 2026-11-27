@@ -37,7 +37,7 @@ func TestBuildIndexedProgramUsesOneTargetConfiguration(t *testing.T) {
 	if len(invalid) != 0 || !program.Valid() {
 		t.Fatalf("constructed program must be valid: %#v invalid=%v", program, invalid)
 	}
-	if program.ModuleResolution.ProgramRoot != "/program" || program.PrimaryModule != ModuleID(1) || len(program.SourceFiles) != 2 || len(program.Modules) != 1 {
+	if program.ModuleResolution.ProgramRoot != "/program" || program.PrimaryModule != ModuleID(1) || len(program.Scopes) != 1 || !program.Scopes[0].Initial || len(program.SourceFiles) != 2 || len(program.Modules) != 1 {
 		t.Fatalf("target configuration was not preserved: %#v", program)
 	}
 }
