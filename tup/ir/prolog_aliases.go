@@ -21,7 +21,7 @@ func (p *IndexedProgram) AddPrologAlias(alias ImportAlias) bool {
 		return false
 	}
 	scope, ok := p.Scopes.Find(alias.Scope)
-	if !ok || !scope.Initial {
+	if !ok || scope.Kind != ScopeProlog {
 		return false
 	}
 	alias.Source = ImportAliasSourceProlog

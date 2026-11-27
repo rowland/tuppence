@@ -65,6 +65,12 @@ func (p IndexedProgram) Valid() bool {
 		if scope.Origin.Primary.File.Valid() && !moduleOwnsOrigin(p.Modules, scope.Module, scope.Origin) {
 			return false
 		}
+		if scope.Initial {
+			parent, ok := p.Scopes.Find(scope.Parent)
+			if !ok || parent.Kind != ScopeProlog || parent.Module != scope.Module {
+				return false
+			}
+		}
 		if scope.Parent.Valid() {
 			parent, ok := p.Scopes.Find(scope.Parent)
 			if !ok || parent.Module != scope.Module {
@@ -145,7 +151,7 @@ func (p IndexedProgram) Valid() bool {
 			}
 		}
 		if alias.Source == ImportAliasSourceProlog {
-			if !p.Prolog.Enabled || !p.Prolog.Includes(alias.Module) || scope.Kind != ScopeModule || !scope.Initial {
+			if !p.Prolog.Enabled || !p.Prolog.Includes(alias.Module) || scope.Kind != ScopeProlog {
 				return false
 			}
 		} else if !moduleImports(p.Modules, scope.Module, alias.Module) {
@@ -346,7 +352,7 @@ func moduleOwnsOrigin(modules ModuleTable, moduleID ModuleID, origin Origin) boo
 
 func moduleImportCollides(scopes ScopeTable, module ModuleID, name string) bool {
 	for _, scope := range scopes {
-		if scope.Module != module || scope.Kind != ScopeModule || scope.Parent.Valid() {
+		if scope.Module != module || scope.Kind != ScopeModule || !scope.Initial {
 			continue
 		}
 		for _, entry := range scope.Entries {

@@ -1,10 +1,15 @@
 package ir
 
-// BuildInitialScopes creates one explicit initial scope for each module.
+// BuildInitialScopes creates a synthetic prolog scope and an initial module
+// scope for each module. The module scope remains the stable module-derived ID.
 func BuildInitialScopes(modules ModuleTable) ScopeTable {
-	scopes := make(ScopeTable, 0, len(modules))
+	scopes := make(ScopeTable, 0, len(modules)*2)
 	for _, module := range modules {
-		scopes = append(scopes, Scope{ID: ScopeID(module.ID), Module: module.ID, Kind: ScopeModule, Initial: true, Origin: module.Origin})
+		prologID := ScopeID(0x80000000) | ScopeID(module.ID)
+		scopes = append(scopes,
+			Scope{ID: prologID, Module: module.ID, Kind: ScopeProlog, Origin: module.Origin},
+			Scope{ID: ScopeID(module.ID), Parent: prologID, Module: module.ID, Kind: ScopeModule, Initial: true, Origin: module.Origin},
+		)
 	}
 	return scopes
 }

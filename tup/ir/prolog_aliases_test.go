@@ -9,12 +9,13 @@ func TestIndexedProgramAddsPrologAliasOnlyToInitialScope(t *testing.T) {
 			{ID: ModuleID(2), Name: "core", Files: []FileID{FileID(2)}, Origin: Origin{Primary: Span{File: FileID(2), Start: 0, End: 1}}},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Initial: true, Origin: testOrigin()},
+			{ID: ScopeID(0x80000001), Module: ModuleID(1), Kind: ScopeProlog, Origin: testOrigin()},
+			{ID: ScopeID(1), Parent: ScopeID(0x80000001), Module: ModuleID(1), Kind: ScopeModule, Initial: true, Origin: testOrigin()},
 			{ID: ScopeID(2), Module: ModuleID(1), Kind: ScopeFunction, Origin: testOrigin()},
 		},
 		Prolog: PrologConfig{Enabled: true, Modules: []ModuleID{ModuleID(2)}, Architecture: "amd64"},
 	}
-	alias := ImportAlias{Scope: ScopeID(1), LocalName: "Int", Module: ModuleID(2), Declaration: DeclID(1), Origin: testOrigin()}
+	alias := ImportAlias{Scope: ScopeID(0x80000001), LocalName: "Int", Module: ModuleID(2), Declaration: DeclID(1), Origin: testOrigin()}
 	if !program.AddPrologAlias(alias) || len(program.ImportAliases) != 1 || program.ImportAliases[0].Source != ImportAliasSourceProlog {
 		t.Fatal("prolog alias must be installed in an initial scope")
 	}

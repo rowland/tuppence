@@ -105,10 +105,17 @@ func (p IndexedProgram) findCallCandidates(call CallExpr) []FunctionID {
 }
 
 func (p IndexedProgram) importAliasVisible(scope ScopeID, declaration DeclID) bool {
-	for _, alias := range p.ImportAliases {
-		if alias.Scope == scope && alias.Declaration == declaration {
-			return true
+	current, ok := p.Scopes.Find(scope)
+	for ok {
+		for _, alias := range p.ImportAliases {
+			if alias.Scope == current.ID && alias.Declaration == declaration {
+				return true
+			}
 		}
+		if !current.Parent.Valid() {
+			break
+		}
+		current, ok = p.Scopes.Find(current.Parent)
 	}
 	return false
 }

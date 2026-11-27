@@ -8,11 +8,12 @@ const (
 	ScopeFunction
 	ScopeBlock
 	ScopeLoop
+	ScopeProlog
 )
 
 // Valid reports whether the scope kind is recognized.
 func (k ScopeKind) Valid() bool {
-	return k >= ScopeModule && k <= ScopeLoop
+	return k >= ScopeModule && k <= ScopeProlog
 }
 
 // Scope is the identity and parentage of one lexical scope. A zero Parent is
@@ -32,7 +33,7 @@ func (s Scope) Valid() bool {
 	if !s.ID.Valid() || !s.Module.Valid() || !s.Kind.Valid() || !s.Origin.Valid() {
 		return false
 	}
-	if s.Initial && (s.Kind != ScopeModule || s.Parent.Valid()) {
+	if s.Initial && s.Kind != ScopeModule {
 		return false
 	}
 	for _, entry := range s.Entries {
