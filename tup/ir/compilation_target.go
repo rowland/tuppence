@@ -8,6 +8,7 @@ type CompilationTarget struct {
 	Architecture string
 	ModuleRoots  ModuleResolutionConfig
 	PrologPaths  []string
+	PrimaryPath  string
 }
 
 // Valid reports whether the target has the information required for loading.
