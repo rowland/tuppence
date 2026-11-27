@@ -253,6 +253,36 @@ func callMatchesFunction(program IndexedProgram, call CallExpr, function Functio
 	return true
 }
 
+// FindTypeCandidates returns visible nominal types with the nearest lexical
+// scope taking precedence over outer scopes.
+func (p IndexedProgram) FindTypeCandidates(scope ScopeID, name string) []TypeID {
+	if name == "" {
+		return nil
+	}
+	bestDistance := int(^uint(0) >> 1)
+	var matches []TypeID
+	for _, typ := range p.Types {
+		if typ.Name != name || !typ.Declaration.Valid() {
+			continue
+		}
+		declaration, ok := p.Declarations.Find(typ.Declaration)
+		if !ok {
+			continue
+		}
+		distance, visible := p.functionVisibilityDistance(scope, declaration)
+		if !visible {
+			continue
+		}
+		if distance < bestDistance {
+			bestDistance = distance
+			matches = matches[:0]
+		}
+		if distance == bestDistance {
+			matches = append(matches, typ.ID)
+		}
+	}
+	return matches
+}
 func (p IndexedProgram) typeVisible(scope ScopeID, typeID TypeID) bool {
 	typ, ok := p.Types.Find(typeID)
 	if !ok {
