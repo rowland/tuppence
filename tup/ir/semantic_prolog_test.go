@@ -9,7 +9,7 @@ func TestIndexedProgramAllowsEnabledPrologAliasInModuleScope(t *testing.T) {
 			{ID: ModuleID(2), Name: "core", Files: []FileID{FileID(2)}, Origin: Origin{Primary: Span{File: FileID(2), Start: 0, End: 1}}},
 		},
 		Scopes: ScopeTable{
-			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Origin: testOrigin()},
+			{ID: ScopeID(1), Module: ModuleID(1), Kind: ScopeModule, Initial: true, Origin: testOrigin()},
 			{ID: ScopeID(2), Module: ModuleID(2), Kind: ScopeModule, Origin: Origin{Primary: Span{File: FileID(2), Start: 0, End: 1}}},
 		},
 		Declarations: DeclarationTable{

@@ -22,6 +22,7 @@ type Scope struct {
 	Parent  ScopeID
 	Module  ModuleID
 	Kind    ScopeKind
+	Initial bool
 	Entries []ScopeEntry
 	Origin  Origin
 }
@@ -29,6 +30,9 @@ type Scope struct {
 // Valid reports whether the scope has the required identity and kind.
 func (s Scope) Valid() bool {
 	if !s.ID.Valid() || !s.Module.Valid() || !s.Kind.Valid() || !s.Origin.Valid() {
+		return false
+	}
+	if s.Initial && (s.Kind != ScopeModule || s.Parent.Valid()) {
 		return false
 	}
 	for _, entry := range s.Entries {

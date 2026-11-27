@@ -140,7 +140,7 @@ func (p IndexedProgram) Valid() bool {
 			return false
 		}
 		if alias.Source == ImportAliasSourceProlog {
-			if !p.Prolog.Enabled || !p.Prolog.Includes(alias.Module) || scope.Kind != ScopeModule {
+			if !p.Prolog.Enabled || !p.Prolog.Includes(alias.Module) || scope.Kind != ScopeModule || !scope.Initial {
 				return false
 			}
 		} else if !moduleImports(p.Modules, scope.Module, alias.Module) {
