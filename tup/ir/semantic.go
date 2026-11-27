@@ -5,6 +5,7 @@ package ir
 type IndexedProgram struct {
 	Modules          ModuleTable
 	SourceFiles      SourceFileTable
+	PrimaryModule    ModuleID
 	Types            TypeTable
 	Constructors     TypeConstructorTable
 	Scopes           ScopeTable
@@ -33,6 +34,11 @@ func (p IndexedProgram) Valid() bool {
 				return false
 			}
 			fileOwners[file] = module.ID
+		}
+	}
+	if p.PrimaryModule.Valid() {
+		if _, ok := p.Modules.Find(p.PrimaryModule); !ok {
+			return false
 		}
 	}
 	if len(p.SourceFiles) > 0 {

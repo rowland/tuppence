@@ -27,6 +27,9 @@ func (p IndexedProgram) Dump() string {
 		fmt.Fprintf(&out, "  %d path=%s module=%s constraints=%v\n", file.ID, file.Path, file.Module.ModuleName, file.Module.Constraints)
 	}
 
+	out.WriteString("primary_module:\n")
+	fmt.Fprintf(&out, "  id=%d\n", p.PrimaryModule)
+
 	out.WriteString("types:\n")
 	for _, typ := range p.Types {
 		fmt.Fprintf(&out, "  %d kind=%d name=%s declaration=%d home_module=%d element=%d elements=%v fixed_length=%t length=%d\n", typ.ID, typ.Kind, typ.Name, typ.Declaration, typ.HomeModule, typ.Element, typ.Elements, typ.FixedLength, typ.Length)

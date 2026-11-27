@@ -16,6 +16,7 @@ func BuildIndexedProgram(filenames []string, target CompilationTarget, prolog Pr
 	primaryFound := false
 	for _, module := range modules {
 		if module.ResolutionPath() == target.PrimaryPath {
+			program.PrimaryModule = module.ID
 			primaryFound = true
 			break
 		}
