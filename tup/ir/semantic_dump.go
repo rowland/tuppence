@@ -35,6 +35,11 @@ func (p IndexedProgram) Dump() string {
 		fmt.Fprintf(&out, "  %d kind=%d name=%s declaration=%d home_module=%d element=%d elements=%v fixed_length=%t length=%d\n", typ.ID, typ.Kind, typ.Name, typ.Declaration, typ.HomeModule, typ.Element, typ.Elements, typ.FixedLength, typ.Length)
 	}
 
+	out.WriteString("type_references:\n")
+	for _, reference := range p.TypeReferences {
+		fmt.Fprintf(&out, "  %d scope=%d name=%s type=%d origin_file=%d\n", reference.Reference.ID, reference.Reference.Scope, reference.Reference.Name, reference.Type, reference.Reference.Origin.Primary.File)
+	}
+
 	out.WriteString("constructors:\n")
 	for _, constructor := range p.Constructors {
 		fmt.Fprintf(&out, "  type=%d storage=%d\n", constructor.Type, constructor.Storage)

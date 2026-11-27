@@ -34,4 +34,9 @@ func TestIndexedProgramResolvesTypeReferencesInOrder(t *testing.T) {
 	if len(diagnostics) != 2 || diagnostics[0].Code != "TYPE_NOT_FOUND" || diagnostics[1].Code != "TYPE_AMBIGUOUS" {
 		t.Fatal("type reference diagnostics must preserve source order")
 	}
+	program.TypeReferences = nil
+	program.Diagnostics = nil
+	if recorded := program.ResolveAndRecordTypeReferences(references); len(recorded) != 1 || len(program.TypeReferences) != 1 || len(program.Diagnostics) != 2 {
+		t.Fatal("snapshot recording must retain results and diagnostics")
+	}
 }

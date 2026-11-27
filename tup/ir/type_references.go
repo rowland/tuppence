@@ -45,3 +45,15 @@ func (p IndexedProgram) ResolveTypeReferences(references []TypeReference) ([]Res
 	}
 	return resolved, diagnostics
 }
+
+// ResolveAndRecordTypeReferences resolves references and records both the
+// successful results and diagnostics in the snapshot.
+func (p *IndexedProgram) ResolveAndRecordTypeReferences(references []TypeReference) []ResolvedTypeReference {
+	if p == nil {
+		return nil
+	}
+	resolved, diagnostics := p.ResolveTypeReferences(references)
+	p.TypeReferences = append(p.TypeReferences, resolved...)
+	p.Diagnostics = append(p.Diagnostics, diagnostics...)
+	return resolved
+}

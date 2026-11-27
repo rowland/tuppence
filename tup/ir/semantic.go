@@ -7,6 +7,7 @@ type IndexedProgram struct {
 	SourceFiles      SourceFileTable
 	PrimaryModule    ModuleID
 	Types            TypeTable
+	TypeReferences   []ResolvedTypeReference
 	Constructors     TypeConstructorTable
 	Scopes           ScopeTable
 	Declarations     DeclarationTable
@@ -26,6 +27,16 @@ type IndexedProgram struct {
 func (p IndexedProgram) Valid() bool {
 	if !p.Modules.Valid() || !p.SourceFiles.Valid() || !p.Prolog.Valid() || !p.ModuleResolution.Valid() || !p.Types.Valid() || !p.Constructors.Valid() || !p.Scopes.Valid() || !p.Declarations.Valid() || !p.Bindings.Valid() || !p.Functions.Valid() || !p.Aliases.Valid() || !p.Expressions.Valid() || !p.Calls.Valid() || !p.ImportAliases.Valid() {
 		return false
+	}
+	for _, reference := range p.TypeReferences {
+		if !reference.Valid() {
+			return false
+		}
+		scope, scopeOK := p.Scopes.Find(reference.Reference.Scope)
+		typ, typeOK := p.Types.Find(reference.Type)
+		if !scopeOK || !typeOK || !moduleOwnsOrigin(p.Modules, scope.Module, reference.Reference.Origin) || typ.Name != reference.Reference.Name {
+			return false
+		}
 	}
 	fileOwners := make(map[FileID]ModuleID)
 	for _, module := range p.Modules {
