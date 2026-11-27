@@ -288,34 +288,14 @@ func (p IndexedProgram) typeVisible(scope ScopeID, typeID TypeID) bool {
 	if !ok {
 		return true
 	}
-	declaration, ok := p.Declarations.Find(typ.Declaration)
-	if !ok {
+	if _, ok := p.Declarations.Find(typ.Declaration); !ok {
 		return false
 	}
-	if p.importAliasVisible(scope, declaration.ID) {
-		return true
+	if typ.Kind == TypeNominal && typ.Name != "" {
+		resolved, resolvedOK := p.ResolveTypeName(scope, typ.Name)
+		return resolvedOK && resolved == typeID
 	}
-	caller, callerOK := p.Scopes.Find(scope)
-	declScope, declOK := p.Scopes.Find(declaration.Scope)
-	if !callerOK || !declOK {
-		return true
-	}
-	if caller.Module != declScope.Module {
-		return false
-	}
-	for current := caller; ; {
-		if current.ID == declScope.ID {
-			return true
-		}
-		if !current.Parent.Valid() {
-			return false
-		}
-		next, ok := p.Scopes.Find(current.Parent)
-		if !ok {
-			return false
-		}
-		current = next
-	}
+	return true
 }
 
 func (p IndexedProgram) argumentMatchesParameter(argument CallArgument, parameter FunctionParameter, function Function, scope ScopeID) bool {
