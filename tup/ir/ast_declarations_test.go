@@ -78,6 +78,13 @@ func TestCollectTypeDeclarationsBuildsScopeEntries(t *testing.T) {
 	if len(unionType.Diagnostics) != 0 || len(unionType.Structured) != 1 || unionType.Structured[0].Kind != TypeUnion || len(unionType.Structured[0].ElementReferences) != 2 {
 		t.Fatalf("union declarations must retain member references: %#v", unionType)
 	}
+	nestedTuple := ast.NewTypeTuple(ast.NewTupleType([]ast.TupleTypeMemberNode{
+		ast.NewTupleTypeMember(nil, ast.NewDynamicArrayType(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 55, 3), nil, 55, 3))),
+	}))
+	nested := CollectTypeDeclarations(ModuleID(1), ScopeID(1), FileID(9), DeclID(52), []*ast.TypeDeclaration{ast.NewTypeDeclaration(second, nestedTuple)})
+	if len(nested.Diagnostics) != 0 || len(nested.Structured) != 2 || nested.Structured[0].Kind != TypeArray || nested.Structured[1].Kind != TypeTuple || len(nested.Structured[1].ElementTypes) != 1 {
+		t.Fatalf("tuple declarations must retain nested structured members: %#v", nested)
+	}
 	program := IndexedProgram{Scopes: ScopeTable{
 		{ID: ScopeID(0x80000001), Module: ModuleID(1), Kind: ScopeProlog, Origin: testOrigin()},
 		{ID: ScopeID(1), Parent: ScopeID(0x80000001), Module: ModuleID(1), Kind: ScopeModule, Initial: true, Origin: testOrigin()},

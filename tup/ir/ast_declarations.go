@@ -20,6 +20,7 @@ type CollectedStructuredType struct {
 	Declaration       DeclID
 	Kind              TypeKind
 	ElementReferences []TypeReferenceID
+	ElementTypes      []TypeID
 	FixedLength       bool
 	Length            uint64
 	Origin            Origin
@@ -89,6 +90,25 @@ func (p *IndexedProgram) InstallCollectedTypeDeclarations(module ModuleID, colle
 			elements = append(elements, element)
 		}
 		if len(elements) != len(structured.ElementReferences) {
+			continue
+		}
+		for _, element := range structured.ElementTypes {
+			_, exists := p.Types.Find(element)
+			if !exists {
+				for _, local := range structuredTypes {
+					if local.ID == element {
+						exists = true
+						break
+					}
+				}
+			}
+			if !exists {
+				elements = nil
+				break
+			}
+			elements = append(elements, element)
+		}
+		if len(elements) != len(structured.ElementReferences)+len(structured.ElementTypes) {
 			continue
 		}
 		typ := Type{ID: structured.ID, Kind: structured.Kind, FixedLength: structured.FixedLength, Length: structured.Length, Origin: structured.Origin}
@@ -193,6 +213,7 @@ func CollectTypeDeclarations(module ModuleID, scope ScopeID, file FileID, first 
 			}
 		} else if tuple, ok := declaration.RHS.(*ast.TypeTuple); ok && tuple.TupleType != nil {
 			referenceIDs := make([]TypeReferenceID, 0, len(tuple.TupleType.Members))
+			elementTypeIDs := make([]TypeID, 0, len(tuple.TupleType.Members))
 			for i, member := range tuple.TupleType.Members {
 				var element ast.FunctionTypeParameterType
 				switch member := member.(type) {
@@ -202,17 +223,42 @@ func CollectTypeDeclarations(module ModuleID, scope ScopeID, file FileID, first 
 					element = member.Type
 				}
 				reference, ok := element.(*ast.TypeReference)
-				if !ok || reference == nil {
-					result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: SeverityError, Code: "TYPE_BODY_UNSUPPORTED", Message: "tuple members must be type references", Origin: origin})
+				if ok && reference != nil {
+					referenceID := TypeReferenceID(0x40000000) | (TypeReferenceID(irDeclaration.ID) << 8) | TypeReferenceID(i+1)
+					referenceIDs = append(referenceIDs, referenceID)
+					result.References = append(result.References, TypeReference{ID: referenceID, Scope: scope, Name: reference.String(), Origin: Origin{Primary: Span{File: file, Start: uint32(reference.StartOffset), End: uint32(reference.StartOffset + reference.Length)}}})
+					continue
+				}
+				array, arrayOK := element.(*ast.DynamicArrayType)
+				fixed, fixedOK := element.(*ast.FixedSizeArrayType)
+				var arrayElement ast.ArrayElementType
+				fixedLength := uint64(0)
+				if arrayOK {
+					arrayElement = array.ElementType
+				} else if fixedOK {
+					arrayElement = fixed.ElementType
+					size, sizeOK := fixed.Size.(*ast.IntegerLiteral)
+					if !sizeOK || size == nil || size.IntegerValue < 0 {
+						fixedOK = false
+					} else {
+						fixedLength = uint64(size.IntegerValue)
+					}
+				}
+				arrayReference, arrayReferenceOK := arrayElement.(*ast.TypeReference)
+				if (!arrayOK && !fixedOK) || !arrayReferenceOK || arrayReference == nil {
+					result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: SeverityError, Code: "TYPE_BODY_UNSUPPORTED", Message: "tuple members must be type references or arrays of type references", Origin: origin})
 					referenceIDs = nil
+					elementTypeIDs = nil
 					break
 				}
-				referenceID := TypeReferenceID(0x40000000) | (TypeReferenceID(irDeclaration.ID) << 8) | TypeReferenceID(i+1)
-				referenceIDs = append(referenceIDs, referenceID)
-				result.References = append(result.References, TypeReference{ID: referenceID, Scope: scope, Name: reference.String(), Origin: Origin{Primary: Span{File: file, Start: uint32(reference.StartOffset), End: uint32(reference.StartOffset + reference.Length)}}})
+				childID := TypeID(0x60000000) | (TypeID(irDeclaration.ID) << 8) | TypeID(i+1)
+				childReferenceID := TypeReferenceID(0x70000000) | (TypeReferenceID(irDeclaration.ID) << 8) | TypeReferenceID(i+1)
+				result.References = append(result.References, TypeReference{ID: childReferenceID, Scope: scope, Name: arrayReference.String(), Origin: Origin{Primary: Span{File: file, Start: uint32(arrayReference.StartOffset), End: uint32(arrayReference.StartOffset + arrayReference.Length)}}})
+				result.Structured = append(result.Structured, CollectedStructuredType{ID: childID, Declaration: irDeclaration.ID, Kind: TypeArray, ElementReferences: []TypeReferenceID{childReferenceID}, FixedLength: fixedOK, Length: fixedLength, Origin: origin})
+				elementTypeIDs = append(elementTypeIDs, childID)
 			}
 			if referenceIDs != nil {
-				result.Structured = append(result.Structured, CollectedStructuredType{ID: TypeID(irDeclaration.ID), Declaration: irDeclaration.ID, Kind: TypeTuple, ElementReferences: referenceIDs, Origin: origin})
+				result.Structured = append(result.Structured, CollectedStructuredType{ID: TypeID(irDeclaration.ID), Declaration: irDeclaration.ID, Kind: TypeTuple, ElementReferences: referenceIDs, ElementTypes: elementTypeIDs, Origin: origin})
 			}
 		} else {
 			result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: SeverityError, Code: "TYPE_BODY_UNSUPPORTED", Message: "structured type declaration bodies are not yet supported", Origin: origin})
