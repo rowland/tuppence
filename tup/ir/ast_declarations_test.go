@@ -62,6 +62,14 @@ func TestCollectTypeDeclarationsBuildsScopeEntries(t *testing.T) {
 	if len(fixedType.Diagnostics) != 0 || len(fixedType.Structured) != 1 || !fixedType.Structured[0].FixedLength || fixedType.Structured[0].Length != 4 {
 		t.Fatalf("fixed array declarations must retain validated lengths: %#v", fixedType)
 	}
+	tupleRHS := ast.NewTypeTuple(ast.NewTupleType([]ast.TupleTypeMemberNode{
+		ast.NewTupleTypeMember(nil, ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 32, 3), nil, 32, 3)),
+		ast.NewTupleTypeMember(nil, ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 37, 3), nil, 37, 3)),
+	}))
+	tupleType := CollectTypeDeclarations(ModuleID(1), ScopeID(1), FileID(7), DeclID(50), []*ast.TypeDeclaration{ast.NewTypeDeclaration(second, tupleRHS)})
+	if len(tupleType.Diagnostics) != 0 || len(tupleType.Structured) != 1 || tupleType.Structured[0].Kind != TypeTuple || len(tupleType.Structured[0].ElementReferences) != 2 {
+		t.Fatalf("tuple declarations must retain member references: %#v", tupleType)
+	}
 	program := IndexedProgram{Scopes: ScopeTable{
 		{ID: ScopeID(0x80000001), Module: ModuleID(1), Kind: ScopeProlog, Origin: testOrigin()},
 		{ID: ScopeID(1), Parent: ScopeID(0x80000001), Module: ModuleID(1), Kind: ScopeModule, Initial: true, Origin: testOrigin()},
