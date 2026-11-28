@@ -44,8 +44,8 @@ func TestCollectTypeDeclarationsBuildsScopeEntries(t *testing.T) {
 		t.Fatalf("collected declaration lost source span: %#v", collected.Declarations[1])
 	}
 	newType := CollectTypeDeclarations(ModuleID(1), ScopeID(1), FileID(7), DeclID(20), []*ast.TypeDeclaration{ast.NewTypeDeclaration(first, ast.NewNilableType(nil))})
-	if len(newType.Types) != 1 || newType.Types[0].ID != TypeID(21) || newType.Types[0].HomeModule != ModuleID(1) {
-		t.Fatalf("non-reference declaration must create a nominal type: %#v", newType)
+	if len(newType.Types) != 0 || len(newType.Diagnostics) != 1 || newType.Diagnostics[0].Code != "TYPE_BODY_UNSUPPORTED" {
+		t.Fatalf("structured declaration bodies must be reported explicitly: %#v", newType)
 	}
 	program := IndexedProgram{Scopes: ScopeTable{
 		{ID: ScopeID(0x80000001), Module: ModuleID(1), Kind: ScopeProlog, Origin: testOrigin()},

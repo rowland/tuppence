@@ -100,7 +100,7 @@ func CollectTypeDeclarations(module ModuleID, scope ScopeID, file FileID, first 
 				Origin: Origin{Primary: Span{File: file, Start: uint32(reference.StartOffset), End: uint32(reference.StartOffset + reference.Length)}},
 			})
 		} else {
-			result.Types = append(result.Types, Type{ID: TypeID(irDeclaration.ID), Name: irDeclaration.Name, Kind: TypeNominal, Declaration: irDeclaration.ID, HomeModule: module, Origin: origin})
+			result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: SeverityError, Code: "TYPE_BODY_UNSUPPORTED", Message: "structured type declaration bodies are not yet supported", Origin: origin})
 		}
 	}
 	return result
