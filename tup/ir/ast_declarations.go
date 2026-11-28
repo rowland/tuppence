@@ -7,6 +7,7 @@ import "github.com/rowland/tuppence/tup/ast"
 type CollectedTypeDeclarations struct {
 	Declarations DeclarationTable
 	Entries      []ScopeEntry
+	Types        TypeTable
 	References   []TypeReference
 	Diagnostics  []Diagnostic
 }
@@ -43,6 +44,9 @@ func (p *IndexedProgram) InstallCollectedTypeDeclarations(module ModuleID, colle
 		if _, exists := p.Declarations.Find(declaration.ID); exists {
 			return false
 		}
+		if typ, exists := p.Types.Find(TypeID(declaration.ID)); exists || typ.ID.Valid() {
+			return false
+		}
 		seenNames[entry.Name] = struct{}{}
 	}
 	resolved, diagnostics := p.ResolveTypeReferences(collected.References)
@@ -59,8 +63,14 @@ func (p *IndexedProgram) InstallCollectedTypeDeclarations(module ModuleID, colle
 			}
 		}
 	}
+	for _, typ := range collected.Types {
+		if typ.Declaration == 0 || typ.HomeModule != module || !typ.Valid() {
+			return false
+		}
+	}
 	p.Declarations = append(p.Declarations, collected.Declarations...)
 	scope.Entries = append(scope.Entries, collected.Entries...)
+	p.Types = append(p.Types, collected.Types...)
 	p.TypeReferences = append(p.TypeReferences, resolved...)
 	p.Diagnostics = append(p.Diagnostics, diagnostics...)
 	p.Aliases = append(p.Aliases, aliases...)
@@ -69,7 +79,7 @@ func (p *IndexedProgram) InstallCollectedTypeDeclarations(module ModuleID, colle
 
 // CollectTypeDeclarations converts parsed type declaration names into semantic
 // declarations without interpreting their right-hand-side type bodies.
-func CollectTypeDeclarations(scope ScopeID, file FileID, first DeclID, declarations []*ast.TypeDeclaration) CollectedTypeDeclarations {
+func CollectTypeDeclarations(module ModuleID, scope ScopeID, file FileID, first DeclID, declarations []*ast.TypeDeclaration) CollectedTypeDeclarations {
 	result := CollectedTypeDeclarations{}
 	next := uint32(first)
 	for _, declaration := range declarations {
@@ -89,6 +99,8 @@ func CollectTypeDeclarations(scope ScopeID, file FileID, first DeclID, declarati
 				Name:   reference.String(),
 				Origin: Origin{Primary: Span{File: file, Start: uint32(reference.StartOffset), End: uint32(reference.StartOffset + reference.Length)}},
 			})
+		} else {
+			result.Types = append(result.Types, Type{ID: TypeID(irDeclaration.ID), Name: irDeclaration.Name, Kind: TypeNominal, Declaration: irDeclaration.ID, HomeModule: module, Origin: origin})
 		}
 	}
 	return result

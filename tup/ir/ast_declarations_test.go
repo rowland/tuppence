@@ -9,7 +9,7 @@ import (
 func TestInstallCollectedTypeDeclarationsCreatesAliases(t *testing.T) {
 	lhs := ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Alias", nil, 0, 5), nil)
 	rhs := ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 8, 3), nil, 8, 3)
-	collected := CollectTypeDeclarations(ScopeID(1), FileID(1), DeclID(0), []*ast.TypeDeclaration{ast.NewTypeDeclaration(lhs, rhs)})
+	collected := CollectTypeDeclarations(ModuleID(1), ScopeID(1), FileID(1), DeclID(0), []*ast.TypeDeclaration{ast.NewTypeDeclaration(lhs, rhs)})
 	prolog := ScopeID(0x80000001)
 	program := IndexedProgram{
 		Scopes: ScopeTable{
@@ -30,7 +30,7 @@ func TestCollectTypeDeclarationsBuildsScopeEntries(t *testing.T) {
 	first := ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Int", nil, 4, 3), nil)
 	second := ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Answer", nil, 12, 6), nil)
 	rhs := ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 20, 3), nil, 20, 3)
-	collected := CollectTypeDeclarations(ScopeID(1), FileID(7), DeclID(10), []*ast.TypeDeclaration{
+	collected := CollectTypeDeclarations(ModuleID(1), ScopeID(1), FileID(7), DeclID(10), []*ast.TypeDeclaration{
 		ast.NewTypeDeclaration(first, rhs),
 		ast.NewTypeDeclaration(second, rhs),
 	})
@@ -42,6 +42,10 @@ func TestCollectTypeDeclarationsBuildsScopeEntries(t *testing.T) {
 	}
 	if collected.Declarations[1].Origin.Primary.File != FileID(7) || collected.Declarations[1].Origin.Primary.Start != 12 || collected.Declarations[1].Origin.Primary.End != 18 {
 		t.Fatalf("collected declaration lost source span: %#v", collected.Declarations[1])
+	}
+	newType := CollectTypeDeclarations(ModuleID(1), ScopeID(1), FileID(7), DeclID(20), []*ast.TypeDeclaration{ast.NewTypeDeclaration(first, ast.NewNilableType(nil))})
+	if len(newType.Types) != 1 || newType.Types[0].ID != TypeID(21) || newType.Types[0].HomeModule != ModuleID(1) {
+		t.Fatalf("non-reference declaration must create a nominal type: %#v", newType)
 	}
 	program := IndexedProgram{Scopes: ScopeTable{
 		{ID: ScopeID(0x80000001), Module: ModuleID(1), Kind: ScopeProlog, Origin: testOrigin()},
