@@ -14,7 +14,7 @@ func TestCollectTypeDeclarationsBuildsScopeEntries(t *testing.T) {
 		ast.NewTypeDeclaration(first, rhs),
 		ast.NewTypeDeclaration(second, rhs),
 	})
-	if len(collected.Diagnostics) != 0 || len(collected.Declarations) != 2 || len(collected.Entries) != 2 {
+	if len(collected.Diagnostics) != 0 || len(collected.Declarations) != 2 || len(collected.Entries) != 2 || len(collected.References) != 2 {
 		t.Fatalf("type declaration collection returned unexpected results: %#v", collected)
 	}
 	if collected.Declarations[0].ID != DeclID(11) || collected.Declarations[0].Name != "Int" || collected.Declarations[0].Scope != ScopeID(1) || collected.Entries[1].Declaration != DeclID(12) {

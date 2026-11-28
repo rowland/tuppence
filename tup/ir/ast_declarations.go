@@ -7,6 +7,7 @@ import "github.com/rowland/tuppence/tup/ast"
 type CollectedTypeDeclarations struct {
 	Declarations DeclarationTable
 	Entries      []ScopeEntry
+	References   []TypeReference
 	Diagnostics  []Diagnostic
 }
 
@@ -46,6 +47,7 @@ func (p *IndexedProgram) InstallCollectedTypeDeclarations(module ModuleID, colle
 	}
 	p.Declarations = append(p.Declarations, collected.Declarations...)
 	scope.Entries = append(scope.Entries, collected.Entries...)
+	p.ResolveAndRecordTypeReferences(collected.References)
 	return true
 }
 
@@ -64,6 +66,14 @@ func CollectTypeDeclarations(scope ScopeID, file FileID, first DeclID, declarati
 		irDeclaration := Declaration{ID: DeclID(next), Scope: scope, Name: name.String(), Kind: DeclType, Origin: origin}
 		result.Declarations = append(result.Declarations, irDeclaration)
 		result.Entries = append(result.Entries, ScopeEntry{Name: irDeclaration.Name, Declaration: irDeclaration.ID})
+		if reference, ok := declaration.RHS.(*ast.TypeReference); ok && reference != nil {
+			result.References = append(result.References, TypeReference{
+				ID:     TypeReferenceID(irDeclaration.ID),
+				Scope:  scope,
+				Name:   reference.String(),
+				Origin: Origin{Primary: Span{File: file, Start: uint32(reference.StartOffset), End: uint32(reference.StartOffset + reference.Length)}},
+			})
+		}
 	}
 	return result
 }
