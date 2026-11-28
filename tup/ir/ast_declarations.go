@@ -9,7 +9,17 @@ type CollectedTypeDeclarations struct {
 	Entries      []ScopeEntry
 	Types        TypeTable
 	References   []TypeReference
+	Structured   []CollectedStructuredType
 	Diagnostics  []Diagnostic
+}
+
+// CollectedStructuredType is a structured type whose element references are
+// resolved before its semantic Type record is installed.
+type CollectedStructuredType struct {
+	ID               TypeID
+	Declaration      DeclID
+	ElementReference TypeReferenceID
+	Origin           Origin
 }
 
 // InstallCollectedTypeDeclarations adds collected declarations to a module's
@@ -50,12 +60,13 @@ func (p *IndexedProgram) InstallCollectedTypeDeclarations(module ModuleID, colle
 		seenNames[entry.Name] = struct{}{}
 	}
 	resolved, diagnostics := p.ResolveTypeReferences(collected.References)
-	aliases := make([]TypeAlias, 0, len(resolved))
+	resolvedByID := make(map[TypeReferenceID]TypeID, len(resolved))
+	for _, reference := range resolved {
+		resolvedByID[reference.Reference.ID] = reference.Type
+	}
+	aliases := make([]TypeAlias, 0, len(resolved)+len(collected.Structured))
 	for _, reference := range resolved {
 		declaration := DeclID(reference.Reference.ID)
-		if _, ok := p.Declarations.Find(declaration); ok {
-			return false
-		}
 		for _, collectedDeclaration := range collected.Declarations {
 			if collectedDeclaration.ID == declaration {
 				aliases = append(aliases, TypeAlias{Declaration: declaration, Target: reference.Type, Origin: reference.Reference.Origin})
@@ -63,14 +74,29 @@ func (p *IndexedProgram) InstallCollectedTypeDeclarations(module ModuleID, colle
 			}
 		}
 	}
+	structuredTypes := make(TypeTable, 0, len(collected.Structured))
+	for _, structured := range collected.Structured {
+		element, ok := resolvedByID[structured.ElementReference]
+		if !ok {
+			continue
+		}
+		structuredTypes = append(structuredTypes, Type{ID: structured.ID, Kind: TypeArray, Element: element, Origin: structured.Origin})
+		aliases = append(aliases, TypeAlias{Declaration: structured.Declaration, Target: structured.ID, Origin: structured.Origin})
+	}
 	for _, typ := range collected.Types {
 		if typ.Declaration == 0 || typ.HomeModule != module || !typ.Valid() {
+			return false
+		}
+	}
+	for _, typ := range structuredTypes {
+		if _, exists := p.Types.Find(typ.ID); exists {
 			return false
 		}
 	}
 	p.Declarations = append(p.Declarations, collected.Declarations...)
 	scope.Entries = append(scope.Entries, collected.Entries...)
 	p.Types = append(p.Types, collected.Types...)
+	p.Types = append(p.Types, structuredTypes...)
 	p.TypeReferences = append(p.TypeReferences, resolved...)
 	p.Diagnostics = append(p.Diagnostics, diagnostics...)
 	p.Aliases = append(p.Aliases, aliases...)
@@ -99,6 +125,20 @@ func CollectTypeDeclarations(module ModuleID, scope ScopeID, file FileID, first 
 				Name:   reference.String(),
 				Origin: Origin{Primary: Span{File: file, Start: uint32(reference.StartOffset), End: uint32(reference.StartOffset + reference.Length)}},
 			})
+		} else if array, ok := declaration.RHS.(*ast.DynamicArrayType); ok {
+			element, ok := array.ElementType.(*ast.TypeReference)
+			if !ok || element == nil {
+				result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: SeverityError, Code: "TYPE_BODY_UNSUPPORTED", Message: "dynamic array elements must be type references", Origin: origin})
+				continue
+			}
+			referenceID := TypeReferenceID(0x80000000) | TypeReferenceID(irDeclaration.ID)
+			result.References = append(result.References, TypeReference{
+				ID:     referenceID,
+				Scope:  scope,
+				Name:   element.String(),
+				Origin: Origin{Primary: Span{File: file, Start: uint32(element.StartOffset), End: uint32(element.StartOffset + element.Length)}},
+			})
+			result.Structured = append(result.Structured, CollectedStructuredType{ID: TypeID(irDeclaration.ID), Declaration: irDeclaration.ID, ElementReference: referenceID, Origin: origin})
 		} else {
 			result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: SeverityError, Code: "TYPE_BODY_UNSUPPORTED", Message: "structured type declaration bodies are not yet supported", Origin: origin})
 		}

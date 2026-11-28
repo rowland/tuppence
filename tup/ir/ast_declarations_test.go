@@ -24,6 +24,11 @@ func TestInstallCollectedTypeDeclarationsCreatesAliases(t *testing.T) {
 	if !program.InstallCollectedTypeDeclarations(ModuleID(1), collected) || len(program.Aliases) != 1 || program.Aliases[0].Declaration != DeclID(1) || program.Aliases[0].Target != TypeID(20) {
 		t.Fatalf("resolved type declaration must create an alias: %#v", program)
 	}
+	arrayRHS := ast.NewDynamicArrayType(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 8, 3), nil, 8, 3))
+	arrayCollected := CollectTypeDeclarations(ModuleID(1), ScopeID(1), FileID(1), DeclID(30), []*ast.TypeDeclaration{ast.NewTypeDeclaration(ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Bytes", nil, 0, 5), nil), arrayRHS)})
+	if !program.InstallCollectedTypeDeclarations(ModuleID(1), arrayCollected) || len(program.Aliases) != 2 || len(program.Types) != 2 || program.Aliases[1].Target != TypeID(31) || program.Types[1].Element != TypeID(20) {
+		t.Fatalf("dynamic array declaration must resolve its element and create an alias: %#v", program)
+	}
 }
 
 func TestCollectTypeDeclarationsBuildsScopeEntries(t *testing.T) {
@@ -46,6 +51,11 @@ func TestCollectTypeDeclarationsBuildsScopeEntries(t *testing.T) {
 	newType := CollectTypeDeclarations(ModuleID(1), ScopeID(1), FileID(7), DeclID(20), []*ast.TypeDeclaration{ast.NewTypeDeclaration(first, ast.NewNilableType(nil))})
 	if len(newType.Types) != 0 || len(newType.Diagnostics) != 1 || newType.Diagnostics[0].Code != "TYPE_BODY_UNSUPPORTED" {
 		t.Fatalf("structured declaration bodies must be reported explicitly: %#v", newType)
+	}
+	arrayRHS := ast.NewDynamicArrayType(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 24, 3), nil, 24, 3))
+	arrayType := CollectTypeDeclarations(ModuleID(1), ScopeID(1), FileID(7), DeclID(30), []*ast.TypeDeclaration{ast.NewTypeDeclaration(second, arrayRHS)})
+	if len(arrayType.Diagnostics) != 0 || len(arrayType.Structured) != 1 || len(arrayType.References) != 1 || arrayType.Structured[0].ID != TypeID(31) {
+		t.Fatalf("dynamic array declarations must retain pending element resolution: %#v", arrayType)
 	}
 	program := IndexedProgram{Scopes: ScopeTable{
 		{ID: ScopeID(0x80000001), Module: ModuleID(1), Kind: ScopeProlog, Origin: testOrigin()},
