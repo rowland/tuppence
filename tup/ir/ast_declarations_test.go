@@ -6,6 +6,44 @@ import (
 	"github.com/rowland/tuppence/tup/ast"
 )
 
+func TestCollectTypeDeclarationsRecursivelyCollectsStructuredMembers(t *testing.T) {
+	ref := func(name string, offset int) *ast.TypeReference {
+		return ast.NewTypeReference(nil, ast.NewTypeIdentifier(name, nil, int32(offset), int32(len(name))), nil, int32(offset), int32(len(name)))
+	}
+	arrayOfArrays := ast.NewDynamicArrayType(ast.NewDynamicArrayType(ref("Int", 20)))
+	nestedUnion := ast.NewUnionType([]ast.UnionMemberType{ref("Bool", 30), arrayOfArrays})
+	nestedTuple := ast.NewTupleType([]ast.TupleTypeMemberNode{
+		ast.NewTupleTypeMember(nil, nestedUnion),
+		ast.NewTupleTypeMember(nil, ast.NewDynamicArrayType(ref("String", 40))),
+	})
+	root := ast.NewTypeTuple(ast.NewTupleType([]ast.TupleTypeMemberNode{
+		ast.NewTupleTypeMember(nil, nestedTuple),
+		ast.NewTupleTypeMember(nil, ref("Float", 50)),
+	}))
+
+	collected := CollectTypeDeclarations(ModuleID(1), ScopeID(1), FileID(1), DeclID(10), []*ast.TypeDeclaration{
+		ast.NewTypeDeclaration(ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Nested", nil, 0, 7), nil), root),
+	})
+	if len(collected.Diagnostics) != 0 {
+		t.Fatalf("recursive structured collection returned diagnostics: %#v", collected.Diagnostics)
+	}
+	if len(collected.Structured) != 6 {
+		t.Fatalf("recursive structured collection must retain every nested type: %#v", collected.Structured)
+	}
+	if collected.Structured[0].Kind != TypeArray || collected.Structured[1].Kind != TypeArray || collected.Structured[2].Kind != TypeUnion || collected.Structured[3].Kind != TypeArray || collected.Structured[4].Kind != TypeTuple || collected.Structured[5].Kind != TypeTuple {
+		t.Fatalf("nested structured types must be collected deterministically: %#v", collected.Structured)
+	}
+	if got := collected.Structured[2].ElementOrder; len(got) != 2 || got[0].Reference == 0 || got[1].Type != collected.Structured[1].ID {
+		t.Fatalf("union members must preserve source order: %#v", got)
+	}
+	if got := collected.Structured[4].ElementOrder; len(got) != 2 || got[0].Type != collected.Structured[2].ID || got[1].Type != collected.Structured[3].ID {
+		t.Fatalf("nested tuple members must preserve source order: %#v", got)
+	}
+	if got := collected.Structured[5].ElementOrder; len(got) != 2 || got[0].Type != collected.Structured[4].ID || got[1].Reference == 0 {
+		t.Fatalf("root tuple members must preserve source order: %#v", got)
+	}
+}
+
 func TestInstallCollectedTypeDeclarationsCreatesAliases(t *testing.T) {
 	lhs := ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Alias", nil, 0, 5), nil)
 	rhs := ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 8, 3), nil, 8, 3)
