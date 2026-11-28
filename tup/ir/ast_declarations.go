@@ -292,6 +292,61 @@ func CollectTypeDeclarations(module ModuleID, scope ScopeID, file FileID, first 
 					result.References = append(result.References, TypeReference{ID: referenceID, Scope: scope, Name: reference.String(), Origin: Origin{Primary: Span{File: file, Start: uint32(reference.StartOffset), End: uint32(reference.StartOffset + reference.Length)}}})
 					continue
 				}
+				if nested, nestedOK := element.(*ast.TupleType); nestedOK {
+					childID := TypeID(0x52000000) | (TypeID(irDeclaration.ID) << 8) | TypeID(i+1)
+					childRefs := make([]TypeReferenceID, 0, len(nested.Members))
+					childOrder := make([]CollectedStructuredElement, 0, len(nested.Members))
+					for j, nestedMember := range nested.Members {
+						var nestedElement ast.FunctionTypeParameterType
+						switch nestedMember := nestedMember.(type) {
+						case *ast.TupleTypeMember:
+							nestedElement = nestedMember.Type
+						case *ast.LabeledTupleTypeMember:
+							nestedElement = nestedMember.Type
+						}
+						nestedReference, nestedReferenceOK := nestedElement.(*ast.TypeReference)
+						if !nestedReferenceOK || nestedReference == nil {
+							result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: SeverityError, Code: "TYPE_BODY_UNSUPPORTED", Message: "nested tuple members must be type references", Origin: origin})
+							referenceIDs = nil
+							break
+						}
+						nestedReferenceID := TypeReferenceID(0x53000000) | (TypeReferenceID(irDeclaration.ID) << 8) | TypeReferenceID(i*16+j+1)
+						childRefs = append(childRefs, nestedReferenceID)
+						childOrder = append(childOrder, CollectedStructuredElement{Reference: nestedReferenceID})
+						result.References = append(result.References, TypeReference{ID: nestedReferenceID, Scope: scope, Name: nestedReference.String(), Origin: Origin{Primary: Span{File: file, Start: uint32(nestedReference.StartOffset), End: uint32(nestedReference.StartOffset + nestedReference.Length)}}})
+					}
+					if referenceIDs == nil {
+						break
+					}
+					result.Structured = append(result.Structured, CollectedStructuredType{ID: childID, Declaration: irDeclaration.ID, Kind: TypeTuple, ElementReferences: childRefs, ElementOrder: childOrder, Origin: origin})
+					elementTypeIDs = append(elementTypeIDs, childID)
+					elementOrder = append(elementOrder, CollectedStructuredElement{Type: childID})
+					continue
+				}
+				if nested, nestedOK := element.(*ast.UnionType); nestedOK {
+					childID := TypeID(0x54000000) | (TypeID(irDeclaration.ID) << 8) | TypeID(i+1)
+					childRefs := make([]TypeReferenceID, 0, len(nested.Members))
+					childOrder := make([]CollectedStructuredElement, 0, len(nested.Members))
+					for j, nestedMember := range nested.Members {
+						nestedReference, nestedReferenceOK := nestedMember.(*ast.TypeReference)
+						if !nestedReferenceOK || nestedReference == nil {
+							result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: SeverityError, Code: "TYPE_BODY_UNSUPPORTED", Message: "nested union members must be type references", Origin: origin})
+							referenceIDs = nil
+							break
+						}
+						nestedReferenceID := TypeReferenceID(0x55000000) | (TypeReferenceID(irDeclaration.ID) << 8) | TypeReferenceID(i*16+j+1)
+						childRefs = append(childRefs, nestedReferenceID)
+						childOrder = append(childOrder, CollectedStructuredElement{Reference: nestedReferenceID})
+						result.References = append(result.References, TypeReference{ID: nestedReferenceID, Scope: scope, Name: nestedReference.String(), Origin: Origin{Primary: Span{File: file, Start: uint32(nestedReference.StartOffset), End: uint32(nestedReference.StartOffset + nestedReference.Length)}}})
+					}
+					if referenceIDs == nil {
+						break
+					}
+					result.Structured = append(result.Structured, CollectedStructuredType{ID: childID, Declaration: irDeclaration.ID, Kind: TypeUnion, ElementReferences: childRefs, ElementOrder: childOrder, Origin: origin})
+					elementTypeIDs = append(elementTypeIDs, childID)
+					elementOrder = append(elementOrder, CollectedStructuredElement{Type: childID})
+					continue
+				}
 				array, arrayOK := element.(*ast.DynamicArrayType)
 				fixed, fixedOK := element.(*ast.FixedSizeArrayType)
 				var arrayElement ast.ArrayElementType
