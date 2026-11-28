@@ -14,6 +14,14 @@ func BuildInitialScopes(modules ModuleTable) ScopeTable {
 	return scopes
 }
 
+// BuildIndexedProgramWithTypeReferences builds a snapshot and records the
+// parsed type references before returning it to later semantic passes.
+func BuildIndexedProgramWithTypeReferences(filenames []string, target CompilationTarget, prolog PrologConfig, references []TypeReference) (IndexedProgram, []string) {
+	program, invalid := BuildIndexedProgram(filenames, target, prolog)
+	program.ResolveAndRecordTypeReferences(references)
+	return program, invalid
+}
+
 // BuildIndexedProgram constructs the initial semantic snapshot from one target
 // configuration, keeping source selection and import resolution consistent.
 func BuildIndexedProgram(filenames []string, target CompilationTarget, prolog PrologConfig) (IndexedProgram, []string) {

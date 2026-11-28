@@ -2,6 +2,14 @@ package ir
 
 import "testing"
 
+func TestBuildIndexedProgramRecordsTypeReferenceDiagnostics(t *testing.T) {
+	target := CompilationTarget{OS: "linux", Architecture: "amd64", PrimaryPath: "app/main"}
+	program, invalid := BuildIndexedProgramWithTypeReferences([]string{"app/main.tup"}, target, PrologConfig{}, []TypeReference{{ID: TypeReferenceID(1), Scope: ScopeID(1), Name: "Missing", Origin: Origin{Primary: Span{File: FileID(1), Start: 0, End: 7}}}})
+	if len(invalid) != 0 || len(program.TypeReferences) != 0 || len(program.Diagnostics) != 1 || program.Diagnostics[0].Code != "TYPE_NOT_FOUND" {
+		t.Fatalf("builder must record type-resolution diagnostics: program=%#v invalid=%v", program, invalid)
+	}
+}
+
 func TestBuildIndexedProgramRequiresPrimaryPath(t *testing.T) {
 	program, invalid := BuildIndexedProgram([]string{"app/main.tup"}, CompilationTarget{OS: "linux", Architecture: "amd64"}, PrologConfig{})
 	if program.Modules != nil || len(invalid) != 1 || invalid[0] != "primary module path is required" {
