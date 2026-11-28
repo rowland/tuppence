@@ -229,21 +229,48 @@ func CollectTypeDeclarations(module ModuleID, scope ScopeID, file FileID, first 
 				continue
 			}
 			referenceIDs := make([]TypeReferenceID, 0, len(union.Members))
+			elementTypeIDs := make([]TypeID, 0, len(union.Members))
 			elementOrder := make([]CollectedStructuredElement, 0, len(union.Members))
 			for i, member := range union.Members {
 				reference, ok := member.(*ast.TypeReference)
-				if !ok || reference == nil {
-					result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: SeverityError, Code: "TYPE_BODY_UNSUPPORTED", Message: "union members must be type references", Origin: origin})
+				if ok && reference != nil {
+					referenceID := TypeReferenceID(0x20000000) | (TypeReferenceID(irDeclaration.ID) << 8) | TypeReferenceID(i+1)
+					referenceIDs = append(referenceIDs, referenceID)
+					elementOrder = append(elementOrder, CollectedStructuredElement{Reference: referenceID})
+					result.References = append(result.References, TypeReference{ID: referenceID, Scope: scope, Name: reference.String(), Origin: Origin{Primary: Span{File: file, Start: uint32(reference.StartOffset), End: uint32(reference.StartOffset + reference.Length)}}})
+					continue
+				}
+				array, arrayOK := member.(*ast.DynamicArrayType)
+				fixed, fixedOK := member.(*ast.FixedSizeArrayType)
+				var arrayElement ast.ArrayElementType
+				fixedLength := uint64(0)
+				if arrayOK {
+					arrayElement = array.ElementType
+				} else if fixedOK {
+					arrayElement = fixed.ElementType
+					size, sizeOK := fixed.Size.(*ast.IntegerLiteral)
+					if !sizeOK || size == nil || size.IntegerValue < 0 {
+						fixedOK = false
+					} else {
+						fixedLength = uint64(size.IntegerValue)
+					}
+				}
+				arrayReference, arrayReferenceOK := arrayElement.(*ast.TypeReference)
+				if (!arrayOK && !fixedOK) || !arrayReferenceOK || arrayReference == nil {
+					result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: SeverityError, Code: "TYPE_BODY_UNSUPPORTED", Message: "union members must be type references or arrays of type references", Origin: origin})
 					referenceIDs = nil
+					elementTypeIDs = nil
 					break
 				}
-				referenceID := TypeReferenceID(0x20000000) | (TypeReferenceID(irDeclaration.ID) << 8) | TypeReferenceID(i+1)
-				referenceIDs = append(referenceIDs, referenceID)
-				elementOrder = append(elementOrder, CollectedStructuredElement{Reference: referenceID})
-				result.References = append(result.References, TypeReference{ID: referenceID, Scope: scope, Name: reference.String(), Origin: Origin{Primary: Span{File: file, Start: uint32(reference.StartOffset), End: uint32(reference.StartOffset + reference.Length)}}})
+				childID := TypeID(0x50000000) | (TypeID(irDeclaration.ID) << 8) | TypeID(i+1)
+				childReferenceID := TypeReferenceID(0x51000000) | (TypeReferenceID(irDeclaration.ID) << 8) | TypeReferenceID(i+1)
+				result.References = append(result.References, TypeReference{ID: childReferenceID, Scope: scope, Name: arrayReference.String(), Origin: Origin{Primary: Span{File: file, Start: uint32(arrayReference.StartOffset), End: uint32(arrayReference.StartOffset + arrayReference.Length)}}})
+				result.Structured = append(result.Structured, CollectedStructuredType{ID: childID, Declaration: irDeclaration.ID, Kind: TypeArray, ElementReferences: []TypeReferenceID{childReferenceID}, ElementOrder: []CollectedStructuredElement{{Reference: childReferenceID}}, FixedLength: fixedOK, Length: fixedLength, Origin: origin})
+				elementTypeIDs = append(elementTypeIDs, childID)
+				elementOrder = append(elementOrder, CollectedStructuredElement{Type: childID})
 			}
 			if referenceIDs != nil {
-				result.Structured = append(result.Structured, CollectedStructuredType{ID: TypeID(irDeclaration.ID), Declaration: irDeclaration.ID, Kind: TypeUnion, ElementReferences: referenceIDs, ElementOrder: elementOrder, Origin: origin})
+				result.Structured = append(result.Structured, CollectedStructuredType{ID: TypeID(irDeclaration.ID), Declaration: irDeclaration.ID, Kind: TypeUnion, ElementReferences: referenceIDs, ElementTypes: elementTypeIDs, ElementOrder: elementOrder, Origin: origin})
 			}
 		} else if tuple, ok := declaration.RHS.(*ast.TypeTuple); ok && tuple.TupleType != nil {
 			referenceIDs := make([]TypeReferenceID, 0, len(tuple.TupleType.Members))
