@@ -1,0 +1,75 @@
+package ir
+
+// BuildInitialScopes creates a synthetic prolog scope and an initial module
+// scope for each module. The module scope remains the stable module-derived ID.
+func BuildInitialScopes(modules ModuleTable) ScopeTable {
+	scopes := make(ScopeTable, 0, len(modules)*2)
+	for _, module := range modules {
+		prologID := ScopeID(0x80000000) | ScopeID(module.ID)
+		scopes = append(scopes,
+			Scope{ID: prologID, Module: module.ID, Kind: ScopeProlog, Origin: module.Origin},
+			Scope{ID: ScopeID(module.ID), Parent: prologID, Module: module.ID, Kind: ScopeModule, Initial: true, Origin: module.Origin},
+		)
+	}
+	return scopes
+}
+
+// BuildIndexedProgramWithTypeReferences builds a snapshot and records the
+// parsed type references before returning it to later semantic passes.
+func BuildIndexedProgramWithTypeReferences(filenames []string, target CompilationTarget, prolog PrologConfig, references []TypeReference) (IndexedProgram, []string) {
+	program, invalid := BuildIndexedProgram(filenames, target, prolog)
+	program.ResolveAndRecordTypeReferences(references)
+	return program, invalid
+}
+
+// BuildIndexedProgram constructs the initial semantic snapshot from one target
+// configuration, keeping source selection and import resolution consistent.
+func BuildIndexedProgram(filenames []string, target CompilationTarget, prolog PrologConfig) (IndexedProgram, []string) {
+	if target.PrimaryPath == "" {
+		return IndexedProgram{}, []string{"primary module path is required"}
+	}
+	files, modules, invalid := BuildModuleIndexForTarget(filenames, target)
+	program := IndexedProgram{
+		Modules:          modules,
+		SourceFiles:      files,
+		Scopes:           BuildInitialScopes(modules),
+		ModuleResolution: target.ModuleRoots,
+		Prolog:           prolog,
+	}
+	primaryFound := false
+	for _, module := range modules {
+		if module.ResolutionPath() == target.PrimaryPath {
+			program.PrimaryModule = module.ID
+			primaryFound = true
+			break
+		}
+	}
+	if !primaryFound {
+		invalid = append(invalid, target.PrimaryPath)
+	}
+	if prolog.Enabled && len(target.PrologPaths) > 0 {
+		program.Prolog.Modules = nil
+		program.Prolog.Architecture = target.Architecture
+		roots := append([]string(nil), target.ModuleRoots.SearchPaths...)
+		if target.ModuleRoots.ProgramRoot != "" {
+			roots = append([]string{target.ModuleRoots.ProgramRoot}, roots...)
+		}
+		for _, path := range target.PrologPaths {
+			found := false
+			for _, module := range modules {
+				if module.ResolutionPath() == path {
+					program.Prolog.Modules = append(program.Prolog.Modules, module.ID)
+					found = true
+					break
+				}
+			}
+			if !found {
+				invalid = append(invalid, path)
+				if len(files) > 0 {
+					program.Diagnostics = append(program.Diagnostics, NewUnresolvedPrologDiagnostic(Origin{Primary: Span{File: files[0].ID}}, path, roots))
+				}
+			}
+		}
+	}
+	return program, invalid
+}

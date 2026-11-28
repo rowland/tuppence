@@ -1,0 +1,55 @@
+package ir
+
+import "testing"
+
+func TestScopeValidity(t *testing.T) {
+	scope := Scope{
+		ID:     ScopeID(1),
+		Module: ModuleID(2),
+		Kind:   ScopeModule,
+		Origin: testOrigin(),
+		Entries: []ScopeEntry{
+			{Name: "answer", Declaration: DeclID(3), Offset: 4},
+		},
+	}
+	if !scope.Valid() {
+		t.Fatal("complete scope must be valid")
+	}
+	if scope.Parent.Valid() {
+		t.Fatal("root scope should not require a parent")
+	}
+}
+
+func TestScopeRejectsInvalidEntries(t *testing.T) {
+	scope := Scope{
+		ID:     ScopeID(1),
+		Module: ModuleID(2),
+		Kind:   ScopeBlock,
+		Entries: []ScopeEntry{
+			{Name: "", Declaration: DeclID(3)},
+		},
+	}
+	if scope.Valid() {
+		t.Fatal("scope with an invalid entry must be invalid")
+	}
+}
+
+func TestScopeRejectsMissingIdentityOrKind(t *testing.T) {
+	for name, invalid := range map[string]Scope{
+		"missing id":     {Module: ModuleID(2), Kind: ScopeBlock, Origin: testOrigin()},
+		"missing module": {ID: ScopeID(1), Kind: ScopeBlock, Origin: testOrigin()},
+		"missing kind":   {ID: ScopeID(1), Module: ModuleID(2)},
+	} {
+		if invalid.Valid() {
+			t.Errorf("%s scope must be invalid", name)
+		}
+	}
+}
+
+func TestScopeKindsHaveValidValues(t *testing.T) {
+	for _, kind := range []ScopeKind{ScopeModule, ScopeFunction, ScopeBlock, ScopeLoop} {
+		if !kind.Valid() {
+			t.Errorf("scope kind %d must be valid", kind)
+		}
+	}
+}

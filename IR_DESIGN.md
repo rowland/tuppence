@@ -47,10 +47,12 @@ versions, and diagnostics; executable SSA follows once a small typed subset work
 | Call effects | `fn` may call `fn` by name or reference. It may store an `fx` callable but cannot invoke it. `fx` may invoke either. |
 | Parameters | Formal parameters form a tuple definition, including names and defaults. Actual arguments form a tuple construction. Anonymous tuples also have generated types, constructors, and enumerable metadata. |
 | Effect ordering | Invocations of `fx` inside `fx` preserve their source order. Pure calls may be deduplicated and reordered subject to dependencies and the eventual failure/divergence rules. |
-| Literals | Immutable direct literal bindings may instantiate independently at uses. Mutable bindings and function-call results have one fixed type. |
-| Literal defaults | A uniquely applicable concrete parameter can provide a literal type. Generic or `any` use selects its configured default, such as `Int` or `Float`. |
-| Conversions | Concrete values are not generally implicitly converted. Anonymous structures may adapt to an expected named type; the reverse is not implicit. Constructor-based implicit conversions remain open. |
-| Lookup | UFCS searches the receiver type's home module before lexical scopes. Ordinary calls search inward to outward. Within a location: exact, generic, then `any` candidates. |
+| Literals | An immutable binding whose value is a literal remains a reusable literal template: each use may instantiate it under the same rules as the literal written at that use. Integer and float literals/templates begin with their category's admissible storage-type superset, including byte arrays. Mutable bindings, function-call results, and values with an established concrete type do not behave this way. |
+| Literal defaults | If one non-generic candidate remains applicable, literal/template storage types are tried in the specified priority order through the candidate's type constructors. If multiple candidates remain, the literal/template assumes the configured default, such as `Int` or `Float` when out of range. |
+| Conversions | A known concrete value is not implicitly converted merely because another parameter type would fit. If a suitable existing cast function is in scope, the compiler may insert a call to it; the compiler does not synthesize the cast function. Anonymous structures may adapt to an expected named type; the reverse is not implicit. |
+| Lookup | UFCS searches the receiver type's home module before lexical scopes. Ordinary calls search inward to outward. Within a location, candidates are considered in priority tiers: exact concrete matches, generic matches, then `any` matches. A lower tier cannot displace an applicable higher tier. |
+| Module resolution | A relative import path is resolved against the current module, then the program root, then configured module search paths. A leading `/` goes directly to the configured absolute module-path roots rather than applying current-module or program-root-relative lookup. The resolved module identity remains distinct for each path/version, including when local aliases reuse the same name. |
+| Core imports | Core standard-library types and functions are introduced through a compiler-provided prolog by default. The prolog is the language's controlled include-like exception: its selected exports and aliases occupy a synthetic lexical scope immediately outside the current module's initial scope. A compile option may suppress it, including when building the standard library itself; the selected core set is architecture-dependent. `Float` defaults to `Float64` unless the target does not support it, in which case the architecture-specific prolog selects a supported alternative. Ordinary module imports bind a module to a local symbol for qualified calls; type constructors and cast functions outside the prolog require explicit local aliases for unqualified implicit resolution. Core symbols therefore participate in an explicit, controlled prolog environment rather than blanket imports being generally available. |
 | Generic environment | Specializations retain the generic declaration's home module and lexical environment. Caller-local functions are not injected into that environment. |
 | Contracts | Compile-time requirements, including requirements inferred from operations on generic parameters. No runtime interface or method tables. |
 | Unions | Finite unions may dispatch by generated switches when all alternatives have applicable calls. `any` and `error` are open unions; switches over them require an `else`. |
@@ -365,6 +367,21 @@ takes32(x)  -> instantiate literal 1 as Int32
 takes64(x)  -> instantiate literal 1 as Int64
 ```
 
+The binding `x` above is therefore matched like the literal `1` written directly in
+those call sites. This rule applies only while the binding remains an immutable,
+direct literal template. A mutable binding, a function result, or a binding whose
+concrete type has already been fixed is an ordinary known-typed value and cannot
+silently change type at a later use.
+
+A literal template begins as the superset of admissible storage types for its
+category: integer and float templates may use the applicable signed, unsigned, or
+floating storage types and an array of bytes, subject to range and representation
+rules. If one non-generic function candidate remains applicable, resolve the
+candidate's parameter through its type constructor for each admissible storage type
+in the specified storage-type priority order. If multiple function candidates
+remain, default the template to `Int`, or `Float` when the value is out of integer
+range. Generic and `any` consumers use their configured defaults.
+
 For a function result, independent instantiation does not apply. For a mutable
 binding, every version must agree on one type. A uniquely determined concrete
 consumer provides a constraint; a generic/`any` consumer selects the configured
@@ -415,20 +432,32 @@ type CallPlan struct {
 
 `TupleConstructionPlan` identifies its schema/constructor and maps source arguments
 to logical members. Its member plans have alternatives for supplied value, instantiated literal,
-default expression, rest packing, structural adaptation, and an explicit
-conversion call. It is not permission to introduce implicit numeric conversions.
+default expression, rest packing, structural adaptation, and a cast-function call when a suitable existing cast is in scope. The compiler
+may insert that call, but candidate discovery must not invent a cast function. Literal storage-type
+constructors are tried in the configured priority order. This does not permit
+arbitrary implicit numeric conversions.
 
 Proposed resolution algorithm:
 
 1. Identify the call form and candidate location groups. UFCS starts with the
    concrete receiver's home module, followed by the declaration's lexical scopes.
    Ordinary calls use lexical scopes. Explicit qualification restricts discovery.
-2. Within one location, check arity, labels, selectors, literal constraints,
-   generic substitutions, and contract requirements. Retain reasons for rejection.
-3. Apply exact/concrete, generic-specialization, then `any` priority. Proceed to an
-   outer location only when no candidate is applicable. Ambiguity in a preferred
-   location is a diagnostic, not a reason to fall back.
-4. Select argument adaptations and defaults only after choosing a viable candidate.
+2. Within one location, check arity, labels, selectors, literal/storage-type
+   constraints, generic substitutions, contract requirements, and cast-function
+   availability. A known concrete argument matches an exact parameter when its
+   type is already equal. It may also use an existing suitable cast function, but
+   that cast is an inserted call rather than an exact match.
+3. Apply exact/concrete, generic-specialization, then `any` priority. An immutable
+   literal template is eligible for contextual storage-type instantiation in the
+   exact tier. If one non-generic candidate remains, try its type constructor over
+   the admissible storage types in priority order. If multiple candidates remain,
+   default the literal template to `Int`, or `Float` when out of integer range, and
+   then consider existing cast functions. Proceed to an outer location only when
+   no candidate is applicable. Ambiguity in a preferred location is a diagnostic,
+   not a reason to fall back.
+4. Select argument adaptations, type constructors, cast-function calls, and defaults
+   only after choosing a viable candidate. The compiler may insert a call to an
+   existing suitable cast function, but must not synthesize the function itself.
    Keep source evaluation order separate from formal parameter packaging.
 5. For finite union arguments, construct an exhaustive dispatch plan if necessary.
    Resolve each concrete combination in its appropriate environment, and form the
