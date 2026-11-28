@@ -6,6 +6,26 @@ import (
 	"github.com/rowland/tuppence/tup/ast"
 )
 
+func TestInstallCollectedTypeDeclarationsCreatesAliases(t *testing.T) {
+	lhs := ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Alias", nil, 0, 5), nil)
+	rhs := ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 8, 3), nil, 8, 3)
+	collected := CollectTypeDeclarations(ScopeID(1), FileID(1), DeclID(0), []*ast.TypeDeclaration{ast.NewTypeDeclaration(lhs, rhs)})
+	prolog := ScopeID(0x80000001)
+	program := IndexedProgram{
+		Scopes: ScopeTable{
+			{ID: prolog, Module: ModuleID(1), Kind: ScopeProlog, Origin: testOrigin()},
+			{ID: ScopeID(1), Parent: prolog, Module: ModuleID(1), Kind: ScopeModule, Initial: true, Origin: testOrigin()},
+			{ID: ScopeID(2), Module: ModuleID(2), Kind: ScopeModule, Origin: testOrigin()},
+		},
+		ImportAliases: ImportAliasTable{{Scope: ScopeID(1), LocalName: "Int", Module: ModuleID(2), Declaration: DeclID(20), Origin: testOrigin()}},
+		Declarations:  DeclarationTable{{ID: DeclID(20), Scope: ScopeID(2), Name: "Int", Kind: DeclType, Exported: true, Origin: testOrigin()}},
+		Types:         TypeTable{{ID: TypeID(20), Name: "Int", Kind: TypeNominal, Declaration: DeclID(20), HomeModule: ModuleID(2), Origin: testOrigin()}},
+	}
+	if !program.InstallCollectedTypeDeclarations(ModuleID(1), collected) || len(program.Aliases) != 1 || program.Aliases[0].Declaration != DeclID(1) || program.Aliases[0].Target != TypeID(20) {
+		t.Fatalf("resolved type declaration must create an alias: %#v", program)
+	}
+}
+
 func TestCollectTypeDeclarationsBuildsScopeEntries(t *testing.T) {
 	first := ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Int", nil, 4, 3), nil)
 	second := ast.NewTypeDeclarationLHS(nil, ast.NewTypeIdentifier("Answer", nil, 12, 6), nil)

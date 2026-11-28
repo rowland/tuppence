@@ -45,9 +45,25 @@ func (p *IndexedProgram) InstallCollectedTypeDeclarations(module ModuleID, colle
 		}
 		seenNames[entry.Name] = struct{}{}
 	}
+	resolved, diagnostics := p.ResolveTypeReferences(collected.References)
+	aliases := make([]TypeAlias, 0, len(resolved))
+	for _, reference := range resolved {
+		declaration := DeclID(reference.Reference.ID)
+		if _, ok := p.Declarations.Find(declaration); ok {
+			return false
+		}
+		for _, collectedDeclaration := range collected.Declarations {
+			if collectedDeclaration.ID == declaration {
+				aliases = append(aliases, TypeAlias{Declaration: declaration, Target: reference.Type, Origin: reference.Reference.Origin})
+				break
+			}
+		}
+	}
 	p.Declarations = append(p.Declarations, collected.Declarations...)
 	scope.Entries = append(scope.Entries, collected.Entries...)
-	p.ResolveAndRecordTypeReferences(collected.References)
+	p.TypeReferences = append(p.TypeReferences, resolved...)
+	p.Diagnostics = append(p.Diagnostics, diagnostics...)
+	p.Aliases = append(p.Aliases, aliases...)
 	return true
 }
 
