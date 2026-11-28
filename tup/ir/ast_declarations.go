@@ -171,6 +171,26 @@ func CollectTypeDeclarations(module ModuleID, scope ScopeID, file FileID, first 
 				Origin: Origin{Primary: Span{File: file, Start: uint32(element.StartOffset), End: uint32(element.StartOffset + element.Length)}},
 			})
 			result.Structured = append(result.Structured, CollectedStructuredType{ID: TypeID(irDeclaration.ID), Declaration: irDeclaration.ID, Kind: TypeArray, ElementReferences: []TypeReferenceID{referenceID}, FixedLength: true, Length: uint64(size.IntegerValue), Origin: origin})
+		} else if union, ok := declaration.RHS.(*ast.UnionType); ok {
+			if len(union.Members) == 0 {
+				result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: SeverityError, Code: "TYPE_BODY_INVALID", Message: "union declarations require at least one member", Origin: origin})
+				continue
+			}
+			referenceIDs := make([]TypeReferenceID, 0, len(union.Members))
+			for i, member := range union.Members {
+				reference, ok := member.(*ast.TypeReference)
+				if !ok || reference == nil {
+					result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: SeverityError, Code: "TYPE_BODY_UNSUPPORTED", Message: "union members must be type references", Origin: origin})
+					referenceIDs = nil
+					break
+				}
+				referenceID := TypeReferenceID(0x20000000) | (TypeReferenceID(irDeclaration.ID) << 8) | TypeReferenceID(i+1)
+				referenceIDs = append(referenceIDs, referenceID)
+				result.References = append(result.References, TypeReference{ID: referenceID, Scope: scope, Name: reference.String(), Origin: Origin{Primary: Span{File: file, Start: uint32(reference.StartOffset), End: uint32(reference.StartOffset + reference.Length)}}})
+			}
+			if referenceIDs != nil {
+				result.Structured = append(result.Structured, CollectedStructuredType{ID: TypeID(irDeclaration.ID), Declaration: irDeclaration.ID, Kind: TypeUnion, ElementReferences: referenceIDs, Origin: origin})
+			}
 		} else if tuple, ok := declaration.RHS.(*ast.TypeTuple); ok && tuple.TupleType != nil {
 			referenceIDs := make([]TypeReferenceID, 0, len(tuple.TupleType.Members))
 			for i, member := range tuple.TupleType.Members {

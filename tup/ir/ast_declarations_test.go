@@ -70,6 +70,14 @@ func TestCollectTypeDeclarationsBuildsScopeEntries(t *testing.T) {
 	if len(tupleType.Diagnostics) != 0 || len(tupleType.Structured) != 1 || tupleType.Structured[0].Kind != TypeTuple || len(tupleType.Structured[0].ElementReferences) != 2 {
 		t.Fatalf("tuple declarations must retain member references: %#v", tupleType)
 	}
+	unionRHS := ast.NewUnionType([]ast.UnionMemberType{
+		ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 42, 3), nil, 42, 3),
+		ast.NewTypeReference(nil, ast.NewTypeIdentifier("Bool", nil, 47, 4), nil, 47, 4),
+	})
+	unionType := CollectTypeDeclarations(ModuleID(1), ScopeID(1), FileID(8), DeclID(51), []*ast.TypeDeclaration{ast.NewTypeDeclaration(second, unionRHS)})
+	if len(unionType.Diagnostics) != 0 || len(unionType.Structured) != 1 || unionType.Structured[0].Kind != TypeUnion || len(unionType.Structured[0].ElementReferences) != 2 {
+		t.Fatalf("union declarations must retain member references: %#v", unionType)
+	}
 	program := IndexedProgram{Scopes: ScopeTable{
 		{ID: ScopeID(0x80000001), Module: ModuleID(1), Kind: ScopeProlog, Origin: testOrigin()},
 		{ID: ScopeID(1), Parent: ScopeID(0x80000001), Module: ModuleID(1), Kind: ScopeModule, Initial: true, Origin: testOrigin()},
