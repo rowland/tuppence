@@ -19,6 +19,8 @@ type CollectedStructuredType struct {
 	ID               TypeID
 	Declaration      DeclID
 	ElementReference TypeReferenceID
+	FixedLength      bool
+	Length           uint64
 	Origin           Origin
 }
 
@@ -80,7 +82,7 @@ func (p *IndexedProgram) InstallCollectedTypeDeclarations(module ModuleID, colle
 		if !ok {
 			continue
 		}
-		structuredTypes = append(structuredTypes, Type{ID: structured.ID, Kind: TypeArray, Element: element, Origin: structured.Origin})
+		structuredTypes = append(structuredTypes, Type{ID: structured.ID, Kind: TypeArray, Element: element, FixedLength: structured.FixedLength, Length: structured.Length, Origin: structured.Origin})
 		aliases = append(aliases, TypeAlias{Declaration: structured.Declaration, Target: structured.ID, Origin: structured.Origin})
 	}
 	for _, typ := range collected.Types {
@@ -139,6 +141,21 @@ func CollectTypeDeclarations(module ModuleID, scope ScopeID, file FileID, first 
 				Origin: Origin{Primary: Span{File: file, Start: uint32(element.StartOffset), End: uint32(element.StartOffset + element.Length)}},
 			})
 			result.Structured = append(result.Structured, CollectedStructuredType{ID: TypeID(irDeclaration.ID), Declaration: irDeclaration.ID, ElementReference: referenceID, Origin: origin})
+		} else if array, ok := declaration.RHS.(*ast.FixedSizeArrayType); ok {
+			element, elementOK := array.ElementType.(*ast.TypeReference)
+			size, sizeOK := array.Size.(*ast.IntegerLiteral)
+			if !elementOK || element == nil || !sizeOK || size == nil || size.IntegerValue < 0 {
+				result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: SeverityError, Code: "TYPE_BODY_INVALID", Message: "fixed array requires a non-negative integer size and type-reference element", Origin: origin})
+				continue
+			}
+			referenceID := TypeReferenceID(0x80000000) | TypeReferenceID(irDeclaration.ID)
+			result.References = append(result.References, TypeReference{
+				ID:     referenceID,
+				Scope:  scope,
+				Name:   element.String(),
+				Origin: Origin{Primary: Span{File: file, Start: uint32(element.StartOffset), End: uint32(element.StartOffset + element.Length)}},
+			})
+			result.Structured = append(result.Structured, CollectedStructuredType{ID: TypeID(irDeclaration.ID), Declaration: irDeclaration.ID, ElementReference: referenceID, FixedLength: true, Length: uint64(size.IntegerValue), Origin: origin})
 		} else {
 			result.Diagnostics = append(result.Diagnostics, Diagnostic{Severity: SeverityError, Code: "TYPE_BODY_UNSUPPORTED", Message: "structured type declaration bodies are not yet supported", Origin: origin})
 		}

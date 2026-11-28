@@ -57,6 +57,11 @@ func TestCollectTypeDeclarationsBuildsScopeEntries(t *testing.T) {
 	if len(arrayType.Diagnostics) != 0 || len(arrayType.Structured) != 1 || len(arrayType.References) != 1 || arrayType.Structured[0].ID != TypeID(31) {
 		t.Fatalf("dynamic array declarations must retain pending element resolution: %#v", arrayType)
 	}
+	fixedRHS := ast.NewFixedSizeArrayType(ast.NewTypeReference(nil, ast.NewTypeIdentifier("Int", nil, 24, 3), nil, 24, 3), ast.NewDecimalLiteral("4", 4, nil, 28, 1))
+	fixedType := CollectTypeDeclarations(ModuleID(1), ScopeID(1), FileID(7), DeclID(40), []*ast.TypeDeclaration{ast.NewTypeDeclaration(second, fixedRHS)})
+	if len(fixedType.Diagnostics) != 0 || len(fixedType.Structured) != 1 || !fixedType.Structured[0].FixedLength || fixedType.Structured[0].Length != 4 {
+		t.Fatalf("fixed array declarations must retain validated lengths: %#v", fixedType)
+	}
 	program := IndexedProgram{Scopes: ScopeTable{
 		{ID: ScopeID(0x80000001), Module: ModuleID(1), Kind: ScopeProlog, Origin: testOrigin()},
 		{ID: ScopeID(1), Parent: ScopeID(0x80000001), Module: ModuleID(1), Kind: ScopeModule, Initial: true, Origin: testOrigin()},
